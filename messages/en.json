@@ -1,0 +1,189 @@
+{
+  "Name": {
+    "apiroq": "Apiroq"
+  },
+  "nav": {
+    "support": "Support",
+    "computers": "Computers",
+    "peripherals": "Peripherals",
+    "help": "Help",
+    "about": "About Us",
+    "advantages": "Advantages",
+    "contacts": "Contacts",
+    "about_company": "About Company"
+  },
+    "contact": {
+      "title": "Contact us",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send"
+    },
+  "header": {
+    "ready_configs": "Ready-made configurations",
+    "ready_configs_desc": "Choose from our ready-made computer configurations",
+    "configurator": "Computer configuration",
+    "configurator_desc": "Build your ideal computer"
+  },
+  "navigation": {
+    "home": "Home",
+    "configurator": "Configurator",
+    "catalog": "Catalog",
+    "about": "About",
+    "login": "Login",
+    "register": "Register"
+  },
+  "home": {
+    "title": "Custom PC Configuration Platform",
+    "subtitle": "Build your perfect computer",
+    "ready_configs": "Ready-made configurations",
+    "custom_config": "Create custom configuration"
+  },
+  "configurator": {
+    "categories": {
+      "cpu": "Processor",
+      "motherboard": "Motherboard",
+      "gpu": "Graphics Card",
+      "ram": "RAM",
+      "storage": "Storage",
+      "psu": "Power Supply",
+      "case": "Case",
+      "cooling": "Cooling"
+    },
+    "actions": {
+      "add": "Add",
+      "remove": "Remove",
+      "save": "Save configuration",
+      "calculate": "Calculate price"
+    }
+  },
+  "auth": {
+      "login_title": "Login to your account",
+      "register_title": "Create a new account",
+      "email": "Email address",
+      "password": "Password",
+      "confirm_password": "Confirm password",
+      "name": "Full name",
+      "forgot_password": "Forgot password?",
+      "sign_in": "Sign In",
+      "register": "Register",
+      "no_account": "Don't have an account? Register",
+      "have_account": "Already have an account? Log in",
+      "passwords_not_match": "Passwords do not match"
+  },
+  "features": {
+      "title": "Our Advantages",
+      "professional": {
+        "title": "Professional and Fast Assembly",
+        "description": "We customize the computer to your needs and perform full personalization"
+      },
+      "delivery": {
+        "title": "Free Delivery",
+        "description": "Average delivery time is 2-4 days. We work with a contract and provide warranty"
+      },
+      "secure": {
+        "title": "Secure Purchases at All Stages",
+        "description": "Ability to pay with various payment methods, including warranty service"
+      }
+  },
+  "hero": {
+      "title": "Gaming Computer Assembly and Personalization",
+      "subtitle": "We build computers according to your budget and needs",
+      "features": {
+        "delivery": "Free Delivery",
+        "assembly": "Individual Assembly", 
+        "warranty": "3-Year Warranty"
+      },
+      "cta": "Contact Us",
+      "imageAlt": "Gaming PC"
+  },
+  "productCatalog": {
+        "title": "Product Catalog",
+        "categories": {
+            "gaming": "Gaming Computers",
+            "workstation": "Workstations",
+            "streaming": "Streaming PCs",
+            "editing": "Video Editing Computers",
+            "3dModeling": "3D Modeling Computers"
+        },
+        "filters": {
+            "price": "Price",
+            "performance": "Performance",
+            "purpose": "Purpose"
+        },
+        "sorting": {
+            "priceAsc": "Price: Low to High",
+            "priceDesc": "Price: High to Low",
+            "newest": "Newest",
+            "bestsellers": "Bestsellers"
+        }
+    },
+    "footer": {
+        "contact": {
+          "title": "Contact Us",
+          "name": "Your Name",
+          "email": "Email Address",
+          "message": "Your Message",
+          "send": "Send"
+        }, 
+        "businessOffers": {
+            "title": "Business Offers",
+            "description": "Do you have a collaboration proposal or want to create a computer with specific requirements?",
+            "contactLink": "Write an email"
+        },
+        "technicalSupport": {
+            "title": "Technical Support",
+            "description": "Do you have questions or need help? Contact us, we will help!",
+            "workHours": "Working hours: 10:00 - 22:00, every day"
+        },
+        "socialMedia": {
+            "followUs": "Follow Us"
+        },
+        "copyright": "© COPYRIGHT 2024 APIROQ. ALL RIGHTS RESERVED."
+    },
+    "reviews": {
+        "title": "Latest Customer Reviews",
+        "chooseComputer": "Choose a Computer",
+        "prevReview": "Previous Review",
+        "nextReview": "Next Review",
+        "writeReview": "Write a Review"
+    },
+    "telegramSection": {
+        "memberCount": "ALREADY 100+ PLAYERS WITH US",
+        "title": "Stay Informed! Join Our\nTelegram Channel Apiroq",
+        "description": "Only original content: latest news, current products, and gaming equipment giveaways",
+        "joinButton": "JOIN TELEGRAM",
+        "giveaway": "Ongoing giveaway for a computer 🎮",
+        "previewAlt": "Telegram Channel Preview"
+    },
+    "processSteps": {
+        "title": "4 Steps to Your New Computer",
+        "step1": {
+            "title": "Submit a Request",
+            "description": "We will clarify the order details and your wishes"
+        },
+        "step2": {
+            "title": "Order Components",
+            "description": "We select and order the necessary parts"
+        },
+        "step3": {
+            "title": "Assembly",
+            "description": "We perform assembly and testing"
+        },
+        "step4": {
+            "title": "Delivery",
+            "description": "Safe delivery throughout Latvia"
+        }
+    },
+    "contactModal": {
+      "title": "Contact Us",
+      "callOrRequest": "Call or request a call",
+      "writeMessage": "Send a message",
+      "writeEmail": "Send an email",
+      "description": {
+        "first": "Each Apiroq computer is the result of 15 years of experience. Our experts know exactly what a gaming PC, workstation, or server should be.",
+        "second": "To get started, tell us about your needs, timeline, and budget, and we'll offer the best solution."
+      },
+      "workHours": "Working hours: 10:00 - 22:00, every day"
+  }
+}

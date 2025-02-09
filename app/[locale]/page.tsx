@@ -1,0 +1,50 @@
+'use client'
+import Hero from '../components/Home/Hero'
+import Features from '../components/Home/Features'
+import ProcessSteps from '../components/Home/ProcessSteps'
+import TelegramSection from '../components/Home/TelegramSection'
+{/*  import Reviews from '../components/Home/Reviews'*/}
+import { ContactModal } from '../components/ui/ContactModal'
+import { useTranslations } from 'next-intl';
+import { useState } from 'react'
+
+export default function Home() {
+  const t = useTranslations();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  return (
+    <main>
+      <Hero />
+      <Features />
+      <ProcessSteps />
+      <TelegramSection />
+      {/* <Reviews /> */}
+      
+       {/* Contact button */}
+       <button
+        onClick={() => setIsModalOpen(true)} 
+        className="fixed bottom-8 right-8 z-40 bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-colors duration-200"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth="2" 
+            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+          />
+        </svg>
+      </button>
+
+      {/* New Contact Modal */}
+      <ContactModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </main>
+  )
+}

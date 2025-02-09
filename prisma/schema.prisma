@@ -1,0 +1,44 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  password      String
+  name          String?
+  configurations Configuration[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Component {
+  id          String   @id @default(cuid())
+  category    String   // CPU, GPU, RAM, etc.
+  name        String
+  manufacturer String
+  price       Float
+  specs       Json
+  stock       Int      @default(0)
+  configurations Configuration[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Configuration {
+  id          String      @id @default(cuid())
+  name        String
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  components  Component[]
+  totalPrice  Float
+  status      String      // draft, saved, ordered
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}

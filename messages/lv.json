@@ -1,0 +1,189 @@
+{
+  "Name": {
+    "Apiroq": "Apiroq"
+  },
+  "nav": {
+    "support": "Atbalsts",
+    "computers": "Datori",
+    "peripherals": "Perifērija",
+    "help": "Palīdzība",
+    "about": "Par mums",
+    "advantages": "Priekšrocības",
+    "contacts": "Kontakti",
+    "about_company": "Par kompāniju"
+  },
+  "navigation": {
+    "home": "Sākumlapa",
+    "configurator": "Konfigurators",
+    "catalog": "Katalogs",
+    "about": "Par mums",
+    "login": "Ielogoties",
+    "register": "Reģistrēties"
+  },
+  "header": {
+    "ready_configs": "Ready-made configurations",
+    "ready_configs_desc": "Choose from our ready-made computer configurations",
+    "configurator": "Computer configuration",
+    "configurator_desc": "Build your ideal computer"
+  },
+    "contact": {
+      "title": "Sazināties ar mums",
+      "name": "Vārds",
+      "email": "E-pasts",
+      "message": "Ziņojums",
+      "send": "Sūtīt"
+    },
+  "home": {
+    "title": "Datoru Pielāgošanas Platforma",
+    "subtitle": "Izveidojiet savu ideālo datoru",
+    "ready_configs": "Gatavās konfigurācijas",
+    "custom_config": "Izveidot pielāgotu konfigurāciju"
+  },
+  "configurator": {
+    "categories": {
+      "cpu": "Procesors",
+      "motherboard": "Mātesplate",
+      "gpu": "Grafiskā karte",
+      "ram": "Operatīvā atmiņa",
+      "storage": "Krātuve",
+      "psu": "Barošanas bloks",
+      "case": "Korpuss",
+      "cooling": "Dzesēšana"
+    },
+    "actions": {
+      "add": "Pievienot",
+      "remove": "Noņemt",
+      "save": "Saglabāt konfigurāciju",
+      "calculate": "Aprēķināt cenu"
+    }
+  },
+  "auth": {
+      "login_title": "Ielogoties savā kontā",
+      "register_title": "Izveidot jaunu kontu",
+      "email": "E-pasta adrese",
+      "password": "Parole",
+      "confirm_password": "Apstiprināt paroli",
+      "name": "Vārds un uzvārds",
+      "forgot_password": "Aizmirsāt paroli?",
+      "sign_in": "Ielogoties",
+      "register": "Reģistrēties",
+      "no_account": "Nav konta? Reģistrējieties",
+      "have_account": "Jau ir konts? Ielogojieties",
+      "passwords_not_match": "Paroles nesakrīt"
+  },
+  "features": {
+      "title": "Mūsu priekšrocības",
+      "professional": {
+        "title": "Profesionāla un ātra montāža",
+        "description": "Pielāgojam datoru jūsu vajadzībām un veicam pilnu personalizāciju"
+      },
+      "delivery": {
+        "title": "Bezmaksas piegāde",
+        "description": "Vidējais piegādes laiks 2-4 dienas. Strādājam ar līgumu, sniedzam garantiju"
+      },
+      "secure": {
+        "title": "Droši pirkumi visos posmos",
+        "description": "Iespēja maksāt ar dažādiem maksājumu veidiem, iekļauta garantijas apkalpošana"
+      }
+  },
+  "hero": {
+      "title": "Spēļu datoru montāža un personalizācija",
+      "subtitle": "Veidojam datorus atbilstoši jūsu budžetam un vajadzībām",
+      "features": {
+        "delivery": "Bezmaksas piegāde",
+        "assembly": "Individuāla montāža", 
+        "warranty": "3 gadu garantija"
+      },
+      "cta": "Sazināties",
+      "imageAlt": "Spēļu dators"
+  },
+  "productCatalog": {
+      "title": "Produktu Katalogs",
+      "categories": {
+          "gaming": "Spēļu Datori",
+          "workstation": "Darba Stacijas",
+          "streaming": "Straumēšanas Datori",
+          "editing": "Video Rediģēšanas Datori",
+          "3dModeling": "3D Modelēšanas Datori"
+      },
+      "filters": {
+          "price": "Cena",
+          "performance": "Veiktspēja",
+          "purpose": "Pielietojums"
+      },
+      "sorting": {
+          "priceAsc": "Cena: No zemākās uz augstāko",
+          "priceDesc": "Cena: No augstākās uz zemāko",
+          "newest": "Jaunākie",
+          "bestsellers": "Bestselleri"
+      }
+  },
+  "footer": {
+      "contact": {
+      "title": "Sazināties ar mums",
+      "name": "Jūsu vārds",
+      "email": "E-pasta adrese",
+      "message": "Jūsu ziņojums",
+      "send": "Nosūtīt"
+    },
+      "businessOffers": {
+          "title": "Biznesa Piedāvājumi",
+          "description": "Ir piedāvājums sadarbībai vai vēlaties izveidot datoru pēc individuālām prasībām?",
+          "contactLink": "Rakstiet uz e-pastu"
+      },
+      "technicalSupport": {
+          "title": "Tehniskais Atbalsts",
+          "description": "Radušies jautājumi vai nepieciešama palīdzība? Sazinieties ar mums, mēs palīdzēsim!",
+          "workHours": "Darba laiks: 10:00 - 22:00, katru dienu"
+      },
+      "socialMedia": {
+          "followUs": "Sekojiet mums"
+      },
+      "copyright": "© COPYRIGHT 2024 APIROQ. VISAS TIESĪBAS AIZSARGĀTAS."
+  },
+  "reviews": {
+      "title": "Pēdējie klientu vērtējumi",
+      "chooseComputer": "Izvēlēties datoru",
+      "prevReview": "Iepriekšējā atsauksme",
+      "nextReview": "Nākamā atsauksme",
+      "writeReview": "Uzrakstīt atsauksmi"
+  },
+  "telegramSection": {
+      "memberCount": "KOPĀ AR MUMS JAU 100+ SPĒLĒTĀJU",
+      "title": "Esi informēts! Pievienojies mums\nTelegram kanālā Apiroq",
+      "description": "Tikai oriģināls saturs: jaunākās ziņas, aktuālie produkti un spēļu aprīkojuma izlozes",
+      "joinButton": "PIEVIENOTIES TELEGRAM",
+      "giveaway": "Notiek izloze par datoru 🎮",
+      "previewAlt": "Telegram kanāla priekšskatījums"
+  },
+  "processSteps": {
+      "title": "4 soļi līdz jūsu jaunajam datoram",
+      "step1": {
+          "title": "Atstājiet pieteikumu",
+          "description": "Precizēsim pasūtījuma detaļas un vēlmes"
+      },
+      "step2": {
+          "title": "Pasūtam komponentes",
+          "description": "Atlasām un pasūtam nepieciešamās detaļas"
+      },
+      "step3": {
+          "title": "Montāža",
+          "description": "Veicam montāžu un testēšanu"
+      },
+      "step4": {
+          "title": "Piegāde",
+          "description": "Droša piegāde visā Latvijā"
+      }
+  },
+    "contactModal": {
+      "title": "Sazināties ar mums",
+      "callOrRequest": "Zvanīt vai pieprasīt zvanu",
+      "writeMessage": "Rakstīt ziņu",
+      "writeEmail": "Rakstīt e-pastu",
+      "description": {
+        "first": "Katrs Apiroq dators ir 15 gadu pieredzes rezultāts. Mūsu eksperti precīzi zina, kādam jābūt spēļu datoram, darba stacijai vai serverim.",
+        "second": "Lai sāktu, pastāstiet par savām vajadzībām, termiņiem un budžetu, un mēs piedāvāsim labāko risinājumu."
+      },
+      "workHours": "Darba laiks: 10:00 - 22:00, katru dienu"
+    }
+}
