@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
 
@@ -9,19 +8,19 @@ export default function Navigation() {
   const t = useTranslations();
   
   return (
-    <nav className="bg-gradient-to-r from-[#1a1b26] via-[#2a2c3e] to-[#1a1b26] border-b border-gray-800">
+    <nav className="bg-gradient-to-r from-[#E63946] via-[#f8c4c8]/30 to-[#1a1b26] border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-          <Image 
+          {/* <Image 
               src="/images/logo.png" 
               alt="Apiroq"
               width={32}
               height={32}
               style={{ height: 'auto' }}
               priority
-            />
+            /> */}
 
           <span className="text-white text-xl font-semibold">{t('Name.apiroq')}</span>
           </Link>
@@ -30,7 +29,7 @@ export default function Navigation() {
 
           {/* Navigation links 
           <div className="hidden md:flex items-center space-x-8">
-            {/* Datori dropdown 
+            {/* Datori dropdown
             <div className="relative group">
               <button className="text-gray-300 hover:text-white flex items-center gap-1">
                 {t('nav.computers')}
@@ -88,7 +87,7 @@ export default function Navigation() {
             <Link href="/about" className="text-gray-300 hover:text-white">
               {t('nav.about')}
             </Link>
-          </div> */}
+          </div>  */}
 
           {/* Right side buttons */}
           <div className="flex items-center space-x-4">

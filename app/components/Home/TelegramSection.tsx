@@ -10,12 +10,12 @@ export default function TelegramSection() {
   return (
     <section className="py-16 bg-white/5">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="bg-[#1a1b26] rounded-2xl p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="bg-gradient-to-r from-[#58b6f9]/50 via-[#58b6f9]/60 to-[#eff8fe]/70 rounded-2xl p-8">
+          <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
             <div>
-              <div className="text-red-500 mb-2">
+              {/* <div className="text-white-500 mb-2">
                 {t('memberCount')}
-              </div>
+              </div> */}
               <h2 className="text-3xl font-bold text-white mb-4">
                 {t('title')}
               </h2>
@@ -23,14 +23,14 @@ export default function TelegramSection() {
                 {t('description')}
               </p>
               <Link 
-                href="https://t.me/apiroq" 
-                className="inline-flex items-center gap-2 bg-[#27A7E7] text-white px-6 py-3 rounded-lg hover:bg-[#229AD6]"
+                href="https://t.me/IvaProCommunity" 
+                className="inline-flex items-center gap-3 bg-[#27A7E7] text-white px-3 py-3 rounded-lg hover:bg-[#229AD6]"
               >
                 <Image 
-                  src="/telegram-logo.svg" 
+                  src="/images/telegram-logo.png" 
                   alt="Telegram" 
-                  width={24} 
-                  height={24} 
+                  width={36} 
+                  height={36} 
                 />
                 {t('joinButton')}
               </Link>
@@ -38,14 +38,14 @@ export default function TelegramSection() {
                   {t('giveaway')}  
               </div> */}
             </div>
-            <div className="relative h-[300px]">
+            {/* <div className="relative h-[300px]">
               <Image
                 src="/images/telegram-preview.png"
                 alt={t('previewAlt')}
                 fill
                 style={{objectFit: 'contain'}}
-              />
-            </div>
+              /> 
+            </div> */}
           </div>
         </div>
       </div>

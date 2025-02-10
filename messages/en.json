@@ -1,6 +1,12 @@
 {
   "Name": {
-    "apiroq": "Apiroq"
+    "apiroq": "IvaPro"
+  },
+  "PhoneNumbers": {
+    "support": "+371 20699800"
+  },
+  "Mail": {
+    "support": "ivaprolv@outlook.com"
   },
   "nav": {
     "support": "Support",
@@ -72,19 +78,19 @@
       "passwords_not_match": "Passwords do not match"
   },
   "features": {
-      "title": "Our Advantages",
-      "professional": {
-        "title": "Professional and Fast Assembly",
-        "description": "We customize the computer to your needs and perform full personalization"
-      },
-      "delivery": {
-        "title": "Free Delivery",
-        "description": "Average delivery time is 2-4 days. We work with a contract and provide warranty"
-      },
-      "secure": {
-        "title": "Secure Purchases at All Stages",
-        "description": "Ability to pay with various payment methods, including warranty service"
-      }
+    "title": "Our Services",
+    "diagnostics": {
+      "title": "Diagnostics",
+      "price": "Diagnostics service: €15"
+    },
+    "repair": {
+      "title": "Repair",
+      "price": "Repair services starting from €25 depending on the issue"
+    },
+    "assembly": {
+      "title": "PC Assembly",
+      "price": "Custom PC assembly: €60 (includes OS installation and setup)"
+    }
   },
   "hero": {
       "title": "Gaming Computer Assembly and Personalization",
@@ -92,7 +98,7 @@
       "features": {
         "delivery": "Free Delivery",
         "assembly": "Individual Assembly", 
-        "warranty": "3-Year Warranty"
+        "warranty": "1-Year Warranty"
       },
       "cta": "Contact Us",
       "imageAlt": "Gaming PC"
@@ -125,7 +131,10 @@
           "email": "Email Address",
           "message": "Your Message",
           "send": "Send"
-        }, 
+        },
+        "PhoneNumbers": {
+          "support": "+371 20699800"
+        },
         "businessOffers": {
             "title": "Business Offers",
             "description": "Do you have a collaboration proposal or want to create a computer with specific requirements?",
@@ -139,7 +148,7 @@
         "socialMedia": {
             "followUs": "Follow Us"
         },
-        "copyright": "© COPYRIGHT 2024 APIROQ. ALL RIGHTS RESERVED."
+        "copyright": "© COPYRIGHT 2025 IVAPRO. ALL RIGHTS RESERVED."
     },
     "reviews": {
         "title": "Latest Customer Reviews",
@@ -150,7 +159,7 @@
     },
     "telegramSection": {
         "memberCount": "ALREADY 100+ PLAYERS WITH US",
-        "title": "Stay Informed! Join Our\nTelegram Channel Apiroq",
+        "title": "Stay Informed! Join Our\nTelegram Channel IvaPro",
         "description": "Only original content: latest news, current products, and gaming equipment giveaways",
         "joinButton": "JOIN TELEGRAM",
         "giveaway": "Ongoing giveaway for a computer 🎮",
@@ -181,9 +190,9 @@
       "writeMessage": "Send a message",
       "writeEmail": "Send an email",
       "description": {
-        "first": "Each Apiroq computer is the result of 15 years of experience. Our experts know exactly what a gaming PC, workstation, or server should be.",
+        "first": "Each IvaPro computer is the result of 5 years of experience. Our experts know exactly what a gaming PC, workstation, or server should be.",
         "second": "To get started, tell us about your needs, timeline, and budget, and we'll offer the best solution."
       },
-      "workHours": "Working hours: 10:00 - 22:00, every day"
+      "workHours": "Working hours: 9:00 - 20:00, every day"
   }
 }

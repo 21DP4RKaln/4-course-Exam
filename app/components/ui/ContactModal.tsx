@@ -52,10 +52,10 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
               <div>
                 <h3 className="text-lg text-white mb-2">{t('callOrRequest')}</h3>
                 <a 
-                  href="tel:+37112345678" 
+                  href="tel:+37120699800" 
                   className="text-xl text-white font-bold hover:text-lime-400"
                 >
-                  +371 12345678
+                  +371 20699800
                 </a>
               </div>
   
@@ -64,13 +64,13 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 <h3 className="text-lg text-white mb-2">{t('writeMessage')}</h3>
                 <div className="flex gap-4">
                   <a 
-                    href="https://t.me/apiroq" 
+                    href="https://t.me/ivaprolv" 
                     className="px-4 py-2 bg-gray-800 rounded-lg text-white hover:bg-gray-700"
                   >
                     Telegram
                   </a>
                   <a 
-                    href="https://wa.me/37112345678" 
+                    href="https://wa.me/37120699800" 
                     className="px-4 py-2 bg-gray-800 rounded-lg text-white hover:bg-gray-700"
                   >
                     WhatsApp
@@ -83,10 +83,10 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 <h3 className="text-lg text-white mb-2">{t('writeEmail')}</h3>
                 <div className="flex gap-4">
                   <a 
-                    href="mailto:info@apiroq.lv" 
+                    href="mailto: ivaprolv@outlook.com" 
                     className="px-4 py-2 bg-gray-800 rounded-lg text-white hover:bg-gray-700"
                   >
-                    info@apiroq.lv
+                    ivaprolv@outlook.com
                   </a>
                 </div>
               </div>
