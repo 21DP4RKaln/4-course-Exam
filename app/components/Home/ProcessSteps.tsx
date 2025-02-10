@@ -34,7 +34,7 @@ export default function ProcessSteps() {
   ];
 
   return (
-    <section className="py-16">
+    <section className="py-16 bg-gradient-to-r from-[#E63946]/1 via-[#97121c]/10 to-[#E63946]/1">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-white mb-12">
           {t('title')}

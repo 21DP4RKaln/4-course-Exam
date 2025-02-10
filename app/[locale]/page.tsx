@@ -5,20 +5,14 @@ import ProcessSteps from '../components/Home/ProcessSteps'
 import TelegramSection from '../components/Home/TelegramSection'
 {/*  import Reviews from '../components/Home/Reviews'*/}
 import { ContactModal } from '../components/ui/ContactModal'
-import { useTranslations } from 'next-intl';
 import { useState } from 'react'
 
 export default function Home() {
-  const t = useTranslations();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
   return (
-    <main>
+    <main className="bg-[#1A1A1A]">
       <Hero />
       <Features />
       <ProcessSteps />
@@ -28,7 +22,7 @@ export default function Home() {
        {/* Contact button */}
        <button
         onClick={() => setIsModalOpen(true)} 
-        className="fixed bottom-8 right-8 z-40 bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-colors duration-200"
+        className="fixed bottom-8 right-8 z-40 bg-[#E63946] hover:bg-[#FF4D5A] text-white p-4 rounded-full shadow-lg transition-colors duration-200"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path 

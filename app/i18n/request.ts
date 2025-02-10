@@ -8,8 +8,10 @@ import ru from '../../messages/ru.json';
 
 const messages = { en, lv, ru };
 
+type LocaleType = 'en' | 'lv' | 'ru';
+
 export default getRequestConfig(async ({ locale }) => {
-  if (!locales.includes(locale as any)) {
+  if (!locales.includes(locale as LocaleType)) {
     notFound();
   }
 

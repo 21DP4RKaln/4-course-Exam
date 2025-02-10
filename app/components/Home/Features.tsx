@@ -1,57 +1,57 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Zap, Truck, ThumbsUp } from 'lucide-react';
+import { Wrench, Computer, Search } from 'lucide-react';
 
 export default function Features() {
   const t = useTranslations('features');
   
   return (
-    <section className="py-16 bg-[#1a1b26]">
+    <section className="py-8 bg-[#2D2D2D]">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-white mb-12">
-            {t('title')}
+          {t('title')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-8">
             <div className="w-16 h-16 bg-red-600/10 rounded-full flex items-center justify-center mb-4">
               <div className="text-red-600 text-2xl">
-                <Zap className="w-8 h-8 text-red-600" />
+                <Search className="w-8 h-8 text-red-600" />
               </div>
             </div>
             <h3 className="text-xl font-bold mb-2 text-white">
-              {t('professional.title')}
+              {t('diagnostics.title')}
             </h3>
             <p className="text-gray-400">
-              {t('professional.description')}
+              {t('diagnostics.price')}
             </p>
           </div>
           
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-8">
-            <div className="w-16 h-16 bg-blue-600/10 rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-red-600/10 rounded-full flex items-center justify-center mb-4">
               <div className="text-red-600 text-2xl">
-                <Truck className="w-8 h-8 text-red-600" />
+                <Wrench className="w-8 h-8 text-red-600" />
               </div>
             </div>
             <h3 className="text-xl font-bold mb-2 text-white">
-              {t('delivery.title')}
+              {t('repair.title')}
             </h3>
             <p className="text-gray-400">
-              {t('delivery.description')}
+              {t('repair.price')}
             </p>
           </div>
           
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-8">
-            <div className="w-16 h-16 bg-green-600/10 rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-red-600/10 rounded-full flex items-center justify-center mb-4">
               <div className="text-red-600 text-2xl">
-                <ThumbsUp className="w-8 h-8 text-red-600" />
+                <Computer className="w-8 h-8 text-red-600" />
               </div>
             </div>
             <h3 className="text-xl font-bold mb-2 text-white">
-              {t('secure.title')}
+              {t('assembly.title')}
             </h3>
             <p className="text-gray-400">
-              {t('secure.description')}
+              {t('assembly.price')}
             </p>
           </div>
         </div>

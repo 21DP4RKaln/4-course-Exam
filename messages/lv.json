@@ -1,6 +1,12 @@
 {
   "Name": {
-    "Apiroq": "Apiroq"
+    "apiroq": "IvaPro"
+  },
+  "PhoneNumbers": {
+    "support": "+371 20699800"
+  },
+  "Mail": {
+    "support": "ivaprolv@outlook.com"
   },
   "nav": {
     "support": "Atbalsts",
@@ -72,18 +78,18 @@
       "passwords_not_match": "Paroles nesakrīt"
   },
   "features": {
-      "title": "Mūsu priekšrocības",
-      "professional": {
-        "title": "Profesionāla un ātra montāža",
-        "description": "Pielāgojam datoru jūsu vajadzībām un veicam pilnu personalizāciju"
+      "title": "Mūsu pakalpojumi",
+      "diagnostics": {
+        "title": "Diagnostika",
+        "price": "Diagnostikas pakalpojums: €15"
       },
-      "delivery": {
-        "title": "Bezmaksas piegāde",
-        "description": "Vidējais piegādes laiks 2-4 dienas. Strādājam ar līgumu, sniedzam garantiju"
+      "repair": {
+        "title": "Remonts",
+        "price": "Remonta pakalpojumi sākot no €25 atkarībā no problēmas"
       },
-      "secure": {
-        "title": "Droši pirkumi visos posmos",
-        "description": "Iespēja maksāt ar dažādiem maksājumu veidiem, iekļauta garantijas apkalpošana"
+      "assembly": {
+        "title": "Datoru komplektēšana",
+        "price": "Datoru komplektēšana pēc pasūtījuma: €60 (iekļauta OS uzstādīšana un iestatīšana)"
       }
   },
   "hero": {
@@ -92,7 +98,7 @@
       "features": {
         "delivery": "Bezmaksas piegāde",
         "assembly": "Individuāla montāža", 
-        "warranty": "3 gadu garantija"
+        "warranty": "1 gadu garantija"
       },
       "cta": "Sazināties",
       "imageAlt": "Spēļu dators"
@@ -126,6 +132,9 @@
       "message": "Jūsu ziņojums",
       "send": "Nosūtīt"
     },
+    "PhoneNumbers": {
+    "support": "+371 20699800"
+    },
       "businessOffers": {
           "title": "Biznesa Piedāvājumi",
           "description": "Ir piedāvājums sadarbībai vai vēlaties izveidot datoru pēc individuālām prasībām?",
@@ -139,7 +148,7 @@
       "socialMedia": {
           "followUs": "Sekojiet mums"
       },
-      "copyright": "© COPYRIGHT 2024 APIROQ. VISAS TIESĪBAS AIZSARGĀTAS."
+      "copyright": "© COPYRIGHT 2024 IVAPRO. VISAS TIESĪBAS AIZSARGĀTAS."
   },
   "reviews": {
       "title": "Pēdējie klientu vērtējumi",
@@ -150,7 +159,7 @@
   },
   "telegramSection": {
       "memberCount": "KOPĀ AR MUMS JAU 100+ SPĒLĒTĀJU",
-      "title": "Esi informēts! Pievienojies mums\nTelegram kanālā Apiroq",
+      "title": "Esi informēts! Pievienojies mums\nTelegram kanālā IvaPro",
       "description": "Tikai oriģināls saturs: jaunākās ziņas, aktuālie produkti un spēļu aprīkojuma izlozes",
       "joinButton": "PIEVIENOTIES TELEGRAM",
       "giveaway": "Notiek izloze par datoru 🎮",
@@ -181,9 +190,9 @@
       "writeMessage": "Rakstīt ziņu",
       "writeEmail": "Rakstīt e-pastu",
       "description": {
-        "first": "Katrs Apiroq dators ir 15 gadu pieredzes rezultāts. Mūsu eksperti precīzi zina, kādam jābūt spēļu datoram, darba stacijai vai serverim.",
+        "first": "Katrs IvaPro dators ir 5 gadu pieredzes rezultāts. Mūsu eksperti precīzi zina, kādam jābūt spēļu datoram, darba stacijai vai serverim.",
         "second": "Lai sāktu, pastāstiet par savām vajadzībām, termiņiem un budžetu, un mēs piedāvāsim labāko risinājumu."
       },
-      "workHours": "Darba laiks: 10:00 - 22:00, katru dienu"
+      "workHours": "Darba laiks: 9:00 - 20:00, katru dienu"
     }
 }
