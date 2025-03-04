@@ -11,6 +11,7 @@ export default function LoginPage() {
     password: ''
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
   
     try {
       const res = await fetch('/api/auth/login', {
@@ -32,18 +34,25 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        // Important: adding these options helps prevent caching issues
+        cache: 'no-store',
+        credentials: 'include'
       });
   
       if (res.ok) {
-        window.location.href = `/profile`;
-        
+        // Use router.push instead of window.location for a smoother experience
+        router.push('/profile');
+        // If router.push doesn't work, try this as a fallback:
+        // window.location.href = `/profile`;
       } else {
         const data = await res.json();
-        setError(data.message || 'Ielogošanās neizdevās');
+        setError(data.message || 'Check-in failed');
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Radās kļūda. Lūdzu mēģiniet vēlreiz.');
+      setError('An error occurred. Please try again .');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -97,9 +106,10 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#E63946] hover:bg-[#FF4D5A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E63946] transition-colors duration-200"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#E63946] hover:bg-[#FF4D5A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E63946] transition-colors duration-200 disabled:opacity-70"
             >
-              {t('auth.login')}
+              {isLoading ? 'In the process...' : t('auth.login')}
             </button>
           </div>
           

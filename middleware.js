@@ -1,73 +1,62 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import { i18nConfig } from './app/i18n/config';
 
-const verifyToken = (token) => {
+function verifyToken(token) {
   try {
     jwt.verify(
       token, 
-      process.env.JWT_SECRET || 'fallback-secret-key-change-in-production'
+      process.env.JWT_SECRET || '7f42e7c9b3d8a5f6e1b0c2d4a8f6e3b9d7c5a2f4e6b8d0c2a4f6e8b0d2c4a6f8'
     );
     return true;
   } catch (error) {
     return false;
   }
-};
+}
 
 const intlMiddleware = createMiddleware({
   locales: i18nConfig.locales,
-  defaultLocale: i18nConfig.defaultLocale
+  defaultLocale: i18nConfig.defaultLocale,
+  timeZone: 'Europe/Riga'
 });
 
 export default function middleware(request) {
-  const response = intlMiddleware(request);
+  const pathname = request.nextUrl.pathname;
   
   const publicPaths = [
     '/login', 
     '/register', 
-    '/', '/about', 
-    `/${i18nConfig.defaultLocale}`
+    '/',
+    '/about'
   ];
   
-  const pathname = request.nextUrl.pathname;
-  const pathnameIsMissingLocale = i18nConfig.locales.every(
-    locale => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
-  );
+  if (pathname.startsWith('/api/') || 
+      pathname.startsWith('/_next/') || 
+      pathname.includes('.')) {
+    return NextResponse.next();
+  }
   
-  if (pathnameIsMissingLocale) {
+  const response = intlMiddleware(request);
+  
+  const segments = pathname.split('/');
+  const locale = segments.length > 1 && i18nConfig.locales.includes(segments[1]) 
+    ? segments[1] 
+    : i18nConfig.defaultLocale;
+  
+  const pathWithoutLocale = segments.length > 1 && i18nConfig.locales.includes(segments[1])
+    ? '/' + segments.slice(2).join('/')
+    : pathname;
+  
+  if (publicPaths.includes(pathWithoutLocale) || pathWithoutLocale === '/') {
     return response;
   }
   
-  const locale = pathname.split('/')[1];
-  
-  const isPublicPath = publicPaths.some(path => {
-    return pathname === `/${locale}${path}` || pathname.startsWith(`/${locale}${path}/`);
-  });
-  
-  if (pathname === `/${locale}` || pathname === '/') {
-    return response;
-  }
-  
-  const isApiOrStatic = pathname.includes('/api/') || 
-                         pathname.includes('/_next/') ||
-                         pathname.includes('/static/');
-  
-  if (isPublicPath || isApiOrStatic) {
-    return response;
-  }
-  
-  const cookieStore = request.cookies;
-  const token = cookieStore.get('token')?.value;
+  const token = request.cookies.get('token')?.value;
   
   if (!token || !verifyToken(token)) {
     const loginUrl = new URL(`/${locale}/login`, request.url);
-    
-    if (!pathname.includes('/login')) {
-      loginUrl.searchParams.set('callbackUrl', pathname);
-    }
-    
+    loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }
   
@@ -75,5 +64,5 @@ export default function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  matcher: ['/((?!api|_next|static|.*\\..*).*)']
 };

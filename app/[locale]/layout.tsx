@@ -11,21 +11,16 @@ const inter = Inter({ subsets: ['latin'] });
 
 interface LayoutProps {
   children: React.ReactNode;
-  params: {
-    locale: string;
-  };
+  params: { locale: string };
 }
 
 export default async function RootLayout({
   children,
   params,
-}: {
-  children: React.ReactNode;
-  params: { locale: string };
-}) {
-  await Promise.resolve(); 
-
-  const locale = params.locale;
+}: LayoutProps) {
+  const resolvedParams = await Promise.resolve(params);
+  const locale = resolvedParams.locale;
+  
   const isValidLocale = locale in messages;
   
   return (

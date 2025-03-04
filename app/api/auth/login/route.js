@@ -1,57 +1,59 @@
 import { NextResponse } from 'next/server';
-import prisma from '@lib/prisma';
+import prisma from '../../../../lib/prisma';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { cookies } from 'next/headers';
 
 export async function POST(request) {
   try {
     const { email, password } = await request.json();
-    
+
+    if (!email || !password) {
+      return NextResponse.json(
+        { message: 'Email and password are required' },
+        { status: 400 }
+      );
+    }
+
     const user = await prisma.user.findUnique({
       where: { email }
     });
-    
-    if (!user) {
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return NextResponse.json(
-        { message: 'Incorrect email or password' },
+        { message: 'Invalid email or password' },
         { status: 401 }
       );
     }
-    
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    
-    if (!passwordMatch) {
-      return NextResponse.json(
-        { message: 'Incorrect email or password' },
-        { status: 401 }
-      );
-    }
-    
+
     const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET || 'fallback-secret-key-change-in-production',
+      { 
+        userId: user.id,
+        email: user.email
+      },
+      process.env.JWT_SECRET || '7f42e7c9b3d8a5f6e1b0c2d4a8f6e3b9d7c5a2f4e6b8d0c2a4f6e8b0d2c4a6f8',
       { expiresIn: '7d' }
     );
-    
-    const cookieStore = await cookies();
-    cookieStore.set('token', token, {
+
+    const response = NextResponse.json(
+      { message: 'Login successful' },
+      { status: 200 }
+    );
+
+    response.cookies.set({
+      name: 'token',
+      value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60,
-      path: '/'
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+      sameSite: 'lax'
     });
-    
-    const { password: userPassword, ...userWithoutPassword } = user;
-    
-    return NextResponse.json({
-      user: userWithoutPassword,
-      message: 'Connection successful!'
-    });
+
+    return response;
   } catch (error) {
-    console.error('Connection error:', error);
+    console.error('Login error:', error);
     return NextResponse.json(
-      { message: 'An error occurred during connection' },
+      { message: 'Server error occurred' },
       { status: 500 }
     );
   }

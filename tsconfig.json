@@ -24,6 +24,7 @@
       "@components/*": ["./components/*"],
       "@styles/*": ["./styles/*"],
       "@utils/*": ["./utils/*"],
+      "@/*": ["./app/*"],
       "@lib/*": ["./lib/*"]
     }
   },

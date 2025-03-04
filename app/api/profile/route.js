@@ -17,7 +17,7 @@ export async function GET() {
 
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || 'fallback-secret-key-change-in-production'
+      process.env.JWT_SECRET || '7f42e7c9b3d8a5f6e1b0c2d4a8f6e3b9d7c5a2f4e6b8d0c2a4f6e8b0d2c4a6f8'
     );
 
     const user = await prisma.user.findUnique({
