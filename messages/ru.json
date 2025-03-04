@@ -24,7 +24,8 @@
     "catalog": "Каталог",
     "about": "О нас",
     "login": "Войти",
-    "register": "Регистрация"
+    "register": "Регистрация",
+    "support": "+371 20699800"
   },
   "header": {
     "ready_configs": "Ready-made configurations",
@@ -68,14 +69,16 @@
       "register_title": "Создать новый аккаунт",
       "email": "Электронная почта",
       "password": "Пароль",
-      "confirm_password": "Подтвердить пароль",
+      "confirmPassword": "Подтвердить пароль",
       "name": "Имя и фамилия",
       "forgot_password": "Забыли пароль?",
       "sign_in": "Войти",
       "register": "Зарегистрироваться",
+      "login": "Войти",
       "no_account": "Нет аккаунта? Зарегистрируйтесь",
-      "have_account": "Уже есть аккаунт? Войдите",
-      "passwords_not_match": "Пароли не совпадают"
+      "haveAccount": "Уже есть аккаунт? Войдите",
+      "passwords_not_match": "Пароли не совпадают",
+      "noAccount": "Нет аккаунта?"
   },
   "features": {
       "title": "Наши услуги",

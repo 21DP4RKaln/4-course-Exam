@@ -24,7 +24,8 @@
     "catalog": "Katalogs",
     "about": "Par mums",
     "login": "Ielogoties",
-    "register": "Reģistrēties"
+    "register": "Reģistrēties",
+    "support": "+371 20699800"
   },
   "header": {
     "ready_configs": "Ready-made configurations",
@@ -68,14 +69,16 @@
       "register_title": "Izveidot jaunu kontu",
       "email": "E-pasta adrese",
       "password": "Parole",
-      "confirm_password": "Apstiprināt paroli",
+      "confirmPassword": "Apstiprināt paroli",
       "name": "Vārds un uzvārds",
       "forgot_password": "Aizmirsāt paroli?",
       "sign_in": "Ielogoties",
       "register": "Reģistrēties",
+      "login": "Ielogoties",
       "no_account": "Nav konta? Reģistrējieties",
-      "have_account": "Jau ir konts? Ielogojieties",
-      "passwords_not_match": "Paroles nesakrīt"
+      "haveAccount": "Jau ir konts? Ielogojieties",
+      "passwords_not_match": "Paroles nesakrīt",
+      "noAccount": "Nav konta?"
   },
   "features": {
       "title": "Mūsu pakalpojumi",

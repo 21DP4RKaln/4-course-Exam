@@ -3,17 +3,20 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Truck, Settings, Shield } from 'lucide-react';
+import { useCallback } from 'react';
 
 export default function Hero() {
     const t = useTranslations('hero');
 
-    const scrollToFooter = () => {
-        const footer = document.getElementById('footer');
-        if (footer) {
-            footer.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
-  
+    const scrollToFooter = useCallback(() => {
+        requestAnimationFrame(() => {
+            const footer = document.querySelector('footer');
+            if (footer) {
+                footer.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }, []);
+
     return (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -63,12 +66,12 @@ export default function Hero() {
                 </div>
 
                 <div className="relative h-[600px]">
-                    <Image
-                        src="/images/pc-case.png"
-                        alt={t('imageAlt')}
-                        fill
-                        style={{objectFit: 'contain'}}
-                        priority
+                <Image 
+                    src="/images/pc-case.png"
+                    alt="PC case"
+                    width={500}
+                    height={600}
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     />
                 </div>
             </div>

@@ -37,7 +37,8 @@
     "catalog": "Catalog",
     "about": "About",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "support": "+371 20699800"
   },
   "home": {
     "title": "Custom PC Configuration Platform",
@@ -68,14 +69,16 @@
       "register_title": "Create a new account",
       "email": "Email address",
       "password": "Password",
-      "confirm_password": "Confirm password",
+      "confirmPassword": "Confirm password",
       "name": "Full name",
       "forgot_password": "Forgot password?",
       "sign_in": "Sign In",
       "register": "Register",
+      "login": "Log In",
       "no_account": "Don't have an account? Register",
-      "have_account": "Already have an account? Log in",
-      "passwords_not_match": "Passwords do not match"
+      "haveAccount": "Already have an account? Log in",
+      "passwords_not_match": "Passwords do not match",
+      "noAccount": "You don't have an account yet?"
   },
   "features": {
     "title": "Our Services",
