@@ -37,19 +37,25 @@ export default function middleware(request) {
     return NextResponse.next();
   }
   
-  const response = intlMiddleware(request);
-  
   const segments = pathname.split('/');
   const locale = segments.length > 1 && i18nConfig.locales.includes(segments[1]) 
     ? segments[1] 
     : i18nConfig.defaultLocale;
   
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-next-intl-locale', locale);
+  requestHeaders.set('x-next-intl-timezone', 'Europe/Riga');
+  
   const pathWithoutLocale = segments.length > 1 && i18nConfig.locales.includes(segments[1])
     ? '/' + segments.slice(2).join('/')
     : pathname;
   
+  const response = intlMiddleware(request);
+  
   if (publicPaths.includes(pathWithoutLocale) || pathWithoutLocale === '/') {
-    return response;
+    return NextResponse.rewrite(new URL(request.url), {
+      request: { headers: requestHeaders }
+    });
   }
   
   const token = request.cookies.get('token')?.value;
@@ -60,7 +66,9 @@ export default function middleware(request) {
     return NextResponse.redirect(loginUrl);
   }
   
-  return response;
+  return NextResponse.next({
+    request: { headers: requestHeaders }
+  });
 }
 
 export const config = {

@@ -1,5 +1,5 @@
-/** @type {import('next').NextConfig} */
 const withNextIntl = require('next-intl/plugin')('./app/i18n/request.ts');
+const timeZones = require('./time-zones');
 
 const nextConfig = {
   reactStrictMode: true,
@@ -14,6 +14,7 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_DEFAULT_LOCALE: 'en',
+    NEXT_PUBLIC_DEFAULT_TIMEZONE: 'Europe/Riga'
   }
 };
 

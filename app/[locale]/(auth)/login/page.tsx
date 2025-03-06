@@ -3,9 +3,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { usePathname } from 'next-intl/client';
 
 export default function LoginPage() {
   const t = useTranslations();
+  const pathname = usePathname();
+  const segments = pathname.split('/');
+  const locale = segments[1]; // Extract the locale from URL
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -34,23 +39,19 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-        // Important: adding these options helps prevent caching issues
         cache: 'no-store',
         credentials: 'include'
       });
   
       if (res.ok) {
-        // Use router.push instead of window.location for a smoother experience
-        router.push('/profile');
-        // If router.push doesn't work, try this as a fallback:
-        // window.location.href = `/profile`;
+        router.push(`/${locale}/profile`);
       } else {
         const data = await res.json();
         setError(data.message || 'Check-in failed');
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('An error occurred. Please try again .');
+      setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +116,7 @@ export default function LoginPage() {
           
           <div className="text-sm text-center">
             <Link 
-              href="/register" 
+              href={`/${locale}/auth/register`}
               className="font-medium text-[#E63946] hover:text-[#FF4D5A]"
             >
               {t('auth.noAccount')}

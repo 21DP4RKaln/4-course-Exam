@@ -14,7 +14,11 @@ interface ClientLayoutProps {
 
 export default function ClientLayout({ children, messages, locale }: ClientLayoutProps) {
   return (
-    <NextIntlClientProvider messages={messages} locale={locale}>
+    <NextIntlClientProvider 
+      messages={messages} 
+      locale={locale}
+      timeZone="Europe/Riga"
+    >
       <Header />
       <main>{children}</main>
       <Footer />
