@@ -7,13 +7,10 @@
   },
   "Mail": {
     "support": "ivaprolv@outlook.com"
-<<<<<<< HEAD
-=======
   },
   "topbar": {
     "support": "+371 20699800",
     "address": "somewhere in Riga, Latvia"
->>>>>>> master
   },
   "nav": {
     "apiroq": "IvaPro",
@@ -29,13 +26,13 @@
     "help": "Help",
     "about": "About Us"
   },
-    "contact": {
-      "title": "Contact us",
-      "name": "Name",
-      "email": "Email",
-      "message": "Message",
-      "send": "Send"
-    },
+  "contact": {
+    "title": "Contact us",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send"
+  },
   "header": {
     "ready_configs": "Ready-made configurations",
     "ready_configs_desc": "Choose from our ready-made computer configurations",
@@ -76,31 +73,66 @@
     }
   },
   "auth": {
-      "create_account": "Create an account",
-      "already_have_account": "Already have an account?",
-      "login_instead": "Sign in instead",
-      "name": "Full name",
-      "email": "Email address",
-      "password": "Password",
-      "confirm_password": "Confirm password",
-      "agree_terms": "I agree to the Terms of Service and Privacy Policy",
-      "register": "Register",
-      "registering": "Registering...",
-      "name_required": "Name is required",
-      "email_required": "Email is required",
-      "email_invalid": "Please enter a valid email address",
-      "password_required": "Password is required",
-      "password_length": "Password must be at least 8 characters long",
-      "passwords_not_match": "Passwords do not match",
-      "registration_failed": "Registration failed",
-      "login": "Sign in to your account",
-      "no_account": "Don't have an account?",
-      "register_instead": "Register instead",
-      "remember_me": "Remember me",
-      "forgot_password": "Forgot your password?",
-      "signin": "Sign in",
-      "signing_in": "Signing in..."
+    "create_account": "Create an account",
+    "already_have_account": "Already have an account?",
+    "login_instead": "Sign in instead",
+    "name": "Full name",
+    "email": "Email address",
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "agree_terms": "I agree to the Terms of Service and Privacy Policy",
+    "register": "Register",
+    "registering": "Registering...",
+    "name_required": "Name is required",
+    "email_required": "Email is required",
+    "email_invalid": "Please enter a valid email address",
+    "password_required": "Password is required",
+    "password_length": "Password must be at least 8 characters long",
+    "passwords_not_match": "Passwords do not match",
+    "registration_failed": "Registration failed",
+    "login": "Sign in to your account",
+    "loggingIn": "Signing in...",
+    "loginFailed": "Invalid email or password",
+    "loginError": "An error occurred. Please try again.",
+    "noAccount": "Don't have an account?",
+    "backToLogin": "Back to login"
+  },
+  "dashboard": {
+    "welcomeMessage": "Welcome to your dashboard",
+    "accountCreated": "Your account was created on",
+    "myComputers": "My Computers",
+    "noComputers": "You haven't created any computers yet.",
+    "createComputer": "Create your first computer",
+    "accountSettings": "Account Settings",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity",
+    "logout": "Log out",
+    "unnamed": "Unnamed User",
+    "backToLogin": "Back to login",
+    "errors": {
+      "fetchFailed": "Failed to load dashboard data"
+    }
+  },
+  "profile": {
+    "profileSettings": "Profile Settings",
+    "name": "Name",
+    "email": "Email",
+    "joined": "Joined",
+    "unknown": "Unknown",
+    "notProvided": "Not provided",
+    "editProfile": "Edit Profile",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "updateSuccess": "Profile successfully updated",
+    "errors": {
+      "fetchFailed": "Failed to load profile data",
+      "updateFailed": "Failed to update profile"
     },
+    "dashboard": "Dashboard",
+    "logout": "Log out",
+    "unnamed": "Unnamed User",
+    "backToLogin": "Back to login"
+  },
   "features": {
     "title": "Our Services",
     "diagnostics": {

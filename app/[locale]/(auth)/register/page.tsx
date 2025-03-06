@@ -110,8 +110,8 @@ export default function Register() {
         throw new Error(data.message || t('registration_failed'));
       }
       
-      // Registration successful - redirect to login
-      router.push(`/${locale}/login?registered=true`);
+      // Registration successful - redirect to dashboard instead of login
+      router.push(`/${locale}/dashboard`);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setGeneralError(error.message);
@@ -124,12 +124,12 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#1A1A1A] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
           {t('create_account')}
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-center text-sm text-gray-400">
           {t('already_have_account')}{' '}
           <Link href={`/${locale}/login`} className="font-medium text-[#E63946] hover:text-[#FF4D5A]">
             {t('login_instead')}
@@ -138,16 +138,16 @@ export default function Register() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-[#1E1E1E] py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {generalError && (
-            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 text-red-700">
+            <div className="mb-4 bg-red-500/20 border-l-4 border-red-500 p-4 text-red-300">
               <p>{generalError}</p>
             </div>
           )}
           
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
                 {t('name')}
               </label>
               <div className="mt-1">
@@ -159,17 +159,17 @@ export default function Register() {
                   value={formData.name}
                   onChange={handleChange}
                   className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.name ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm`}
+                    errors.name ? 'border-red-500' : 'border-gray-700'
+                  } rounded-md shadow-sm bg-[#2A2A2A] placeholder-gray-400 text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm`}
                 />
                 {errors.name && (
-                  <p className="mt-2 text-sm text-red-600">{errors.name}</p>
+                  <p className="mt-2 text-sm text-red-500">{errors.name}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
                 {t('email')}
               </label>
               <div className="mt-1">
@@ -181,17 +181,17 @@ export default function Register() {
                   value={formData.email}
                   onChange={handleChange}
                   className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.email ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm`}
+                    errors.email ? 'border-red-500' : 'border-gray-700'
+                  } rounded-md shadow-sm bg-[#2A2A2A] placeholder-gray-400 text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm`}
                 />
                 {errors.email && (
-                  <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+                  <p className="mt-2 text-sm text-red-500">{errors.email}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                 {t('password')}
               </label>
               <div className="mt-1">
@@ -203,17 +203,17 @@ export default function Register() {
                   value={formData.password}
                   onChange={handleChange}
                   className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.password ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm`}
+                    errors.password ? 'border-red-500' : 'border-gray-700'
+                  } rounded-md shadow-sm bg-[#2A2A2A] placeholder-gray-400 text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm`}
                 />
                 {errors.password && (
-                  <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+                  <p className="mt-2 text-sm text-red-500">{errors.password}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
                 {t('confirm_password')}
               </label>
               <div className="mt-1">
@@ -225,34 +225,32 @@ export default function Register() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm`}
+                    errors.confirmPassword ? 'border-red-500' : 'border-gray-700'
+                  } rounded-md shadow-sm bg-[#2A2A2A] placeholder-gray-400 text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm`}
                 />
                 {errors.confirmPassword && (
-                  <p className="mt-2 text-sm text-red-600">{errors.confirmPassword}</p>
+                  <p className="mt-2 text-sm text-red-500">{errors.confirmPassword}</p>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  className="h-4 w-4 text-[#E63946] focus:ring-[#E63946] border-gray-300 rounded"
-                />
-                <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-                  {t('agree_terms')}
-                </label>
-              </div>
+            <div className="flex items-center">
+              <input
+                id="terms"
+                name="terms"
+                type="checkbox"
+                className="h-4 w-4 text-[#E63946] focus:ring-[#E63946] border-gray-700 rounded bg-[#2A2A2A]"
+              />
+              <label htmlFor="terms" className="ml-2 block text-sm text-gray-300">
+                {t('agree_terms')}
+              </label>
             </div>
 
             <div>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#E63946] hover:bg-[#FF4D5A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-300 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#E63946] hover:bg-[#FF4D5A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-800 disabled:opacity-70"
               >
                 {isLoading ? t('registering') : t('register')}
               </button>

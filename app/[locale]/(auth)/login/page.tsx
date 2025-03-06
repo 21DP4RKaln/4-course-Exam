@@ -53,14 +53,15 @@ export default function LoginPage() {
       });
 
       if (res.ok) {
-        router.push(`/${locale}/profile`);
+        // Redirect to dashboard instead of profile
+        router.push(`/${locale}/dashboard`);
       } else {
         const data: ErrorResponse = await res.json();
-        setError(data.message || 'Check-in failed');
+        setError(data.message || t('auth.loginFailed'));
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('An error occurred. Please try again.');
+      setError(t('auth.loginError'));
     } finally {
       setIsLoading(false);
     }
@@ -119,13 +120,13 @@ export default function LoginPage() {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#E63946] hover:bg-[#FF4D5A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E63946] transition-colors duration-200 disabled:opacity-70"
             >
-              {isLoading ? 'In the process...' : t('auth.login')}
+              {isLoading ? t('auth.loggingIn') : t('auth.login')}
             </button>
           </div>
           
           <div className="text-sm text-center">
             <Link 
-              href={`/${locale}/auth/register`}
+              href={`/${locale}/register`}
               className="font-medium text-[#E63946] hover:text-[#FF4D5A]"
             >
               {t('auth.noAccount')}

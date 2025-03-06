@@ -6,16 +6,9 @@ import ProcessSteps from '../components/Home/ProcessSteps'
 import TelegramSection from '../components/Home/TelegramSection'
 {/*  import Reviews from '../components/Home/Reviews'*/}
 import { ContactModal } from '../components/ui/ContactModal'
-<<<<<<< HEAD
-import { useState } from 'react'
+import { useState } from 'react';
 
 export default function Home() {
-
-=======
-import { useState, useRef } from 'react';
-
-export default function Home() {
->>>>>>> master
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (

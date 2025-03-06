@@ -7,13 +7,10 @@
   },
   "Mail": {
     "support": "ivaprolv@outlook.com"
-<<<<<<< HEAD
-=======
   },
   "topbar": {
     "support": "+371 20699800",
     "address": "kur Rīgā, Latvijā"
->>>>>>> master
   },
   "nav": {
     "apiroq": "IvaPro",
@@ -83,23 +80,58 @@
     "email": "E-pasts",
     "password": "Parole",
     "confirm_password": "Apstiprināt paroli",
-    "agree_terms": "Piekrītu Servisa noteikumiem un Konfidencialitātes politikai",
+    "agree_terms": "Piekrītu lietošanas noteikumiem",
     "register": "Reģistrēties",
     "registering": "Reģistrējas...",
     "name_required": "Vārds ir obligāts",
     "email_required": "E-pasts ir obligāts",
-    "email_invalid": "Lūdzu ievadiet derīgu e-pasta adresi",
+    "email_invalid": "Lūdzu, ievadiet derīgu e-pasta adresi",
     "password_required": "Parole ir obligāta",
-    "password_length": "Parolei jābūt vismaz 6 simbolus garai",
+    "password_length": "Parolei jāsatur vismaz 8 simbolus",
     "passwords_not_match": "Paroles nesakrīt",
     "registration_failed": "Reģistrācija neizdevās",
     "login": "Ielogoties",
-    "no_account": "Nav konta? Reģistrēties",
-    "register_instead": "Reģistrēties",
-    "remember_me": "Atcerēties mani",
-    "forgot_password": "Aizmirsāt paroli?",
-    "signin": "Ielogoties",
-    "signing_in": "Ielogojas..."
+    "loggingIn": "Ielogojas...",
+    "loginFailed": "Ielogošanās neizdevās",
+    "loginError": "Kaut kas nogāja greizi. Lūdzu, mēģiniet vēlreiz",
+    "noAccount": "Nav konta?",
+    "backToLogin": "Atpakaļ uz ielogojumu"
+  },
+  "dashboard": {
+    "welcomeMessage": "Laipni lūdzam atpakaļ,",
+    "accountCreated": "Jūsu konts tika izveidots",
+    "myComputers": "Mani Datori",
+    "noComputers": "Jūs vēl neesat izveidojis nevienu datoru",
+    "createComputer": "Izveidojiet savu pirmo datoru",
+    "accountSettings": "Konta iestatījumi",
+    "recentActivity": "Nesenā darbība",
+    "noActivity": "Nav nesenās darbības",
+    "logout": "Izrakstīties",
+    "unnamed": "Nenosaukts Lietotājs",
+    "backToLogin": "Atpakaļ uz ielogojumu",
+    "errors": {
+      "fetchFailed": "Neizdevās ielādēt informāciju"
+    }
+  },
+  "profile": {
+    "profileSettings": "Profila iestatījumi",
+    "name": "Vārds",
+    "email": "E-pasts",
+    "joined": "Pievienojies",
+    "unknown": "Nav norādīts",
+    "notProvided": "Nav norādīts",
+    "editProfile": "Rediģēt profilu",
+    "saveChanges": "Saglabāt izmaiņas",
+    "cancel": "Atcelt",
+    "updateSuccess": "Profils veiksmīgi atjaunināts",
+    "errors": {
+      "fetchFailed": "Neizdevās ielādēt profilu",
+      "updateFailed": "Neizdevās atjaunināt profilu"
+    },
+    "dashboard": "Informācijas panelis",
+    "logout": "Izrakstīties",
+    "unnamed": "Nenosaukts Lietotājs",
+    "backToLogin": "Atpakaļ uz ielogojumu"
   },
   "features": {
       "title": "Mūsu pakalpojumi",

@@ -12,16 +12,9 @@ const messages = { en, lv, ru };
 
 type LocaleType = 'en' | 'lv' | 'ru';
 
-<<<<<<< HEAD
-export default getRequestConfig(async ({ locale }) => {
-=======
 export const { usePathname, useRouter } = createSharedPathnamesNavigation({ locales });
 
-export default getRequestConfig(async () => {
-  const headersList = await headers();
-  const locale = headersList.get('x-next-intl-locale') || 'en';
-
->>>>>>> master
+export default getRequestConfig(async ({ locale }) => {
   if (!locales.includes(locale as LocaleType)) {
     notFound();
   }

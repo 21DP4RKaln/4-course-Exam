@@ -15,28 +15,13 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-          {/* <Image 
-              src="/images/logo.png" 
-              alt="Apiroq"
-              width={32}
-              height={32}
-              style={{ height: 'auto' }}
-              priority
-            /> */}
-
-          <span className="text-white text-xl font-semibold">{t('apiroq')}</span>
+          <Link href={`/${locale}`} className="flex items-center">
+            <span className="text-white text-xl font-semibold">{t('apiroq')}</span>
           </Link>
-
-          
 
           {/* Navigation links */}
           <div className="hidden md:flex items-center space-x-8">
-<<<<<<< HEAD
-            {/* Datori dropdown
-=======
             {/* Datori dropdown */}
->>>>>>> master
             <div className="relative group">
               <button className="text-gray-300 hover:text-white flex items-center gap-1">
                 {t('computers')}
@@ -48,7 +33,7 @@ export default function Navigation() {
               <div className="absolute left-0 mt-2 w-[600px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                 <div className="bg-white rounded-lg shadow-xl overflow-hidden -translate-x-1/4">
                   <div className="grid grid-cols-2">
-                    <Link href="/gatavie-datori" className="p-6 hover:bg-gray-50">
+                    <Link href={`/${locale}/gatavie-datori`} className="p-6 hover:bg-gray-50">
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
                           <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,7 +49,7 @@ export default function Navigation() {
                       </div>
                     </Link>
                     
-                    <Link href="/konfigurators" className="p-6 hover:bg-gray-50">
+                    <Link href={`/${locale}/konfigurators`} className="p-6 hover:bg-gray-50">
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
                           <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,20 +70,16 @@ export default function Navigation() {
               </div>
             </div>
 
-            <Link href="/peripherals" className="text-gray-300 hover:text-white">
+            <Link href={`/${locale}/peripherals`} className="text-gray-300 hover:text-white">
               {t('peripherals')}
             </Link>
-            <Link href="/help" className="text-gray-300 hover:text-white">
+            <Link href={`/${locale}/help`} className="text-gray-300 hover:text-white">
               {t('help')}
             </Link>
-            <Link href="/about" className="text-gray-300 hover:text-white">
+            <Link href={`/${locale}/about`} className="text-gray-300 hover:text-white">
               {t('about')}
             </Link>
-<<<<<<< HEAD
-          </div>  */}
-=======
           </div>
->>>>>>> master
 
           {/* Right side buttons */}
           <div className="flex items-center space-x-4">
@@ -116,13 +97,13 @@ export default function Navigation() {
 
             {/* Auth Buttons */}
             <Link 
-              href="/login"
+              href={`/${locale}/login`}
               className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200"
             >
               {t('login')}
             </Link>
             <Link 
-              href="/register"
+              href={`/${locale}/register`}
               className="px-4 py-2 rounded-md text-sm font-medium bg-[#E63946] text-white hover:bg-[#FF4D5A] transition-colors duration-200"
             >
               {t('register')}
