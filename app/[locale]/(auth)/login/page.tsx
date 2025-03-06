@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { usePathname } from 'next-intl/client';
+import { usePathname } from 'next/navigation';
 
 export default function LoginPage() {
   const t = useTranslations();
   const pathname = usePathname();
   const segments = pathname.split('/');
-  const locale = segments[1]; // Extract the locale from URL
+  const locale = segments[1]; 
 
   const [formData, setFormData] = useState({
     email: '',
@@ -19,7 +19,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -27,11 +27,20 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  interface FormData {
+    email: string;
+    password: string;
+  }
+
+  interface ErrorResponse {
+    message?: string;
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-  
+
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -42,11 +51,11 @@ export default function LoginPage() {
         cache: 'no-store',
         credentials: 'include'
       });
-  
+
       if (res.ok) {
         router.push(`/${locale}/profile`);
       } else {
-        const data = await res.json();
+        const data: ErrorResponse = await res.json();
         setError(data.message || 'Check-in failed');
       }
     } catch (err) {

@@ -23,13 +23,9 @@
       "@assets/*": ["./assets/*"],
       "@components/*": ["./components/*"],
       "@styles/*": ["./styles/*"],
-<<<<<<< HEAD
-      "@utils/*": ["./utils/*"]
-=======
       "@utils/*": ["./utils/*"],
       "@/*": ["./app/*"],
       "@lib/*": ["./lib/*"]
->>>>>>> master
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
