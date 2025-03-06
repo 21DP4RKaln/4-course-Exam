@@ -7,16 +7,27 @@
   },
   "Mail": {
     "support": "ivaprolv@outlook.com"
+<<<<<<< HEAD
+=======
+  },
+  "topbar": {
+    "support": "+371 20699800",
+    "address": "kur Rīgā, Latvijā"
+>>>>>>> master
   },
   "nav": {
+    "apiroq": "IvaPro",
+    "login": "Ielogoties",
+    "register": "Reģistrēties",
+    "ready_configs": "Gatavās konfigurācijas",
+    "configurator": "Konfigurators",
+    "ready_configs_desc": "Izvēlieties no mūsu gatavajām datora konfigurācijām",
+    "configurator_desc": "Izveidojiet savu ideālo datoru",
     "support": "Atbalsts",
     "computers": "Datori",
     "peripherals": "Perifērija",
     "help": "Palīdzība",
-    "about": "Par mums",
-    "advantages": "Priekšrocības",
-    "contacts": "Kontakti",
-    "about_company": "Par kompāniju"
+    "about": "Par mums"
   },
   "navigation": {
     "home": "Sākumlapa",
@@ -24,7 +35,8 @@
     "catalog": "Katalogs",
     "about": "Par mums",
     "login": "Ielogoties",
-    "register": "Reģistrēties"
+    "register": "Reģistrēties",
+    "support": "+371 20699800"
   },
   "header": {
     "ready_configs": "Ready-made configurations",
@@ -64,18 +76,30 @@
     }
   },
   "auth": {
-      "login_title": "Ielogoties savā kontā",
-      "register_title": "Izveidot jaunu kontu",
-      "email": "E-pasta adrese",
-      "password": "Parole",
-      "confirm_password": "Apstiprināt paroli",
-      "name": "Vārds un uzvārds",
-      "forgot_password": "Aizmirsāt paroli?",
-      "sign_in": "Ielogoties",
-      "register": "Reģistrēties",
-      "no_account": "Nav konta? Reģistrējieties",
-      "have_account": "Jau ir konts? Ielogojieties",
-      "passwords_not_match": "Paroles nesakrīt"
+    "create_account": "Izveidot kontu",
+    "already_have_account": "Jau ir konts?",
+    "login_instead": "Ielogoties",
+    "name": "Vārds",
+    "email": "E-pasts",
+    "password": "Parole",
+    "confirm_password": "Apstiprināt paroli",
+    "agree_terms": "Piekrītu Servisa noteikumiem un Konfidencialitātes politikai",
+    "register": "Reģistrēties",
+    "registering": "Reģistrējas...",
+    "name_required": "Vārds ir obligāts",
+    "email_required": "E-pasts ir obligāts",
+    "email_invalid": "Lūdzu ievadiet derīgu e-pasta adresi",
+    "password_required": "Parole ir obligāta",
+    "password_length": "Parolei jābūt vismaz 6 simbolus garai",
+    "passwords_not_match": "Paroles nesakrīt",
+    "registration_failed": "Reģistrācija neizdevās",
+    "login": "Ielogoties",
+    "no_account": "Nav konta? Reģistrēties",
+    "register_instead": "Reģistrēties",
+    "remember_me": "Atcerēties mani",
+    "forgot_password": "Aizmirsāt paroli?",
+    "signin": "Ielogoties",
+    "signing_in": "Ielogojas..."
   },
   "features": {
       "title": "Mūsu pakalpojumi",

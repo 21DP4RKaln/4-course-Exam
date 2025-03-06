@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
 
 export default function Navigation() {
-  const t = useTranslations();
+  const t = useTranslations('nav');
+  const params = useParams();
+  const locale = params.locale || 'en';
   
   return (
     <nav className="bg-gradient-to-r from-[#E63946] via-[#f8c4c8]/30 to-[#1a1b26] border-b border-gray-800">
@@ -22,17 +25,21 @@ export default function Navigation() {
               priority
             /> */}
 
-          <span className="text-white text-xl font-semibold">{t('Name.apiroq')}</span>
+          <span className="text-white text-xl font-semibold">{t('apiroq')}</span>
           </Link>
 
           
 
-          {/* Navigation links 
+          {/* Navigation links */}
           <div className="hidden md:flex items-center space-x-8">
+<<<<<<< HEAD
             {/* Datori dropdown
+=======
+            {/* Datori dropdown */}
+>>>>>>> master
             <div className="relative group">
               <button className="text-gray-300 hover:text-white flex items-center gap-1">
-                {t('nav.computers')}
+                {t('computers')}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -49,9 +56,9 @@ export default function Navigation() {
                           </svg>
                         </div>
                         <div>
-                          <h3 className="font-medium text-gray-900">{t('header.ready_configs')}</h3>
+                          <h3 className="font-medium text-gray-900">{t('ready_configs')}</h3>
                           <p className="text-sm text-gray-500 mt-1">
-                            {t('header.ready_configs_desc')}
+                            {t('ready_configs_desc')}
                           </p>
                         </div>
                       </div>
@@ -66,9 +73,9 @@ export default function Navigation() {
                           </svg>
                         </div>
                         <div>
-                          <h3 className="font-medium text-gray-900">{t('header.configurator')}</h3>
+                          <h3 className="font-medium text-gray-900">{t('configurator')}</h3>
                           <p className="text-sm text-gray-500 mt-1">
-                            {t('header.configurator_desc')}
+                            {t('configurator_desc')}
                           </p>
                         </div>
                       </div>
@@ -79,20 +86,24 @@ export default function Navigation() {
             </div>
 
             <Link href="/peripherals" className="text-gray-300 hover:text-white">
-              {t('nav.peripherals')}
+              {t('peripherals')}
             </Link>
             <Link href="/help" className="text-gray-300 hover:text-white">
-              {t('nav.help')}
+              {t('help')}
             </Link>
             <Link href="/about" className="text-gray-300 hover:text-white">
-              {t('nav.about')}
+              {t('about')}
             </Link>
+<<<<<<< HEAD
           </div>  */}
+=======
+          </div>
+>>>>>>> master
 
           {/* Right side buttons */}
           <div className="flex items-center space-x-4">
             <LanguageSwitcher />
-            {/* <button className="text-gray-300 hover:text-white">
+             <button className="text-gray-300 hover:text-white">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
@@ -101,7 +112,21 @@ export default function Navigation() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-            </button> */}
+            </button> 
+
+            {/* Auth Buttons */}
+            <Link 
+              href="/login"
+              className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200"
+            >
+              {t('login')}
+            </Link>
+            <Link 
+              href="/register"
+              className="px-4 py-2 rounded-md text-sm font-medium bg-[#E63946] text-white hover:bg-[#FF4D5A] transition-colors duration-200"
+            >
+              {t('register')}
+            </Link>
           </div>
         </div>
       </div>

@@ -1,43 +1,37 @@
 import '../globals.css';
 import { Inter } from 'next/font/google';
-import { NextIntlClientProvider } from 'next-intl';
-import { notFound } from 'next/navigation';
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
+import ClientLayout from '../components/ClientLayout';
 
 import en from '../../messages/en.json';
 import lv from '../../messages/lv.json';
 import ru from '../../messages/ru.json';
 
 const messages = { en, lv, ru };
-
 const inter = Inter({ subsets: ['latin'] });
 
 interface LayoutProps {
   children: React.ReactNode;
-  params: {
-    locale: string;
-  };
+  params: { locale: string };
 }
 
 export default async function RootLayout({
   children,
   params,
 }: LayoutProps) {
-  const locale = params.locale;
+  const resolvedParams = await Promise.resolve(params);
+  const locale = resolvedParams.locale;
   
-  if (!(locale in messages)) {
-    notFound();
-  }
-
+  const isValidLocale = locale in messages;
+  
   return (
     <html lang={locale}>
-      <body className={inter.className}>
-        <NextIntlClientProvider messages={messages[locale as keyof typeof messages]} locale={locale}>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </NextIntlClientProvider>
+      <body>
+        <ClientLayout
+          messages={isValidLocale ? messages[locale as keyof typeof messages] : messages.lv} 
+          locale={locale}
+        >
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

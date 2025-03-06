@@ -7,16 +7,27 @@
   },
   "Mail": {
     "support": "ivaprolv@outlook.com"
+<<<<<<< HEAD
+=======
+  },
+  "topbar": {
+    "support": "+371 20699800",
+    "address": "где-то в Риге, Латвия"
+>>>>>>> master
   },
   "nav": {
+    "apiroq": "IvaPro",
+    "login": "Войти",
+    "register": "Регистрация",
+    "ready_configs": "Готовые конфигурации",
+    "configurator": "Конфигуратор",
+    "ready_configs_desc": "Выберите из наших готовых конфигураций компьютера",
+    "configurator_desc": "Создайте свой идеальный компьютер",
     "support": "Поддержка",
     "computers": "Компьютеры",
     "peripherals": "Периферия",
     "help": "Помощь",
-    "about": "О нас",
-    "advantages": "Преимущества",
-    "contacts": "Контакты",
-    "about_company": "О компании"
+    "about": "О нас"
   },
   "navigation": {
     "home": "Главная",
@@ -24,7 +35,8 @@
     "catalog": "Каталог",
     "about": "О нас",
     "login": "Войти",
-    "register": "Регистрация"
+    "register": "Регистрация",
+    "support": "+371 20699800"
   },
   "header": {
     "ready_configs": "Ready-made configurations",
@@ -64,18 +76,30 @@
     }
   },
   "auth": {
-      "login_title": "Войти в аккаунт",
-      "register_title": "Создать новый аккаунт",
-      "email": "Электронная почта",
-      "password": "Пароль",
-      "confirm_password": "Подтвердить пароль",
-      "name": "Имя и фамилия",
-      "forgot_password": "Забыли пароль?",
-      "sign_in": "Войти",
-      "register": "Зарегистрироваться",
-      "no_account": "Нет аккаунта? Зарегистрируйтесь",
-      "have_account": "Уже есть аккаунт? Войдите",
-      "passwords_not_match": "Пароли не совпадают"
+    "create_account": "Создать аккаунт",
+    "already_have_account": "Уже есть аккаунт?",
+    "login_instead": "Войти",
+    "name": "Имя",
+    "email": "Эл. почта",
+    "password": "Пароль",
+    "confirm_password": "Подтвердите пароль",
+    "agree_terms": "Я согласен с условиями использования",
+    "register": "Регистрация",
+    "registering": "Регистрация...",
+    "name_required": "Имя обязательно",
+    "email_required": "Эл. почта обязательна",
+    "email_invalid": "Неверный адрес эл. почты",
+    "password_required": "Пароль обязателен",
+    "password_length": "Пароль должен содержать не менее 6 символов",
+    "passwords_not_match": "Пароли не совпадают",
+    "registration_failed": "Регистрация не удалась",
+    "login": "Войти",
+    "no_account": "Нет аккаунта?",
+    "register_instead": "Зарегистрироваться",
+    "remember_me": "Запомнить меня",
+    "forgot_password": "Забыли пароль?",
+    "signin": "Войти",
+    "signing_in": "Вход..."
   },
   "features": {
       "title": "Наши услуги",

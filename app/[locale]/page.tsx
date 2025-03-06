@@ -1,14 +1,21 @@
 'use client'
+
 import Hero from '../components/Home/Hero'
 import Features from '../components/Home/Features'
 import ProcessSteps from '../components/Home/ProcessSteps'
 import TelegramSection from '../components/Home/TelegramSection'
 {/*  import Reviews from '../components/Home/Reviews'*/}
 import { ContactModal } from '../components/ui/ContactModal'
+<<<<<<< HEAD
 import { useState } from 'react'
 
 export default function Home() {
 
+=======
+import { useState, useRef } from 'react';
+
+export default function Home() {
+>>>>>>> master
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -18,9 +25,9 @@ export default function Home() {
       <ProcessSteps />
       <TelegramSection />
       {/* <Reviews /> */}
-      
-       {/* Contact button */}
-       <button
+
+      {/* Contact button */}
+      <button
         onClick={() => setIsModalOpen(true)} 
         className="fixed bottom-8 right-8 z-40 bg-[#E63946] hover:bg-[#FF4D5A] text-white p-4 rounded-full shadow-lg transition-colors duration-200"
       >
@@ -40,5 +47,5 @@ export default function Home() {
         onClose={() => setIsModalOpen(false)}
       />
     </main>
-  )
+  );
 }

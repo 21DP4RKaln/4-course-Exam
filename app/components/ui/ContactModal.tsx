@@ -77,7 +77,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   </a>
                 </div>
               </div>
-  
+              
               {/* Email */}
               <div>
                 <h3 className="text-lg text-white mb-2">{t('writeEmail')}</h3>

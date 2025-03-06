@@ -7,16 +7,27 @@
   },
   "Mail": {
     "support": "ivaprolv@outlook.com"
+<<<<<<< HEAD
+=======
+  },
+  "topbar": {
+    "support": "+371 20699800",
+    "address": "somewhere in Riga, Latvia"
+>>>>>>> master
   },
   "nav": {
+    "apiroq": "IvaPro",
+    "login": "Login",
+    "register": "Register",
+    "ready_configs": "Ready-made configurations",
+    "configurator": "Computer configuration",
+    "ready_configs_desc": "Choose from our ready-made computer configurations",
+    "configurator_desc": "Build your ideal computer",
     "support": "Support",
     "computers": "Computers",
     "peripherals": "Peripherals",
     "help": "Help",
-    "about": "About Us",
-    "advantages": "Advantages",
-    "contacts": "Contacts",
-    "about_company": "About Company"
+    "about": "About Us"
   },
     "contact": {
       "title": "Contact us",
@@ -37,7 +48,8 @@
     "catalog": "Catalog",
     "about": "About",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "support": "+371 20699800"
   },
   "home": {
     "title": "Custom PC Configuration Platform",
@@ -64,19 +76,31 @@
     }
   },
   "auth": {
-      "login_title": "Login to your account",
-      "register_title": "Create a new account",
+      "create_account": "Create an account",
+      "already_have_account": "Already have an account?",
+      "login_instead": "Sign in instead",
+      "name": "Full name",
       "email": "Email address",
       "password": "Password",
       "confirm_password": "Confirm password",
-      "name": "Full name",
-      "forgot_password": "Forgot password?",
-      "sign_in": "Sign In",
+      "agree_terms": "I agree to the Terms of Service and Privacy Policy",
       "register": "Register",
-      "no_account": "Don't have an account? Register",
-      "have_account": "Already have an account? Log in",
-      "passwords_not_match": "Passwords do not match"
-  },
+      "registering": "Registering...",
+      "name_required": "Name is required",
+      "email_required": "Email is required",
+      "email_invalid": "Please enter a valid email address",
+      "password_required": "Password is required",
+      "password_length": "Password must be at least 8 characters long",
+      "passwords_not_match": "Passwords do not match",
+      "registration_failed": "Registration failed",
+      "login": "Sign in to your account",
+      "no_account": "Don't have an account?",
+      "register_instead": "Register instead",
+      "remember_me": "Remember me",
+      "forgot_password": "Forgot your password?",
+      "signin": "Sign in",
+      "signing_in": "Signing in..."
+    },
   "features": {
     "title": "Our Services",
     "diagnostics": {

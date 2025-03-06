@@ -1,4 +1,6 @@
 import { getRequestConfig } from 'next-intl/server';
+import { createSharedPathnamesNavigation } from 'next-intl/navigation';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { locales } from './config';
 
@@ -10,7 +12,16 @@ const messages = { en, lv, ru };
 
 type LocaleType = 'en' | 'lv' | 'ru';
 
+<<<<<<< HEAD
 export default getRequestConfig(async ({ locale }) => {
+=======
+export const { usePathname, useRouter } = createSharedPathnamesNavigation({ locales });
+
+export default getRequestConfig(async () => {
+  const headersList = await headers();
+  const locale = headersList.get('x-next-intl-locale') || 'en';
+
+>>>>>>> master
   if (!locales.includes(locale as LocaleType)) {
     notFound();
   }
