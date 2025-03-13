@@ -39,7 +39,7 @@ npm install -g npm
 
 ```bash
 git clone <repository_url>
-cd Exam-3-
+cd Exam-4-course
 ```
 
 3. Install dependencies:
