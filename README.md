@@ -1,4 +1,4 @@
-# Course 3 Exam Project
+# Course 4 Exam Project
 
 This project is developed as part of the Course 3 exam, utilizing Next.js and Prisma technologies.
 
