@@ -1,6 +1,6 @@
 # Course 4 Exam Project
 
-This project is developed as part of the Course 3 exam, utilizing Next.js and Prisma technologies.
+This project is developed as part of the Course 4 exam, utilizing Next.js and Prisma technologies.
 
 ## Technologies
 
@@ -11,7 +11,7 @@ This project is developed as part of the Course 3 exam, utilizing Next.js and Pr
 ## Project Structure
 
 ```
-Exam-3-
+Exam-4-course
 ├── app/            # Main Next.js application code
 ├── hooks/          # React hooks
 ├── lib/            # Utility functions and common libraries
