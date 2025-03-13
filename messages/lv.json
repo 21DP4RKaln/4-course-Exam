@@ -36,10 +36,10 @@
     "support": "+371 20699800"
   },
   "header": {
-    "ready_configs": "Ready-made configurations",
-    "ready_configs_desc": "Choose from our ready-made computer configurations",
-    "configurator": "Computer configuration",
-    "configurator_desc": "Build your ideal computer"
+    "ready_configs": "Gatavās konfigurācijas",
+    "ready_configs_desc": "Izvēlieties no mūsu gatavajām datora konfigurācijām",
+    "configurator": "Konfigurators",
+    "configurator_desc": "Izveidojiet savu ideālo datoru"
   },
     "contact": {
       "title": "Sazināties ar mums",
