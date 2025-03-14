@@ -28,7 +28,9 @@ export default function middleware(request) {
     '/login', 
     '/register', 
     '/',
-    '/about'
+    '/about',
+    '/api/auth/login', 
+    '/api/auth/register'
   ];
   
   if (pathname.startsWith('/api/') || 

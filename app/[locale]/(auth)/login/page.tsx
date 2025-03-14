@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 
@@ -53,8 +53,10 @@ export default function LoginPage() {
       });
 
       if (res.ok) {
-        // Redirect to dashboard instead of profile
-        router.push(`/${locale}/dashboard`);
+        setTimeout(() => {
+          router.push(`/${locale}/dashboard`);
+          router.refresh();
+        }, 100);
       } else {
         const data: ErrorResponse = await res.json();
         setError(data.message || t('auth.loginFailed'));
