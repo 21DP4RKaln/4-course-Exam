@@ -55,24 +55,118 @@
     "ready_configs": "Готовые конфигурации",
     "custom_config": "Создать индивидуальную конфигурацию"
   },
-  "configurator": {
-    "categories": {
-      "cpu": "Процессор",
-      "motherboard": "Материнская плата",
-      "gpu": "Видеокарта",
-      "ram": "Оперативная память",
-      "storage": "Накопитель",
-      "psu": "Блок питания",
-      "case": "Корпус",
-      "cooling": "Охлаждение"
+    "configurator": {
+      "title": "Конфигурация компьютера",
+      "components": "Компоненты",
+      "categories": {
+        "cpu": "Процессор",
+        "gpu": "Видеокарта",
+        "ram": "Оперативная память",
+        "storage": "Накопитель",
+        "psu": "Блок питания",
+        "case": "Корпус",
+        "cooling": "Охлаждение",
+        "motherboard": "Материнская плата"
+      },
+      "filterByPrice": "Фильтр по цене",
+      "minPrice": "Минимальная цена",
+      "maxPrice": "Максимальная цена",
+      "searchPlaceholder": "Поиск компонентов...",
+      "available": "доступно",
+      "noComponentsFound": "Не найдено компонентов по заданным фильтрам",
+      "configName": "Название конфигурации",
+      "configNamePlaceholder": "Например: Игровой компьютер Ивана",
+      "selectedComponents": "Выбранные компоненты",
+      "noComponentsSelected": "Компоненты не выбраны",
+      "subtotal": "Сумма",
+      "tax": "НДС",
+      "total": "Итого",
+      "summary": "Информация",
+      "fps": "FPS в играх",
+      "editConfig": "Редактировать конфигурацию",
+      "backToDashboard": "Вернуться на панель управления",
+      "configUpdated": "Конфигурация успешно обновлена!",
+      "actions": {
+        "add": "Добавить",
+        "replace": "Заменить",
+        "selected": "Выбрано",
+        "unavailable": "Недоступно",
+        "remove": "Удалить",
+        "save": "Сохранить конфигурацию",
+        "saving": "Сохранение...",
+        "saveChanges": "Сохранить изменения"
+      },
+      "errors": {
+        "fetchFailed": "Не удалось загрузить компоненты",
+        "saveFailed": "Не удалось сохранить конфигурацию",
+        "fetchConfigFailed": "Не удалось загрузить конфигурацию",
+        "configNotFound": "Конфигурация не найдена",
+        "fetchComponentsFailed": "Не удалось загрузить компоненты",
+        "noComponents": "Пожалуйста, выберите хотя бы один компонент",
+        "noName": "Пожалуйста, укажите название конфигурации"
+      },
+      "outOfStock": "Нет в наличии",
+      "configSaved": "Конфигурация успешно сохранена!",
+      "redirecting": "Вы будете перенаправлены на панель управления..."
     },
-    "actions": {
-      "add": "Добавить",
-      "remove": "Удалить",
-      "save": "Сохранить конфигурацию",
-      "calculate": "Рассчитать цену"
-    }
-  },
+    "serviceComponents": {
+      "title": "Компоненты для сервиса",
+      "damageType": "Тип повреждения",
+      "requiredWork": "Необходимые работы",
+      "workAmount": "Объем работ",
+      "add": "Добавить компонент",
+      "remove": "Удалить компонент",
+      "edit": "Редактировать компонент",
+      "noComponents": "Нет компонентов для сервиса",
+      "componentAdded": "Компонент добавлен",
+      "componentRemoved": "Компонент удален",
+      "componentUpdated": "Компонент обновлен"
+    },
+    "serviceOrder": {
+      "title": "Сервисный заказ",
+      "status": "Статус",
+      "cost": "Стоимость",
+      "deliveryDate": "Дата доставки",
+      "completionDate": "Дата завершения",
+      "problemDescription": "Описание проблемы",
+      "deviceType": "Тип устройства",
+      "createOrder": "Создать заказ",
+      "updateOrder": "Обновить заказ",
+      "orderCreated": "Заказ создан",
+      "orderUpdated": "Заказ обновлен",
+      "selectDevice": "Выберите тип устройства",
+      "enterProblem": "Введите описание проблемы",
+      "statusOptions": {
+        "new": "Новый",
+        "confirmed": "Подтвержден",
+        "inProgress": "В работе",
+        "delivered": "Доставлен",
+        "completed": "Завершен",
+        "cancelled": "Отменен"
+      }
+    },
+    "orders": {
+      "title": "Заказы",
+      "orderNumber": "Номер заказа",
+      "orderDate": "Дата заказа",
+      "totalAmount": "Общая сумма",
+      "status": "Статус",
+      "noOrders": "Нет заказов",
+      "createOrder": "Создать заказ",
+      "viewDetails": "Просмотр деталей",
+      "confirmOrder": "Подтвердить заказ",
+      "cancelOrder": "Отменить заказ",
+      "orderConfirmed": "Заказ подтвержден",
+      "orderCancelled": "Заказ отменен",
+      "statusOptions": {
+        "new": "Новый",
+        "confirmed": "Подтвержден",
+        "processing": "В обработке",
+        "prepared": "Подготовлен",
+        "delivered": "Доставлен",
+        "cancelled": "Отменен"
+      }
+    },
   "auth": {
     "create_account": "Создать аккаунт",
     "already_have_account": "Уже есть аккаунт?",

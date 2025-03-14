@@ -9,36 +9,81 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  password      String
-  name          String?
-  configurations Configuration[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                String             @id @default(uuid())
+  name              String             @db.VarChar(30)
+  surname           String             @db.VarChar(30)
+  email             String             @unique @db.VarChar(50)
+  password          String             @db.VarChar(255)
+  registrationDate  DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  configurations    Configuration[]
+  serviceOrders     ServiceOrder[]
 }
 
 model Component {
-  id          String   @id @default(cuid())
-  category    String   // CPU, GPU, RAM, etc.
-  name        String
-  manufacturer String
-  price       Float
-  specs       Json
-  stock       Int      @default(0)
-  configurations Configuration[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String               @id @default(uuid())
+  name                 String               @db.VarChar(50)
+  manufacturer         String               @db.VarChar(30)
+  category             String               @db.VarChar(30)
+  price                Decimal              @db.Decimal(10, 2)
+  specifications       String               @db.Text
+  availabilityStatus   String               @default("pieejams")
+  configurations       Configuration[]
+  serviceComponents    ServiceComponent[]
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
 }
 
 model Configuration {
-  id          String      @id @default(cuid())
-  name        String
+  id          String       @id @default(uuid())
+  name        String       @db.VarChar(50)
   userId      String
-  user        User        @relation(fields: [userId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
   components  Component[]
-  totalPrice  Float
-  status      String      // draft, saved, ordered
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  totalPrice  Decimal      @db.Decimal(10, 2)
+  status      String       @default("saglabāts")
+  order       Order?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Order {
+  id               String         @id @default(uuid())
+  orderNumber      String         @unique @db.VarChar(15)
+  configurationId  String         @unique
+  configuration    Configuration  @relation(fields: [configurationId], references: [id])
+  orderDate        DateTime       @default(now())
+  totalAmount      Decimal        @db.Decimal(10, 2)
+  status           String         @default("jauns")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model ServiceOrder {
+  id                 String               @id @default(uuid())
+  userId             String
+  user               User                 @relation(fields: [userId], references: [id])
+  problemDescription String               @db.Text
+  deviceType         String               @db.VarChar(50)
+  cost               Decimal              @db.Decimal(10, 2)
+  status             String               @default("jauns")
+  deliveryDate       DateTime?
+  completionDate     DateTime?
+  serviceComponents  ServiceComponent[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+}
+
+model ServiceComponent {
+  id                 String            @id @default(uuid())
+  serviceOrderId     String
+  serviceOrder       ServiceOrder      @relation(fields: [serviceOrderId], references: [id])
+  componentId        String
+  component          Component         @relation(fields: [componentId], references: [id])
+  damageType         String            @db.VarChar(100)
+  requiredWork       String            @db.Text
+  workAmount         Int               // Minūtes
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 }
