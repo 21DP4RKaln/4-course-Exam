@@ -58,9 +58,18 @@ export default function LoginPage() {
       
       if (res.ok) {
         console.log("Login successful, redirecting to dashboard");
+        
+        await fetch('/api/auth/check', { 
+          method: 'GET',
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
         setTimeout(() => {
           router.push(`/${locale}/dashboard`);
-          router.refresh();
+          router.refresh(); 
         }, 100);
       } else {
         const data: ErrorResponse = await res.json();

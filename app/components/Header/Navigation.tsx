@@ -2,13 +2,49 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
 
 export default function Navigation() {
   const t = useTranslations('nav');
   const params = useParams();
+  const pathname = usePathname();
   const locale = params.locale || 'en';
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Function to check authentication status
+  const checkAuth = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/auth/check', {
+        method: 'GET',
+        cache: 'no-store', // Important: Don't cache this request
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+      const data = await response.json();
+      setIsAuthenticated(data.authenticated);
+    } catch (error) {
+      console.error('Auth check error:', error);
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check auth status when component mounts
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  // Re-check auth status when the pathname changes
+  // This will update the navigation when user logs in/out
+  useEffect(() => {
+    checkAuth();
+  }, [pathname]);
   
   return (
     <nav className="bg-gradient-to-r from-[#E63946] via-[#f8c4c8]/30 to-[#1a1b26] border-b border-gray-800">
@@ -84,30 +120,42 @@ export default function Navigation() {
           {/* Right side buttons */}
           <div className="flex items-center space-x-4">
             <LanguageSwitcher />
-             <button className="text-gray-300 hover:text-white">
+            <button className="text-gray-300 hover:text-white">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </button>
-            <button className="text-gray-300 hover:text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </button> 
-
-            {/* Auth Buttons */}
-            <Link 
-              href={`/${locale}/login`}
-              className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200"
-            >
-              {t('login')}
-            </Link>
-            <Link 
-              href={`/${locale}/register`}
-              className="px-4 py-2 rounded-md text-sm font-medium bg-[#E63946] text-white hover:bg-[#FF4D5A] transition-colors duration-200"
-            >
-              {t('register')}
-            </Link>
+            
+            {/* Conditional rendering based on authentication status */}
+            {!loading && (
+              isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  <Link 
+                    href={`/${locale}/dashboard`}
+                    className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Link 
+                    href={`/${locale}/login`}
+                    className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200"
+                  >
+                    {t('login')}
+                  </Link>
+                  <Link 
+                    href={`/${locale}/register`}
+                    className="px-4 py-2 rounded-md text-sm font-medium bg-[#E63946] text-white hover:bg-[#FF4D5A] transition-colors duration-200"
+                  >
+                    {t('register')}
+                  </Link>
+                </div>
+              )
+            )}
           </div>
         </div>
       </div>

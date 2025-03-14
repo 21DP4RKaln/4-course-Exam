@@ -94,7 +94,8 @@ export default function Register() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
         },
         body: JSON.stringify({
           name: formData.name,
@@ -109,6 +110,14 @@ export default function Register() {
       if (!response.ok) {
         throw new Error(data.message || t('registration_failed'));
       }
+      
+      await fetch('/api/auth/check', { 
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       
       setTimeout(() => {
         router.push(`/${locale}/dashboard`);
