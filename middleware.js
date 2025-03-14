@@ -1,13 +1,12 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
 import { i18nConfig } from './app/i18n/config';
+import { verifyJwtToken } from './lib/edgeJWT';
 
-function verifyToken(token) {
+async function verifyToken(token) {
   try {
-    const JWT_SECRET = process.env.JWT_SECRET || '7f42e7c9b3d8a5f6e1b0c2d4a8f6e3b9d7c5a2f4e6b8d0c2a4f6e8b0d2c4a6f8';
-    jwt.verify(token, JWT_SECRET);
-    return true;
+    const payload = await verifyJwtToken(token);
+    return payload !== null;
   } catch (error) {
     console.error('Token verification failed:', error.message);
     return false;
@@ -20,7 +19,7 @@ const intlMiddleware = createMiddleware({
   timeZone: 'Europe/Riga'
 });
 
-export default function middleware(request) {
+export default async function middleware(request) {
   const pathname = request.nextUrl.pathname;
   
   const publicPaths = [
@@ -60,7 +59,7 @@ export default function middleware(request) {
   
   const token = request.cookies.get('token')?.value;
   
-  if (!token || !verifyToken(token)) {
+  if (!token || !(await verifyToken(token))) {
     console.log(`Access denied to ${pathname} - No valid token`);
     const loginUrl = new URL(`/${locale}/login`, request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);

@@ -1,7 +1,8 @@
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import jwt from 'jsonwebtoken';
+import { signJwtToken } from '../../../../lib/edgeJWT';
 
 const prisma = new PrismaClient();
 
@@ -10,10 +11,12 @@ export async function POST(request) {
     const body = await request.json();
     const { name, email, password } = body;
 
+    console.log('Registration attempt for:', { name, email });
+
     if (!name || !email || !password) {
-      return new Response(
-        JSON.stringify({ message: 'Missing required fields' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      return NextResponse.json(
+        { message: 'Missing required fields' },
+        { status: 400 }
       );
     }
 
@@ -22,9 +25,9 @@ export async function POST(request) {
     });
 
     if (existingUser) {
-      return new Response(
-        JSON.stringify({ message: 'User with this email already exists' }),
-        { status: 409, headers: { 'Content-Type': 'application/json' } }
+      return NextResponse.json(
+        { message: 'User with this email already exists' },
+        { status: 409 }
       );
     }
 
@@ -41,35 +44,40 @@ export async function POST(request) {
 
     const { password: _, ...userWithoutPassword } = user;
 
-    const token = jwt.sign(
-      { 
-        userId: user.id,
-        email: user.email
-      },
-      process.env.JWT_SECRET || '7f42e7c9b3d8a5f6e1b0c2d4a8f6e3b9d7c5a2f4e6b8d0c2a4f6e8b0d2c4a6f8',
-      { expiresIn: '7d' }
-    );
+    const payload = { 
+      userId: user.id,
+      email: user.email
+    };
+    
+    const token = await signJwtToken(payload);
 
-    const response = new Response(
-      JSON.stringify({ 
+    const response = NextResponse.json(
+      { 
         user: userWithoutPassword,
         message: 'User registered successfully' 
-      }),
-      { 
-        status: 201, 
-        headers: { 'Content-Type': 'application/json' } 
-      }
+      },
+      { status: 201 }
     );
 
-    response.headers.set('Set-Cookie', `token=${token}; Path=/; HttpOnly; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`);
+    response.cookies.set({
+      name: 'token',
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 7, 
+      path: '/',
+      sameSite: 'lax'
+    });
 
+    console.log('Registration successful, token set');
     return response;
+
   } catch (error) {
     console.error('Registration error:', error);
     
-    return new Response(
-      JSON.stringify({ message: 'An error occurred during registration' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    return NextResponse.json(
+      { message: 'An error occurred during registration' },
+      { status: 500 }
     );
   } finally {
     await prisma.$disconnect();
