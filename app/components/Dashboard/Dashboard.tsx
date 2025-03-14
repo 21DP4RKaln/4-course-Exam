@@ -11,17 +11,39 @@ interface UserData {
   name: string;
   email: string;
   createdAt: string;
+  configurations?: Configuration[];
+}
+
+interface Component {
+  id: string;
+  category: string;
+  name: string;
+  manufacturer: string;
+  price: number;
+}
+
+interface Configuration {
+  id: string;
+  name: string;
+  totalPrice: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  components: Component[];
 }
 
 export default function Dashboard() {
   const t = useTranslations('dashboard');
+  const configT = useTranslations('configurator');
   const router = useRouter();
   const params = useParams();
   const locale = params.locale || 'en';
   
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [configurations, setConfigurations] = useState<Configuration[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -52,7 +74,32 @@ export default function Dashboard() {
       }
     };
     
+    const fetchConfigurations = async () => {
+      try {
+        const response = await fetch('/api/configurations', {
+          method: 'GET',
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            return;
+          }
+          throw new Error(t('errors.fetchConfigsFailed'));
+        }
+        
+        const data = await response.json();
+        setConfigurations(data);
+      } catch (error) {
+        console.error('Configurations fetch error:', error);
+      }
+    };
+    
     fetchUserData();
+    fetchConfigurations();
   }, [router, t, locale]);
 
   const handleLogout = async () => {
@@ -77,6 +124,42 @@ export default function Dashboard() {
       router.refresh();
     } catch (error) {
       console.error('Logout error:', error);
+    }
+  };
+
+  const handleDeleteConfiguration = async (configId: string) => {
+    if (confirm(t('confirmDelete'))) {
+      try {
+        setDeleteLoading(configId);
+        
+        const response = await fetch(`/api/configurations/${configId}`, {
+          method: 'DELETE',
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(t('errors.deleteConfigFailed'));
+        }
+        
+        setConfigurations(prev => prev.filter(config => config.id !== configId));
+      } catch (error) {
+        console.error('Configuration deletion error:', error);
+        alert(t('errors.deleteConfigFailed'));
+      } finally {
+        setDeleteLoading(null);
+      }
+    }
+  };
+
+  const getCategoryTranslation = (category: string) => {
+    try {
+      const categoryKey = category.toLowerCase().replace(/\s+/g, '');
+      return configT(`categories.${categoryKey}`);
+    } catch (e) {
+      return category;
     }
   };
 
@@ -134,37 +217,133 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="bg-[#2A2A2A] rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">{t('welcomeMessage')}</h2>
-        <p className="text-gray-300 mb-4">{t('accountCreated')} {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : ''}</p>
-        
-        <div className="mt-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[#1E1E1E] p-4 rounded-lg">
-              <h3 className="text-lg font-medium text-white mb-2">{t('myComputers')}</h3>
-              <p className="text-gray-400">{t('noComputers')}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <div className="bg-[#2A2A2A] rounded-lg shadow-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-white">{t('myComputers')}</h2>
               <Link 
                 href={`/${locale}/configurator`}
-                className="mt-2 inline-block text-[#E63946] hover:text-[#FF4D5A]"
+                className="px-4 py-2 bg-[#E63946] text-white rounded-md hover:bg-[#FF4D5A] transition-colors"
               >
-                {t('createComputer')}
+                {t('newConfiguration')}
               </Link>
             </div>
             
-            <div className="bg-[#1E1E1E] p-4 rounded-lg">
+            {configurations.length > 0 ? (
+              <div className="space-y-4">
+                {configurations.map((config) => (
+                  <div 
+                    key={config.id} 
+                    className="bg-[#1E1E1E] p-4 rounded-lg"
+                  >
+                    <div className="flex justify-between mb-2">
+                      <h3 className="text-lg font-medium text-white">{config.name}</h3>
+                      <span className="text-white font-semibold">€{config.totalPrice.toFixed(2)}</span>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-400">
+                        {t('created')} {new Date(config.createdAt).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        {t('components')}: {config.components.length}
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                      {config.components.slice(0, 6).map((component) => (
+                        <div 
+                          key={component.id} 
+                          className="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300"
+                        >
+                          {getCategoryTranslation(component.category)}: {component.name.length > 20 ? component.name.substring(0, 20) + '...' : component.name}
+                        </div>
+                      ))}
+                      {config.components.length > 6 && (
+                        <div className="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300">
+                          +{config.components.length - 6} {t('more')}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-end space-x-2">
+                      <Link
+                        href={`/${locale}/configurator/${config.id}`}
+                        className="px-3 py-1 bg-gray-700 text-white text-sm rounded hover:bg-gray-600 transition-colors"
+                      >
+                        {t('edit')}
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteConfiguration(config.id)}
+                        disabled={deleteLoading === config.id}
+                        className="px-3 py-1 bg-red-700 text-white text-sm rounded hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {deleteLoading === config.id ? t('deleting') : t('delete')}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-400 mb-4">{t('noComputers')}</p>
+                <Link 
+                  href={`/${locale}/configurator`}
+                  className="inline-block text-[#E63946] hover:text-[#FF4D5A]"
+                >
+                  {t('createComputer')}
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div>
+          <div className="bg-[#2A2A2A] rounded-lg shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-white mb-4">{t('welcomeMessage')}</h2>
+            <p className="text-gray-300 mb-4">
+              {t('accountCreated')} {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : ''}
+            </p>
+            
+            <div className="border-t border-gray-700 pt-4 mt-4">
               <h3 className="text-lg font-medium text-white mb-2">{t('accountSettings')}</h3>
               <Link 
                 href={`/${locale}/profile`}
-                className="mt-2 inline-block text-[#E63946] hover:text-[#FF4D5A]"
+                className="text-[#E63946] hover:text-[#FF4D5A]"
               >
                 {t('editProfile')}
               </Link>
             </div>
           </div>
           
-          <div className="bg-[#1E1E1E] p-4 rounded-lg">
-            <h3 className="text-lg font-medium text-white mb-2">{t('recentActivity')}</h3>
-            <p className="text-gray-400">{t('noActivity')}</p>
+          <div className="bg-[#2A2A2A] rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">{t('statistics')}</h2>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-gray-400">{t('totalConfigurations')}</span>
+                <span className="text-white font-medium">{configurations.length}</span>
+              </div>
+              
+              {configurations.length > 0 && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">{t('averagePrice')}</span>
+                    <span className="text-white font-medium">
+                      €{(configurations.reduce((sum, config) => sum + config.totalPrice, 0) / configurations.length).toFixed(2)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">{t('maxPrice')}</span>
+                    <span className="text-white font-medium">
+                      €{Math.max(...configurations.map(config => config.totalPrice)).toFixed(2)}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

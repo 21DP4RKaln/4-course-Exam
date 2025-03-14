@@ -56,22 +56,53 @@
     "custom_config": "Izveidot pielāgotu konfigurāciju"
   },
   "configurator": {
+    "title": "Datora konfigurācija",
+    "components": "Komponentes",
     "categories": {
       "cpu": "Procesors",
-      "motherboard": "Mātesplate",
-      "gpu": "Grafiskā karte",
+      "gpu": "Videokarte",
       "ram": "Operatīvā atmiņa",
-      "storage": "Krātuve",
+      "storage": "Atmiņas disks",
       "psu": "Barošanas bloks",
       "case": "Korpuss",
       "cooling": "Dzesēšana"
     },
+    "filterByPrice": "Filtrēt pēc cenas",
+    "minPrice": "Minimālā cena",
+    "maxPrice": "Maksimālā cena",
+    "searchPlaceholder": "Meklēt komponentu...",
+    "available": "pieejami",
+    "noComponentsFound": "Nav atrasti komponenti ar norādītajiem filtriem",
+    "configName": "Konfigurācijas nosaukums",
+    "configNamePlaceholder": "Piemēram: Jāņa spēļu dators",
+    "selectedComponents": "Izvēlētās komponentes",
+    "noComponentsSelected": "Nav izvēlētas komponentes",
+    "subtotal": "Starpsumma",
+    "tax": "PVN",
+    "total": "Kopā",
+    "summary": "Kopsavilkums",
+    "fps": "FPS spēlēs",
     "actions": {
       "add": "Pievienot",
+      "replace": "Nomainīt",
+      "selected": "Izvēlēts",
+      "unavailable": "Nav pieejams",
       "remove": "Noņemt",
       "save": "Saglabāt konfigurāciju",
-      "calculate": "Aprēķināt cenu"
-    }
+      "saving": "Saglabā..."
+    },
+    "errors": {
+      "fetchFailed": "Neizdevās ielādēt komponentes",
+      "saveFailed": "Neizdevās saglabāt konfigurāciju",
+      "noComponents": "Lūdzu, izvēlieties vismaz vienu komponenti",
+      "noName": "Lūdzu, norādiet konfigurācijas nosaukumu"
+    },
+    "outOfStock": "Nav noliktavā",
+    "configSaved": "Konfigurācija veiksmīgi saglabāta!",
+    "redirecting": "Jūs tiksiet novirzīts uz informācijas paneli..."
+  },
+  "common": {
+    "backToHome": "Atpakaļ uz sākumlapu"
   },
   "auth": {
     "create_account": "Izveidot kontu",
@@ -99,20 +130,34 @@
     "backToLogin": "Atpakaļ uz ielogojumu"
   },
   "dashboard": {
-    "welcomeMessage": "Laipni lūdzam atpakaļ,",
+    "welcomeMessage": "Laipni lūdzam atpakaļ",
     "accountCreated": "Jūsu konts tika izveidots",
     "myComputers": "Mani Datori",
     "noComputers": "Jūs vēl neesat izveidojis nevienu datoru",
     "createComputer": "Izveidojiet savu pirmo datoru",
+    "newConfiguration": "Jauna konfigurācija",
     "accountSettings": "Konta iestatījumi",
     "recentActivity": "Nesenā darbība",
     "noActivity": "Nav nesenās darbības",
+    "components": "Komponentes",
+    "more": "vēl",
+    "created": "Izveidots:",
+    "edit": "Rediģēt",
+    "delete": "Dzēst",
+    "deleting": "Dzēš...",
+    "confirmDelete": "Vai tiešām vēlaties dzēst šo konfigurāciju?",
+    "statistics": "Statistika",
+    "totalConfigurations": "Kopējais konfigurāciju skaits",
+    "averagePrice": "Vidējā cena",
+    "maxPrice": "Augstākā cena",
     "logout": "Izrakstīties",
     "unnamed": "Nenosaukts Lietotājs",
     "backToLogin": "Atpakaļ uz ielogojumu",
     "editProfile": "Rediģēt profilu",
     "errors": {
-      "fetchFailed": "Neizdevās ielādēt informāciju"
+      "fetchFailed": "Neizdevās ielādēt informāciju",
+      "fetchConfigsFailed": "Neizdevās ielādēt konfigurācijas",
+      "deleteConfigFailed": "Neizdevās dzēst konfigurāciju"
     }
   },
   "profile": {
