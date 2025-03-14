@@ -110,6 +110,7 @@
     "logout": "Izrakstīties",
     "unnamed": "Nenosaukts Lietotājs",
     "backToLogin": "Atpakaļ uz ielogojumu",
+    "editProfile": "Rediģēt profilu",
     "errors": {
       "fetchFailed": "Neizdevās ielādēt informāciju"
     }

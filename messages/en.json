@@ -110,6 +110,7 @@
     "logout": "Log out",
     "unnamed": "Unnamed User",
     "backToLogin": "Back to login",
+    "editProfile": "Edit Profile",
     "errors": {
       "fetchFailed": "Failed to load dashboard data"
     }
