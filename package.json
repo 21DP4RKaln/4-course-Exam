@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "set DISABLE_ESLINT_PLUGIN=true && next build",
+    "build": "prisma generate && set DISABLE_ESLINT_PLUGIN=true && next build",
     "start": "next start",
     "lint": "next lint"
   },
