@@ -42,6 +42,8 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      console.log("Sending login request with data:", { email: formData.email, passwordLength: formData.password.length });
+      
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -52,13 +54,17 @@ export default function LoginPage() {
         credentials: 'include'
       });
 
+      console.log("Login response status:", res.status);
+      
       if (res.ok) {
+        console.log("Login successful, redirecting to dashboard");
         setTimeout(() => {
           router.push(`/${locale}/dashboard`);
           router.refresh();
         }, 100);
       } else {
         const data: ErrorResponse = await res.json();
+        console.error("Login error response:", data);
         setError(data.message || t('auth.loginFailed'));
       }
     } catch (err) {
@@ -79,7 +85,7 @@ export default function LoginPage() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="text-red-500 text-center text-sm">
+            <div className="text-red-500 text-center text-sm p-2 bg-red-100/10 rounded">
               {error}
             </div>
           )}

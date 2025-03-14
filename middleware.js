@@ -4,16 +4,15 @@ import jwt from 'jsonwebtoken';
 import { i18nConfig } from './app/i18n/config';
 
 function verifyToken(token) {
-   try {
-     jwt.verify(
-       token, 
-       process.env.JWT_SECRET || '7f42e7c9b3d8a5f6e1b0c2d4a8f6e3b9d7c5a2f4e6b8d0c2a4f6e8b0d2c4a6f8'
-     );
-     return true;
-   } catch (error) {
-     return false;
-   }
- }
+  try {
+    const JWT_SECRET = process.env.JWT_SECRET || '7f42e7c9b3d8a5f6e1b0c2d4a8f6e3b9d7c5a2f4e6b8d0c2a4f6e8b0d2c4a6f8';
+    jwt.verify(token, JWT_SECRET);
+    return true;
+  } catch (error) {
+    console.error('Token verification failed:', error.message);
+    return false;
+  }
+}
 
 const intlMiddleware = createMiddleware({
   locales: i18nConfig.locales,
@@ -29,8 +28,9 @@ export default function middleware(request) {
     '/register', 
     '/',
     '/about',
-    '/api/auth/login', 
-    '/api/auth/register'
+    '/models',
+    '/peripherals',
+    '/help'
   ];
   
   if (pathname.startsWith('/api/') || 
@@ -55,22 +55,20 @@ export default function middleware(request) {
   const response = intlMiddleware(request);
   
   if (publicPaths.includes(pathWithoutLocale) || pathWithoutLocale === '/') {
-    return NextResponse.rewrite(new URL(request.url), {
-      request: { headers: requestHeaders }
-    });
+    return response;
   }
   
   const token = request.cookies.get('token')?.value;
   
   if (!token || !verifyToken(token)) {
+    console.log(`Access denied to ${pathname} - No valid token`);
     const loginUrl = new URL(`/${locale}/login`, request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }
   
-  return NextResponse.next({
-    request: { headers: requestHeaders }
-  });
+  console.log(`Access granted to ${pathname} - Valid token`);
+  return response;
 }
 
 export const config = {
