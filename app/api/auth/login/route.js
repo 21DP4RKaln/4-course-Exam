@@ -5,26 +5,34 @@ import { signJwtToken } from '../../../../lib/edgeJWT';
 
 export async function POST(request) {
   try {
-    const { email, password } = await request.json();
+    const body = await request.json();
+    const { email, phoneNumber, password } = body;
     
-    console.log('Login attempt for email:', email);
-
-    if (!email || !password) {
-      console.log('Missing email or password');
+    if ((!email && !phoneNumber) || !password) {
+      console.log('Missing identifier (email or phone) or password');
       return NextResponse.json(
-        { message: 'Email and password are required' },
+        { message: 'Email/phone and password are required' },
         { status: 400 }
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email }
+    const query = {};
+    if (email) {
+      console.log('Login attempt with email:', email);
+      query.email = email;
+    } else {
+      console.log('Login attempt with phone number:', phoneNumber);
+      query.phoneNumber = phoneNumber;
+    }
+
+    const user = await prisma.user.findFirst({
+      where: query
     });
 
     if (!user) {
       console.log('User not found');
       return NextResponse.json(
-        { message: 'Invalid email or password' },
+        { message: 'Invalid credentials' },
         { status: 401 }
       );
     }
@@ -33,7 +41,7 @@ export async function POST(request) {
     if (!passwordValid) {
       console.log('Invalid password');
       return NextResponse.json(
-        { message: 'Invalid email or password' },
+        { message: 'Invalid credentials' },
         { status: 401 }
       );
     }
@@ -51,7 +59,9 @@ export async function POST(request) {
         user: {
           id: user.id,
           email: user.email,
-          name: user.name
+          name: user.name,
+          surname: user.surname,
+          phoneNumber: user.phoneNumber
         }
       },
       { status: 200 }

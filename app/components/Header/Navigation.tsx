@@ -14,13 +14,12 @@ export default function Navigation() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Function to check authentication status
   const checkAuth = async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/auth/check', {
         method: 'GET',
-        cache: 'no-store', // Important: Don't cache this request
+        cache: 'no-store', 
         headers: {
           'Cache-Control': 'no-cache'
         }
@@ -35,13 +34,10 @@ export default function Navigation() {
     }
   };
 
-  // Check auth status when component mounts
   useEffect(() => {
     checkAuth();
   }, []);
 
-  // Re-check auth status when the pathname changes
-  // This will update the navigation when user logs in/out
   useEffect(() => {
     checkAuth();
   }, [pathname]);

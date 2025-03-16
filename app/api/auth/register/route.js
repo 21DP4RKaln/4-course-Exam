@@ -9,26 +9,55 @@ const prisma = new PrismaClient();
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, email, password } = body;
+    const { name, surname, email, phoneNumber, password } = body;
 
-    console.log('Registration attempt for:', { name, email });
+    console.log('Registration attempt for:', { name, surname, email, phoneNumber: phoneNumber || 'Not provided' });
 
-    if (!name || !email || !password) {
+    if (!name || !surname || (!email && !phoneNumber) || !password) {
       return NextResponse.json(
-        { message: 'Missing required fields' },
+        { message: 'Missing required fields. Name, surname, password, and either email or phone number are required.' },
         { status: 400 }
       );
     }
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
+    if (email && !/\S+@\S+\.\S+/.test(email)) {
       return NextResponse.json(
-        { message: 'User with this email already exists' },
-        { status: 409 }
+        { message: 'Invalid email format' },
+        { status: 400 }
       );
+    }
+
+    if (phoneNumber && !/^\+?[0-9]{8,15}$/.test(phoneNumber)) {
+      return NextResponse.json(
+        { message: 'Invalid phone number format' },
+        { status: 400 }
+      );
+    }
+
+    if (email) {
+      const existingUserByEmail = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUserByEmail) {
+        return NextResponse.json(
+          { message: 'User with this email already exists' },
+          { status: 409 }
+        );
+      }
+    }
+
+    if (phoneNumber) {
+      const existingUserByPhone = await prisma.user.findFirst({
+        where: { phoneNumber },
+      });
+
+      if (existingUserByPhone) {
+        return NextResponse.json(
+          { message: 'User with this phone number already exists' },
+          { status: 409 }
+        );
+      }
     }
 
     const hashedPassword = await hash(password, 10);
@@ -37,7 +66,9 @@ export async function POST(request) {
       data: {
         id: uuidv4(),
         name,
-        email,
+        surname,
+        email: email || null, 
+        phoneNumber: phoneNumber || null, 
         password: hashedPassword,
       },
     });

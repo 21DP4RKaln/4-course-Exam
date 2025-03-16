@@ -14,7 +14,9 @@ export default function Register() {
 
   const [formData, setFormData] = useState({
     name: '',
+    surname: '',
     email: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: ''
   });
@@ -25,7 +27,9 @@ export default function Register() {
 
   interface FormData {
     name: string;
+    surname: string;
     email: string;
+    phoneNumber: string;
     password: string;
     confirmPassword: string;
   }
@@ -52,22 +56,33 @@ export default function Register() {
   const validateForm = () => {
       const newErrors: { [key: string]: string } = {};
     
+    // Validate name
     if (!formData.name.trim()) {
       newErrors.name = t('name_required');
     }
     
-    if (!formData.email.trim()) {
-      newErrors.email = t('email_required');
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = t('email_invalid');
+    // Validate surname
+    if (!formData.surname.trim()) {
+      newErrors.surname = t('surname_required');
     }
     
+    // Validate email or phone
+    if (!formData.email.trim() && !formData.phoneNumber.trim()) {
+      newErrors.email = t('email_or_phone_required');
+    } else if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = t('email_invalid');
+    } else if (formData.phoneNumber.trim() && !/^\+?[0-9]{8,15}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = t('phone_invalid');
+    }
+    
+    // Validate password
     if (!formData.password) {
       newErrors.password = t('password_required');
     } else if (formData.password.length < 8) {
       newErrors.password = t('password_length');
     }
     
+    // Validate password confirmation
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = t('passwords_not_match');
     }
@@ -99,7 +114,9 @@ export default function Register() {
         },
         body: JSON.stringify({
           name: formData.name,
+          surname: formData.surname,
           email: formData.email,
+          phoneNumber: formData.phoneNumber || null, 
           password: formData.password
         }),
         credentials: 'include'
@@ -149,6 +166,7 @@ export default function Register() {
           )}
           
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Name field */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-300">
                 {t('name')}
@@ -158,7 +176,7 @@ export default function Register() {
                   id="name"
                   name="name"
                   type="text"
-                  autoComplete="name"
+                  autoComplete="given-name"
                   required
                   value={formData.name}
                   onChange={handleChange}
@@ -170,6 +188,29 @@ export default function Register() {
               </div>
             </div>
             
+            {/* Surname field */}
+            <div>
+              <label htmlFor="surname" className="block text-sm font-medium text-gray-300">
+                {t('surname')}
+              </label>
+              <div className="mt-1">
+                <input
+                  id="surname"
+                  name="surname"
+                  type="text"
+                  autoComplete="family-name"
+                  required
+                  value={formData.surname}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 bg-[#2A2A2A] text-white focus:outline-none focus:ring-[#E63946] focus:border-[#E63946]"
+                />
+                {errors.surname && (
+                  <p className="mt-2 text-sm text-red-400">{errors.surname}</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Email field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300">
                 {t('email')}
@@ -180,7 +221,6 @@ export default function Register() {
                   name="email"
                   type="email"
                   autoComplete="email"
-                  required
                   value={formData.email}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 bg-[#2A2A2A] text-white focus:outline-none focus:ring-[#E63946] focus:border-[#E63946]"
@@ -191,6 +231,30 @@ export default function Register() {
               </div>
             </div>
             
+            {/* Phone number field */}
+            <div>
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-300">
+                {t('phone_number')} ({t('optional')})
+              </label>
+              <div className="mt-1">
+                <input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="tel"
+                  autoComplete="tel"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="+371 12345678"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 bg-[#2A2A2A] text-white focus:outline-none focus:ring-[#E63946] focus:border-[#E63946]"
+                />
+                {errors.phoneNumber && (
+                  <p className="mt-2 text-sm text-red-400">{errors.phoneNumber}</p>
+                )}
+              </div>
+              <p className="mt-1 text-xs text-gray-500">{t('email_or_phone_required_hint')}</p>
+            </div>
+            
+            {/* Password field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                 {t('password')}
@@ -212,6 +276,7 @@ export default function Register() {
               </div>
             </div>
             
+            {/* Confirm password field */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
                 {t('confirm_password')}
@@ -233,6 +298,7 @@ export default function Register() {
               </div>
             </div>
             
+            {/* Submit button */}
             <div>
               <button
                 type="submit"
@@ -244,6 +310,7 @@ export default function Register() {
             </div>
           </form>
           
+          {/* Login link */}
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

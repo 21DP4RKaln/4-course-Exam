@@ -12,7 +12,7 @@ export default function LoginPage() {
   const locale = segments[1]; 
 
   const [formData, setFormData] = useState({
-    email: '',
+    identifier: '',
     password: ''
   });
   const [error, setError] = useState('');
@@ -28,7 +28,7 @@ export default function LoginPage() {
   };
 
   interface FormData {
-    email: string;
+    identifier: string;
     password: string;
   }
 
@@ -42,14 +42,25 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      console.log("Sending login request with data:", { email: formData.email, passwordLength: formData.password.length });
+      const isEmail = formData.identifier.includes('@');
+      
+      const loginData = {
+        password: formData.password,
+        ...(isEmail ? { email: formData.identifier } : { phoneNumber: formData.identifier })
+      };
+      
+      console.log("Sending login request with data:", { 
+        identifier: formData.identifier, 
+        passwordLength: formData.password.length,
+        isEmail 
+      });
       
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(loginData),
         cache: 'no-store',
         credentials: 'include'
       });
@@ -100,17 +111,17 @@ export default function LoginPage() {
           )}
           <div className="rounded-md space-y-4">
             <div>
-              <label htmlFor="email" className="sr-only">
-                {t('auth.email')}
+              <label htmlFor="identifier" className="sr-only">
+                {t('auth.email_or_phone')}
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
+                id="identifier"
+                name="identifier"
+                type="text"
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-[#2A2A2A] placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
-                placeholder={t('auth.email')}
-                value={formData.email}
+                placeholder={t('auth.email_or_phone')}
+                value={formData.identifier}
                 onChange={handleChange}
               />
             </div>
