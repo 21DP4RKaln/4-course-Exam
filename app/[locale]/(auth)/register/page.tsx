@@ -24,7 +24,6 @@ export default function Register() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
-  const [preferredContact, setPreferredContact] = useState<'email' | 'phone' | 'both'>('email');
 
   interface FormData {
     name: string;
@@ -54,15 +53,6 @@ export default function Register() {
     }
   };
 
-  const handleContactMethodChange = (method: 'email' | 'phone' | 'both') => {
-    setPreferredContact(method);
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      email: '',
-      phoneNumber: ''
-    }));
-  };
-
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     
@@ -76,29 +66,18 @@ export default function Register() {
       newErrors.surname = t('surname_required');
     }
     
-    // Validate email or phone based on selected contact method
-    if (preferredContact === 'email' || preferredContact === 'both') {
-      if (!formData.email.trim()) {
-        newErrors.email = t('email_required');
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = t('email_invalid');
-      }
+    // Validate email if provided
+    if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = t('email_invalid');
     }
     
-    if (preferredContact === 'phone' || preferredContact === 'both') {
-      if (!formData.phoneNumber.trim()) {
-        newErrors.phoneNumber = t('phone_required');
-      } else if (!/^\+?[0-9]{8,15}$/.test(formData.phoneNumber)) {
-        newErrors.phoneNumber = t('phone_invalid');
-      }
+    // Validate phone if provided
+    if (formData.phoneNumber.trim() && !/^\+?[0-9]{8,15}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = t('phone_invalid');
     }
     
-    // If both contact methods are empty
-    if (
-      preferredContact === 'both' && 
-      !formData.email.trim() && 
-      !formData.phoneNumber.trim()
-    ) {
+    // Require at least one contact method
+    if (!formData.email.trim() && !formData.phoneNumber.trim()) {
       newErrors.email = t('email_or_phone_required');
     }
     
@@ -142,8 +121,8 @@ export default function Register() {
         body: JSON.stringify({
           name: formData.name,
           surname: formData.surname,
-          email: preferredContact === 'phone' ? null : formData.email,
-          phoneNumber: preferredContact === 'email' ? null : formData.phoneNumber, 
+          email: formData.email.trim() || null,
+          phoneNumber: formData.phoneNumber.trim() || null, 
           password: formData.password
         }),
         credentials: 'include'
@@ -236,100 +215,50 @@ export default function Register() {
                 )}
               </div>
             </div>
-
-            {/* Contact Method Selection */}
+            
+            {/* Email field */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                {t('contact_method')}
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+                {t('email')} <span className="text-gray-500">({t('optional')})</span>
               </label>
-              <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={() => handleContactMethodChange('email')}
-                  className={`flex-1 py-2 rounded-md ${
-                    preferredContact === 'email'
-                      ? 'bg-[#E63946] text-white'
-                      : 'bg-[#2A2A2A] text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  {t('email_only')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleContactMethodChange('phone')}
-                  className={`flex-1 py-2 rounded-md ${
-                    preferredContact === 'phone'
-                      ? 'bg-[#E63946] text-white'
-                      : 'bg-[#2A2A2A] text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  {t('phone_only')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleContactMethodChange('both')}
-                  className={`flex-1 py-2 rounded-md ${
-                    preferredContact === 'both'
-                      ? 'bg-[#E63946] text-white'
-                      : 'bg-[#2A2A2A] text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  {t('both')}
-                </button>
+              <div className="mt-1">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 bg-[#2A2A2A] text-white focus:outline-none focus:ring-[#E63946] focus:border-[#E63946]"
+                />
+                {errors.email && (
+                  <p className="mt-2 text-sm text-red-400">{errors.email}</p>
+                )}
               </div>
             </div>
             
-            {/* Email field */}
-            {(preferredContact === 'email' || preferredContact === 'both') && (
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                  {t('email')} {preferredContact === 'both' ? `(${t('optional')})` : ''}
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required={preferredContact === 'email'}
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 bg-[#2A2A2A] text-white focus:outline-none focus:ring-[#E63946] focus:border-[#E63946]"
-                  />
-                  {errors.email && (
-                    <p className="mt-2 text-sm text-red-400">{errors.email}</p>
-                  )}
-                </div>
-              </div>
-            )}
-            
             {/* Phone number field */}
-            {(preferredContact === 'phone' || preferredContact === 'both') && (
-              <div>
-                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-300">
-                  {t('phone_number')} {preferredContact === 'both' ? `(${t('optional')})` : ''}
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    type="tel"
-                    autoComplete="tel"
-                    required={preferredContact === 'phone'}
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    placeholder="+371 12345678"
-                    className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 bg-[#2A2A2A] text-white focus:outline-none focus:ring-[#E63946] focus:border-[#E63946]"
-                  />
-                  {errors.phoneNumber && (
-                    <p className="mt-2 text-sm text-red-400">{errors.phoneNumber}</p>
-                  )}
-                </div>
-                {preferredContact === 'both' && (
-                  <p className="mt-1 text-xs text-gray-500">{t('email_or_phone_required_hint')}</p>
+            <div>
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-300">
+                {t('phone_number')} <span className="text-gray-500">({t('optional')})</span>
+              </label>
+              <div className="mt-1">
+                <input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="tel"
+                  autoComplete="tel"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="+371 12345678"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 bg-[#2A2A2A] text-white focus:outline-none focus:ring-[#E63946] focus:border-[#E63946]"
+                />
+                {errors.phoneNumber && (
+                  <p className="mt-2 text-sm text-red-400">{errors.phoneNumber}</p>
                 )}
               </div>
-            )}
+              <p className="mt-1 text-xs text-gray-500">{t('email_or_phone_required_hint')}</p>
+            </div>
             
             {/* Password field */}
             <div>

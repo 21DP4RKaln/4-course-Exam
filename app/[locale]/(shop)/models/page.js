@@ -8,9 +8,7 @@ import { ContactModal } from '../../../components/ui/ContactModal'
 import { useState } from 'react'
 
 export default function Models() {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
 
   return (
     <main className="bg-[#1A1A1A]">

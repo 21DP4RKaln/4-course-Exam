@@ -384,12 +384,7 @@ export default function Profile() {
               <h3 className="text-sm font-medium text-gray-400">{t('phoneNumber')}</h3>
               <p className="mt-1 text-lg text-white">{userData?.phoneNumber || t('notProvided')}</p>
             </div>
-            
-            <div>
-              <h3 className="text-sm font-medium text-gray-400">{t('role')}</h3>
-              <p className="mt-1 text-lg text-white">{userData?.role || t('unknown')}</p>
-            </div>
-            
+
             <div>
               <h3 className="text-sm font-medium text-gray-400">{t('joined')}</h3>
               <p className="mt-1 text-gray-300">

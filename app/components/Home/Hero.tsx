@@ -3,19 +3,15 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Truck, Settings, Shield } from 'lucide-react';
-import { useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Hero() {
     const t = useTranslations('hero');
-
-    const scrollToFooter = useCallback(() => {
-        requestAnimationFrame(() => {
-            const footer = document.querySelector('footer');
-            if (footer) {
-                footer.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }, []);
+    const router = useRouter();
+    const params = useParams();
+    const locale = params.locale || 'en';
 
     return (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -56,13 +52,21 @@ export default function Hero() {
                         </div>
                     </div>
 
-                    {/* Aizvietojam Link ar button */}
-                    <button 
-                        onClick={scrollToFooter}
-                        className="inline-block bg-red-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-red-700 transition-colors"
-                    >
-                        {t('cta')}
-                    </button>
+                    {/* Divas pogas līdzās */}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Link 
+                            href={`/${locale}/configurator`}
+                            className="inline-block bg-red-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-red-700 transition-colors text-center"
+                        >
+                            {t('custom_config')}
+                        </Link>
+                        <Link 
+                            href={`/${locale}/ready-configs`}
+                            className="inline-block bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-600 transition-colors text-center"
+                        >
+                            {t('ready_configs')}
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="relative h-[600px]">
