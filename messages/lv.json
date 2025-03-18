@@ -8,6 +8,31 @@
   "Mail": {
     "support": "ivaprolv@outlook.com"
   },
+  "common": {
+    "backToHome": "Atpakaļ uz sākumlapu",
+    "loading": "Ielādē...",
+    "error": "Kļūda",
+    "notFound": "Nav atrasts",
+    "save": "Saglabāt",
+    "cancel": "Atcelt",
+    "edit": "Rediģēt",
+    "delete": "Dzēst",
+    "create": "Izveidot",
+    "submit": "Iesniegt",
+    "selected": "Izvēlēts",
+    "more": "vairāk",
+    "back": "Atpakaļ",
+    "next": "Tālāk",
+    "prev": "Iepriekšējais",
+    "yes": "Jā",
+    "no": "Nē",
+    "confirm": "Apstiprināt",
+    "contactNotProvided": "Nav norādīts",
+    "from": "No",
+    "to": "Līdz",
+    "optional": "pēc izvēles",
+    "required": "obligāti"
+  },
   "topbar": {
     "support": "+371 20699800",
     "address": "kur Rīgā, Latvijā"
@@ -27,6 +52,19 @@
     "help": "Palīdzība",
     "about": "Par mums"
   },
+  "contact": {
+    "title": "Sazināties ar mums",
+    "name": "Vārds",
+    "email": "E-pasts",
+    "message": "Ziņojums",
+    "send": "Sūtīt"
+  },
+  "header": {
+    "ready_configs": "Gatavās konfigurācijas",
+    "ready_configs_desc": "Izvēlieties no mūsu gatavajām datora konfigurācijām",
+    "configurator": "Konfigurators",
+    "configurator_desc": "Izveidojiet savu ideālo datoru"
+  },
   "navigation": {
     "home": "Sākumlapa",
     "configurator": "Konfigurators",
@@ -36,19 +74,6 @@
     "register": "Reģistrēties",
     "support": "+371 20699800"
   },
-  "header": {
-    "ready_configs": "Gatavās konfigurācijas",
-    "ready_configs_desc": "Izvēlieties no mūsu gatavajām datora konfigurācijām",
-    "configurator": "Konfigurators",
-    "configurator_desc": "Izveidojiet savu ideālo datoru"
-  },
-    "contact": {
-      "title": "Sazināties ar mums",
-      "name": "Vārds",
-      "email": "E-pasts",
-      "message": "Ziņojums",
-      "send": "Sūtīt"
-    },
   "home": {
     "title": "Datoru Pielāgošanas Platforma",
     "subtitle": "Izveidojiet savu ideālo datoru",
@@ -86,6 +111,7 @@
     "editConfig": "Rediģēt konfigurāciju",
     "backToDashboard": "Atpakaļ uz vadības paneli",
     "configUpdated": "Konfigurācija veiksmīgi atjaunināta!",
+    "redirecting": "Jūs tiksiet novirzīts uz vadības paneli...",
     "actions": {
       "add": "Pievienot",
       "replace": "Nomainīt",
@@ -94,7 +120,8 @@
       "remove": "Noņemt",
       "save": "Saglabāt konfigurāciju",
       "saving": "Saglabā...",
-      "saveChanges": "Saglabāt izmaiņas"
+      "saveChanges": "Saglabāt izmaiņas",
+      "calculate": "Aprēķināt cenu"
     },
     "errors": {
       "fetchFailed": "Neizdevās ielādēt komponentes",
@@ -106,8 +133,201 @@
       "noName": "Lūdzu, norādiet konfigurācijas nosaukumu"
     },
     "outOfStock": "Nav noliktavā",
-    "configSaved": "Konfigurācija veiksmīgi saglabāta!",
-    "redirecting": "Jūs tiksiet novirzīts uz vadības paneli..."
+    "configSaved": "Konfigurācija veiksmīgi saglabāta!"
+  },
+  "auth": {
+    "create_account": "Izveidot kontu",
+    "already_have_account": "Jau ir konts?",
+    "login_instead": "Ielogoties",
+    "name": "Vārds",
+    "surname": "Uzvārds",
+    "email": "E-pasts",
+    "phone_number": "Telefona numurs",
+    "optional": "pēc izvēles",
+    "email_or_phone": "E-pasts vai telefona numurs",
+    "email_or_phone_required_hint": "Jānorāda vismaz e-pasts vai telefona numurs",
+    "password": "Parole",
+    "confirm_password": "Apstiprināt paroli",
+    "agree_terms": "Piekrītu lietošanas noteikumiem",
+    "register": "Reģistrēties",
+    "registering": "Reģistrējas...",
+    "name_required": "Vārds ir obligāts",
+    "surname_required": "Uzvārds ir obligāts",
+    "email_required": "E-pasts ir obligāts",
+    "email_or_phone_required": "Nepieciešams norādīt vai nu e-pastu vai telefona numuru",
+    "email_invalid": "Lūdzu, ievadiet derīgu e-pasta adresi",
+    "phone_invalid": "Lūdzu, ievadiet derīgu telefona numuru",
+    "password_required": "Parole ir obligāta",
+    "password_length": "Parolei jāsatur vismaz 8 simbolus",
+    "passwords_not_match": "Paroles nesakrīt",
+    "registration_failed": "Reģistrācija neizdevās",
+    "login": "Ielogoties",
+    "loggingIn": "Ielogojas...",
+    "loginFailed": "Nepareizs e-pasts/tālrunis vai parole",
+    "loginError": "Kaut kas nogāja greizi. Lūdzu, mēģiniet vēlreiz",
+    "noAccount": "Nav konta?",
+    "backToLogin": "Atpakaļ uz ielogošanos"
+  },
+  "dashboard": {
+    "welcomeMessage": "Laipni lūdzam atpakaļ",
+    "accountCreated": "Jūsu konts tika izveidots",
+    "myComputers": "Mani Datori",
+    "noComputers": "Jūs vēl neesat izveidojis nevienu datoru",
+    "createComputer": "Izveidojiet savu pirmo datoru",
+    "newConfiguration": "Jauna konfigurācija",
+    "accountSettings": "Konta iestatījumi",
+    "recentActivity": "Nesenā darbība",
+    "noActivity": "Nav nesenās darbības",
+    "components": "Komponentes",
+    "more": "vēl",
+    "created": "Izveidots:",
+    "edit": "Rediģēt",
+    "delete": "Dzēst",
+    "deleting": "Dzēš...",
+    "confirmDelete": "Vai tiešām vēlaties dzēst šo konfigurāciju?",
+    "statistics": "Statistika",
+    "totalConfigurations": "Kopējais konfigurāciju skaits",
+    "averagePrice": "Vidējā cena",
+    "maxPrice": "Augstākā cena",
+    "logout": "Izrakstīties",
+    "unnamed": "Nenosaukts Lietotājs",
+    "backToLogin": "Atpakaļ uz ielogošanos",
+    "editProfile": "Rediģēt profilu",
+    "errors": {
+      "fetchFailed": "Neizdevās ielādēt informāciju",
+      "fetchConfigsFailed": "Neizdevās ielādēt konfigurācijas",
+      "deleteConfigFailed": "Neizdevās dzēst konfigurāciju"
+    }
+  },
+  "profile": {
+    "profileSettings": "Profila iestatījumi",
+    "name": "Vārds",
+    "surname": "Uzvārds",
+    "email": "E-pasts",
+    "phoneNumber": "Telefona numurs",
+    "contactRequirement": "Jānorāda vismaz e-pasts vai telefona numurs",
+    "joined": "Pievienojies",
+    "unknown": "Nav norādīts",
+    "notProvided": "Nav norādīts",
+    "editProfile": "Rediģēt profilu",
+    "saveChanges": "Saglabāt izmaiņas",
+    "saving": "Saglabā...",
+    "cancel": "Atcelt",
+    "updateSuccess": "Profils veiksmīgi atjaunināts",
+    "errors": {
+      "fetchFailed": "Neizdevās ielādēt profilu",
+      "updateFailed": "Neizdevās atjaunināt profilu"
+    },
+    "dashboard": "Informācijas panelis",
+    "logout": "Izrakstīties",
+    "unnamed": "Nenosaukts Lietotājs",
+    "backToLogin": "Atpakaļ uz ielogošanos"
+  },
+  "admin": {
+    "welcomeMessage": "Laipni lūgti",
+    "adminPanel": "Administratora Panelis",
+    "profile": "Profils",
+    "logout": "Izrakstīties",
+    "quickMenu": "Ātrā izvēlne",
+    "manageUsers": "Pārvaldīt lietotājus",
+    "manageComponents": "Pārvaldīt komponentes",
+    "specialistPanel": "Speciālista panelis",
+    "userManagement": "Lietotāju pārvaldība",
+    "createUser": "Izveidot lietotāju",
+    "name": "Vārds",
+    "email": "E-pasts",
+    "role": "Loma",
+    "status": "Statuss",
+    "actions": "Darbības",
+    "roles": {
+      "client": "Klients",
+      "specialist": "Speciālists",
+      "admin": "Administrators"
+    },
+    "blocked": "Bloķēts",
+    "active": "Aktīvs",
+    "unblock": "Atbloķēt",
+    "block": "Bloķēt",
+    "edit": "Rediģēt",
+    "noUsers": "Nav atrasti lietotāji",
+    "errors": {
+      "fetchFailed": "Neizdevās ielādēt datus",
+      "updateFailed": "Neizdevās atjaunināt",
+      "fetchUsersFailed": "Neizdevās ielādēt lietotājus"
+    },
+    "backToLogin": "Atpakaļ uz ielogošanos"
+  },
+  "specialist": {
+    "welcomeMessage": "Laipni lūgti",
+    "specialistPanel": "Speciālista Panelis",
+    "profile": "Profils",
+    "logout": "Izrakstīties",
+    "quickMenu": "Ātrā izvēlne",
+    "serviceOrders": "Servisa pasūtījumi",
+    "approveConfigurations": "Apstiprināt konfigurācijas",
+    "pendingConfigurations": "Gaidošās konfigurācijas",
+    "noPendingConfigurations": "Nav gaidošo konfigurāciju",
+    "createdBy": "Izveidoja",
+    "status": "Statuss",
+    "review": "Pārskatīt",
+    "statistics": "Statistika",
+    "pendingReviews": "Gaidošie pārskati",
+    "approvedConfigurations": "Apstiprinātās konfigurācijas",
+    "activeServiceOrders": "Aktīvie servisa pasūtījumi",
+    "reviewConfiguration": "Pārskatīt konfigurāciju",
+    "back": "Atpakaļ",
+    "approvalOptions": "Apstiprināšanas opcijas",
+    "approveConfiguration": "Apstiprināt konfigurāciju",
+    "rejectConfiguration": "Noraidīt konfigurāciju",
+    "processing": "Apstrādā...",
+    "approvalInfo": "Apstiprināšanas informācija",
+    "approvalDescription": "Apstiprinot šo konfigurāciju, tā kļūs publiski pieejama, un citi lietotāji varēs to apskatīt un pasūtīt.",
+    "customerInfo": "Klienta informācija",
+    "name": "Vārds",
+    "email": "E-pasts",
+    "manufacturer": "Ražotājs",
+    "configNotFound": "Konfigurācija nav atrasta",
+    "errors": {
+      "fetchFailed": "Neizdevās ielādēt datus",
+      "fetchPendingFailed": "Neizdevās ielādēt gaidošās konfigurācijas",
+      "fetchConfigFailed": "Neizdevās ielādēt konfigurāciju",
+      "approveFailed": "Neizdevās apstiprināt konfigurāciju",
+      "rejectFailed": "Neizdevās noraidīt konfigurāciju"
+    },
+    "backToLogin": "Atpakaļ uz ielogošanos"
+  },
+  "components": {
+    "title": "Komponentes",
+    "addComponent": "Pievienot komponenti",
+    "name": "Nosaukums",
+    "manufacturer": "Ražotājs",
+    "category": "Kategorija",
+    "price": "Cena",
+    "availability": "Pieejamība",
+    "specifications": "Specifikācijas",
+    "back": "Atpakaļ",
+    "save": "Saglabāt",
+    "saving": "Saglabā...",
+    "categories": {
+      "cpu": "Procesors",
+      "gpu": "Videokarte",
+      "ram": "Operatīvā atmiņa",
+      "storage": "Atmiņas disks",
+      "psu": "Barošanas bloks",
+      "case": "Korpuss",
+      "cooling": "Dzesēšana"
+    },
+    "statuses": {
+      "available": "Pieejams",
+      "unavailable": "Nav pieejams",
+      "orderable": "Pasūtāms"
+    },
+    "errors": {
+      "createFailed": "Neizdevās izveidot komponenti",
+      "updateFailed": "Neizdevās atjaunināt komponenti",
+      "deleteFailed": "Neizdevās dzēst komponenti",
+      "fetchFailed": "Neizdevās ielādēt komponentes"
+    }
   },
   "serviceComponents": {
     "title": "Servisa komponentes",
@@ -167,139 +387,57 @@
       "cancelled": "Atcelts"
     }
   },
-  "auth": {
-    "create_account": "Izveidot kontu",
-    "already_have_account": "Jau ir konts?",
-    "login_instead": "Ielogoties",
-    "name": "Vārds",
-    "surname": "Uzvārds",
-    "email": "E-pasts",
-    "phone_number": "Telefona numurs",
-    "optional": "pēc izvēles",
-    "email_or_phone": "E-pasts vai telefona numurs",
-    "email_or_phone_required_hint": "Jānorāda vismaz e-pasts vai telefona numurs",
-    "password": "Parole",
-    "confirm_password": "Apstiprināt paroli",
-    "agree_terms": "Piekrītu lietošanas noteikumiem",
-    "register": "Reģistrēties",
-    "registering": "Reģistrējas...",
-    "name_required": "Vārds ir obligāts",
-    "surname_required": "Uzvārds ir obligāts",
-    "email_required": "E-pasts ir obligāts",
-    "email_or_phone_required": "Nepieciešams norādīt vai nu e-pastu vai telefona numuru",
-    "email_invalid": "Lūdzu, ievadiet derīgu e-pasta adresi",
-    "phone_invalid": "Lūdzu, ievadiet derīgu telefona numuru",
-    "password_required": "Parole ir obligāta",
-    "password_length": "Parolei jāsatur vismaz 8 simbolus",
-    "passwords_not_match": "Paroles nesakrīt",
-    "registration_failed": "Reģistrācija neizdevās",
-    "login": "Ielogoties",
-    "loggingIn": "Ielogojas...",
-    "loginFailed": "Nepareizs e-pasts/tālrunis vai parole",
-    "loginError": "Kaut kas nogāja greizi. Lūdzu, mēģiniet vēlreiz",
-    "noAccount": "Nav konta?",
-    "backToLogin": "Atpakaļ uz ielogojumu"
-  },
-  "dashboard": {
-    "welcomeMessage": "Laipni lūdzam atpakaļ",
-    "accountCreated": "Jūsu konts tika izveidots",
-    "myComputers": "Mani Datori",
-    "noComputers": "Jūs vēl neesat izveidojis nevienu datoru",
-    "createComputer": "Izveidojiet savu pirmo datoru",
-    "newConfiguration": "Jauna konfigurācija",
-    "accountSettings": "Konta iestatījumi",
-    "recentActivity": "Nesenā darbība",
-    "noActivity": "Nav nesenās darbības",
-    "components": "Komponentes",
-    "more": "vēl",
-    "created": "Izveidots:",
-    "edit": "Rediģēt",
-    "delete": "Dzēst",
-    "deleting": "Dzēš...",
-    "confirmDelete": "Vai tiešām vēlaties dzēst šo konfigurāciju?",
-    "statistics": "Statistika",
-    "totalConfigurations": "Kopējais konfigurāciju skaits",
-    "averagePrice": "Vidējā cena",
-    "maxPrice": "Augstākā cena",
-    "logout": "Izrakstīties",
-    "unnamed": "Nenosaukts Lietotājs",
-    "backToLogin": "Atpakaļ uz ielogojumu",
-    "editProfile": "Rediģēt profilu",
-    "errors": {
-      "fetchFailed": "Neizdevās ielādēt informāciju",
-      "fetchConfigsFailed": "Neizdevās ielādēt konfigurācijas",
-      "deleteConfigFailed": "Neizdevās dzēst konfigurāciju"
+  "features": {
+    "title": "Mūsu pakalpojumi",
+    "diagnostics": {
+      "title": "Diagnostika",
+      "price": "Diagnostikas pakalpojums: €15"
+    },
+    "repair": {
+      "title": "Remonts",
+      "price": "Remonta pakalpojumi sākot no €25 atkarībā no problēmas"
+    },
+    "assembly": {
+      "title": "Datoru komplektēšana",
+      "price": "Datoru komplektēšana pēc pasūtījuma: €60 (iekļauta OS uzstādīšana un iestatīšana)"
     }
   },
-  "profile": {
-    "profileSettings": "Profila iestatījumi",
-    "name": "Vārds",
-    "email": "E-pasts",
-    "joined": "Pievienojies",
-    "unknown": "Nav norādīts",
-    "notProvided": "Nav norādīts",
-    "editProfile": "Rediģēt profilu",
-    "saveChanges": "Saglabāt izmaiņas",
-    "cancel": "Atcelt",
-    "updateSuccess": "Profils veiksmīgi atjaunināts",
-    "errors": {
-      "fetchFailed": "Neizdevās ielādēt profilu",
-      "updateFailed": "Neizdevās atjaunināt profilu"
-    },
-    "dashboard": "Informācijas panelis",
-    "logout": "Izrakstīties",
-    "unnamed": "Nenosaukts Lietotājs",
-    "backToLogin": "Atpakaļ uz ielogojumu"
-  },
-  "features": {
-      "title": "Mūsu pakalpojumi",
-      "diagnostics": {
-        "title": "Diagnostika",
-        "price": "Diagnostikas pakalpojums: €15"
-      },
-      "repair": {
-        "title": "Remonts",
-        "price": "Remonta pakalpojumi sākot no €25 atkarībā no problēmas"
-      },
-      "assembly": {
-        "title": "Datoru komplektēšana",
-        "price": "Datoru komplektēšana pēc pasūtījuma: €60 (iekļauta OS uzstādīšana un iestatīšana)"
-      }
-  },
   "hero": {
-      "title": "Spēļu datoru montāža un personalizācija",
-      "subtitle": "Veidojam datorus atbilstoši jūsu budžetam un vajadzībām",
-      "features": {
-        "delivery": "Bezmaksas piegāde",
-        "assembly": "Individuāla montāža", 
-        "warranty": "1 gadu garantija"
-      },
-      "cta": "Sazināties",
-      "imageAlt": "Spēļu dators"
+    "title": "Spēļu datoru montāža un personalizācija",
+    "subtitle": "Veidojam datorus atbilstoši jūsu budžetam un vajadzībām",
+    "features": {
+      "delivery": "Bezmaksas piegāde",
+      "assembly": "Individuāla montāža", 
+      "warranty": "1 gadu garantija"
+    },
+    "cta": "Sazināties",
+    "imageAlt": "Spēļu dators",
+    "custom_config": "Izveidot pielāgotu konfigurāciju",
+    "ready_configs": "Gatavās konfigurācijas"
   },
   "productCatalog": {
-      "title": "Produktu Katalogs",
-      "categories": {
-          "gaming": "Spēļu Datori",
-          "workstation": "Darba Stacijas",
-          "streaming": "Straumēšanas Datori",
-          "editing": "Video Rediģēšanas Datori",
-          "3dModeling": "3D Modelēšanas Datori"
-      },
-      "filters": {
-          "price": "Cena",
-          "performance": "Veiktspēja",
-          "purpose": "Pielietojums"
-      },
-      "sorting": {
-          "priceAsc": "Cena: No zemākās uz augstāko",
-          "priceDesc": "Cena: No augstākās uz zemāko",
-          "newest": "Jaunākie",
-          "bestsellers": "Bestselleri"
-      }
+    "title": "Produktu Katalogs",
+    "categories": {
+      "gaming": "Spēļu Datori",
+      "workstation": "Darba Stacijas",
+      "streaming": "Straumēšanas Datori",
+      "editing": "Video Rediģēšanas Datori",
+      "3dModeling": "3D Modelēšanas Datori"
+    },
+    "filters": {
+      "price": "Cena",
+      "performance": "Veiktspēja",
+      "purpose": "Pielietojums"
+    },
+    "sorting": {
+      "priceAsc": "Cena: No zemākās uz augstāko",
+      "priceDesc": "Cena: No augstākās uz zemāko",
+      "newest": "Jaunākie",
+      "bestsellers": "Bestselleri"
+    }
   },
   "footer": {
-      "contact": {
+    "contact": {
       "title": "Sazināties ar mums",
       "name": "Jūsu vārds",
       "email": "E-pasta adrese",
@@ -307,66 +445,66 @@
       "send": "Nosūtīt"
     },
     "PhoneNumbers": {
-    "support": "+371 20699800"
+      "support": "+371 20699800"
     },
-      "businessOffers": {
-          "title": "Biznesa Piedāvājumi",
-          "description": "Ir piedāvājums sadarbībai vai vēlaties izveidot datoru pēc individuālām prasībām?",
-          "contactLink": "Rakstiet uz e-pastu"
-      },
-      "technicalSupport": {
-          "title": "Tehniskais Atbalsts",
-          "description": "Radušies jautājumi vai nepieciešama palīdzība? Sazinieties ar mums, mēs palīdzēsim!",
-          "workHours": "Darba laiks: 10:00 - 22:00, katru dienu"
-      },
-      "socialMedia": {
-          "followUs": "Sekojiet mums"
-      },
-      "copyright": "© COPYRIGHT 2024 IVAPRO. VISAS TIESĪBAS AIZSARGĀTAS."
+    "businessOffers": {
+      "title": "Biznesa Piedāvājumi",
+      "description": "Ir piedāvājums sadarbībai vai vēlaties izveidot datoru pēc individuālām prasībām?",
+      "contactLink": "Rakstiet uz e-pastu"
+    },
+    "technicalSupport": {
+      "title": "Tehniskais Atbalsts",
+      "description": "Radušies jautājumi vai nepieciešama palīdzība? Sazinieties ar mums, mēs palīdzēsim!",
+      "workHours": "Darba laiks: 10:00 - 22:00, katru dienu"
+    },
+    "socialMedia": {
+      "followUs": "Sekojiet mums"
+    },
+    "copyright": "© COPYRIGHT 2025 IVAPRO. VISAS TIESĪBAS AIZSARGĀTAS."
   },
   "reviews": {
-      "title": "Pēdējie klientu vērtējumi",
-      "chooseComputer": "Izvēlēties datoru",
-      "prevReview": "Iepriekšējā atsauksme",
-      "nextReview": "Nākamā atsauksme",
-      "writeReview": "Uzrakstīt atsauksmi"
+    "title": "Pēdējie klientu vērtējumi",
+    "chooseComputer": "Izvēlēties datoru",
+    "prevReview": "Iepriekšējā atsauksme",
+    "nextReview": "Nākamā atsauksme",
+    "writeReview": "Uzrakstīt atsauksmi"
   },
   "telegramSection": {
-      "memberCount": "KOPĀ AR MUMS JAU 100+ SPĒLĒTĀJU",
-      "title": "Esi informēts! Pievienojies mums\nTelegram kanālā IvaPro",
-      "description": "Tikai oriģināls saturs: jaunākās ziņas, aktuālie produkti un spēļu aprīkojuma izlozes",
-      "joinButton": "PIEVIENOTIES TELEGRAM",
-      "giveaway": "Notiek izloze par datoru 🎮",
-      "previewAlt": "Telegram kanāla priekšskatījums"
+    "memberCount": "KOPĀ AR MUMS JAU 100+ SPĒLĒTĀJU",
+    "title": "Esi informēts! Pievienojies mums\nTelegram kanālā IvaPro",
+    "description": "Tikai oriģināls saturs: jaunākās ziņas, aktuālie produkti un spēļu aprīkojuma izlozes",
+    "joinButton": "PIEVIENOTIES TELEGRAM",
+    "giveaway": "Notiek izloze par datoru 🎮",
+    "previewAlt": "Telegram kanāla priekšskatījums"
   },
   "processSteps": {
-      "title": "4 soļi līdz jūsu jaunajam datoram",
-      "step1": {
-          "title": "Atstājiet pieteikumu",
-          "description": "Precizēsim pasūtījuma detaļas un vēlmes"
-      },
-      "step2": {
-          "title": "Pasūtam komponentes",
-          "description": "Atlasām un pasūtam nepieciešamās detaļas"
-      },
-      "step3": {
-          "title": "Montāža",
-          "description": "Veicam montāžu un testēšanu"
-      },
-      "step4": {
-          "title": "Piegāde",
-          "description": "Droša piegāde visā Latvijā"
-      }
-  },
-    "contactModal": {
-      "title": "Sazināties ar mums",
-      "callOrRequest": "Zvanīt vai pieprasīt zvanu",
-      "writeMessage": "Rakstīt ziņu",
-      "writeEmail": "Rakstīt e-pastu",
-      "description": {
-        "first": "Katrs IvaPro dators ir 5 gadu pieredzes rezultāts. Mūsu eksperti precīzi zina, kādam jābūt spēļu datoram, darba stacijai vai serverim.",
-        "second": "Lai sāktu, pastāstiet par savām vajadzībām, termiņiem un budžetu, un mēs piedāvāsim labāko risinājumu."
-      },
-      "workHours": "Darba laiks: 9:00 - 20:00, katru dienu"
+    "title": "4 soļi līdz jūsu jaunajam datoram",
+    "step1": {
+      "title": "Atstājiet pieteikumu",
+      "description": "Precizēsim pasūtījuma detaļas un vēlmes"
+    },
+    "step2": {
+      "title": "Pasūtam komponentes",
+      "description": "Atlasām un pasūtam nepieciešamās detaļas"
+    },
+    "step3": {
+      "title": "Montāža",
+      "description": "Veicam montāžu un testēšanu"
+    },
+    "step4": {
+      "title": "Piegāde",
+      "description": "Droša piegāde visā Latvijā"
     }
+  },
+  "contactModal": {
+    "title": "Sazināties ar mums",
+    "callOrRequest": "Zvanīt vai pieprasīt zvanu",
+    "writeMessage": "Rakstīt ziņu",
+    "writeEmail": "Rakstīt e-pastu",
+    "description": {
+      "first": "Katrs IvaPro dators ir 5 gadu pieredzes rezultāts. Mūsu eksperti precīzi zina, kādam jābūt spēļu datoram, darba stacijai vai serverim.",
+      "second": "Lai sāktu, pastāstiet par savām vajadzībām, termiņiem un budžetu, un mēs piedāvāsim labāko risinājumu."
+    },
+    "workHours": "Darba laiks: 9:00 - 20:00, katru dienu"
+  }
 }

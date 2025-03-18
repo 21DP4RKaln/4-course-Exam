@@ -8,6 +8,31 @@
   "Mail": {
     "support": "ivaprolv@outlook.com"
   },
+  "common": {
+    "backToHome": "Вернуться на главную",
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "notFound": "Не найдено",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "create": "Создать",
+    "submit": "Отправить",
+    "selected": "Выбрано",
+    "more": "больше",
+    "back": "Назад",
+    "next": "Далее",
+    "prev": "Предыдущий",
+    "yes": "Да",
+    "no": "Нет",
+    "confirm": "Подтвердить",
+    "contactNotProvided": "Не указано",
+    "from": "От",
+    "to": "До",
+    "optional": "необязательно",
+    "required": "обязательно"
+  },
   "topbar": {
     "support": "+371 20699800",
     "address": "где-то в Риге, Латвия"
@@ -27,6 +52,19 @@
     "help": "Помощь",
     "about": "О нас"
   },
+  "contact": {
+    "title": "Связаться с нами",
+    "name": "Имя",
+    "email": "Эл. почта",
+    "message": "Сообщение",
+    "send": "Отправить"
+  },
+  "header": {
+    "ready_configs": "Готовые конфигурации",
+    "ready_configs_desc": "Выберите из наших готовых конфигураций компьютера",
+    "configurator": "Конфигуратор",
+    "configurator_desc": "Создайте свой идеальный компьютер"
+  },
   "navigation": {
     "home": "Главная",
     "configurator": "Конфигуратор",
@@ -36,137 +74,67 @@
     "register": "Регистрация",
     "support": "+371 20699800"
   },
-  "header": {
-    "ready_configs": "Ready-made configurations",
-    "ready_configs_desc": "Choose from our ready-made computer configurations",
-    "configurator": "Computer configuration",
-    "configurator_desc": "Build your ideal computer"
-  },
-  "contact": {
-    "title": "Связаться с нами",
-    "name": "Имя",
-    "email": "Эл. почта",
-    "message": "Сообщение",
-    "send": "Отправить"
-  },
   "home": {
-    "title": "Платформа Персонализации Компьютеров",
+    "title": "Платформа персонализации компьютеров",
     "subtitle": "Создайте свой идеальный компьютер",
     "ready_configs": "Готовые конфигурации",
     "custom_config": "Создать индивидуальную конфигурацию"
   },
-    "configurator": {
-      "title": "Конфигурация компьютера",
-      "components": "Компоненты",
-      "categories": {
-        "cpu": "Процессор",
-        "gpu": "Видеокарта",
-        "ram": "Оперативная память",
-        "storage": "Накопитель",
-        "psu": "Блок питания",
-        "case": "Корпус",
-        "cooling": "Охлаждение",
-        "motherboard": "Материнская плата"
-      },
-      "filterByPrice": "Фильтр по цене",
-      "minPrice": "Минимальная цена",
-      "maxPrice": "Максимальная цена",
-      "searchPlaceholder": "Поиск компонентов...",
-      "available": "доступно",
-      "noComponentsFound": "Не найдено компонентов по заданным фильтрам",
-      "configName": "Название конфигурации",
-      "configNamePlaceholder": "Например: Игровой компьютер Ивана",
-      "selectedComponents": "Выбранные компоненты",
-      "noComponentsSelected": "Компоненты не выбраны",
-      "subtotal": "Сумма",
-      "tax": "НДС",
-      "total": "Итого",
-      "summary": "Информация",
-      "fps": "FPS в играх",
-      "editConfig": "Редактировать конфигурацию",
-      "backToDashboard": "Вернуться на панель управления",
-      "configUpdated": "Конфигурация успешно обновлена!",
-      "actions": {
-        "add": "Добавить",
-        "replace": "Заменить",
-        "selected": "Выбрано",
-        "unavailable": "Недоступно",
-        "remove": "Удалить",
-        "save": "Сохранить конфигурацию",
-        "saving": "Сохранение...",
-        "saveChanges": "Сохранить изменения"
-      },
-      "errors": {
-        "fetchFailed": "Не удалось загрузить компоненты",
-        "saveFailed": "Не удалось сохранить конфигурацию",
-        "fetchConfigFailed": "Не удалось загрузить конфигурацию",
-        "configNotFound": "Конфигурация не найдена",
-        "fetchComponentsFailed": "Не удалось загрузить компоненты",
-        "noComponents": "Пожалуйста, выберите хотя бы один компонент",
-        "noName": "Пожалуйста, укажите название конфигурации"
-      },
-      "outOfStock": "Нет в наличии",
-      "configSaved": "Конфигурация успешно сохранена!",
-      "redirecting": "Вы будете перенаправлены на панель управления..."
+  "configurator": {
+    "title": "Конфигурация компьютера",
+    "components": "Компоненты",
+    "categories": {
+      "cpu": "Процессор",
+      "gpu": "Видеокарта",
+      "ram": "Оперативная память",
+      "storage": "Накопитель",
+      "psu": "Блок питания",
+      "case": "Корпус",
+      "cooling": "Охлаждение",
+      "motherboard": "Материнская плата"
     },
-    "serviceComponents": {
-      "title": "Компоненты для сервиса",
-      "damageType": "Тип повреждения",
-      "requiredWork": "Необходимые работы",
-      "workAmount": "Объем работ",
-      "add": "Добавить компонент",
-      "remove": "Удалить компонент",
-      "edit": "Редактировать компонент",
-      "noComponents": "Нет компонентов для сервиса",
-      "componentAdded": "Компонент добавлен",
-      "componentRemoved": "Компонент удален",
-      "componentUpdated": "Компонент обновлен"
+    "filterByPrice": "Фильтр по цене",
+    "minPrice": "Минимальная цена",
+    "maxPrice": "Максимальная цена",
+    "searchPlaceholder": "Поиск компонентов...",
+    "available": "доступно",
+    "noComponentsFound": "Не найдено компонентов по заданным фильтрам",
+    "configName": "Название конфигурации",
+    "configNamePlaceholder": "Например: Игровой компьютер Ивана",
+    "selectedComponents": "Выбранные компоненты",
+    "noComponentsSelected": "Компоненты не выбраны",
+    "subtotal": "Сумма",
+    "tax": "НДС",
+    "total": "Итого",
+    "summary": "Информация",
+    "fps": "FPS в играх",
+    "editConfig": "Редактировать конфигурацию",
+    "backToDashboard": "Вернуться на панель управления",
+    "configUpdated": "Конфигурация успешно обновлена!",
+    "redirecting": "Вы будете перенаправлены на панель управления...",
+    "actions": {
+      "add": "Добавить",
+      "replace": "Заменить",
+      "selected": "Выбрано",
+      "unavailable": "Недоступно",
+      "remove": "Удалить",
+      "save": "Сохранить конфигурацию",
+      "saving": "Сохранение...",
+      "saveChanges": "Сохранить изменения",
+      "calculate": "Рассчитать цену"
     },
-    "serviceOrder": {
-      "title": "Сервисный заказ",
-      "status": "Статус",
-      "cost": "Стоимость",
-      "deliveryDate": "Дата доставки",
-      "completionDate": "Дата завершения",
-      "problemDescription": "Описание проблемы",
-      "deviceType": "Тип устройства",
-      "createOrder": "Создать заказ",
-      "updateOrder": "Обновить заказ",
-      "orderCreated": "Заказ создан",
-      "orderUpdated": "Заказ обновлен",
-      "selectDevice": "Выберите тип устройства",
-      "enterProblem": "Введите описание проблемы",
-      "statusOptions": {
-        "new": "Новый",
-        "confirmed": "Подтвержден",
-        "inProgress": "В работе",
-        "delivered": "Доставлен",
-        "completed": "Завершен",
-        "cancelled": "Отменен"
-      }
+    "errors": {
+      "fetchFailed": "Не удалось загрузить компоненты",
+      "saveFailed": "Не удалось сохранить конфигурацию",
+      "fetchConfigFailed": "Не удалось загрузить конфигурацию",
+      "configNotFound": "Конфигурация не найдена",
+      "fetchComponentsFailed": "Не удалось загрузить компоненты",
+      "noComponents": "Пожалуйста, выберите хотя бы один компонент",
+      "noName": "Пожалуйста, укажите название конфигурации"
     },
-    "orders": {
-      "title": "Заказы",
-      "orderNumber": "Номер заказа",
-      "orderDate": "Дата заказа",
-      "totalAmount": "Общая сумма",
-      "status": "Статус",
-      "noOrders": "Нет заказов",
-      "createOrder": "Создать заказ",
-      "viewDetails": "Просмотр деталей",
-      "confirmOrder": "Подтвердить заказ",
-      "cancelOrder": "Отменить заказ",
-      "orderConfirmed": "Заказ подтвержден",
-      "orderCancelled": "Заказ отменен",
-      "statusOptions": {
-        "new": "Новый",
-        "confirmed": "Подтвержден",
-        "processing": "В обработке",
-        "prepared": "Подготовлен",
-        "delivered": "Доставлен",
-        "cancelled": "Отменен"
-      }
-    },
+    "outOfStock": "Нет в наличии",
+    "configSaved": "Конфигурация успешно сохранена!"
+  },
   "auth": {
     "create_account": "Создать аккаунт",
     "already_have_account": "Уже есть аккаунт?",
@@ -198,34 +166,52 @@
     "loginFailed": "Неверные учетные данные",
     "loginError": "Произошла ошибка. Пожалуйста, попробуйте снова",
     "noAccount": "У вас нет аккаунта?",
-    "backToLogin": "Вернуться к входу"
+    "backToLogin": "Вернуться ко входу"
   },
   "dashboard": {
-    "welcomeMessage": "Добро пожаловать обратно,",
+    "welcomeMessage": "Добро пожаловать",
     "accountCreated": "Ваш аккаунт был создан",
     "myComputers": "Мои компьютеры",
     "noComputers": "Вы еще не создали ни одного компьютера",
     "createComputer": "Создайте свой первый компьютер",
+    "newConfiguration": "Новая конфигурация",
     "accountSettings": "Настройки аккаунта",
     "recentActivity": "Последняя активность",
     "noActivity": "Нет последней активности",
+    "components": "Компоненты",
+    "more": "еще",
+    "created": "Создано:",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "deleting": "Удаление...",
+    "confirmDelete": "Вы уверены, что хотите удалить эту конфигурацию?",
+    "statistics": "Статистика",
+    "totalConfigurations": "Всего конфигураций",
+    "averagePrice": "Средняя цена",
+    "maxPrice": "Максимальная цена",
     "logout": "Выйти",
-    "unnamed": "Неизвестный пользователь",
-    "backToLogin": "Вернуться к входу",
+    "unnamed": "Безымянный пользователь",
+    "backToLogin": "Вернуться ко входу",
     "editProfile": "Редактировать профиль",
     "errors": {
-      "fetchFailed": "Не удалось загрузить данные"
+      "fetchFailed": "Не удалось загрузить данные",
+      "fetchConfigsFailed": "Не удалось загрузить конфигурации",
+      "deleteConfigFailed": "Не удалось удалить конфигурацию"
     }
   },
   "profile": {
     "profileSettings": "Настройки профиля",
     "name": "Имя",
+    "surname": "Фамилия",
     "email": "Эл. почта",
+    "phoneNumber": "Номер телефона",
+    "contactRequirement": "Необходимо указать хотя бы эл. почту или номер телефона",
     "joined": "Присоединился",
     "unknown": "Неизвестно",
     "notProvided": "Не указано",
     "editProfile": "Редактировать профиль",
     "saveChanges": "Сохранить изменения",
+    "saving": "Сохранение...",
     "cancel": "Отмена",
     "updateSuccess": "Профиль успешно обновлен",
     "errors": {
@@ -234,8 +220,172 @@
     },
     "dashboard": "Панель управления",
     "logout": "Выйти",
-    "unnamed": "Неизвестный пользователь",
-    "backToLogin": "Вернуться к входу"
+    "unnamed": "Безымянный пользователь",
+    "backToLogin": "Вернуться ко входу"
+  },
+  "admin": {
+    "welcomeMessage": "Добро пожаловать",
+    "adminPanel": "Панель администратора",
+    "profile": "Профиль",
+    "logout": "Выйти",
+    "quickMenu": "Быстрое меню",
+    "manageUsers": "Управление пользователями",
+    "manageComponents": "Управление компонентами",
+    "specialistPanel": "Панель специалиста",
+    "userManagement": "Управление пользователями",
+    "createUser": "Создать пользователя",
+    "name": "Имя",
+    "email": "Эл. почта",
+    "role": "Роль",
+    "status": "Статус",
+    "actions": "Действия",
+    "roles": {
+      "client": "Клиент",
+      "specialist": "Специалист",
+      "admin": "Администратор"
+    },
+    "blocked": "Заблокирован",
+    "active": "Активен",
+    "unblock": "Разблокировать",
+    "block": "Заблокировать",
+    "edit": "Редактировать",
+    "noUsers": "Пользователи не найдены",
+    "errors": {
+      "fetchFailed": "Не удалось загрузить данные",
+      "updateFailed": "Не удалось обновить",
+      "fetchUsersFailed": "Не удалось загрузить пользователей"
+    },
+    "backToLogin": "Вернуться ко входу"
+  },
+  "specialist": {
+    "welcomeMessage": "Добро пожаловать",
+    "specialistPanel": "Панель специалиста",
+    "profile": "Профиль",
+    "logout": "Выйти",
+    "quickMenu": "Быстрое меню",
+    "serviceOrders": "Сервисные заказы",
+    "approveConfigurations": "Одобрить конфигурации",
+    "pendingConfigurations": "Ожидающие конфигурации",
+    "noPendingConfigurations": "Нет ожидающих конфигураций",
+    "createdBy": "Создано",
+    "status": "Статус",
+    "review": "Просмотр",
+    "statistics": "Статистика",
+    "pendingReviews": "Ожидают рассмотрения",
+    "approvedConfigurations": "Одобренные конфигурации",
+    "activeServiceOrders": "Активные сервисные заказы",
+    "reviewConfiguration": "Просмотр конфигурации",
+    "back": "Назад",
+    "approvalOptions": "Варианты одобрения",
+    "approveConfiguration": "Одобрить конфигурацию",
+    "rejectConfiguration": "Отклонить конфигурацию",
+    "processing": "Обработка...",
+    "approvalInfo": "Информация об одобрении",
+    "approvalDescription": "После одобрения эта конфигурация станет общедоступной, и другие пользователи смогут ее просматривать и заказывать.",
+    "customerInfo": "Информация о клиенте",
+    "name": "Имя",
+    "email": "Эл. почта",
+    "manufacturer": "Производитель",
+    "configNotFound": "Конфигурация не найдена",
+    "errors": {
+      "fetchFailed": "Не удалось загрузить данные",
+      "fetchPendingFailed": "Не удалось загрузить ожидающие конфигурации",
+      "fetchConfigFailed": "Не удалось загрузить конфигурацию",
+      "approveFailed": "Не удалось одобрить конфигурацию",
+      "rejectFailed": "Не удалось отклонить конфигурацию"
+    },
+    "backToLogin": "Вернуться ко входу"
+  },
+  "components": {
+    "title": "Компоненты",
+    "addComponent": "Добавить компонент",
+    "name": "Название",
+    "manufacturer": "Производитель",
+    "category": "Категория",
+    "price": "Цена",
+    "availability": "Доступность",
+    "specifications": "Характеристики",
+    "back": "Назад",
+    "save": "Сохранить",
+    "saving": "Сохранение...",
+    "categories": {
+      "cpu": "Процессор",
+      "gpu": "Видеокарта",
+      "ram": "Оперативная память",
+      "storage": "Накопитель",
+      "psu": "Блок питания",
+      "case": "Корпус",
+      "cooling": "Охлаждение"
+    },
+    "statuses": {
+      "available": "Доступен",
+      "unavailable": "Недоступен",
+      "orderable": "Под заказ"
+    },
+    "errors": {
+      "createFailed": "Не удалось создать компонент",
+      "updateFailed": "Не удалось обновить компонент",
+      "deleteFailed": "Не удалось удалить компонент",
+      "fetchFailed": "Не удалось загрузить компоненты"
+    }
+  },
+  "serviceComponents": {
+    "title": "Сервисные компоненты",
+    "damageType": "Тип повреждения",
+    "requiredWork": "Необходимые работы",
+    "workAmount": "Объем работ",
+    "add": "Добавить компонент",
+    "remove": "Удалить компонент",
+    "edit": "Редактировать компонент",
+    "noComponents": "Нет сервисных компонентов",
+    "componentAdded": "Компонент добавлен",
+    "componentRemoved": "Компонент удален",
+    "componentUpdated": "Компонент обновлен"
+  },
+  "serviceOrder": {
+    "title": "Сервисный заказ",
+    "status": "Статус",
+    "cost": "Стоимость",
+    "deliveryDate": "Дата доставки",
+    "completionDate": "Дата завершения",
+    "problemDescription": "Описание проблемы",
+    "deviceType": "Тип устройства",
+    "createOrder": "Создать заказ",
+    "updateOrder": "Обновить заказ",
+    "orderCreated": "Заказ создан",
+    "orderUpdated": "Заказ обновлен",
+    "selectDevice": "Выберите тип устройства",
+    "enterProblem": "Введите описание проблемы",
+    "statusOptions": {
+      "new": "Новый",
+      "confirmed": "Подтвержден",
+      "inProgress": "В работе",
+      "delivered": "Доставлен",
+      "completed": "Завершен",
+      "cancelled": "Отменен"
+    }
+  },
+  "orders": {
+    "title": "Заказы",
+    "orderNumber": "Номер заказа",
+    "orderDate": "Дата заказа",
+    "totalAmount": "Общая сумма",
+    "status": "Статус",
+    "noOrders": "Нет заказов",
+    "createOrder": "Создать заказ",
+    "viewDetails": "Просмотр деталей",
+    "confirmOrder": "Подтвердить заказ",
+    "cancelOrder": "Отменить заказ",
+    "orderConfirmed": "Заказ подтвержден",
+    "orderCancelled": "Заказ отменен",
+    "statusOptions": {
+      "new": "Новый",
+      "confirmed": "Подтвержден",
+      "processing": "В обработке",
+      "prepared": "Подготовлен",
+      "delivered": "Доставлен",
+      "cancelled": "Отменен"
+    }
   },
   "features": {
     "title": "Наши услуги",
@@ -258,10 +408,12 @@
     "features": {
       "delivery": "Бесплатная доставка",
       "assembly": "Индивидуальная сборка", 
-      "warranty": "1 года гарантии"
+      "warranty": "1 год гарантии"
     },
     "cta": "Связаться",
-    "imageAlt": "Игровой компьютер"
+    "imageAlt": "Игровой компьютер",
+    "custom_config": "Создать индивидуальную конфигурацию",
+    "ready_configs": "Готовые конфигурации"
   },
   "productCatalog": {
     "title": "Каталог Продуктов",
@@ -308,7 +460,7 @@
     "socialMedia": {
       "followUs": "Подписывайтесь на нас"
     },
-    "copyright": "© COPYRIGHT 2024 IVAPRO. ВСЕ ПРАВА ЗАЩИЩЕНЫ."
+    "copyright": "© COPYRIGHT 2025 IVAPRO. ВСЕ ПРАВА ЗАЩИЩЕНЫ."
   },
   "reviews": {
     "title": "Последние отзывы клиентов",
