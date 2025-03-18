@@ -10,6 +10,7 @@ interface UserData {
   id: string;
   name: string;
   email: string;
+  role: string;
   createdAt: string;
   configurations?: Configuration[];
 }
@@ -66,6 +67,14 @@ export default function Dashboard() {
         
         const data = await response.json();
         setUserData(data);
+        
+        if (data.role === 'ADMIN') {
+          router.push(`/${locale}/admin-dashboard`);
+          return;
+        } else if (data.role === 'SPECIALIST') {
+          router.push(`/${locale}/specialist-dashboard`);
+          return;
+        }
       } catch (error) {
         console.error('Dashboard data fetch error:', error);
         setError(t('errors.fetchFailed'));

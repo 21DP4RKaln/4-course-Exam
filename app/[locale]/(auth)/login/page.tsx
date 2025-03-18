@@ -68,7 +68,11 @@ export default function LoginPage() {
       console.log("Login response status:", res.status);
       
       if (res.ok) {
-        console.log("Login successful, redirecting to dashboard");
+        console.log("Login successful");
+        
+        const userData = await res.json();
+        console.log("User data:", userData);
+        const userRole = userData.user?.role;
         
         await fetch('/api/auth/check', { 
           method: 'GET',
@@ -79,13 +83,18 @@ export default function LoginPage() {
         });
         
         setTimeout(() => {
-          router.push(`/${locale}/dashboard`);
-          router.refresh(); 
+          if (userRole === 'ADMIN') {
+            console.log("Redirecting to admin dashboard");
+            router.push(`/${locale}/admin-dashboard`);
+          } else if (userRole === 'SPECIALIST') {
+            console.log("Redirecting to specialist dashboard");
+            router.push(`/${locale}/specialist-dashboard`);
+          } else {
+            console.log("Redirecting to user dashboard");
+            router.push(`/${locale}/dashboard`);
+          }
+          router.refresh();
         }, 100);
-      } else {
-        const data: ErrorResponse = await res.json();
-        console.error("Login error response:", data);
-        setError(data.message || t('auth.loginFailed'));
       }
     } catch (err) {
       console.error('Login error:', err);

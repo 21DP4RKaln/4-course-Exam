@@ -55,7 +55,11 @@ export default function AdminDashboard() {
         
         const data = await response.json();
         
-        if (data.role !== 'ADMIN') {
+        // Redirect based on user role if they're on the wrong dashboard
+        if (data.role === 'SPECIALIST') {
+          router.push(`/${locale}/specialist-dashboard`);
+          return;
+        } else if (data.role === 'CLIENT') {
           router.push(`/${locale}/dashboard`);
           return;
         }

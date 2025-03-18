@@ -9,13 +9,18 @@ import Link from 'next/link';
 interface UserData {
   id: string;
   name: string;
-  email: string;
+  surname: string;
+  email: string | null;
+  phoneNumber: string | null;
+  role: string;
   createdAt: string;
 }
 
 interface FormData {
   name: string;
+  surname: string;
   email: string;
+  phoneNumber: string;
 }
 
 export default function Profile() {
@@ -30,9 +35,13 @@ export default function Profile() {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    email: ''
+    surname: '',
+    email: '',
+    phoneNumber: ''
   });
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -57,7 +66,9 @@ export default function Profile() {
         setUserData(data);
         setFormData({
           name: data.name || '',
-          email: data.email || ''
+          surname: data.surname || '', 
+          email: data.email || '',
+          phoneNumber: data.phoneNumber || ''
         });
       } catch (error) {
         console.error('Profile data fetch error:', error);
@@ -76,10 +87,50 @@ export default function Profile() {
       ...prev,
       [name]: value
     }));
+
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    
+    if (!formData.name.trim()) {
+      errors.name = t('name_required');
+    }
+    
+    if (!formData.surname.trim()) {
+      errors.surname = t('surname_required');
+    }
+    
+    if (!formData.email.trim() && !formData.phoneNumber.trim()) {
+      errors.email = t('email_or_phone_required');
+    }
+    
+    if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = t('email_invalid');
+    }
+    
+    if (formData.phoneNumber.trim() && !/^\+?[0-9]{8,15}$/.test(formData.phoneNumber)) {
+      errors.phoneNumber = t('phone_invalid');
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
     
     try {
       const response = await fetch('/api/profile', {
@@ -88,7 +139,12 @@ export default function Profile() {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email || null,
+          phoneNumber: formData.phoneNumber || null
+        })
       });
       
       if (!response.ok) {
@@ -106,6 +162,8 @@ export default function Profile() {
     } catch (error) {
       console.error('Profile update error:', error);
       setError(t('errors.updateFailed'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -168,8 +226,10 @@ export default function Profile() {
               {userData?.name ? userData.name.charAt(0).toUpperCase() : '?'}
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">{userData?.name || t('unnamed')}</h1>
-              <p className="text-gray-400">{userData?.email}</p>
+              <h1 className="text-2xl font-bold text-white">{userData?.name} {userData?.surname}</h1>
+              <p className="text-gray-400">
+                {userData?.email || userData?.phoneNumber || t('contactNotProvided')}
+              </p>
             </div>
           </div>
           <div className="flex space-x-4">
@@ -201,6 +261,7 @@ export default function Profile() {
         
         {editMode ? (
           <form onSubmit={handleUpdateProfile} className="space-y-4">
+            {/* Name field */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
                 {t('name')}
@@ -213,8 +274,30 @@ export default function Profile() {
                 onChange={handleChange}
                 className="w-full rounded-md border border-gray-700 bg-[#1E1E1E] text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
               />
+              {formErrors.name && (
+                <p className="mt-1 text-sm text-red-400">{formErrors.name}</p>
+              )}
             </div>
             
+            {/* Surname field */}
+            <div>
+              <label htmlFor="surname" className="block text-sm font-medium text-gray-300 mb-1">
+                {t('surname')}
+              </label>
+              <input
+                id="surname"
+                name="surname"
+                type="text"
+                value={formData.surname}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-700 bg-[#1E1E1E] text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
+              />
+              {formErrors.surname && (
+                <p className="mt-1 text-sm text-red-400">{formErrors.surname}</p>
+              )}
+            </div>
+            
+            {/* Email field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
                 {t('email')}
@@ -227,14 +310,40 @@ export default function Profile() {
                 onChange={handleChange}
                 className="w-full rounded-md border border-gray-700 bg-[#1E1E1E] text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
               />
+              {formErrors.email && (
+                <p className="mt-1 text-sm text-red-400">{formErrors.email}</p>
+              )}
             </div>
+            
+            {/* Phone number field */}
+            <div>
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-300 mb-1">
+                {t('phoneNumber')}
+              </label>
+              <input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-700 bg-[#1E1E1E] text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
+              />
+              {formErrors.phoneNumber && (
+                <p className="mt-1 text-sm text-red-400">{formErrors.phoneNumber}</p>
+              )}
+            </div>
+            
+            <p className="text-sm text-gray-400">
+              {t('contactRequirement')}
+            </p>
             
             <div className="flex space-x-4 pt-4">
               <button
                 type="submit"
-                className="px-4 py-2 bg-[#E63946] text-white rounded-md hover:bg-[#FF4D5A] transition-colors"
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-[#E63946] text-white rounded-md hover:bg-[#FF4D5A] transition-colors disabled:opacity-50"
               >
-                {t('saveChanges')}
+                {isSubmitting ? t('saving') : t('saveChanges')}
               </button>
               <button
                 type="button"
@@ -242,8 +351,11 @@ export default function Profile() {
                   setEditMode(false);
                   setFormData({
                     name: userData?.name || '',
-                    email: userData?.email || ''
+                    surname: userData?.surname || '',
+                    email: userData?.email || '',
+                    phoneNumber: userData?.phoneNumber || ''
                   });
+                  setFormErrors({});
                 }}
                 className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
               >
@@ -259,8 +371,23 @@ export default function Profile() {
             </div>
             
             <div>
+              <h3 className="text-sm font-medium text-gray-400">{t('surname')}</h3>
+              <p className="mt-1 text-lg text-white">{userData?.surname || t('notProvided')}</p>
+            </div>
+            
+            <div>
               <h3 className="text-sm font-medium text-gray-400">{t('email')}</h3>
-              <p className="mt-1 text-lg text-white">{userData?.email}</p>
+              <p className="mt-1 text-lg text-white">{userData?.email || t('notProvided')}</p>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium text-gray-400">{t('phoneNumber')}</h3>
+              <p className="mt-1 text-lg text-white">{userData?.phoneNumber || t('notProvided')}</p>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium text-gray-400">{t('role')}</h3>
+              <p className="mt-1 text-lg text-white">{userData?.role || t('unknown')}</p>
             </div>
             
             <div>

@@ -3,7 +3,6 @@ import prisma from '@lib/prisma';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-// GET route (existing)
 export async function GET() {
   try {
     const cookieStore = await cookies();
@@ -76,9 +75,9 @@ export async function PUT(request) {
 
     const userData = await request.json();
     
-    if (!userData.name || !userData.email) {
+    if (!userData.name || (!userData.email && !userData.phoneNumber)) {
       return NextResponse.json(
-        { message: 'Name and email are required' },
+        { message: 'Name and either email or phone number are required' },
         { status: 400 }
       );
     }
@@ -98,6 +97,22 @@ export async function PUT(request) {
         );
       }
     }
+    
+    if (userData.phoneNumber) {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          phoneNumber: userData.phoneNumber,
+          id: { not: decoded.userId }
+        }
+      });
+      
+      if (existingUser) {
+        return NextResponse.json(
+          { message: 'Phone number is already in use by another user' },
+          { status: 409 }
+        );
+      }
+    }
 
     const updatedUser = await prisma.user.update({
       where: {
@@ -105,7 +120,9 @@ export async function PUT(request) {
       },
       data: {
         name: userData.name,
-        email: userData.email
+        surname: userData.surname,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber
       }
     });
 

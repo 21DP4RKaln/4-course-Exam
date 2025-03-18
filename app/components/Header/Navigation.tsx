@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useParams, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
 
 export default function Navigation() {
@@ -12,6 +12,7 @@ export default function Navigation() {
   const pathname = usePathname();
   const locale = params.locale || 'en';
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
@@ -26,6 +27,21 @@ export default function Navigation() {
       });
       const data = await response.json();
       setIsAuthenticated(data.authenticated);
+      
+      if (data.authenticated) {
+        const profileResponse = await fetch('/api/profile', {
+          method: 'GET',
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          setUserRole(profileData.role);
+        }
+      }
     } catch (error) {
       console.error('Auth check error:', error);
       setIsAuthenticated(false);
@@ -127,7 +143,13 @@ export default function Navigation() {
               isAuthenticated ? (
                 <div className="flex items-center space-x-2">
                   <Link 
-                    href={`/${locale}/dashboard`}
+                    href={
+                      userRole === 'ADMIN' 
+                        ? `/${locale}/admin-dashboard` 
+                        : userRole === 'SPECIALIST'
+                          ? `/${locale}/specialist-dashboard`
+                          : `/${locale}/dashboard`
+                    }
                     className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
