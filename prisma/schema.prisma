@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,18 +9,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  CLIENT
+  SPECIALIST
+  ADMIN
+}
+
 model User {
   id                String             @id @default(uuid())
   name              String             @db.VarChar(30)
   surname           String             @db.VarChar(30)
   email             String             @unique @db.VarChar(50)
-  phoneNumber       String?            @unique @db.VarChar(20)  // Added phone number field
+  phoneNumber       String?            @unique @db.VarChar(20)
   password          String             @db.VarChar(255)
+  role              UserRole           @default(CLIENT)  
+  blocked           Boolean            @default(false)   
   registrationDate  DateTime           @default(now())
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  configurations    Configuration[]
+  configurations    Configuration[]    @relation("CreatedBy")
   serviceOrders     ServiceOrder[]
+  approvedConfigs   Configuration[]    @relation("ApprovedBy")
+  statusChanges     StatusChange[]
+  statusUpdates     StatusUpdate[]
 }
 
 model Component {
@@ -29,23 +42,28 @@ model Component {
   price                Decimal              @db.Decimal(10, 2)
   specifications       String               @db.Text
   availabilityStatus   String               @default("pieejams")
-  configurations       Configuration[]
+  configurations       Configuration[]      @relation("ComponentToConfiguration")
   serviceComponents    ServiceComponent[]
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
+  addedById            String?              // Admin who added this component
 }
 
 model Configuration {
-  id          String       @id @default(uuid())
-  name        String       @db.VarChar(50)
-  userId      String
-  user        User         @relation(fields: [userId], references: [id])
-  components  Component[]
-  totalPrice  Decimal      @db.Decimal(10, 2)
-  status      String       @default("saglabāts")
-  order       Order?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id               String       @id @default(uuid())
+  name             String       @db.VarChar(50)
+  userId           String
+  user             User         @relation("CreatedBy", fields: [userId], references: [id])
+  components       Component[]  @relation("ComponentToConfiguration")
+  totalPrice       Decimal      @db.Decimal(10, 2)
+  status           String       @default("saglabāts")
+  isPublic         Boolean      @default(false)
+  approvedById     String?
+  approvedBy       User?        @relation("ApprovedBy", fields: [approvedById], references: [id])
+  approvedAt       DateTime?
+  order            Order?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 }
 
 model Order {
@@ -56,8 +74,20 @@ model Order {
   orderDate        DateTime       @default(now())
   totalAmount      Decimal        @db.Decimal(10, 2)
   status           String         @default("jauns")
+  statusChanges    StatusChange[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+}
+
+model StatusChange {
+  id           String   @id @default(uuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id])
+  oldStatus    String
+  newStatus    String
+  changedById  String
+  changedBy    User     @relation(fields: [changedById], references: [id])
+  createdAt    DateTime @default(now())
 }
 
 model ServiceOrder {
@@ -71,8 +101,20 @@ model ServiceOrder {
   deliveryDate       DateTime?
   completionDate     DateTime?
   serviceComponents  ServiceComponent[]
+  statusUpdates      StatusUpdate[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
+}
+
+model StatusUpdate {
+  id              String        @id @default(uuid())
+  serviceOrderId  String
+  serviceOrder    ServiceOrder  @relation(fields: [serviceOrderId], references: [id])
+  oldStatus       String
+  newStatus       String
+  updatedById     String
+  updatedBy       User          @relation(fields: [updatedById], references: [id])
+  createdAt       DateTime      @default(now())
 }
 
 model ServiceComponent {
@@ -83,7 +125,7 @@ model ServiceComponent {
   component          Component         @relation(fields: [componentId], references: [id])
   damageType         String            @db.VarChar(100)
   requiredWork       String            @db.Text
-  workAmount         Int               // Minūtes
+  workAmount         Int               // Minutes
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
 }

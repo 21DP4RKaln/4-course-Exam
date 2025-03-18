@@ -36,6 +36,14 @@ export async function POST(request) {
         { status: 401 }
       );
     }
+    
+    if (user.blocked) {
+      console.log('User is blocked');
+      return NextResponse.json(
+        { message: 'This account has been blocked' },
+        { status: 403 }
+      );
+    }
 
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
@@ -48,7 +56,8 @@ export async function POST(request) {
 
     const payload = { 
       userId: user.id,
-      email: user.email
+      email: user.email,
+      role: user.role
     };
     
     const token = await signJwtToken(payload);
@@ -61,7 +70,8 @@ export async function POST(request) {
           email: user.email,
           name: user.name,
           surname: user.surname,
-          phoneNumber: user.phoneNumber
+          phoneNumber: user.phoneNumber,
+          role: user.role
         }
       },
       { status: 200 }

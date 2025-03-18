@@ -6,10 +6,10 @@ import { verifyJwtToken } from './lib/edgeJWT';
 async function verifyToken(token) {
   try {
     const payload = await verifyJwtToken(token);
-    return payload !== null;
+    return payload;
   } catch (error) {
     console.error('Token verification failed:', error.message);
-    return false;
+    return null;
   }
 }
 
@@ -30,6 +30,18 @@ export default async function middleware(request) {
     '/models',
     '/peripherals',
     '/help'
+  ];
+  
+  const specialistPaths = [
+    '/specialist-dashboard',
+    '/approve-configs',
+    '/service-orders'
+  ];
+  
+  const adminPaths = [
+    '/admin-dashboard',
+    '/manage-users',
+    '/manage-components'
   ];
   
   if (pathname.startsWith('/api/') || 
@@ -59,14 +71,34 @@ export default async function middleware(request) {
   
   const token = request.cookies.get('token')?.value;
   
-  if (!token || !(await verifyToken(token))) {
-    console.log(`Access denied to ${pathname} - No valid token`);
+  if (!token) {
+    console.log(`Access denied to ${pathname} - No token`);
     const loginUrl = new URL(`/${locale}/login`, request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }
   
-  console.log(`Access granted to ${pathname} - Valid token`);
+  const payload = await verifyToken(token);
+  if (!payload) {
+    console.log(`Access denied to ${pathname} - Invalid token`);
+    const loginUrl = new URL(`/${locale}/login`, request.url);
+    loginUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+  
+  if (specialistPaths.some(path => pathWithoutLocale.startsWith(path)) && 
+      !['SPECIALIST', 'ADMIN'].includes(payload.role)) {
+    console.log(`Access denied to ${pathname} - Insufficient permissions`);
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+  }
+  
+  if (adminPaths.some(path => pathWithoutLocale.startsWith(path)) && 
+      payload.role !== 'ADMIN') {
+    console.log(`Access denied to ${pathname} - Insufficient permissions`);
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+  }
+  
+  console.log(`Access granted to ${pathname} - Valid token, role: ${payload.role}`);
   return response;
 }
 

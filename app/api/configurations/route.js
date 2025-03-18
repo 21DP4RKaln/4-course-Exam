@@ -67,7 +67,7 @@ export async function POST(request) {
     }
     
     const data = await request.json();
-    const { name, components, status = 'draft' } = data;
+    const { name, components, status = 'draft', isPublic = false } = data;
     
     if (!name) {
       return NextResponse.json(
@@ -102,11 +102,14 @@ export async function POST(request) {
     
     const totalPrice = validComponents.reduce((sum, component) => sum + component.price, 0);
     
+    const configStatus = isPublic ? 'awaiting_approval' : status;
+    
     const newConfiguration = await prisma.configuration.create({
       data: {
         name,
         userId,
-        status,
+        status: configStatus,
+        isPublic,
         totalPrice,
         components: {
           connect: validComponents.map(component => ({ id: component.id }))
@@ -125,4 +128,4 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-}
+ }

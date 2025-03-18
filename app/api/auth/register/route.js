@@ -20,45 +20,6 @@ export async function POST(request) {
       );
     }
 
-    if (email && !/\S+@\S+\.\S+/.test(email)) {
-      return NextResponse.json(
-        { message: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    if (phoneNumber && !/^\+?[0-9]{8,15}$/.test(phoneNumber)) {
-      return NextResponse.json(
-        { message: 'Invalid phone number format' },
-        { status: 400 }
-      );
-    }
-
-    if (email) {
-      const existingUserByEmail = await prisma.user.findUnique({
-        where: { email },
-      });
-
-      if (existingUserByEmail) {
-        return NextResponse.json(
-          { message: 'User with this email already exists' },
-          { status: 409 }
-        );
-      }
-    }
-
-    if (phoneNumber) {
-      const existingUserByPhone = await prisma.user.findFirst({
-        where: { phoneNumber },
-      });
-
-      if (existingUserByPhone) {
-        return NextResponse.json(
-          { message: 'User with this phone number already exists' },
-          { status: 409 }
-        );
-      }
-    }
 
     const hashedPassword = await hash(password, 10);
 
@@ -70,6 +31,7 @@ export async function POST(request) {
         email: email || null, 
         phoneNumber: phoneNumber || null, 
         password: hashedPassword,
+        role: 'CLIENT',
       },
     });
 
@@ -77,7 +39,8 @@ export async function POST(request) {
 
     const payload = { 
       userId: user.id,
-      email: user.email
+      email: user.email,
+      role: user.role
     };
     
     const token = await signJwtToken(payload);
