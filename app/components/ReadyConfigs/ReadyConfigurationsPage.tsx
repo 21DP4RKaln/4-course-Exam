@@ -8,19 +8,19 @@ import { useParams } from 'next/navigation';
 import { ContactModal } from '../ui/ContactModal';
 import { useCart } from '../../contexts/CartContext';
 
-interface Configuration {
-  id: string;
-  name: string;
-  totalPrice: number;
-  components: Component[];
-}
-
 interface Component {
   id: string;
   name: string;
   manufacturer: string;
   category: string;
   price: number;
+}
+
+interface Configuration {
+  id: string;
+  name: string;
+  totalPrice: number;
+  components: Component[];
 }
 
 export default function ReadyConfigurationsPage() {
@@ -39,63 +39,81 @@ export default function ReadyConfigurationsPage() {
   const { addItem } = useCart();
   
   useEffect(() => {
-    const mockConfigurations = [
-      {
-        id: 'config1',
-        name: 'Gaming Pro X',
-        totalPrice: 1299.99,
-        components: [
-          { id: 'cpu1', name: 'Intel Core i7-13700K', manufacturer: 'Intel', category: 'CPU', price: 419.99 },
-          { id: 'gpu1', name: 'NVIDIA GeForce RTX 4070', manufacturer: 'NVIDIA', category: 'GPU', price: 599.99 },
-          { id: 'ram1', name: 'Kingston FURY Beast DDR5 (2x16GB)', manufacturer: 'Kingston', category: 'RAM', price: 159.99 },
-          { id: 'ssd1', name: 'Samsung 970 EVO Plus 1TB', manufacturer: 'Samsung', category: 'SSD', price: 89.99 },
-          { id: 'psu1', name: 'Corsair RM750x', manufacturer: 'Corsair', category: 'PSU', price: 129.99 },
-          { id: 'case1', name: 'NZXT H7 Flow', manufacturer: 'NZXT', category: 'Case', price: 129.99 }
-        ]
-      },
-      {
-        id: 'config2',
-        name: 'Budget Gamer',
-        totalPrice: 799.99,
-        components: [
-          { id: 'cpu2', name: 'AMD Ryzen 5 7600X', manufacturer: 'AMD', category: 'CPU', price: 299.99 },
-          { id: 'gpu2', name: 'NVIDIA GeForce RTX 4060', manufacturer: 'NVIDIA', category: 'GPU', price: 299.99 },
-          { id: 'ram2', name: 'Corsair Vengeance DDR4 (2x8GB)', manufacturer: 'Corsair', category: 'RAM', price: 69.99 },
-          { id: 'ssd2', name: 'Crucial MX500 1TB', manufacturer: 'Crucial', category: 'SSD', price: 69.99 },
-          { id: 'psu2', name: 'EVGA 650 BQ', manufacturer: 'EVGA', category: 'PSU', price: 89.99 },
-          { id: 'case2', name: 'Corsair 4000D Airflow', manufacturer: 'Corsair', category: 'Case', price: 104.99 }
-        ]
-      },
-      {
-        id: 'config3',
-        name: 'Content Creator Pro',
-        totalPrice: 2499.99,
-        components: [
-          { id: 'cpu3', name: 'AMD Ryzen 9 7950X', manufacturer: 'AMD', category: 'CPU', price: 699.99 },
-          { id: 'gpu3', name: 'NVIDIA GeForce RTX 4080', manufacturer: 'NVIDIA', category: 'GPU', price: 1199.99 },
-          { id: 'ram3', name: 'G.Skill Trident Z RGB DDR5 (2x32GB)', manufacturer: 'G.Skill', category: 'RAM', price: 299.99 },
-          { id: 'ssd3', name: 'WD Black SN850X 2TB', manufacturer: 'Western Digital', category: 'SSD', price: 149.99 },
-          { id: 'psu3', name: 'be quiet! Straight Power 11 1000W', manufacturer: 'be quiet!', category: 'PSU', price: 169.99 },
-          { id: 'case3', name: 'Lian Li O11 Dynamic', manufacturer: 'Lian Li', category: 'Case', price: 149.99 }
-        ]
-      },
-      {
-        id: 'config4',
-        name: 'Office Pro',
-        totalPrice: 599.99,
-        components: [
-          { id: 'cpu4', name: 'Intel Core i3-12100F', manufacturer: 'Intel', category: 'CPU', price: 109.99 },
-          { id: 'gpu4', name: 'Intel UHD Graphics 730', manufacturer: 'Intel', category: 'GPU', price: 0 },
-          { id: 'ram4', name: 'Crucial 16GB DDR4', manufacturer: 'Crucial', category: 'RAM', price: 59.99 },
-          { id: 'ssd4', name: 'Kingston A2000 500GB', manufacturer: 'Kingston', category: 'SSD', price: 59.99 },
-          { id: 'psu4', name: 'EVGA 500W', manufacturer: 'EVGA', category: 'PSU', price: 49.99 },
-          { id: 'case4', name: 'Fractal Design Focus G', manufacturer: 'Fractal Design', category: 'Case', price: 59.99 }
-        ]
+    const fetchConfigurations = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/public-configurations');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch ready configurations');
+        }
+        
+        const data = await response.json();
+        setConfigs(data);
+      } catch (error) {
+        console.error('Failed to fetch configurations:', error);
+        const mockConfigurations = [
+          {
+            id: 'config1',
+            name: 'Gaming Pro X',
+            totalPrice: 1299.99,
+            components: [
+              { id: 'cpu1', name: 'Intel Core i7-13700K', manufacturer: 'Intel', category: 'CPU', price: 419.99 },
+              { id: 'gpu1', name: 'NVIDIA GeForce RTX 4070', manufacturer: 'NVIDIA', category: 'GPU', price: 599.99 },
+              { id: 'ram1', name: 'Kingston FURY Beast DDR5 (2x16GB)', manufacturer: 'Kingston', category: 'RAM', price: 159.99 },
+              { id: 'ssd1', name: 'Samsung 970 EVO Plus 1TB', manufacturer: 'Samsung', category: 'SSD', price: 89.99 },
+              { id: 'psu1', name: 'Corsair RM750x', manufacturer: 'Corsair', category: 'PSU', price: 129.99 },
+              { id: 'case1', name: 'NZXT H7 Flow', manufacturer: 'NZXT', category: 'Case', price: 129.99 }
+            ]
+          },
+          {
+            id: 'config2',
+            name: 'Budget Gamer',
+            totalPrice: 799.99,
+            components: [
+              { id: 'cpu2', name: 'AMD Ryzen 5 7600X', manufacturer: 'AMD', category: 'CPU', price: 299.99 },
+              { id: 'gpu2', name: 'NVIDIA GeForce RTX 4060', manufacturer: 'NVIDIA', category: 'GPU', price: 299.99 },
+              { id: 'ram2', name: 'Corsair Vengeance DDR4 (2x8GB)', manufacturer: 'Corsair', category: 'RAM', price: 69.99 },
+              { id: 'ssd2', name: 'Crucial MX500 1TB', manufacturer: 'Crucial', category: 'SSD', price: 69.99 },
+              { id: 'psu2', name: 'EVGA 650 BQ', manufacturer: 'EVGA', category: 'PSU', price: 89.99 },
+              { id: 'case2', name: 'Corsair 4000D Airflow', manufacturer: 'Corsair', category: 'Case', price: 104.99 }
+            ]
+          },
+          {
+            id: 'config3',
+            name: 'Content Creator Pro',
+            totalPrice: 2499.99,
+            components: [
+              { id: 'cpu3', name: 'AMD Ryzen 9 7950X', manufacturer: 'AMD', category: 'CPU', price: 699.99 },
+              { id: 'gpu3', name: 'NVIDIA GeForce RTX 4080', manufacturer: 'NVIDIA', category: 'GPU', price: 1199.99 },
+              { id: 'ram3', name: 'G.Skill Trident Z RGB DDR5 (2x32GB)', manufacturer: 'G.Skill', category: 'RAM', price: 299.99 },
+              { id: 'ssd3', name: 'WD Black SN850X 2TB', manufacturer: 'Western Digital', category: 'SSD', price: 149.99 },
+              { id: 'psu3', name: 'be quiet! Straight Power 11 1000W', manufacturer: 'be quiet!', category: 'PSU', price: 169.99 },
+              { id: 'case3', name: 'Lian Li O11 Dynamic', manufacturer: 'Lian Li', category: 'Case', price: 149.99 }
+            ]
+          },
+          {
+            id: 'config4',
+            name: 'Office Pro',
+            totalPrice: 599.99,
+            components: [
+              { id: 'cpu4', name: 'Intel Core i3-12100F', manufacturer: 'Intel', category: 'CPU', price: 109.99 },
+              { id: 'gpu4', name: 'Intel UHD Graphics 730', manufacturer: 'Intel', category: 'GPU', price: 0 },
+              { id: 'ram4', name: 'Crucial 16GB DDR4', manufacturer: 'Crucial', category: 'RAM', price: 59.99 },
+              { id: 'ssd4', name: 'Kingston A2000 500GB', manufacturer: 'Kingston', category: 'SSD', price: 59.99 },
+              { id: 'psu4', name: 'EVGA 500W', manufacturer: 'EVGA', category: 'PSU', price: 49.99 },
+              { id: 'case4', name: 'Fractal Design Focus G', manufacturer: 'Fractal Design', category: 'Case', price: 59.99 }
+            ]
+          }
+        ];
+        
+        setConfigs(mockConfigurations);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
     
-    setConfigs(mockConfigurations);
-    setLoading(false);
+    fetchConfigurations();
   }, []);
 
   const getFilteredConfigs = () => {

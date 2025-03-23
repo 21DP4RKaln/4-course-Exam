@@ -5,11 +5,13 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 
 interface UserData {
   id: string;
   name: string;
   email: string;
+  profilePicture: string | null;
   role: string;
   createdAt: string;
   configurations?: Configuration[];
@@ -172,6 +174,26 @@ export default function Dashboard() {
     }
   };
 
+  const renderProfileImage = () => {
+    if (userData?.profilePicture) {
+      return (
+        <div className="w-20 h-20 relative overflow-hidden rounded-full border-2 border-gray-700">
+          <img 
+            src={userData.profilePicture} 
+            alt={`${userData.name}'s profile`}
+            className="absolute w-full h-full object-cover"
+          />
+        </div>
+      );
+    }
+    
+    return (
+      <div className="w-20 h-20 bg-[#E63946] rounded-full flex items-center justify-center text-white text-2xl font-bold">
+        {userData?.name ? userData.name.charAt(0).toUpperCase() : '?'}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -201,9 +223,7 @@ export default function Dashboard() {
       <div className="bg-[#2A2A2A] rounded-lg shadow-lg p-6 mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-20 h-20 bg-[#E63946] rounded-full flex items-center justify-center text-white text-2xl font-bold">
-              {userData?.name ? userData.name.charAt(0).toUpperCase() : '?'}
-            </div>
+            {renderProfileImage()}
             <div>
               <h1 className="text-2xl font-bold text-white">{userData?.name || t('unnamed')}</h1>
               <p className="text-gray-400">{userData?.email}</p>

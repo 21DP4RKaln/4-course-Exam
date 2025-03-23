@@ -221,7 +221,14 @@
     "dashboard": "Dashboard",
     "logout": "Log out",
     "unnamed": "Unnamed User",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "changePicture": "Change profile picture",
+    "addPicture": "Add profile picture",
+    "uploadingPicture": "Uploading profile picture...",
+    "pictureTypeError": "Only image files are allowed",
+    "pictureSizeError": "The image must be smaller than 2MB",
+    "pictureUploadError": "Failed to upload profile picture",
+    "pictureUpdated": "Profile picture successfully updated"
   },
   "admin": {
     "welcomeMessage": "Welcome",

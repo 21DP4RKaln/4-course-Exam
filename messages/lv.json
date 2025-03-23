@@ -221,7 +221,14 @@
     "dashboard": "Informācijas panelis",
     "logout": "Izrakstīties",
     "unnamed": "Nenosaukts Lietotājs",
-    "backToLogin": "Atpakaļ uz ielogošanos"
+    "backToLogin": "Atpakaļ uz ielogošanos",
+    "changePicture": "Mainīt profila attēlu",
+    "addPicture": "Pievienot profila attēlu",
+    "uploadingPicture": "Augšupielādē profila attēlu...",
+    "pictureTypeError": "Atļauti tikai attēlu faili",
+    "pictureSizeError": "Attēlam jābūt mazākam par 2MB",
+    "pictureUploadError": "Neizdevās augšupielādēt profila attēlu",
+    "pictureUpdated": "Profila attēls veiksmīgi atjaunināts"
   },
   "admin": {
     "welcomeMessage": "Laipni lūgti",

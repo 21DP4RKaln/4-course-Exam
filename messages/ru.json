@@ -221,7 +221,14 @@
     "dashboard": "Панель управления",
     "logout": "Выйти",
     "unnamed": "Безымянный пользователь",
-    "backToLogin": "Вернуться ко входу"
+    "backToLogin": "Вернуться ко входу",
+    "changePicture": "Изменить фото профиля",
+    "addPicture": "Добавить фото профиля",
+    "uploadingPicture": "Загрузка фото профиля...",
+    "pictureTypeError": "Разрешены только файлы изображений",
+    "pictureSizeError": "Изображение должно быть меньше 2 МБ",
+    "pictureUploadError": "Не удалось загрузить фото профиля",
+    "pictureUpdated": "Фото профиля успешно обновлено"
   },
   "admin": {
     "welcomeMessage": "Добро пожаловать",
