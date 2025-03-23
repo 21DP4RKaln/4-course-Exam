@@ -3,6 +3,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import Header from './Header/Header';
 import Footer from './Footer/Footer';
+import { CartProvider } from '../contexts/CartContext';
 
 type Messages = Record<string, Record<string, string>>;
 
@@ -19,9 +20,11 @@ export default function ClientLayout({ children, messages, locale }: ClientLayou
       locale={locale}
       timeZone="Europe/Riga"
     >
-      <Header />
-      <main>{children}</main>
-      <Footer />
+      <CartProvider>
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </CartProvider>
     </NextIntlClientProvider>
   );
 }

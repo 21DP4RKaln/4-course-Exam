@@ -27,7 +27,7 @@ export default function AdminDashboard() {
   const t = useTranslations('admin');
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale || 'lv';
+  const locale = params.locale || 'en';
   
   const [userData, setUserData] = useState<UserData | null>(null);
   const [users, setUsers] = useState<User[]>([]);

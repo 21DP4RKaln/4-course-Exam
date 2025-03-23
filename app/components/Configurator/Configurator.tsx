@@ -10,6 +10,7 @@ import SelectedComponents from './SelectedComponents';
 import ConfigurationSummary from './ConfigurationSummary';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import ErrorMessage from '../ui/ErrorMessage';
+import { useCart } from '../../contexts/CartContext';
 
 interface Component {
   id: string;
@@ -26,6 +27,7 @@ export default function Configurator() {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale || 'lv';
+  const { addItem } = useCart();
   
   const [components, setComponents] = useState<Component[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +39,7 @@ export default function Configurator() {
   const [configName, setConfigName] = useState('');
   const [savingConfig, setSavingConfig] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const categories = [
     { key: 'CPU', label: t('categories.cpu') },
@@ -76,6 +79,25 @@ export default function Configurator() {
     };
 
     fetchComponents();
+    
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/check', {
+          method: 'GET',
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        const data = await response.json();
+        setIsAuthenticated(data.authenticated);
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setIsAuthenticated(false);
+      }
+    };
+    
+    checkAuth();
   }, [t]);
 
   const filteredComponents = components.filter(component => 
@@ -117,6 +139,14 @@ export default function Configurator() {
       return;
     }
 
+    if (!isAuthenticated) {
+      if (confirm(t('authNeededForSave'))) {
+        router.push(`/${locale}/login?redirect=configurator`);
+        return;
+      }
+      return;
+    }
+
     try {
       setSavingConfig(true);
       
@@ -147,6 +177,27 @@ export default function Configurator() {
     } finally {
       setSavingConfig(false);
     }
+  };
+  
+  const handleAddToCart = () => {
+    if (Object.values(selectedComponents).length === 0) {
+      alert(t('errors.noComponents'));
+      return;
+    }
+
+    if (!configName.trim()) {
+      alert(t('errors.noName'));
+      return;
+    }
+    
+    addItem({
+      id: `custom-${Date.now()}`, 
+      name: configName,
+      price: calculateTotalPrice(),
+      type: 'custom'
+    });
+    
+    alert(t('addedToCart'));
   };
 
   if (loading) {
@@ -198,13 +249,22 @@ export default function Configurator() {
               />
             </div>
             
-            <button
-              onClick={saveConfiguration}
-              disabled={savingConfig}
-              className="w-full bg-[#E63946] hover:bg-[#FF4D5A] text-white rounded-lg py-3 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {savingConfig ? t('actions.saving') : t('actions.save')}
-            </button>
+            <div className="flex space-x-4">
+              <button
+                onClick={saveConfiguration}
+                disabled={savingConfig}
+                className="flex-1 bg-[#E63946] hover:bg-[#FF4D5A] text-white rounded-lg py-3 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingConfig ? t('actions.saving') : t('actions.save')}
+              </button>
+              
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg py-3 font-medium"
+              >
+                {t('actions.addToCart')}
+              </button>
+            </div>
           </div>
           
           {/* Right sidebar - Selected components summary */}

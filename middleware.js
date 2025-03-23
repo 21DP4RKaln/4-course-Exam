@@ -29,7 +29,9 @@ export default async function middleware(request) {
     '/about',
     '/models',
     '/peripherals',
-    '/help'
+    '/help',
+    '/ready-configs',   
+    '/configurator'     
   ];
   
   const specialistPaths = [

@@ -19,7 +19,7 @@ export default function NewComponent() {
   const t = useTranslations('components');
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale || 'lv';
+  const locale = params.locale || 'en';
   
   const [formData, setFormData] = useState<ComponentFormData>({
     name: '',

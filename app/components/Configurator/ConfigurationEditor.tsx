@@ -33,7 +33,7 @@ export default function ConfigurationEditor() {
   const t = useTranslations('configurator');
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale as string || 'lv';
+  const locale = params.locale as string || 'en';
   const configId = params.id as string;
   
   const [loading, setLoading] = useState(true);

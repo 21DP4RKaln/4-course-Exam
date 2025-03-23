@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
@@ -10,6 +10,8 @@ export default function LoginPage() {
   const pathname = usePathname();
   const segments = pathname.split('/');
   const locale = segments[1]; 
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect');
 
   const [formData, setFormData] = useState({
     identifier: '',
@@ -83,7 +85,10 @@ export default function LoginPage() {
         });
         
         setTimeout(() => {
-          if (userRole === 'ADMIN') {
+          if (redirectPath) {
+            console.log(`Redirecting to ${redirectPath}`);
+            router.push(`/${locale}/${redirectPath}`);
+          } else if (userRole === 'ADMIN') {
             console.log("Redirecting to admin dashboard");
             router.push(`/${locale}/admin-dashboard`);
           } else if (userRole === 'SPECIALIST') {

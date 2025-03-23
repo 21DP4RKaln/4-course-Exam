@@ -30,7 +30,7 @@ export default function SpecialistDashboard() {
   const t = useTranslations('specialist');
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale || 'lv';
+  const locale = params.locale || 'en';
   
   const [userData, setUserData] = useState<UserData | null>(null);
   const [pendingConfigs, setPendingConfigs] = useState<Configuration[]>([]);

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ContactModal } from '../ui/ContactModal';
+import { useCart } from '../../contexts/CartContext';
 
 interface Configuration {
   id: string;
@@ -35,10 +36,9 @@ export default function ReadyConfigurationsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
+  const { addItem } = useCart();
   
-  // Simulētas gatavās konfigurācijas
   useEffect(() => {
-    // Šeit varētu būt API pieprasījums, bet pagaidām izmantosim fiksētus datus
     const mockConfigurations = [
       {
         id: 'config1',
@@ -100,14 +100,12 @@ export default function ReadyConfigurationsPage() {
 
   const getFilteredConfigs = () => {
     return configs.filter(config => {
-      // Kategorijas filtrs
       if (selectedFilter !== 'all') {
         if (selectedFilter === 'gaming' && config.totalPrice < 900) return false;
         if (selectedFilter === 'office' && config.totalPrice > 900) return false;
         if (selectedFilter === 'workstation' && config.totalPrice < 1800) return false;
       }
       
-      // Cenas filtrs
       if (config.totalPrice < priceRange[0] || config.totalPrice > priceRange[1]) return false;
       
       return true;
@@ -121,6 +119,17 @@ export default function ReadyConfigurationsPage() {
     } catch (e) {
       return category;
     }
+  };
+  
+  const handleAddToCart = (config: Configuration) => {
+    addItem({
+      id: config.id,
+      name: config.name,
+      price: config.totalPrice,
+      type: 'ready'
+    });
+    
+    alert(t('addedToCart'));
   };
 
   if (loading) {
@@ -258,16 +267,16 @@ export default function ReadyConfigurationsPage() {
                       
                       <div className="flex space-x-2 mt-4">
                         <button 
-                          onClick={() => setIsModalOpen(true)}
+                          onClick={() => handleAddToCart(config)}
                           className="flex-1 px-4 py-2 bg-[#E63946] text-white rounded-md hover:bg-[#FF4D5A] transition-colors"
                         >
-                          Pasūtīt
+                          {t('addToCart')}
                         </button>
                         <button 
                           onClick={() => router.push(`/${locale}/configurator`)}
                           className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
                         >
-                          Modificēt
+                          {t('customize')}
                         </button>
                       </div>
                     </div>

@@ -12,7 +12,7 @@ export default function ErrorMessage({ message }: ErrorMessageProps) {
   const t = useTranslations();
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale || 'lv';
+  const locale = params.locale || 'en';
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#1A1A1A]">

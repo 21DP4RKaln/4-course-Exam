@@ -36,7 +36,7 @@ export default function ApproveConfiguration() {
   const configT = useTranslations('configurator');
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale || 'lv';
+  const locale = params.locale || 'en';
   const configId = params.id as string;
   
   const [configuration, setConfiguration] = useState<Configuration | null>(null);
