@@ -78,7 +78,8 @@ export async function POST(request) {
         category,
         price,
         specifications,
-        availabilityStatus
+        availabilityStatus,
+        addedById: auth.userId
       }
     });
     

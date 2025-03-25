@@ -50,8 +50,17 @@ export default function ReadyConfigurationsPage() {
         
         const data = await response.json();
         setConfigs(data);
+        
+        if (data.length > 0) {
+          const prices = data.map((config: Configuration) => config.totalPrice);
+          const minPrice = Math.floor(Math.min(...prices));
+          const maxPrice = Math.ceil(Math.max(...prices));
+          setPriceRange([minPrice, maxPrice]);
+        }
       } catch (error) {
         console.error('Failed to fetch configurations:', error);
+        setError(t('errors.fetchFailed'));
+        
         const mockConfigurations = [
           {
             id: 'config1',
@@ -114,7 +123,7 @@ export default function ReadyConfigurationsPage() {
     };
     
     fetchConfigurations();
-  }, []);
+  }, [t]);
 
   const getFilteredConfigs = () => {
     return configs.filter(config => {
@@ -184,6 +193,16 @@ export default function ReadyConfigurationsPage() {
                   }`}
                   onClick={() => setSelectedFilter('all')}
                 >
+                  {t('categories.all')}
+                </button>
+                <button 
+                  className={`block w-full text-left mb-2 px-3 py-2 rounded ${
+                    selectedFilter === 'gaming' 
+                      ? 'bg-[#E63946] text-white' 
+                      : 'text-gray-300 hover:bg-gray-700'
+                  }`}
+                  onClick={() => setSelectedFilter('gaming')}
+                >
                   {t('categories.gaming')}
                 </button>
                 <button 
@@ -194,7 +213,7 @@ export default function ReadyConfigurationsPage() {
                   }`}
                   onClick={() => setSelectedFilter('office')}
                 >
-                  {t('categories.workstation')}
+                  {t('categories.office')}
                 </button>
                 <button 
                   className={`block w-full text-left mb-2 px-3 py-2 rounded ${
@@ -204,17 +223,7 @@ export default function ReadyConfigurationsPage() {
                   }`}
                   onClick={() => setSelectedFilter('workstation')}
                 >
-                  {t('categories.3dModeling')}
-                </button>
-                <button 
-                  className={`block w-full text-left mb-2 px-3 py-2 rounded ${
-                    selectedFilter === 'gaming' 
-                      ? 'bg-[#E63946] text-white' 
-                      : 'text-gray-300 hover:bg-gray-700'
-                  }`}
-                  onClick={() => setSelectedFilter('gaming')}
-                >
-                  {t('categories.streaming')}
+                  {t('categories.workstation')}
                 </button>
               </div>
               
@@ -303,7 +312,7 @@ export default function ReadyConfigurationsPage() {
               </div>
             ) : (
               <div className="bg-[#2A2A2A] rounded-lg p-8 text-center">
-                <p className="text-white">Nav atrasta neviena konfigurācija ar norādītajiem filtriem.</p>
+                <p className="text-white">{t('noResults')}</p>
               </div>
             )}
           </div>

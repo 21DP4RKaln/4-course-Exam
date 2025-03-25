@@ -212,7 +212,7 @@ export default function ComponentManagement() {
                     <div className="text-sm text-gray-300">{component.manufacturer}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">{t(`categories.${component.category.toLowerCase()}`)}</div>
+                    <div className="text-sm text-gray-300">{t(`categories.${component.category.toLowerCase().replace(/\s+/g, '')}`)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-white font-medium">{Number(component.price).toFixed(2)}</div>
