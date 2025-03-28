@@ -39,6 +39,7 @@ model Component {
   manufacturer         String               @db.VarChar(30)
   category             String               @db.VarChar(30)
   price                Decimal              @db.Decimal(10, 2)
+  productCode          String?              @db.VarChar(50)
   specifications       String               @db.Text
   availabilityStatus   String               @default("pieejams")
   configurations       Configuration[]      @relation("ComponentToConfiguration")

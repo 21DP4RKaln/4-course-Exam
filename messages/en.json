@@ -306,15 +306,24 @@
   "components": {
     "title": "Components",
     "addComponent": "Add Component",
+    "editComponent": "Edit Component",
     "name": "Name",
     "manufacturer": "Manufacturer",
     "category": "Category",
     "price": "Price",
+    "productCode": "Product Code",
     "availability": "Availability",
     "specifications": "Specifications",
+    "specificationsHelper": "Enter component specifications",
     "back": "Back",
     "save": "Save",
     "saving": "Saving...",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "confirmDelete": "Are you sure you want to delete this component?",
+    "noComponents": "No components found",
+    "allCategories": "All Categories",
+    "searchPlaceholder": "Search components...",
     "categories": {
       "cpu": "Processor",
       "gpu": "Graphics Card",
@@ -328,6 +337,60 @@
       "available": "Available",
       "unavailable": "Unavailable",
       "orderable": "Orderable"
+    },
+    "specs": {
+      "cpu": {
+        "cores": "Cores",
+        "threads": "Threads",
+        "frequency": "Base Frequency",
+        "boostFrequency": "Boost Frequency",
+        "socket": "Socket",
+        "tdp": "TDP",
+        "cache": "Cache"
+      },
+      "gpu": {
+        "vram": "VRAM",
+        "coreClock": "Core Clock",
+        "boostClock": "Boost Clock",
+        "tdp": "TDP",
+        "ports": "Ports",
+        "length": "Length"
+      },
+      "ram": {
+        "capacity": "Capacity",
+        "type": "Type",
+        "speed": "Speed",
+        "latency": "Latency",
+        "voltage": "Voltage"
+      },
+      "storage": {
+        "capacity": "Capacity",
+        "interface": "Interface",
+        "readSpeed": "Read Speed",
+        "writeSpeed": "Write Speed",
+        "formFactor": "Form Factor"
+      },
+      "psu": {
+        "wattage": "Wattage",
+        "efficiency": "Efficiency",
+        "modular": "Modularity",
+        "formFactor": "Form Factor"
+      },
+      "case": {
+        "formFactor": "Form Factor",
+        "motherboardSupport": "Motherboard Support",
+        "dimensions": "Dimensions",
+        "maxGpuLength": "Max GPU Length",
+        "maxCpuCoolerHeight": "Max CPU Cooler Height",
+        "includedFans": "Included Fans"
+      },
+      "cooling": {
+        "type": "Type",
+        "size": "Size",
+        "fanSize": "Fan Size",
+        "noise": "Noise Level",
+        "socketSupport": "Socket Support"
+      }
     },
     "errors": {
       "createFailed": "Failed to create component",

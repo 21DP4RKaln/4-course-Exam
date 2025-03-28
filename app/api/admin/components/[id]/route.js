@@ -70,7 +70,15 @@ export async function PUT(request, { params }) {
 
     const { id } = params;
     const body = await request.json();
-    const { name, manufacturer, category, price, specifications, availabilityStatus } = body;
+    const {
+      name,
+      manufacturer,
+      category,
+      price,
+      specifications,
+      productCode,
+      availabilityStatus
+    } = body;
     
     if (!name || !manufacturer || !category || !specifications || price === undefined) {
       return NextResponse.json(
@@ -87,6 +95,7 @@ export async function PUT(request, { params }) {
         category,
         price,
         specifications,
+        productCode,
         availabilityStatus,
         updatedAt: new Date()
       }

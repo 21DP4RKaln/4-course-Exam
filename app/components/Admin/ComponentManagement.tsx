@@ -12,9 +12,12 @@ interface Component {
   manufacturer: string;
   category: string;
   price: number;
+  productCode?: string;
   specifications: string;
   availabilityStatus: string;
 }
+
+type CategoryType = string;
 
 export default function ComponentManagement() {
   const t = useTranslations('components');
@@ -28,6 +31,8 @@ export default function ComponentManagement() {
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedComponent, setSelectedComponent] = useState<Component | null>(null);
+  const [showSpecsModal, setShowSpecsModal] = useState(false);
 
   useEffect(() => {
     fetchComponents();
@@ -83,12 +88,18 @@ export default function ComponentManagement() {
       }
     }
   };
+  
+  const handleViewSpecs = (component: Component) => {
+    setSelectedComponent(component);
+    setShowSpecsModal(true);
+  };
 
   const filteredComponents = components.filter(component => {
     const matchesCategory = categoryFilter === 'all' || component.category === categoryFilter;
     const matchesSearch = 
       component.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       component.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (component.productCode && component.productCode.toLowerCase().includes(searchTerm.toLowerCase())) ||
       component.specifications.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesCategory && matchesSearch;
@@ -104,6 +115,38 @@ export default function ComponentManagement() {
     { value: 'Case', label: t('categories.case') },
     { value: 'CPU Cooling', label: t('categories.cooling') }
   ];
+  
+  const formatSpecifications = (specifications: string) => {
+    try {
+      const specsObj = JSON.parse(specifications) as Record<string, string>;
+      return (
+        <div className="space-y-1">
+          {Object.entries(specsObj).map(([key, value]) => (
+            value ? (
+              <div key={key} className="text-xs">
+                <span className="text-gray-500">{getSpecLabel(key, selectedComponent?.category || '')}: </span>
+                <span className="text-white">{value}</span>
+              </div>
+            ) : null
+          ))}
+        </div>
+      );
+    } catch (e) {
+      return <p className="text-xs text-gray-300">{specifications}</p>;
+    }
+  };
+
+  const getSpecLabel = (key: string, category: string): string => {
+    const lowercaseCategory = category.toLowerCase().replace(/\s+/g, '');
+    try {
+      const translationKey = `specs.${lowercaseCategory}.${key}`;
+      if (t.raw(translationKey)) {
+        return t(translationKey);
+      }
+    } catch (e) {
+    }
+    return key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+  };
 
   if (loading) {
     return (
@@ -192,10 +235,16 @@ export default function ComponentManagement() {
                   {t('category')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  {t('productCode')}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   {t('price')} (€)
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   {t('availability')}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  {t('specifications')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
                   {t('actions')}
@@ -215,6 +264,9 @@ export default function ComponentManagement() {
                     <div className="text-sm text-gray-300">{t(`categories.${component.category.toLowerCase().replace(/\s+/g, '')}`)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-300">{component.productCode || "-"}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-white font-medium">{Number(component.price).toFixed(2)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -228,6 +280,14 @@ export default function ComponentManagement() {
                       {t(`statuses.${component.availabilityStatus === 'pieejams' ? 'available' : 
                                        component.availabilityStatus === 'pasūtāms' ? 'orderable' : 'unavailable'}`)}
                     </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button 
+                      onClick={() => handleViewSpecs(component)}
+                      className="text-blue-400 hover:text-blue-300"
+                    >
+                      {t('specifications')}
+                    </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
@@ -262,6 +322,53 @@ export default function ComponentManagement() {
           </div>
         )}
       </div>
+      
+      {/* Specifications Modal */}
+      {showSpecsModal && selectedComponent && (
+        <div 
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          onClick={() => setShowSpecsModal(false)}
+        >
+          <div 
+            className="bg-[#2A2A2A] rounded-lg p-6 max-w-lg w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-white">
+                {selectedComponent.name} - {t('specifications')}
+              </h3>
+              <button 
+                onClick={() => setShowSpecsModal(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="bg-[#1E1E1E] p-4 rounded-lg">
+              {selectedComponent.productCode && (
+                <div className="mb-2 pb-2 border-b border-gray-700">
+                  <span className="text-gray-400">{t('productCode')}: </span>
+                  <span className="text-white">{selectedComponent.productCode}</span>
+                </div>
+              )}
+              
+              {formatSpecifications(selectedComponent.specifications)}
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setShowSpecsModal(false)}
+                className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600"
+              >
+                {t('common.close')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

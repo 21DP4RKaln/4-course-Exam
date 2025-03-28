@@ -306,15 +306,24 @@
   "components": {
     "title": "Komponentes",
     "addComponent": "Pievienot komponenti",
+    "editComponent": "Rediģēt komponenti",
     "name": "Nosaukums",
     "manufacturer": "Ražotājs",
     "category": "Kategorija",
     "price": "Cena",
+    "productCode": "Preces kods",
     "availability": "Pieejamība",
     "specifications": "Specifikācijas",
+    "specificationsHelper": "Ievadiet komponenta specifikācijas",
     "back": "Atpakaļ",
     "save": "Saglabāt",
     "saving": "Saglabā...",
+    "delete": "Dzēst",
+    "deleting": "Dzēš...",
+    "confirmDelete": "Vai tiešām vēlaties dzēst šo komponenti?",
+    "noComponents": "Nav atrastu komponenšu",
+    "allCategories": "Visas kategorijas",
+    "searchPlaceholder": "Meklēt komponentes...",
     "categories": {
       "cpu": "Procesors",
       "gpu": "Videokarte",
@@ -328,6 +337,60 @@
       "available": "Pieejams",
       "unavailable": "Nav pieejams",
       "orderable": "Pasūtāms"
+    },
+    "specs": {
+      "cpu": {
+        "cores": "Kodoli",
+        "threads": "Pavedienu skaits",
+        "frequency": "Bāzes frekvence",
+        "boostFrequency": "Paātrināšanas frekvence",
+        "socket": "Ligzda",
+        "tdp": "TDP",
+        "cache": "Kešatmiņa"
+      },
+      "gpu": {
+        "vram": "Video atmiņa",
+        "coreClock": "Kodola takts frekvence",
+        "boostClock": "Paātrināšanas takts frekvence",
+        "tdp": "TDP",
+        "ports": "Porti",
+        "length": "Garums"
+      },
+      "ram": {
+        "capacity": "Ietilpība",
+        "type": "Tips",
+        "speed": "Ātrums",
+        "latency": "Latentums",
+        "voltage": "Spriegums"
+      },
+      "storage": {
+        "capacity": "Ietilpība",
+        "interface": "Interfeiss",
+        "readSpeed": "Lasīšanas ātrums",
+        "writeSpeed": "Rakstīšanas ātrums",
+        "formFactor": "Formas faktors"
+      },
+      "psu": {
+        "wattage": "Jauda",
+        "efficiency": "Efektivitāte",
+        "modular": "Modularitāte",
+        "formFactor": "Formas faktors"
+      },
+      "case": {
+        "formFactor": "Formas faktors",
+        "motherboardSupport": "Mātesplates atbalsts",
+        "dimensions": "Izmēri",
+        "maxGpuLength": "Maksimālais videokartes garums",
+        "maxCpuCoolerHeight": "Maksimālais procesora dzesētāja augstums",
+        "includedFans": "Iekļautie ventilatori"
+      },
+      "cooling": {
+        "type": "Tips",
+        "size": "Izmērs",
+        "fanSize": "Ventilatora izmērs",
+        "noise": "Trokšņa līmenis",
+        "socketSupport": "Ligzdas atbalsts"
+      }
     },
     "errors": {
       "createFailed": "Neizdevās izveidot komponenti",

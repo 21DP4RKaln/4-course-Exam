@@ -62,7 +62,15 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { name, manufacturer, category, price, specifications, availabilityStatus } = body;
+    const { 
+      name, 
+      manufacturer, 
+      category, 
+      price, 
+      specifications, 
+      productCode,
+      availabilityStatus 
+    } = body;
     
     if (!name || !manufacturer || !category || !specifications || price === undefined) {
       return NextResponse.json(
@@ -78,6 +86,7 @@ export async function POST(request) {
         category,
         price,
         specifications,
+        productCode,
         availabilityStatus,
         addedById: auth.userId
       }
