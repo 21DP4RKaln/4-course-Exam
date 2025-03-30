@@ -45,11 +45,13 @@ export default function ConfigurationEditor() {
   const [selectedComponents, setSelectedComponents] = useState<Record<string, Component>>({});
   const [configName, setConfigName] = useState('');
   const [savingConfig, setSavingConfig] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        
         const configResponse = await fetch(`/api/configurations/${configId}`, {
           cache: 'no-store',
           headers: {
@@ -151,7 +153,11 @@ export default function ConfigurationEditor() {
         throw new Error(t('errors.saveFailed'));
       }
 
-      router.push(`/${locale}/dashboard`);
+      setShowConfirmation(true);
+
+      setTimeout(() => {
+        router.push(`/${locale}/dashboard`);
+      }, 2000);
     } catch (error) {
       console.error('Error saving configuration:', error);
       setError(typeof error === 'string' ? error : t('errors.saveFailed'));
@@ -203,6 +209,7 @@ export default function ConfigurationEditor() {
               setConfigName={setConfigName}
               handleSaveConfig={handleSaveConfig}
               savingConfig={savingConfig}
+              isAuthenticated={true}  
             />
           </div>
           
@@ -219,6 +226,19 @@ export default function ConfigurationEditor() {
           </div>
         </div>
       </div>
+      
+      {/* Confirmation modal */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-[#2A2A2A] rounded-lg p-6 max-w-md w-full text-center">
+            <svg className="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <h2 className="text-xl font-bold text-white mb-2">{t('configUpdated')}</h2>
+            <p className="text-gray-400">{t('redirecting')}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

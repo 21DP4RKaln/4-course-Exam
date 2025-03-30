@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
 
 interface Component {
@@ -32,7 +30,7 @@ export default function ComponentList({
   };
 
   const formatSpecs = (specs: Record<string, any>) => {
-    return Object.entries(specs).map(([key, value]) => {
+    return Object.entries(specs).slice(0, 4).map(([key, value]) => {
       const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
       return { key: formattedKey, value };
     });

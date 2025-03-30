@@ -1,6 +1,3 @@
-// components/Configurator/ConfigurationForm.tsx
-'use client';
-
 import { useTranslations } from 'next-intl';
 
 interface ConfigFormProps {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Filter {
   cores?: string[];
@@ -33,6 +34,13 @@ const ComponentFilters = ({
   const [multiThreading, setMultiThreading] = useState<boolean>(filters.multithreading || false);
   const [selectedSockets, setSelectedSockets] = useState<string[]>(filters.socket || []);
   const [showMoreCores, setShowMoreCores] = useState(false);
+  const [filterSections, setFilterSections] = useState([
+    { name: 'price', open: true },
+    { name: 'cores', open: true },
+    { name: 'multithreading', open: true },
+    { name: 'socket', open: true },
+    { name: 'frequency', open: true }
+  ]);
 
   useEffect(() => {
     onFilterChange({
@@ -50,6 +58,12 @@ const ComponentFilters = ({
     setMultiThreading(filters.multithreading || false);
     setSelectedSockets(filters.socket || []);
   }, [filters, minPrice, maxPrice]);
+
+  const toggleFilterSection = (index: number) => {
+    const newSections = [...filterSections];
+    newSections[index].open = !newSections[index].open;
+    setFilterSections(newSections);
+  };
 
   const toggleCoreSelection = (core: string) => {
     setSelectedCores(prev => 
@@ -98,117 +112,165 @@ const ComponentFilters = ({
 
   const displayedCoreOptions = showMoreCores ? coreOptions : coreOptions.slice(0, 5);
 
-  if (category !== 'CPU') {
-    return (
-      <div className="bg-[#1E2039] rounded-lg p-4 mb-4">
-        {/* Price filter */}
-        <div className="mb-4">
-          <h3 className="text-white text-sm font-medium mb-2">Цена</h3>
-          <div className="flex items-center space-x-2">
+  return (
+    <div className="bg-[#211F38] rounded-lg overflow-hidden">
+      {/* Price Filter */}
+      <div className="border-b border-gray-700">
+        <div 
+          className="p-4 flex justify-between items-center cursor-pointer"
+          onClick={() => toggleFilterSection(0)}
+        >
+          <h3 className="text-white font-medium">Цена</h3>
+          {filterSections[0].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+        </div>
+        {filterSections[0].open && (
+          <div className="px-4 pb-4">
+            <div className="flex space-x-2 mb-3">
+              <input 
+                type="number" 
+                value={priceRange[0]} 
+                onChange={handlePriceMinChange}
+                className="w-full bg-[#1E1E1E] text-white rounded-md p-2 text-sm"
+                min="0"
+              />
+              <span className="text-gray-500 flex items-center">—</span>
+              <input 
+                type="number" 
+                value={priceRange[1]} 
+                onChange={handlePriceMaxChange}
+                className="w-full bg-[#1E1E1E] text-white rounded-md p-2 text-sm"
+              />
+            </div>
             <input 
-              type="text"
-              value={priceRange[0]}
+              type="range" 
+              min="0" 
+              max="5000" 
+              value={priceRange[0]} 
               onChange={handlePriceMinChange}
-              className="w-24 bg-[#1E1E1E] text-white text-sm rounded border border-gray-700 px-2 py-1"
-            />
-            <span className="text-gray-400">—</span>
-            <input 
-              type="text"
-              value={priceRange[1]}
-              onChange={handlePriceMaxChange}
-              className="w-24 bg-[#1E1E1E] text-white text-sm rounded border border-gray-700 px-2 py-1"
+              className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
             />
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-[#1E2039] rounded-lg p-4 mb-4">
-      {/* Price filter */}
-      <div className="mb-4">
-        <h3 className="text-white text-sm font-medium mb-2">Цена</h3>
-        <div className="flex items-center space-x-2">
-          <input 
-            type="text"
-            value={priceRange[0]}
-            onChange={handlePriceMinChange}
-            className="w-24 bg-[#1E1E1E] text-white text-sm rounded border border-gray-700 px-2 py-1"
-          />
-          <span className="text-gray-400">—</span>
-          <input 
-            type="text"
-            value={priceRange[1]}
-            onChange={handlePriceMaxChange}
-            className="w-24 bg-[#1E1E1E] text-white text-sm rounded border border-gray-700 px-2 py-1"
-          />
-        </div>
-      </div>
-      
-      {/* Cores filter */}
-      <div className="mb-4">
-        <h3 className="text-white text-sm font-medium mb-2">Кол-во ядер</h3>
-        <div className="space-y-1">
-          {displayedCoreOptions.map((option) => (
-            <label key={option.value} className="flex items-center">
-              <input
-                type="checkbox"
-                checked={selectedCores.includes(option.value)}
-                onChange={() => toggleCoreSelection(option.value)}
-                className="form-checkbox h-4 w-4 rounded bg-[#1E1E1E] border-gray-700 text-indigo-600 mr-2"
-              />
-              <span className="text-gray-300 text-sm">{option.label} ({option.count})</span>
-            </label>
-          ))}
-        </div>
-        {coreOptions.length > 5 && (
-          <button 
-            className="text-blue-400 text-sm mt-2"
-            onClick={() => setShowMoreCores(!showMoreCores)}
-          >
-            {showMoreCores ? 'Показать меньше' : 'Показать еще'}
-          </button>
         )}
       </div>
-      
-      {/* Multithreading filter */}
-      <div className="mb-4">
-        <h3 className="text-white text-sm font-medium mb-2">Мультипоточность</h3>
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={multiThreading}
-            onChange={() => setMultiThreading(!multiThreading)}
-            className="form-checkbox h-4 w-4 rounded bg-[#1E1E1E] border-gray-700 text-indigo-600 mr-2"
-          />
-          <span className="text-gray-300 text-sm">да (43)</span>
-        </label>
-      </div>
-      
-      {/* Socket filter */}
-      <div className="mb-4">
-        <h3 className="text-white text-sm font-medium mb-2">Сокет</h3>
-        <div className="space-y-1">
-          {socketOptions.map((option) => (
-            <label key={option.value} className="flex items-center">
-              <input
-                type="checkbox"
-                checked={selectedSockets.includes(option.value)}
-                onChange={() => toggleSocketSelection(option.value)}
-                className="form-checkbox h-4 w-4 rounded bg-[#1E1E1E] border-gray-700 text-indigo-600 mr-2"
-              />
-              <span className="text-gray-300 text-sm">{option.label} ({option.count})</span>
-            </label>
-          ))}
+
+      {/* Cores Filter */}
+      {category === 'CPU' && (
+        <div className="border-b border-gray-700">
+          <div 
+            className="p-4 flex justify-between items-center cursor-pointer"
+            onClick={() => toggleFilterSection(1)}
+          >
+            <h3 className="text-white font-medium">Кол-во ядер</h3>
+            {filterSections[1].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+          </div>
+          {filterSections[1].open && (
+            <div className="px-4 pb-4 space-y-2">
+              {displayedCoreOptions.map((option) => (
+                <div key={option.value} className="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    id={`core-${option.value}`}
+                    checked={selectedCores.includes(option.value)}
+                    onChange={() => toggleCoreSelection(option.value)}
+                    className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                  />
+                  <label htmlFor={`core-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                    {option.label} <span className="text-gray-500">({option.count})</span>
+                  </label>
+                </div>
+              ))}
+              {coreOptions.length > 5 && (
+                <button 
+                  className="text-sm text-blue-400 hover:text-white mt-2 underline"
+                  onClick={() => setShowMoreCores(!showMoreCores)}
+                >
+                  {showMoreCores ? 'Показать меньше' : 'Показать еще'}
+                </button>
+              )}
+            </div>
+          )}
         </div>
-      </div>
-      
-      {/* Frequency filter - placeholder */}
-      <div className="mb-4">
-        <h3 className="text-white text-sm font-medium mb-2">Частота</h3>
-        {/* Add frequency slider or inputs */}
-      </div>
+      )}
+
+      {/* Multithreading Filter */}
+      {category === 'CPU' && (
+        <div className="border-b border-gray-700">
+          <div 
+            className="p-4 flex justify-between items-center cursor-pointer"
+            onClick={() => toggleFilterSection(2)}
+          >
+            <h3 className="text-white font-medium">Мультипоточность</h3>
+            {filterSections[2].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+          </div>
+          {filterSections[2].open && (
+            <div className="px-4 pb-4 space-y-2">
+              <div className="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id={`mt-yes`}
+                  checked={multiThreading}
+                  onChange={() => setMultiThreading(!multiThreading)}
+                  className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                />
+                <label htmlFor={`mt-yes`} className="ml-2 text-sm text-gray-300 flex-1">
+                  да <span className="text-gray-500">(43)</span>
+                </label>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Socket Filter */}
+      {category === 'CPU' && (
+        <div className="border-b border-gray-700">
+          <div 
+            className="p-4 flex justify-between items-center cursor-pointer"
+            onClick={() => toggleFilterSection(3)}
+          >
+            <h3 className="text-white font-medium">Сокет</h3>
+            {filterSections[3].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+          </div>
+          {filterSections[3].open && (
+            <div className="px-4 pb-4 space-y-2">
+              {socketOptions.map((option, idx) => (
+                <div key={option.value} className="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    id={`socket-${option.value}`}
+                    checked={selectedSockets.includes(option.value)}
+                    onChange={() => toggleSocketSelection(option.value)}
+                    className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                  />
+                  <label htmlFor={`socket-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                    {option.label} <span className="text-gray-500">({option.count})</span>
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Frequency Filter */}
+      {category === 'CPU' && (
+        <div className="border-b border-gray-700">
+          <div 
+            className="p-4 flex justify-between items-center cursor-pointer"
+            onClick={() => toggleFilterSection(4)}
+          >
+            <h3 className="text-white font-medium">Частота</h3>
+            {filterSections[4].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+          </div>
+          {filterSections[4].open && (
+            <div className="px-4 pb-4">
+              <p className="text-gray-400 text-sm">
+                Frequency filters would go here
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

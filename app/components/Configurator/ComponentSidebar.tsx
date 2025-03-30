@@ -1,6 +1,4 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
@@ -116,7 +114,7 @@ export default function ComponentSidebar({ selectedCategory, onCategorySelect }:
   ];
 
   return (
-    <aside className={`bg-[#1E2039] h-full min-h-screen transition-all duration-300 
+    <aside className={`bg-[#211F38] h-full min-h-screen transition-all duration-300 
       ${collapsed ? 'w-16' : 'w-64'} 
       flex flex-col text-white z-10 shadow-lg`}>
       

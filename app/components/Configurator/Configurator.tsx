@@ -45,7 +45,7 @@ export default function Configurator() {
     cores: [],
     multithreading: false,
     socket: [],
-    price: [0, 500000]
+    price: [0, 5000]
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedComponents, setSelectedComponents] = useState<Record<string, Component>>({});
@@ -53,6 +53,7 @@ export default function Configurator() {
   const [savingConfig, setSavingConfig] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedManufacturer, setSelectedManufacturer] = useState('all');
 
   useEffect(() => {
     const fetchComponents = async () => {
@@ -109,36 +110,32 @@ export default function Configurator() {
   const filteredComponents = components.filter(component => {
     if (component.category !== selectedCategory) return false;
     
-    // Apply search filter
     if (searchTerm && !component.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !component.manufacturer.toLowerCase().includes(searchTerm.toLowerCase())) {
       return false;
     }
     
-    // Apply price filter
+    if (selectedManufacturer !== 'all' && component.manufacturer !== selectedManufacturer) {
+      return false;
+    }
+    
     if (filters.price && (component.price < filters.price[0] || component.price > filters.price[1])) {
       return false;
     }
     
-    // Apply core filter for CPUs
     if (component.category === 'CPU' && filters.cores && filters.cores.length > 0) {
-      // Assuming core count is in component.specs.cores
       if (!filters.cores.includes(String(component.specs.cores))) {
         return false;
       }
     }
     
-    // Apply socket filter for CPUs
     if (component.category === 'CPU' && filters.socket && filters.socket.length > 0) {
-      // Assuming socket is in component.specs.socket
       if (!filters.socket.includes(component.specs.socket)) {
         return false;
       }
     }
     
-    // Apply multithreading filter for CPUs
     if (component.category === 'CPU' && filters.multithreading) {
-      // Check if CPU supports multithreading (if the threads > cores, it has multithreading)
       if (!(component.specs.threads > component.specs.cores)) {
         return false;
       }
@@ -163,7 +160,10 @@ export default function Configurator() {
   };
 
   const calculateTotalPrice = () => {
-    return Object.values(selectedComponents).reduce((sum, component) => sum + component.price, 0);
+    return Object.values(selectedComponents).reduce(
+      (sum, component) => sum + component.price, 
+      0
+    );
   };
 
   const handleSaveConfiguration = async () => {
@@ -246,9 +246,15 @@ export default function Configurator() {
     return <ErrorMessage message={error} />;
   }
 
+  const manufacturers = [...new Set(
+    components
+      .filter(comp => comp.category === selectedCategory)
+      .map(comp => comp.manufacturer)
+  )];
+
   return (
     <div className="flex min-h-screen bg-[#1A1A1A]">
-      {/* Original component sidebar on the left */}
+      {/* Left sidebar */}
       <ComponentSidebar 
         selectedCategory={selectedCategory} 
         onCategorySelect={setSelectedCategory} 
@@ -259,30 +265,10 @@ export default function Configurator() {
         <h1 className="text-3xl font-bold text-white mb-8">{t('title')}</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Component filter panel on the left side of the main content */}
+          {/* Left area - Search and Filters */}
           <div className="lg:col-span-3">
-            <ComponentFilters
-              category={selectedCategory}
-              filters={filters}
-              onFilterChange={setFilters}
-              minPrice={0}
-              maxPrice={500000}
-            />
-
-            <SelectedComponents 
-              selectedComponents={selectedComponents}
-              removeComponent={removeComponent}
-            />
-            
-            <ConfigurationSummary 
-              totalPrice={calculateTotalPrice()}
-            />
-          </div>
-
-          {/* Component list in the center/right area */}
-          <div className="lg:col-span-9 space-y-6">
-            {/* Search bar for components */}
-            <div className="bg-[#2A2A2A] rounded-lg p-4 mb-4">
+            {/* Search field */}
+            <div className="bg-[#211F38] rounded-lg p-4 mb-4">
               <div className="relative">
                 <input
                   type="text"
@@ -307,6 +293,44 @@ export default function Configurator() {
               </div>
             </div>
 
+            {/* Component Filters */}
+            <ComponentFilters
+              category={selectedCategory}
+              filters={filters}
+              onFilterChange={setFilters}
+              minPrice={0}
+              maxPrice={5000}
+            />
+          </div>
+          
+          {/* Center content - Component list */}
+          <div className="lg:col-span-6 space-y-6">
+            {/* Manufacturer filter tabs */}
+            <div className="bg-[#2A2A2A] rounded-lg p-4">
+              <div className="flex flex-wrap gap-2">
+                <button 
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    selectedManufacturer === 'all' ? 'bg-[#E63946] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                  onClick={() => setSelectedManufacturer('all')}
+                >
+                  All
+                </button>
+                {manufacturers.map(manufacturer => (
+                  <button 
+                    key={manufacturer}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      selectedManufacturer === manufacturer ? 'bg-[#E63946] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                    onClick={() => setSelectedManufacturer(manufacturer)}
+                  >
+                    {manufacturer}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Component list */}
             <ComponentList 
               components={filteredComponents}
               category={selectedCategory}
@@ -321,6 +345,18 @@ export default function Configurator() {
               handleAddToCart={handleAddToCart}
               savingConfig={savingConfig}
               isAuthenticated={isAuthenticated}
+            />
+          </div>
+          
+          {/* Right sidebar */}
+          <div className="lg:col-span-3">
+            <SelectedComponents 
+              selectedComponents={selectedComponents}
+              removeComponent={removeComponent}
+            />
+            
+            <ConfigurationSummary 
+              totalPrice={calculateTotalPrice()}
             />
           </div>
         </div>

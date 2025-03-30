@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
 
 interface Component {
@@ -8,8 +6,8 @@ interface Component {
   name: string;
   manufacturer: string;
   price: number;
-  specs: Record<string, any>;
-  stock: number;
+  specs?: Record<string, any>;
+  stock?: number;
 }
 
 interface SelectedComponentsProps {
@@ -23,10 +21,11 @@ export default function SelectedComponents({
 }: SelectedComponentsProps) {
   const t = useTranslations('configurator');
   
-  const getCategoryName = (category: string) => {
-    const categoryKey = category.toLowerCase().replace(/\s+/g, '');
-    return t(`categories.${categoryKey}`);
-  };
+  const categoryOrder = ['CPU', 'Motherboard', 'GPU', 'RAM', 'Storage', 'PSU', 'Case', 'Cooling'];
+  
+  const orderedCategories = categoryOrder.filter(category => 
+    Object.values(selectedComponents).some(comp => comp.category === category)
+  );
 
   return (
     <div className="bg-[#2A2A2A] rounded-lg overflow-hidden mb-4">
@@ -35,31 +34,36 @@ export default function SelectedComponents({
       </div>
       
       <div className="p-4">
-        {Object.keys(selectedComponents).length > 0 ? (
+        {orderedCategories.length > 0 ? (
           <div className="space-y-3">
-            {Object.values(selectedComponents).map((component) => (
-              <div 
-                key={component.id} 
-                className="flex justify-between items-center p-3 bg-gray-800 rounded-lg"
-              >
-                <div>
-                  <h3 className="text-white text-sm font-medium">{component.name}</h3>
-                  <p className="text-gray-400 text-xs">{getCategoryName(component.category)}</p>
+            {orderedCategories.map((category) => {
+              const component = Object.values(selectedComponents).find(c => c.category === category);
+              if (!component) return null;
+              
+              return (
+                <div 
+                  key={component.id} 
+                  className="flex justify-between items-center p-3 bg-gray-800 rounded-lg"
+                >
+                  <div>
+                    <h3 className="text-white text-sm font-medium">{component.name}</h3>
+                    <p className="text-gray-400 text-xs">{t(`categories.${component.category.toLowerCase()}`)}</p>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <span className="text-white text-sm">€{component.price.toFixed(2)}</span>
+                    <button
+                      onClick={() => removeComponent(component.category)}
+                      className="text-gray-400 hover:text-[#E63946]"
+                      aria-label={t('actions.remove')}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-white text-sm">€{component.price.toFixed(2)}</span>
-                  <button
-                    onClick={() => removeComponent(component.category)}
-                    className="text-gray-400 hover:text-[#E63946]"
-                    aria-label={t('actions.remove')}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <p className="text-gray-400 text-center py-4">
