@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import ComponentSelector from './ComponentSelector';
-import ComponentFilter from './ComponentFilter';
+import { useCart } from '../../contexts/CartContext';
+import ComponentSidebar from './ComponentSidebar';
+import ComponentList from './ComponentList';
+import ConfigurationForm from './ConfigurationForm';
 import SelectedComponents from './SelectedComponents';
 import ConfigurationSummary from './ConfigurationSummary';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import ErrorMessage from '../ui/ErrorMessage';
-import { useCart } from '../../contexts/CartContext';
 
 interface Component {
   id: string;
@@ -26,7 +27,7 @@ export default function Configurator() {
   const t = useTranslations('configurator');
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale || 'lv';
+  const locale = params.locale || 'en';
   const { addItem } = useCart();
   
   const [components, setComponents] = useState<Component[]>([]);
@@ -40,16 +41,6 @@ export default function Configurator() {
   const [savingConfig, setSavingConfig] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const categories = [
-    { key: 'CPU', label: t('categories.cpu') },
-    { key: 'GPU', label: t('categories.gpu') },
-    { key: 'RAM', label: t('categories.ram') },
-    { key: 'SSD', label: t('categories.storage') },
-    { key: 'PSU', label: t('categories.psu') },
-    { key: 'Case', label: t('categories.case') },
-    { key: 'CPU Cooling', label: t('categories.cooling') }
-  ];
 
   useEffect(() => {
     const fetchComponents = async () => {
@@ -128,7 +119,7 @@ export default function Configurator() {
     return Object.values(selectedComponents).reduce((sum, component) => sum + component.price, 0);
   };
 
-  const saveConfiguration = async () => {
+  const handleSaveConfiguration = async () => {
     if (Object.values(selectedComponents).length === 0) {
       alert(t('errors.noComponents'));
       return;
@@ -209,66 +200,74 @@ export default function Configurator() {
   }
 
   return (
-    <div className="bg-[#1A1A1A] min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="flex min-h-screen bg-[#1A1A1A]">
+      {/* Left sidebar */}
+      <ComponentSidebar 
+        selectedCategory={selectedCategory} 
+        onCategorySelect={setSelectedCategory} 
+      />
+      
+      {/* Main content */}
+      <div className="flex-1 p-4">
         <h1 className="text-3xl font-bold text-white mb-8">{t('title')}</h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {/* Left sidebar - Component filters */}
-          <div className="md:col-span-3">
-            <ComponentFilter 
-              categories={categories}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
-          </div>
-          
-          {/* Main content - Component selection and configuration */}
-          <div className="md:col-span-6 space-y-6">
-            <ComponentSelector 
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Component selection and configuration */}
+          <div className="md:w-2/3 space-y-6">
+            <div className="bg-[#2A2A2A] rounded-lg p-4 mb-4">
+              {/* Simple search and price filters */}
+              <div className="flex flex-col md:flex-row gap-4 mb-4">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder={t('searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-gray-800 text-white rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-400 text-sm">{priceRange[0]}€</span>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max={priceRange[1]} 
+                    value={priceRange[0]}
+                    onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                    className="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <input 
+                    type="range" 
+                    min={priceRange[0]}
+                    max="3000" 
+                    value={priceRange[1]}
+                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                    className="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <span className="text-gray-400 text-sm">{priceRange[1]}€</span>
+                </div>
+              </div>
+            </div>
+            
+            <ComponentList 
               components={filteredComponents}
               category={selectedCategory}
               selectedComponents={selectedComponents}
               addComponent={addComponent}
             />
             
-            <div className="bg-[#2A2A2A] rounded-lg p-4">
-              <label className="block text-sm font-medium text-gray-400 mb-2">
-                {t('configName')}
-              </label>
-              <input
-                type="text"
-                value={configName}
-                onChange={(e) => setConfigName(e.target.value)}
-                placeholder={t('configNamePlaceholder')}
-                className="w-full bg-gray-800 text-white rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946] border border-gray-700"
-              />
-            </div>
-            
-            <div className="flex space-x-4">
-              <button
-                onClick={saveConfiguration}
-                disabled={savingConfig}
-                className="flex-1 bg-[#E63946] hover:bg-[#FF4D5A] text-white rounded-lg py-3 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {savingConfig ? t('actions.saving') : t('actions.save')}
-              </button>
-              
-              <button
-                onClick={handleAddToCart}
-                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg py-3 font-medium"
-              >
-                {t('actions.addToCart')}
-              </button>
-            </div>
+            <ConfigurationForm
+              configName={configName}
+              setConfigName={setConfigName}
+              handleSaveConfig={handleSaveConfiguration}
+              handleAddToCart={handleAddToCart}
+              savingConfig={savingConfig}
+              isAuthenticated={isAuthenticated}
+            />
           </div>
           
-          {/* Right sidebar - Selected components summary */}
-          <div className="md:col-span-3">
+          {/* Right sidebar */}
+          <div className="md:w-1/3">
             <SelectedComponents 
               selectedComponents={selectedComponents}
               removeComponent={removeComponent}

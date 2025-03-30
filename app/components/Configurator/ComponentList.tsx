@@ -12,19 +12,19 @@ interface Component {
   stock: number;
 }
 
-interface ComponentSelectorProps {
+interface ComponentListProps {
   components: Component[];
   category: string;
   selectedComponents: Record<string, Component>;
   addComponent: (component: Component) => void;
 }
 
-export default function ComponentSelector({
+export default function ComponentList({
   components,
   category,
   selectedComponents,
   addComponent
-}: ComponentSelectorProps) {
+}: ComponentListProps) {
   const t = useTranslations('configurator');
   
   const isSelected = (component: Component) => {
