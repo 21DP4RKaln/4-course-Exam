@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prismaService';
+import prisma from '@/lib/prisma';
 import bcrypt from 'bcrypt';
-import { signJwtToken, createAuthCookie, JwtPayload } from '@/lib/jwt';
+import { signJwtToken, createAuthCookie } from '@/lib/jwt';
 import { withErrorHandling, ApiErrors } from '@/lib/apiErrors';
-import { cookies } from 'next/headers';
 
 // Define login request data interface
 interface LoginRequest {
@@ -56,7 +55,7 @@ export async function POST(request: Request) {
     }
 
     // Create JWT payload
-    const payload: Omit<JwtPayload, 'iat' | 'exp'> = { 
+    const payload = { 
       userId: user.id,
       email: user.email,
       role: user.role

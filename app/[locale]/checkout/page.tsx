@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { useToast } from '../ui/Toaster';
-import LoadingIndicator from '../ui/LoadingIndicator';
+import { useToast } from '../../components/ui/Toaster';
+import LoadingIndicator from '@/app/components/ui/LoadingIndicator';
 
 // Address validation schema
 interface AddressValidation {
@@ -218,7 +218,11 @@ export default function CheckoutForm() {
           {t('orderNumber')}: <span className="font-medium text-white">{orderId}</span>
         </p>
         <button
-          onClick={() => router.push(`/${router.locale}/dashboard`)}
+          onClick={() => {
+            const pathname = usePathname();
+            const locale = pathname.split('/')[1] || 'en';
+            router.push(`/${locale}/dashboard`);
+          }}
           className="inline-block px-6 py-3 bg-[#E63946] text-white rounded-lg hover:bg-[#FF4D5A] transition-colors"
         >
           {t('viewOrders')}

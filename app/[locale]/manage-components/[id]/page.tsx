@@ -1,6 +1,6 @@
 'use client';
 
-import ComponentForm from '@/components/Admin/ComponentForm';
+import ComponentForm from '../../../components/Admin/ComponentForm';
 import { useParams } from 'next/navigation';
 
 export default function EditComponentPage() {

@@ -1,6 +1,6 @@
 'use client';
 
-import SpecialistReadyConfigForm from '@/components/Specialist/ReadyConfigForm';
+import SpecialistReadyConfigForm from '../../../../components/Specialist/ReadyConfigForm';
 import { useParams } from 'next/navigation';
 
 export default function SpecialistEditReadyConfigPage() {

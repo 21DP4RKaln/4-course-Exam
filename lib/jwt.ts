@@ -1,3 +1,4 @@
+// lib/jwt.ts
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
@@ -5,7 +6,7 @@ import { cookies } from 'next/headers';
 export interface JwtPayload {
   userId: string;
   email?: string | null;
-  role: 'CLIENT' | 'SPECIALIST' | 'ADMIN';
+  role: string;
   iat?: number;
   exp?: number;
 }
@@ -41,7 +42,14 @@ export async function verifyJwtToken(token: string): Promise<JwtPayload | null> 
   try {
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
-    return payload as JwtPayload;
+    
+    // Ensure the payload has the required properties
+    if (!payload.userId || !payload.role) {
+      console.error('JWT payload missing required properties:', payload);
+      return null;
+    }
+    
+    return payload as unknown as JwtPayload;
   } catch (error) {
     console.error('Token verification failed:', error instanceof Error ? error.message : error);
     return null;
@@ -52,7 +60,7 @@ export async function verifyJwtToken(token: string): Promise<JwtPayload | null> 
  * Gets the JWT token from cookies and verifies it
  */
 export async function getTokenFromCookies(): Promise<JwtPayload | null> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
   
   if (!token) {

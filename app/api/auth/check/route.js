@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { verifyJwtToken } from '../../../../lib/edgeJWT';
+import { verifyJwtToken } from '../../../../lib/jwt';
 
 export async function GET() {
   try {
