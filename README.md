@@ -1,51 +1,82 @@
-# Course 4 Exam Project
+# IvaPro PC Configurator
 
-This project is developed as part of the Course 4 exam, utilizing Next.js and Prisma technologies.
+A modern web application for configuring and purchasing custom PCs, built with Next.js, Prisma, and React.
+
+## Features
+
+- 🖥️ Custom PC configuration interface
+- 🏪 Ready-made PC catalog
+- 🛒 Shopping cart functionality
+- 👤 User authentication and authorization
+- 🌐 Multi-language support (English, Latvian, Russian)
+- 🎨 Responsive design with dark mode
+- 👨‍💼 Admin and specialist dashboards
+- 🔄 Configuration approval workflow
 
 ## Technologies
 
-- [Next.js](https://nextjs.org/) - React framework with server-side rendering capabilities
-- [Prisma](https://www.prisma.io/) - ORM for database management
-- [React](https://reactjs.org/) - User interface library
+- **Frontend**: Next.js 15, React 19, TailwindCSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: MySQL
+- **Authentication**: JWT with HTTP-only cookies
+- **i18n**: next-intl for internationalization
+- **Hosting**: Vercel (recommended)
 
 ## Project Structure
 
 ```
-Exam-4-course
-├── app/            # Main Next.js application code
-├── hooks/          # React hooks
-├── lib/            # Utility functions and common libraries
-├── messages/       # Internationalization files
-├── nonused/        # Unused components/code
-└── prisma/         # Prisma database configuration and schemas
+IvaPro-PC-Configurator/
+├── app/                  # Main Next.js application
+│   ├── [locale]/         # Localized routes
+│   │   ├── (auth)/       # Authentication routes (login, register)
+│   │   ├── (shop)/       # Shop routes (configurator, ready configs)
+│   │   └── ...           # Other localized routes
+│   ├── api/              # API endpoints
+│   │   ├── auth/         # Authentication APIs
+│   │   ├── admin/        # Admin APIs
+│   │   └── ...           # Other API endpoints
+│   ├── components/       # Reusable components
+│   │   ├── Admin/        # Admin components
+│   │   ├── Cart/         # Cart components
+│   │   ├── Configurator/ # Configurator components
+│   │   ├── Header/       # Header components
+│   │   ├── ui/           # UI components
+│   │   └── ...           # Other components
+│   └── contexts/         # React contexts
+├── lib/                  # Utility libraries
+│   ├── prismaService.ts  # Prisma client service
+│   ├── jwt.ts            # JWT utilities
+│   └── apiErrors.ts      # API error handling
+├── prisma/               # Prisma schema and migrations
+│   ├── schema.prisma     # Database schema
+│   └── migrations/       # Database migrations
+├── messages/             # i18n translation files
+│   ├── en.json           # English translations
+│   ├── lv.json           # Latvian translations
+│   └── ru.json           # Russian translations
+└── public/               # Static assets
 ```
 
-## Installation
+## Getting Started
 
-1. Make sure Node.js and npm are installed on your computer. If not, download and install from [nodejs.org](https://nodejs.org/)
+### Prerequisites
+
+- Node.js 18+ and npm
+- MySQL database
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-# Verify Node.js installation
-node -v
-
-# Verify npm installation
-npm -v
-
-# If npm needs to be installed or updated
-npm install -g npm
+git clone https://github.com/yourusername/ivapro-pc-configurator.git
+cd ivapro-pc-configurator
 ```
 
-2. Clone the repository:
+2. Install dependencies:
 
 ```bash
-git clone <repository_url>
-cd Exam-4-course
-```
-
-3. Install dependencies:
-
-```bash
-npm install #before that in your pc ensure Node.js is installed
+npm install
 # or
 yarn install
 # or
@@ -54,25 +85,33 @@ pnpm install
 bun install
 ```
 
+3. Set up environment variables:
+
+Create a `.env` file in the project root with the following variables:
+
+```
+# Database
+DATABASE_URL="mysql://username:password@localhost:3306/ivapro"
+
+# Auth
+JWT_SECRET="your-secret-key"
+
+# App configuration
+NEXT_PUBLIC_DEFAULT_LOCALE="en"
+NEXT_PUBLIC_DEFAULT_TIMEZONE="Europe/Riga"
+```
+
 4. Set up the database:
 
 ```bash
-# Import existing database schema
-npx prisma db pull
+# Create database schema
+npx prisma migrate dev
 
-# Or distribute changes to the database
-npx prisma db push
+# Seed the database with initial data (optional)
+npx prisma db seed
 ```
 
-5. Configure environment variables:
-
-Create a `.env` file in the project root directory and add necessary configuration variables:
-
-```
-DATABASE_URL="your_database_url"
-```
-
-## Running the Development Server
+5. Start the development server:
 
 ```bash
 npm run dev
@@ -84,7 +123,7 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ## Database Management
 
@@ -94,15 +133,7 @@ To open Prisma Studio (database visualization tool):
 npx prisma studio
 ```
 
-Prisma Studio will start and automatically open in your default web browser (typically at http://localhost:5555)
-
-## Testing
-
-```bash
-npm run test
-# or
-yarn test
-```
+Prisma Studio will start at [http://localhost:5555](http://localhost:5555).
 
 ## Building for Production
 
@@ -116,8 +147,35 @@ pnpm build
 bun build
 ```
 
-## Useful Resources
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Prisma Documentation](https://www.prisma.io/docs/) - explore Prisma functionality.
-- [Node.js Documentation](https://nodejs.org/en/docs/) - learn about Node.js.
+The application is optimized for deployment on Vercel. Simply connect your GitHub repository to Vercel for automatic deployments.
+
+### Environment Variables for Production
+
+Make sure to set the following environment variables in your production environment:
+
+- `DATABASE_URL`: Connection string to your MySQL database
+- `JWT_SECRET`: Secret key for JWT token generation
+- `NODE_ENV`: Set to "production"
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add some amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- [Next.js](https://nextjs.org/)
+- [Prisma](https://prisma.io/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [next-intl](https://next-intl-docs.vercel.app/)
+- [Lucide Icons](https://lucide.dev/)
+- [Jose JWT](https://github.com/panva/jose)

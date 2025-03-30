@@ -262,7 +262,6 @@ export default function Configurator() {
       
       {/* Main content */}
       <div className="flex-1 p-4">
-        <h1 className="text-3xl font-bold text-white mb-8">{t('title')}</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left area - Search and Filters */}
