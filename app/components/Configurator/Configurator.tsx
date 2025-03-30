@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -7,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useCart } from '../../contexts/CartContext';
 import ComponentSidebar from './ComponentSidebar';
 import ComponentList from './ComponentList';
+import ComponentFilters from './ComponentFilters';
 import ConfigurationForm from './ConfigurationForm';
 import SelectedComponents from './SelectedComponents';
 import ConfigurationSummary from './ConfigurationSummary';
@@ -23,6 +22,14 @@ interface Component {
   stock: number;
 }
 
+interface Filter {
+  cores?: string[];
+  multithreading?: boolean;
+  socket?: string[];
+  frequency?: [number, number];
+  price?: [number, number];
+}
+
 export default function Configurator() {
   const t = useTranslations('configurator');
   const router = useRouter();
@@ -34,7 +41,12 @@ export default function Configurator() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('CPU');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [filters, setFilters] = useState<Filter>({
+    cores: [],
+    multithreading: false,
+    socket: [],
+    price: [0, 500000]
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedComponents, setSelectedComponents] = useState<Record<string, Component>>({});
   const [configName, setConfigName] = useState('');
@@ -59,7 +71,10 @@ export default function Configurator() {
           const prices = data.map((comp: Component) => comp.price);
           const minPrice = Math.floor(Math.min(...prices));
           const maxPrice = Math.ceil(Math.max(...prices));
-          setPriceRange([minPrice, maxPrice]);
+          setFilters(prev => ({
+            ...prev,
+            price: [minPrice, maxPrice]
+          }));
         }
       } catch (error) {
         console.error('Error fetching components:', error);
@@ -91,14 +106,46 @@ export default function Configurator() {
     checkAuth();
   }, [t]);
 
-  const filteredComponents = components.filter(component => 
-    component.category === selectedCategory &&
-    component.price >= priceRange[0] &&
-    component.price <= priceRange[1] &&
-    (searchTerm === '' ||
-      component.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      component.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredComponents = components.filter(component => {
+    if (component.category !== selectedCategory) return false;
+    
+    // Apply search filter
+    if (searchTerm && !component.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !component.manufacturer.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return false;
+    }
+    
+    // Apply price filter
+    if (filters.price && (component.price < filters.price[0] || component.price > filters.price[1])) {
+      return false;
+    }
+    
+    // Apply core filter for CPUs
+    if (component.category === 'CPU' && filters.cores && filters.cores.length > 0) {
+      // Assuming core count is in component.specs.cores
+      if (!filters.cores.includes(String(component.specs.cores))) {
+        return false;
+      }
+    }
+    
+    // Apply socket filter for CPUs
+    if (component.category === 'CPU' && filters.socket && filters.socket.length > 0) {
+      // Assuming socket is in component.specs.socket
+      if (!filters.socket.includes(component.specs.socket)) {
+        return false;
+      }
+    }
+    
+    // Apply multithreading filter for CPUs
+    if (component.category === 'CPU' && filters.multithreading) {
+      // Check if CPU supports multithreading (if the threads > cores, it has multithreading)
+      if (!(component.specs.threads > component.specs.cores)) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
 
   const addComponent = (component: Component) => {
     setSelectedComponents(prev => ({
@@ -201,7 +248,7 @@ export default function Configurator() {
 
   return (
     <div className="flex min-h-screen bg-[#1A1A1A]">
-      {/* Left sidebar */}
+      {/* Original component sidebar on the left */}
       <ComponentSidebar 
         selectedCategory={selectedCategory} 
         onCategorySelect={setSelectedCategory} 
@@ -211,44 +258,55 @@ export default function Configurator() {
       <div className="flex-1 p-4">
         <h1 className="text-3xl font-bold text-white mb-8">{t('title')}</h1>
         
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Component selection and configuration */}
-          <div className="md:w-2/3 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Component filter panel on the left side of the main content */}
+          <div className="lg:col-span-3">
+            <ComponentFilters
+              category={selectedCategory}
+              filters={filters}
+              onFilterChange={setFilters}
+              minPrice={0}
+              maxPrice={500000}
+            />
+
+            <SelectedComponents 
+              selectedComponents={selectedComponents}
+              removeComponent={removeComponent}
+            />
+            
+            <ConfigurationSummary 
+              totalPrice={calculateTotalPrice()}
+            />
+          </div>
+
+          {/* Component list in the center/right area */}
+          <div className="lg:col-span-9 space-y-6">
+            {/* Search bar for components */}
             <div className="bg-[#2A2A2A] rounded-lg p-4 mb-4">
-              {/* Simple search and price filters */}
-              <div className="flex flex-col md:flex-row gap-4 mb-4">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    placeholder={t('searchPlaceholder')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-gray-800 text-white rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={t('searchPlaceholder')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-[#1E1E1E] text-white rounded-md pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
+                />
+                <svg
+                  className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-gray-400 text-sm">{priceRange[0]}€</span>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max={priceRange[1]} 
-                    value={priceRange[0]}
-                    onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                    className="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <input 
-                    type="range" 
-                    min={priceRange[0]}
-                    max="3000" 
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                    className="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <span className="text-gray-400 text-sm">{priceRange[1]}€</span>
-                </div>
+                </svg>
               </div>
             </div>
-            
+
             <ComponentList 
               components={filteredComponents}
               category={selectedCategory}
@@ -263,18 +321,6 @@ export default function Configurator() {
               handleAddToCart={handleAddToCart}
               savingConfig={savingConfig}
               isAuthenticated={isAuthenticated}
-            />
-          </div>
-          
-          {/* Right sidebar */}
-          <div className="md:w-1/3">
-            <SelectedComponents 
-              selectedComponents={selectedComponents}
-              removeComponent={removeComponent}
-            />
-            
-            <ConfigurationSummary 
-              totalPrice={calculateTotalPrice()}
             />
           </div>
         </div>

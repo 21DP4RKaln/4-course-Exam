@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ContactModal } from '../ui/ContactModal';
 import { useCart } from '../../contexts/CartContext';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Component {
   id: string;
@@ -23,6 +24,17 @@ interface Configuration {
   components: Component[];
 }
 
+interface Filter {
+  name: string;
+  open: boolean;
+  options?: Array<{
+    value: string;
+    label: string;
+    count: number;
+    checked: boolean;
+  }>;
+}
+
 export default function ReadyConfigurationsPage() {
   const t = useTranslations('productCatalog');
   const configT = useTranslations('configurator');
@@ -34,9 +46,51 @@ export default function ReadyConfigurationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState('all');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
   const { addItem } = useCart();
+  
+  const [filters, setFilters] = useState<Filter[]>([
+    { 
+      name: 'price', 
+      open: true 
+    },
+    { 
+      name: 'cores', 
+      open: true,
+      options: [
+        { value: '4', label: '4', count: 5, checked: false },
+        { value: '6', label: '6', count: 8, checked: false },
+        { value: '8', label: '8', count: 6, checked: false },
+        { value: '10', label: '10', count: 2, checked: false },
+        { value: '12', label: '12', count: 2, checked: false },
+        { value: '14', label: '14', count: 2, checked: false },
+        { value: '16', label: '16', count: 7, checked: false }
+      ]
+    },
+    { 
+      name: 'multithreading', 
+      open: true,
+      options: [
+        { value: 'yes', label: 'да', count: 43, checked: false }
+      ]
+    },
+    { 
+      name: 'socket', 
+      open: true,
+      options: [
+        { value: 'AM4', label: 'AM4', count: 4, checked: false },
+        { value: 'LGA1200', label: 'LGA 1200', count: 3, checked: false },
+        { value: 'STR4', label: 'STR4', count: 5, checked: false },
+        { value: 'LGA1700', label: 'LGA 1700', count: 14, checked: false },
+        { value: 'AM5', label: 'AM5', count: 14, checked: false },
+        { value: 'LGA1851', label: 'LGA 1851', count: 3, checked: false }
+      ]
+    },
+    { 
+      name: 'frequency', 
+      open: true 
+    }
+  ]);
   
   useEffect(() => {
     const fetchConfigurations = async () => {
@@ -125,15 +179,26 @@ export default function ReadyConfigurationsPage() {
     fetchConfigurations();
   }, [t]);
 
+  const toggleFilter = (index: number) => {
+    const newFilters = [...filters];
+    newFilters[index].open = !newFilters[index].open;
+    setFilters(newFilters);
+  };
+
+  const toggleFilterOption = (filterIndex: number, optionIndex: number) => {
+    const newFilters = [...filters];
+    if (newFilters[filterIndex].options) {
+      newFilters[filterIndex].options![optionIndex].checked = !newFilters[filterIndex].options![optionIndex].checked;
+      setFilters(newFilters);
+    }
+  };
+
   const getFilteredConfigs = () => {
     return configs.filter(config => {
-      if (selectedFilter !== 'all') {
-        if (selectedFilter === 'gaming' && config.totalPrice < 900) return false;
-        if (selectedFilter === 'office' && config.totalPrice > 900) return false;
-        if (selectedFilter === 'workstation' && config.totalPrice < 1800) return false;
+      if (config.totalPrice < priceRange[0] || config.totalPrice > priceRange[1]) {
+        return false;
       }
       
-      if (config.totalPrice < priceRange[0] || config.totalPrice > priceRange[1]) return false;
       
       return true;
     });
@@ -177,97 +242,172 @@ export default function ReadyConfigurationsPage() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {/* Sidebar - Filtri */}
+          {/* New Sidebar - Filtri */}
           <div className="md:col-span-3">
-            <div className="bg-[#2A2A2A] rounded-lg overflow-hidden sticky top-4">
-              <div className="p-4 border-b border-gray-700">
-                <h2 className="text-xl font-semibold text-white">{t('filters.purpose')}</h2>
-              </div>
-              
-              <div className="p-4">
-                <button 
-                  className={`block w-full text-left mb-2 px-3 py-2 rounded ${
-                    selectedFilter === 'all' 
-                      ? 'bg-[#E63946] text-white' 
-                      : 'text-gray-300 hover:bg-gray-700'
-                  }`}
-                  onClick={() => setSelectedFilter('all')}
-                >
-                  {t('categories.all')}
-                </button>
-                <button 
-                  className={`block w-full text-left mb-2 px-3 py-2 rounded ${
-                    selectedFilter === 'gaming' 
-                      ? 'bg-[#E63946] text-white' 
-                      : 'text-gray-300 hover:bg-gray-700'
-                  }`}
-                  onClick={() => setSelectedFilter('gaming')}
-                >
-                  {t('categories.gaming')}
-                </button>
-                <button 
-                  className={`block w-full text-left mb-2 px-3 py-2 rounded ${
-                    selectedFilter === 'office' 
-                      ? 'bg-[#E63946] text-white' 
-                      : 'text-gray-300 hover:bg-gray-700'
-                  }`}
-                  onClick={() => setSelectedFilter('office')}
-                >
-                  {t('categories.office')}
-                </button>
-                <button 
-                  className={`block w-full text-left mb-2 px-3 py-2 rounded ${
-                    selectedFilter === 'workstation' 
-                      ? 'bg-[#E63946] text-white' 
-                      : 'text-gray-300 hover:bg-gray-700'
-                  }`}
-                  onClick={() => setSelectedFilter('workstation')}
-                >
-                  {t('categories.workstation')}
-                </button>
-              </div>
-              
-              {/* Cenas filtrs */}
-              <div className="p-4 border-t border-gray-700">
-                <h3 className="text-sm font-medium text-gray-400 mb-2">{t('filters.price')}</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">{configT('minPrice')}</label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-300 text-sm">€{priceRange[0]}</span>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max={priceRange[1]} 
-                        step="100"
-                        value={priceRange[0]}
-                        onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">{configT('maxPrice')}</label>
-                    <div className="flex items-center gap-2">
-                      <input 
-                        type="range" 
-                        min={priceRange[0]}
-                        max="3000" 
-                        step="100"
-                        value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                      />
-                      <span className="text-gray-300 text-sm">€{priceRange[1]}</span>
-                    </div>
-                  </div>
+            <div className="bg-[#1E2039] rounded-lg overflow-hidden sticky top-4">
+              <div className="p-4 text-center">
+                <div className="relative my-2">
+                  <input 
+                    type="search"
+                    placeholder="Поиск по категории"
+                    className="w-full bg-[#0a0b1a] text-white rounded-md p-2 pl-10 focus:outline-none"
+                  />
+                  <svg className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
+              </div>
+
+              {/* Price Filter */}
+              <div className="border-t border-gray-800">
+                <div 
+                  className="p-4 flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleFilter(0)}
+                >
+                  <h3 className="text-white font-medium">Цена</h3>
+                  {filters[0].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+                </div>
+                {filters[0].open && (
+                  <div className="px-4 pb-4">
+                    <div className="flex space-x-2 mb-3">
+                      <input 
+                        type="number" 
+                        value={priceRange[0]} 
+                        onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                        className="w-full bg-[#0a0b1a] text-white rounded-md p-2 text-sm"
+                        min="0"
+                      />
+                      <span className="text-gray-500 flex items-center">—</span>
+                      <input 
+                        type="number" 
+                        value={priceRange[1]} 
+                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                        className="w-full bg-[#0a0b1a] text-white rounded-md p-2 text-sm"
+                      />
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="5000" 
+                      value={priceRange[0]} 
+                      onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                      className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Cores Filter */}
+              <div className="border-t border-gray-800">
+                <div 
+                  className="p-4 flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleFilter(1)}
+                >
+                  <h3 className="text-white font-medium">Кол-во ядер</h3>
+                  {filters[1].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+                </div>
+                {filters[1].open && (
+                  <div className="px-4 pb-4 space-y-2">
+                    {filters[1].options?.map((option, idx) => (
+                      <div key={option.value} className="flex items-center">
+                        <input 
+                          type="checkbox" 
+                          id={`core-${option.value}`}
+                          checked={option.checked}
+                          onChange={() => toggleFilterOption(1, idx)}
+                          className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                        />
+                        <label htmlFor={`core-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                          {option.label} <span className="text-gray-500">({option.count})</span>
+                        </label>
+                      </div>
+                    ))}
+                    <button className="text-sm text-gray-400 hover:text-white mt-2 underline">
+                      Показать еще
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Multithreading Filter */}
+              <div className="border-t border-gray-800">
+                <div 
+                  className="p-4 flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleFilter(2)}
+                >
+                  <h3 className="text-white font-medium">Мультипоточность</h3>
+                  {filters[2].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+                </div>
+                {filters[2].open && (
+                  <div className="px-4 pb-4 space-y-2">
+                    {filters[2].options?.map((option, idx) => (
+                      <div key={option.value} className="flex items-center">
+                        <input 
+                          type="checkbox" 
+                          id={`mt-${option.value}`}
+                          checked={option.checked}
+                          onChange={() => toggleFilterOption(2, idx)}
+                          className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                        />
+                        <label htmlFor={`mt-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                          {option.label} <span className="text-gray-500">({option.count})</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Socket Filter */}
+              <div className="border-t border-gray-800">
+                <div 
+                  className="p-4 flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleFilter(3)}
+                >
+                  <h3 className="text-white font-medium">Сокет</h3>
+                  {filters[3].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+                </div>
+                {filters[3].open && (
+                  <div className="px-4 pb-4 space-y-2">
+                    {filters[3].options?.map((option, idx) => (
+                      <div key={option.value} className="flex items-center">
+                        <input 
+                          type="checkbox" 
+                          id={`socket-${option.value}`}
+                          checked={option.checked}
+                          onChange={() => toggleFilterOption(3, idx)}
+                          className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                        />
+                        <label htmlFor={`socket-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                          {option.label} <span className="text-gray-500">({option.count})</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Frequency Filter */}
+              <div className="border-t border-gray-800">
+                <div 
+                  className="p-4 flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleFilter(4)}
+                >
+                  <h3 className="text-white font-medium">Частота</h3>
+                  {filters[4].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+                </div>
+                {filters[4].open && (
+                  <div className="px-4 pb-4">
+                    <p className="text-gray-400 text-sm">
+                      Frequency filters would go here
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
           
-          {/* Galvenais saturs - Konfigurāciju saraksts */}
+          {/* Main content - Product list */}
           <div className="md:col-span-9">
             {filteredConfigs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
