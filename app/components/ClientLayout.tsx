@@ -1,7 +1,7 @@
 'use client';
 
+import { useState, useEffect, useMemo } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
-import { useState, useEffect } from 'react';
 import Header from './Header/Header';
 import Footer from './Footer/Footer';
 import { CartProvider } from '../contexts/CartContext';
@@ -20,13 +20,15 @@ interface ClientLayoutProps {
 export default function ClientLayout({ children, messages, locale }: ClientLayoutProps) {
   const [mounted, setMounted] = useState(false);
 
+  const memoizedMessages = useMemo(() => messages, [messages]);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
     <NextIntlClientProvider 
-      messages={messages} 
+      messages={memoizedMessages} 
       locale={locale}
       timeZone="Europe/Riga"
       now={new Date()}

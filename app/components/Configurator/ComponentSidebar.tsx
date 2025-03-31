@@ -10,6 +10,8 @@ interface SidebarProps {
 
 export default function ComponentSidebar({ selectedCategory, onCategorySelect }: SidebarProps) {
   const t = useTranslations('configurator');
+  const navT = useTranslations('nav');
+  
   const pathname = usePathname();
   const params = useParams();
   const locale = params.locale || 'lv';
@@ -108,10 +110,14 @@ export default function ComponentSidebar({ selectedCategory, onCategorySelect }:
   
   const mainMenuItems = [
     { path: `/${locale}`, label: 'HOME' },
-    { path: `/${locale}/ready-configs`, label: 'Ready-made PCs' },
-    { path: `/${locale}/configurator`, label: 'Configurator' },
+    { path: `/${locale}/ready-configs`, label: navT('ready_configs') },
+    { path: `/${locale}/configurator`, label: navT('configurator') },
     { path: `/${locale}/dashboard`, label: 'Dashboard' }
   ];
+
+  const getCategoryTranslationKey = (categoryName: string): string => {
+    return categoryName.toLowerCase().replace(/\s+/g, '');
+  };
 
   return (
     <aside className={`bg-[#211F38] h-full min-h-screen transition-all duration-300 
@@ -163,7 +169,7 @@ export default function ComponentSidebar({ selectedCategory, onCategorySelect }:
       
       {/* Components section */}
       <div className="flex-1 px-2 overflow-y-auto">
-        {!collapsed && <h3 className="text-xs uppercase text-gray-500 px-3 mb-2">Components</h3>}
+        {!collapsed && <h3 className="text-xs uppercase text-gray-500 px-3 mb-2">{t('components')}</h3>}
         {categories.map((category) => (
           <button 
             key={category.key}
@@ -177,7 +183,11 @@ export default function ComponentSidebar({ selectedCategory, onCategorySelect }:
             }`}>
               {category.icon}
             </div>
-            {!collapsed && <span className="text-sm">{category.label}</span>}
+            {!collapsed && (
+              <span className="text-sm">
+                {t(`categories.${getCategoryTranslationKey(category.key)}`)}
+              </span>
+            )}
           </button>
         ))}
       </div>

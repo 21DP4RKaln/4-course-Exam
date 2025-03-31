@@ -36,10 +36,17 @@ export default function ComponentList({
     });
   };
 
+  const getCategoryTranslationKey = (categoryName: string): string => {
+    return categoryName.toLowerCase().replace(/\s+/g, '');
+  };
+
   return (
     <div className="bg-[#2A2A2A] rounded-lg overflow-hidden">
       <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-white">{t(`categories.${category.toLowerCase()}`)}</h2>
+        {/* Use the helper function to format the category key properly */}
+        <h2 className="text-xl font-semibold text-white">
+          {t(`categories.${getCategoryTranslationKey(category)}`)}
+        </h2>
         <span className="text-gray-400 text-sm">{components.length} {t('available')}</span>
       </div>
       

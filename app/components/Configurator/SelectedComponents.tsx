@@ -27,6 +27,10 @@ export default function SelectedComponents({
     Object.values(selectedComponents).some(comp => comp.category === category)
   );
 
+  const getCategoryTranslationKey = (categoryName: string): string => {
+    return categoryName.toLowerCase().replace(/\s+/g, '');
+  };
+
   return (
     <div className="bg-[#2A2A2A] rounded-lg overflow-hidden mb-4">
       <div className="p-4 border-b border-gray-700">
@@ -47,7 +51,9 @@ export default function SelectedComponents({
                 >
                   <div>
                     <h3 className="text-white text-sm font-medium">{component.name}</h3>
-                    <p className="text-gray-400 text-xs">{t(`categories.${component.category.toLowerCase()}`)}</p>
+                    <p className="text-gray-400 text-xs">
+                      {t(`categories.${getCategoryTranslationKey(component.category)}`)}
+                    </p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <span className="text-white text-sm">€{component.price.toFixed(2)}</span>

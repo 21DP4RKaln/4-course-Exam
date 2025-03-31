@@ -2,12 +2,35 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-interface Filter {
+interface FilterOption {
+  value: string;
+  label: string;
+  count: number;
+}
+
+interface CategoryData {
+  manufacturers?: string[];
   cores?: string[];
-  multithreading?: boolean;
-  socket?: string[];
-  frequency?: [number, number];
+  sockets?: string[];
+  vram?: string[];
+  capacity?: string[];
+  type?: string[];
+  storageType?: string[];
+  storageCapacity?: string[];
+  count?: number;
+}
+
+interface Filter {
+  manufacturer?: string[];
   price?: [number, number];
+  cores?: string[];
+  socket?: string[];
+  multithreading?: boolean;
+  vram?: string[];
+  capacity?: string[];
+  type?: string[];
+  storageType?: string[];
+  storageCapacity?: string[];
 }
 
 interface ComponentFiltersProps {
@@ -16,6 +39,7 @@ interface ComponentFiltersProps {
   onFilterChange: (newFilters: Filter) => void;
   minPrice: number;
   maxPrice: number;
+  categoryData: CategoryData;
 }
 
 const ComponentFilters = ({
@@ -23,41 +47,78 @@ const ComponentFilters = ({
   filters,
   onFilterChange,
   minPrice = 0,
-  maxPrice = 500000
+  maxPrice = 5000,
+  categoryData = {}
 }: ComponentFiltersProps) => {
   const t = useTranslations('configurator');
   const [priceRange, setPriceRange] = useState<[number, number]>([
     filters.price?.[0] || minPrice,
     filters.price?.[1] || maxPrice
   ]);
-  const [selectedCores, setSelectedCores] = useState<string[]>(filters.cores || []);
-  const [multiThreading, setMultiThreading] = useState<boolean>(filters.multithreading || false);
-  const [selectedSockets, setSelectedSockets] = useState<string[]>(filters.socket || []);
-  const [showMoreCores, setShowMoreCores] = useState(false);
+  
   const [filterSections, setFilterSections] = useState([
     { name: 'price', open: true },
+    { name: 'manufacturer', open: true },
     { name: 'cores', open: true },
-    { name: 'multithreading', open: true },
     { name: 'socket', open: true },
-    { name: 'frequency', open: true }
+    { name: 'multithreading', open: true },
+    { name: 'vram', open: true },
+    { name: 'capacity', open: true },
+    { name: 'type', open: true },
+    { name: 'storageType', open: true },
+    { name: 'storageCapacity', open: true }
   ]);
+  
+  // Expandable sections
+  const [showMoreOptions, setShowMoreOptions] = useState<Record<string, boolean>>({
+    cores: false,
+    socket: false,
+    vram: false,
+    capacity: false,
+    type: false,
+    manufacturer: false,
+    storageType: false,
+    storageCapacity: false
+  });
+  
+  // Selected filter options
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({
+    cores: filters.cores || [],
+    socket: filters.socket || [],
+    vram: filters.vram || [],
+    capacity: filters.capacity || [],
+    type: filters.type || [],
+    storageType: filters.storageType || [],
+    storageCapacity: filters.storageCapacity || []
+  });
+  
+  const [multiThreading, setMultiThreading] = useState<boolean>(filters.multithreading || false);
 
   useEffect(() => {
     onFilterChange({
       ...filters,
-      cores: selectedCores,
+      ...selectedFilters,
       multithreading: multiThreading,
-      socket: selectedSockets,
       price: priceRange
     });
-  }, [selectedCores, multiThreading, selectedSockets, priceRange]);
+  }, [selectedFilters, multiThreading, priceRange]);
 
   useEffect(() => {
     setPriceRange(filters.price || [minPrice, maxPrice]);
-    setSelectedCores(filters.cores || []);
+    
+    // Reset selected filters when changing categories
+    setSelectedFilters({
+      cores: filters.cores || [],
+      socket: filters.socket || [],
+      vram: filters.vram || [],
+      capacity: filters.capacity || [],
+      type: filters.type || [],
+      storageType: filters.storageType || [],
+      storageCapacity: filters.storageCapacity || []
+    });
+    
     setMultiThreading(filters.multithreading || false);
-    setSelectedSockets(filters.socket || []);
-  }, [filters, minPrice, maxPrice]);
+  }, [filters, minPrice, maxPrice, category]);
 
   const toggleFilterSection = (index: number) => {
     const newSections = [...filterSections];
@@ -65,20 +126,16 @@ const ComponentFilters = ({
     setFilterSections(newSections);
   };
 
-  const toggleCoreSelection = (core: string) => {
-    setSelectedCores(prev => 
-      prev.includes(core) 
-        ? prev.filter(c => c !== core) 
-        : [...prev, core]
-    );
-  };
-
-  const toggleSocketSelection = (socket: string) => {
-    setSelectedSockets(prev => 
-      prev.includes(socket) 
-        ? prev.filter(s => s !== socket) 
-        : [...prev, socket]
-    );
+  const toggleFilterOption = (filterName: string, value: string) => {
+    setSelectedFilters(prev => {
+      const current = prev[filterName] || [];
+      return {
+        ...prev,
+        [filterName]: current.includes(value)
+          ? current.filter(v => v !== value)
+          : [...current, value]
+      };
+    });
   };
 
   const handlePriceMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,26 +148,35 @@ const ComponentFilters = ({
     setPriceRange([priceRange[0], value]);
   };
 
-  const coreOptions = [
-    { value: '4', label: '4', count: 5 },
-    { value: '6', label: '6', count: 8 },
-    { value: '8', label: '8', count: 6 },
-    { value: '10', label: '10', count: 2 },
-    { value: '12', label: '12', count: 2 },
-    { value: '14', label: '14', count: 2 },
-    { value: '16', label: '16', count: 7 }
-  ];
+  const getFilterOptionsWithCounts = (options: string[] = []): FilterOption[] => {
+    return options.map(option => ({
+      value: option,
+      label: option,
+      count: Math.floor(Math.random() * 10) + 1 // In a real app, these counts would come from the API
+    }));
+  };
 
-  const socketOptions = [
-    { value: 'AM4', label: 'AM4', count: 4 },
-    { value: 'LGA1200', label: 'LGA 1200', count: 3 },
-    { value: 'STR4', label: 'STR4', count: 5 },
-    { value: 'LGA1700', label: 'LGA 1700', count: 14 },
-    { value: 'AM5', label: 'AM5', count: 14 },
-    { value: 'LGA1851', label: 'LGA 1851', count: 3 }
-  ];
+  // Generate options for different filter types
+  const coreOptions = getFilterOptionsWithCounts(categoryData.cores);
+  const socketOptions = getFilterOptionsWithCounts(categoryData.sockets);
+  const vramOptions = getFilterOptionsWithCounts(categoryData.vram);
+  const capacityOptions = getFilterOptionsWithCounts(categoryData.capacity);
+  const typeOptions = getFilterOptionsWithCounts(categoryData.type);
+  const storageTypeOptions = getFilterOptionsWithCounts(categoryData.storageType);
+  const storageCapacityOptions = getFilterOptionsWithCounts(categoryData.storageCapacity);
+  const manufacturerOptions = getFilterOptionsWithCounts(categoryData.manufacturers);
 
-  const displayedCoreOptions = showMoreCores ? coreOptions : coreOptions.slice(0, 5);
+  // Limit display options unless "show more" is clicked
+  const getDisplayedOptions = (options: FilterOption[], filterType: string) => {
+    return showMoreOptions[filterType] ? options : options.slice(0, 5);
+  };
+
+  const toggleShowMore = (filterType: string) => {
+    setShowMoreOptions(prev => ({
+      ...prev,
+      [filterType]: !prev[filterType]
+    }));
+  };
 
   return (
     <div className="bg-[#211F38] rounded-lg overflow-hidden">
@@ -120,7 +186,7 @@ const ComponentFilters = ({
           className="p-4 flex justify-between items-center cursor-pointer"
           onClick={() => toggleFilterSection(0)}
         >
-          <h3 className="text-white font-medium">Цена</h3>
+          <h3 className="text-white font-medium">Price</h3>
           {filterSections[0].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
         </div>
         {filterSections[0].open && (
@@ -143,8 +209,8 @@ const ComponentFilters = ({
             </div>
             <input 
               type="range" 
-              min="0" 
-              max="5000" 
+              min={minPrice} 
+              max={maxPrice} 
               value={priceRange[0]} 
               onChange={handlePriceMinChange}
               className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
@@ -153,38 +219,38 @@ const ComponentFilters = ({
         )}
       </div>
 
-      {/* Cores Filter */}
-      {category === 'CPU' && (
+      {/* Manufacturer Filter */}
+      {categoryData.manufacturers && categoryData.manufacturers.length > 0 && (
         <div className="border-b border-gray-700">
           <div 
             className="p-4 flex justify-between items-center cursor-pointer"
             onClick={() => toggleFilterSection(1)}
           >
-            <h3 className="text-white font-medium">Кол-во ядер</h3>
+            <h3 className="text-white font-medium">Manufacturer</h3>
             {filterSections[1].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
           </div>
           {filterSections[1].open && (
             <div className="px-4 pb-4 space-y-2">
-              {displayedCoreOptions.map((option) => (
+              {getDisplayedOptions(manufacturerOptions, 'manufacturer').map((option) => (
                 <div key={option.value} className="flex items-center">
                   <input 
                     type="checkbox" 
-                    id={`core-${option.value}`}
-                    checked={selectedCores.includes(option.value)}
-                    onChange={() => toggleCoreSelection(option.value)}
+                    id={`manufacturer-${option.value}`}
+                    checked={selectedFilters.manufacturer?.includes(option.value) || false}
+                    onChange={() => toggleFilterOption('manufacturer', option.value)}
                     className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
                   />
-                  <label htmlFor={`core-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                  <label htmlFor={`manufacturer-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
                     {option.label} <span className="text-gray-500">({option.count})</span>
                   </label>
                 </div>
               ))}
-              {coreOptions.length > 5 && (
+              {manufacturerOptions.length > 5 && (
                 <button 
                   className="text-sm text-blue-400 hover:text-white mt-2 underline"
-                  onClick={() => setShowMoreCores(!showMoreCores)}
+                  onClick={() => toggleShowMore('manufacturer')}
                 >
-                  {showMoreCores ? 'Показать меньше' : 'Показать еще'}
+                  {showMoreOptions.manufacturer ? 'Show less' : 'Show more'}
                 </button>
               )}
             </div>
@@ -192,17 +258,97 @@ const ComponentFilters = ({
         </div>
       )}
 
-      {/* Multithreading Filter */}
+      {/* CPU specific filters */}
       {category === 'CPU' && (
+        <>
+          {/* Cores Filter */}
+          {categoryData.cores && categoryData.cores.length > 0 && (
+            <div className="border-b border-gray-700">
+              <div 
+                className="p-4 flex justify-between items-center cursor-pointer"
+                onClick={() => toggleFilterSection(2)}
+              >
+                <h3 className="text-white font-medium">Cores</h3>
+                {filterSections[2].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+              </div>
+              {filterSections[2].open && (
+                <div className="px-4 pb-4 space-y-2">
+                  {getDisplayedOptions(coreOptions, 'cores').map((option) => (
+                    <div key={option.value} className="flex items-center">
+                      <input 
+                        type="checkbox" 
+                        id={`core-${option.value}`}
+                        checked={selectedFilters.cores?.includes(option.value) || false}
+                        onChange={() => toggleFilterOption('cores', option.value)}
+                        className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                      />
+                      <label htmlFor={`core-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                        {option.label} <span className="text-gray-500">({option.count})</span>
+                      </label>
+                    </div>
+                  ))}
+                  {coreOptions.length > 5 && (
+                    <button 
+                      className="text-sm text-blue-400 hover:text-white mt-2 underline"
+                      onClick={() => toggleShowMore('cores')}
+                    >
+                      {showMoreOptions.cores ? 'Show less' : 'Show more'}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Socket Filter */}
+          {categoryData.sockets && categoryData.sockets.length > 0 && (
+            <div className="border-b border-gray-700">
+              <div 
+                className="p-4 flex justify-between items-center cursor-pointer"
+                onClick={() => toggleFilterSection(3)}
+              >
+                <h3 className="text-white font-medium">Socket</h3>
+                {filterSections[3].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+              </div>
+              {filterSections[3].open && (
+                <div className="px-4 pb-4 space-y-2">
+                  {getDisplayedOptions(socketOptions, 'socket').map((option) => (
+                    <div key={option.value} className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      id={`socket-${option.value}`}
+                      checked={selectedFilters.socket?.includes(option.value) || false}
+                      onChange={() => toggleFilterOption('socket', option.value)}
+                      className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                    />
+                    <label htmlFor={`socket-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                      {option.label} <span className="text-gray-500">({option.count})</span>
+                    </label>
+                  </div>
+                ))}
+                {socketOptions.length > 5 && (
+                  <button 
+                    className="text-sm text-blue-400 hover:text-white mt-2 underline"
+                    onClick={() => toggleShowMore('socket')}
+                  >
+                    {showMoreOptions.socket ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Multithreading Filter */}
         <div className="border-b border-gray-700">
           <div 
             className="p-4 flex justify-between items-center cursor-pointer"
-            onClick={() => toggleFilterSection(2)}
+            onClick={() => toggleFilterSection(4)}
           >
-            <h3 className="text-white font-medium">Мультипоточность</h3>
-            {filterSections[2].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+            <h3 className="text-white font-medium">Multithreading</h3>
+            {filterSections[4].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
           </div>
-          {filterSections[2].open && (
+          {filterSections[4].open && (
             <div className="px-4 pb-4 space-y-2">
               <div className="flex items-center">
                 <input 
@@ -213,66 +359,226 @@ const ComponentFilters = ({
                   className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
                 />
                 <label htmlFor={`mt-yes`} className="ml-2 text-sm text-gray-300 flex-1">
-                  да <span className="text-gray-500">(43)</span>
+                  yes <span className="text-gray-500">(43)</span>
                 </label>
               </div>
             </div>
           )}
         </div>
-      )}
+      </>
+    )}
 
-      {/* Socket Filter */}
-      {category === 'CPU' && (
-        <div className="border-b border-gray-700">
-          <div 
-            className="p-4 flex justify-between items-center cursor-pointer"
-            onClick={() => toggleFilterSection(3)}
-          >
-            <h3 className="text-white font-medium">Сокет</h3>
-            {filterSections[3].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
-          </div>
-          {filterSections[3].open && (
-            <div className="px-4 pb-4 space-y-2">
-              {socketOptions.map((option, idx) => (
-                <div key={option.value} className="flex items-center">
-                  <input 
-                    type="checkbox" 
-                    id={`socket-${option.value}`}
-                    checked={selectedSockets.includes(option.value)}
-                    onChange={() => toggleSocketSelection(option.value)}
-                    className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
-                  />
-                  <label htmlFor={`socket-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
-                    {option.label} <span className="text-gray-500">({option.count})</span>
-                  </label>
-                </div>
-              ))}
+    {/* GPU specific filters */}
+    {category === 'GPU' && (
+      <>
+        {/* VRAM Filter */}
+        {categoryData.vram && categoryData.vram.length > 0 && (
+          <div className="border-b border-gray-700">
+            <div 
+              className="p-4 flex justify-between items-center cursor-pointer"
+              onClick={() => toggleFilterSection(5)}
+            >
+              <h3 className="text-white font-medium">VRAM</h3>
+              {filterSections[5].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
             </div>
-          )}
-        </div>
-      )}
+            {filterSections[5].open && (
+              <div className="px-4 pb-4 space-y-2">
+                {getDisplayedOptions(vramOptions, 'vram').map((option) => (
+                  <div key={option.value} className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      id={`vram-${option.value}`}
+                      checked={selectedFilters.vram?.includes(option.value) || false}
+                      onChange={() => toggleFilterOption('vram', option.value)}
+                      className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                    />
+                    <label htmlFor={`vram-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                      {option.label} <span className="text-gray-500">({option.count})</span>
+                    </label>
+                  </div>
+                ))}
+                {vramOptions.length > 5 && (
+                  <button 
+                    className="text-sm text-blue-400 hover:text-white mt-2 underline"
+                    onClick={() => toggleShowMore('vram')}
+                  >
+                    {showMoreOptions.vram ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </>
+    )}
 
-      {/* Frequency Filter */}
-      {category === 'CPU' && (
-        <div className="border-b border-gray-700">
-          <div 
-            className="p-4 flex justify-between items-center cursor-pointer"
-            onClick={() => toggleFilterSection(4)}
-          >
-            <h3 className="text-white font-medium">Частота</h3>
-            {filterSections[4].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
-          </div>
-          {filterSections[4].open && (
-            <div className="px-4 pb-4">
-              <p className="text-gray-400 text-sm">
-                Frequency filters would go here
-              </p>
+    {/* RAM specific filters */}
+    {category === 'RAM' && (
+      <>
+        {/* Capacity Filter */}
+        {categoryData.capacity && categoryData.capacity.length > 0 && (
+          <div className="border-b border-gray-700">
+            <div 
+              className="p-4 flex justify-between items-center cursor-pointer"
+              onClick={() => toggleFilterSection(6)}
+            >
+              <h3 className="text-white font-medium">Capacity</h3>
+              {filterSections[6].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
             </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+            {filterSections[6].open && (
+              <div className="px-4 pb-4 space-y-2">
+                {getDisplayedOptions(capacityOptions, 'capacity').map((option) => (
+                  <div key={option.value} className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      id={`capacity-${option.value}`}
+                      checked={selectedFilters.capacity?.includes(option.value) || false}
+                      onChange={() => toggleFilterOption('capacity', option.value)}
+                      className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                    />
+                    <label htmlFor={`capacity-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                      {option.label} <span className="text-gray-500">({option.count})</span>
+                    </label>
+                  </div>
+                ))}
+                {capacityOptions.length > 5 && (
+                  <button 
+                    className="text-sm text-blue-400 hover:text-white mt-2 underline"
+                    onClick={() => toggleShowMore('capacity')}
+                  >
+                    {showMoreOptions.capacity ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Type Filter */}
+        {categoryData.type && categoryData.type.length > 0 && (
+          <div className="border-b border-gray-700">
+            <div 
+              className="p-4 flex justify-between items-center cursor-pointer"
+              onClick={() => toggleFilterSection(7)}
+            >
+              <h3 className="text-white font-medium">Type</h3>
+              {filterSections[7].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+            </div>
+            {filterSections[7].open && (
+              <div className="px-4 pb-4 space-y-2">
+                {getDisplayedOptions(typeOptions, 'type').map((option) => (
+                  <div key={option.value} className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      id={`type-${option.value}`}
+                      checked={selectedFilters.type?.includes(option.value) || false}
+                      onChange={() => toggleFilterOption('type', option.value)}
+                      className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                    />
+                    <label htmlFor={`type-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                      {option.label} <span className="text-gray-500">({option.count})</span>
+                    </label>
+                  </div>
+                ))}
+                {typeOptions.length > 5 && (
+                  <button 
+                    className="text-sm text-blue-400 hover:text-white mt-2 underline"
+                    onClick={() => toggleShowMore('type')}
+                  >
+                    {showMoreOptions.type ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </>
+    )}
+
+    {/* Storage specific filters */}
+    {category === 'Storage' && (
+      <>
+        {/* Storage Type Filter */}
+        {categoryData.storageType && categoryData.storageType.length > 0 && (
+          <div className="border-b border-gray-700">
+            <div 
+              className="p-4 flex justify-between items-center cursor-pointer"
+              onClick={() => toggleFilterSection(8)}
+            >
+              <h3 className="text-white font-medium">Type</h3>
+              {filterSections[8].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+            </div>
+            {filterSections[8].open && (
+              <div className="px-4 pb-4 space-y-2">
+                {getDisplayedOptions(storageTypeOptions, 'storageType').map((option) => (
+                  <div key={option.value} className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      id={`storageType-${option.value}`}
+                      checked={selectedFilters.storageType?.includes(option.value) || false}
+                      onChange={() => toggleFilterOption('storageType', option.value)}
+                      className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                    />
+                    <label htmlFor={`storageType-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                      {option.label} <span className="text-gray-500">({option.count})</span>
+                    </label>
+                  </div>
+                ))}
+                {storageTypeOptions.length > 5 && (
+                  <button 
+                    className="text-sm text-blue-400 hover:text-white mt-2 underline"
+                    onClick={() => toggleShowMore('storageType')}
+                  >
+                    {showMoreOptions.storageType ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Storage Capacity Filter */}
+        {categoryData.storageCapacity && categoryData.storageCapacity.length > 0 && (
+          <div className="border-b border-gray-700">
+            <div 
+              className="p-4 flex justify-between items-center cursor-pointer"
+              onClick={() => toggleFilterSection(9)}
+            >
+              <h3 className="text-white font-medium">Capacity</h3>
+              {filterSections[9].open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+            </div>
+            {filterSections[9].open && (
+              <div className="px-4 pb-4 space-y-2">
+                {getDisplayedOptions(storageCapacityOptions, 'storageCapacity').map((option) => (
+                  <div key={option.value} className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      id={`storageCapacity-${option.value}`}
+                      checked={selectedFilters.storageCapacity?.includes(option.value) || false}
+                      onChange={() => toggleFilterOption('storageCapacity', option.value)}
+                      className="w-4 h-4 bg-[#0a0b1a] border-gray-700 rounded focus:ring-blue-600"
+                    />
+                    <label htmlFor={`storageCapacity-${option.value}`} className="ml-2 text-sm text-gray-300 flex-1">
+                      {option.label} <span className="text-gray-500">({option.count})</span>
+                    </label>
+                  </div>
+                ))}
+                {storageCapacityOptions.length > 5 && (
+                  <button 
+                    className="text-sm text-blue-400 hover:text-white mt-2 underline"
+                    onClick={() => toggleShowMore('storageCapacity')}
+                  >
+                    {showMoreOptions.storageCapacity ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
+}
 
 export default ComponentFilters;

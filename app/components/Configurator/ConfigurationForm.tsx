@@ -20,7 +20,7 @@ export default function ConfigurationForm({
   const t = useTranslations('configurator');
   
   return (
-    <div className="bg-[#2A2A2A] rounded-lg p-4 mb-6">
+    <div className="bg-[#211F38] rounded-lg p-4 mb-6">
       <label className="block text-sm font-medium text-gray-400 mb-2">
         {t('configName')}
       </label>
@@ -29,7 +29,7 @@ export default function ConfigurationForm({
         value={configName}
         onChange={(e) => setConfigName(e.target.value)}
         placeholder={t('configNamePlaceholder')}
-        className="w-full bg-gray-800 text-white rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946] border border-gray-700 mb-4"
+        className="w-full bg-[#1E1E1E] text-white rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946] border border-gray-700 mb-4"
       />
       
       <div className="flex space-x-4">

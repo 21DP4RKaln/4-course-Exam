@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -23,11 +25,16 @@ interface Component {
 }
 
 interface Filter {
-  cores?: string[];
-  multithreading?: boolean;
-  socket?: string[];
-  frequency?: [number, number];
+  manufacturer?: string[];
   price?: [number, number];
+  cores?: string[];
+  socket?: string[];
+  multithreading?: boolean;
+  vram?: string[];
+  capacity?: string[];
+  type?: string[];
+  storageType?: string[];
+  storageCapacity?: string[];
 }
 
 export default function Configurator() {
@@ -42,9 +49,7 @@ export default function Configurator() {
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('CPU');
   const [filters, setFilters] = useState<Filter>({
-    cores: [],
-    multithreading: false,
-    socket: [],
+    manufacturer: [],
     price: [0, 5000]
   });
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,6 +59,9 @@ export default function Configurator() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedManufacturer, setSelectedManufacturer] = useState('all');
+  const [categoryFilters, setCategoryFilters] = useState<Record<string, any>>({});
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(5000);
 
   useEffect(() => {
     const fetchComponents = async () => {
@@ -72,10 +80,66 @@ export default function Configurator() {
           const prices = data.map((comp: Component) => comp.price);
           const minPrice = Math.floor(Math.min(...prices));
           const maxPrice = Math.ceil(Math.max(...prices));
+          
+          setMinPrice(minPrice);
+          setMaxPrice(maxPrice);
           setFilters(prev => ({
             ...prev,
             price: [minPrice, maxPrice]
           }));
+
+          const categoryData: Record<string, any> = {};
+          
+          data.forEach((comp: Component) => {
+            if (!categoryData[comp.category]) {
+              categoryData[comp.category] = {
+                manufacturers: new Set(),
+                cores: new Set(),
+                sockets: new Set(),
+                vram: new Set(),
+                capacity: new Set(),
+                type: new Set(),
+                storageType: new Set(),
+                storageCapacity: new Set(),
+                count: 0
+              };
+            }
+            
+            categoryData[comp.category].count++;
+            categoryData[comp.category].manufacturers.add(comp.manufacturer);
+            
+            if (comp.category === 'CPU' && comp.specs) {
+              if (comp.specs.cores) categoryData.CPU.cores.add(String(comp.specs.cores));
+              if (comp.specs.socket) categoryData.CPU.sockets.add(comp.specs.socket);
+            }
+            
+            if (comp.category === 'GPU' && comp.specs) {
+              if (comp.specs.vram) categoryData.GPU.vram.add(comp.specs.vram);
+            }
+            
+            if (comp.category === 'RAM' && comp.specs) {
+              if (comp.specs.capacity) categoryData.RAM.capacity.add(comp.specs.capacity);
+              if (comp.specs.type) categoryData.RAM.type.add(comp.specs.type);
+            }
+            
+            if (comp.category === 'Storage' && comp.specs) {
+              if (comp.specs.type) categoryData.Storage.storageType.add(comp.specs.type);
+              if (comp.specs.capacity) categoryData.Storage.storageCapacity.add(comp.specs.capacity);
+            }
+          });
+          
+          Object.keys(categoryData).forEach(category => {
+            categoryData[category].manufacturers = [...categoryData[category].manufacturers];
+            categoryData[category].cores = [...categoryData[category].cores];
+            categoryData[category].sockets = [...categoryData[category].sockets];
+            categoryData[category].vram = [...categoryData[category].vram];
+            categoryData[category].capacity = [...categoryData[category].capacity];
+            categoryData[category].type = [...categoryData[category].type];
+            categoryData[category].storageType = [...categoryData[category].storageType];
+            categoryData[category].storageCapacity = [...categoryData[category].storageCapacity];
+          });
+          
+          setCategoryFilters(categoryData);
         }
       } catch (error) {
         console.error('Error fetching components:', error);
@@ -123,21 +187,57 @@ export default function Configurator() {
       return false;
     }
     
-    if (component.category === 'CPU' && filters.cores && filters.cores.length > 0) {
-      if (!filters.cores.includes(String(component.specs.cores))) {
+    if (component.category === 'CPU') {
+      if (filters.cores && filters.cores.length > 0) {
+        if (!filters.cores.includes(String(component.specs.cores))) {
+          return false;
+        }
+      }
+      
+      if (filters.socket && filters.socket.length > 0) {
+        if (!filters.socket.includes(component.specs.socket)) {
+          return false;
+        }
+      }
+      
+      if (filters.multithreading) {
+        if (!(component.specs.threads > component.specs.cores)) {
+          return false;
+        }
+      }
+    }
+    
+    if (component.category === 'GPU' && filters.vram && filters.vram.length > 0) {
+      if (!filters.vram.includes(component.specs.vram)) {
         return false;
       }
     }
     
-    if (component.category === 'CPU' && filters.socket && filters.socket.length > 0) {
-      if (!filters.socket.includes(component.specs.socket)) {
-        return false;
+    if (component.category === 'RAM') {
+      if (filters.capacity && filters.capacity.length > 0) {
+        if (!filters.capacity.includes(component.specs.capacity)) {
+          return false;
+        }
+      }
+      
+      if (filters.type && filters.type.length > 0) {
+        if (!filters.type.includes(component.specs.type)) {
+          return false;
+        }
       }
     }
     
-    if (component.category === 'CPU' && filters.multithreading) {
-      if (!(component.specs.threads > component.specs.cores)) {
-        return false;
+    if (component.category === 'Storage') {
+      if (filters.storageType && filters.storageType.length > 0) {
+        if (!filters.storageType.includes(component.specs.type)) {
+          return false;
+        }
+      }
+      
+      if (filters.storageCapacity && filters.storageCapacity.length > 0) {
+        if (!filters.storageCapacity.includes(component.specs.capacity)) {
+          return false;
+        }
       }
     }
     
@@ -246,117 +346,116 @@ export default function Configurator() {
     return <ErrorMessage message={error} />;
   }
 
-  const manufacturers = [...new Set(
-    components
-      .filter(comp => comp.category === selectedCategory)
-      .map(comp => comp.manufacturer)
-  )];
+  // Get manufacturers for the current category
+  const manufacturers = categoryFilters[selectedCategory]?.manufacturers || [];
 
   return (
-    <div className="flex min-h-screen bg-[#1A1A1A]">
-      {/* Left sidebar */}
-      <ComponentSidebar 
-        selectedCategory={selectedCategory} 
-        onCategorySelect={setSelectedCategory} 
-      />
-      
-      {/* Main content */}
-      <div className="flex-1 p-4">
+    <div className="min-h-screen bg-[#1A1A1A]">
+      <div className="flex">
+        {/* Left sidebar */}
+        <ComponentSidebar 
+          selectedCategory={selectedCategory} 
+          onCategorySelect={setSelectedCategory} 
+        />
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left area - Search and Filters */}
-          <div className="lg:col-span-3">
-            {/* Search field */}
-            <div className="bg-[#211F38] rounded-lg p-4 mb-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder={t('searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-[#1E1E1E] text-white rounded-md pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
-                />
-                <svg
-                  className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        {/* Main content */}
+        <div className="flex-1 p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Left area - Search and Filters */}
+            <div className="lg:col-span-3">
+              {/* Search field */}
+              <div className="bg-[#211F38] rounded-lg p-4 mb-4">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder={t('searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-[#1E1E1E] text-white rounded-md pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946]"
                   />
-                </svg>
-              </div>
-            </div>
-
-            {/* Component Filters */}
-            <ComponentFilters
-              category={selectedCategory}
-              filters={filters}
-              onFilterChange={setFilters}
-              minPrice={0}
-              maxPrice={5000}
-            />
-          </div>
-          
-          {/* Center content - Component list */}
-          <div className="lg:col-span-6 space-y-6">
-            {/* Manufacturer filter tabs */}
-            <div className="bg-[#2A2A2A] rounded-lg p-4">
-              <div className="flex flex-wrap gap-2">
-                <button 
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    selectedManufacturer === 'all' ? 'bg-[#E63946] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
-                  onClick={() => setSelectedManufacturer('all')}
-                >
-                  All
-                </button>
-                {manufacturers.map(manufacturer => (
-                  <button 
-                    key={manufacturer}
-                    className={`px-3 py-1 rounded-full text-sm ${
-                      selectedManufacturer === manufacturer ? 'bg-[#E63946] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                    onClick={() => setSelectedManufacturer(manufacturer)}
+                  <svg
+                    className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    {manufacturer}
-                  </button>
-                ))}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
               </div>
-            </div>
 
-            {/* Component list */}
-            <ComponentList 
-              components={filteredComponents}
-              category={selectedCategory}
-              selectedComponents={selectedComponents}
-              addComponent={addComponent}
-            />
+              {/* Component Filters - Now dynamic based on category */}
+              <ComponentFilters
+                category={selectedCategory}
+                filters={filters}
+                onFilterChange={setFilters}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                categoryData={categoryFilters[selectedCategory] || {}}
+              />
+            </div>
             
-            <ConfigurationForm
-              configName={configName}
-              setConfigName={setConfigName}
-              handleSaveConfig={handleSaveConfiguration}
-              handleAddToCart={handleAddToCart}
-              savingConfig={savingConfig}
-              isAuthenticated={isAuthenticated}
-            />
-          </div>
-          
-          {/* Right sidebar */}
-          <div className="lg:col-span-3">
-            <SelectedComponents 
-              selectedComponents={selectedComponents}
-              removeComponent={removeComponent}
-            />
+            {/* Center content - Component list */}
+            <div className="lg:col-span-6 space-y-6">
+              {/* Manufacturer filter tabs */}
+              <div className="bg-[#211F38] rounded-lg p-4">
+                <div className="flex flex-wrap gap-2">
+                  <button 
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      selectedManufacturer === 'all' ? 'bg-[#E63946] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                    onClick={() => setSelectedManufacturer('all')}
+                  >
+                    All
+                  </button>
+                  {manufacturers.map((manufacturer: string) => (
+                    <button 
+                      key={manufacturer}
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        selectedManufacturer === manufacturer ? 'bg-[#E63946] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                      onClick={() => setSelectedManufacturer(manufacturer)}
+                    >
+                      {manufacturer}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Component list */}
+              <ComponentList 
+                components={filteredComponents}
+                category={selectedCategory}
+                selectedComponents={selectedComponents}
+                addComponent={addComponent}
+              />
+              
+              <ConfigurationForm
+                configName={configName}
+                setConfigName={setConfigName}
+                handleSaveConfig={handleSaveConfiguration}
+                handleAddToCart={handleAddToCart}
+                savingConfig={savingConfig}
+                isAuthenticated={isAuthenticated}
+              />
+            </div>
             
-            <ConfigurationSummary 
-              totalPrice={calculateTotalPrice()}
-            />
+            {/* Right sidebar */}
+            <div className="lg:col-span-3">
+              <SelectedComponents 
+                selectedComponents={selectedComponents}
+                removeComponent={removeComponent}
+              />
+              
+              <ConfigurationSummary 
+                totalPrice={calculateTotalPrice()}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -364,7 +463,7 @@ export default function Configurator() {
       {/* Confirmation modal */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-[#2A2A2A] rounded-lg p-6 max-w-md w-full text-center">
+          <div className="bg-[#211F38] rounded-lg p-6 max-w-md w-full text-center">
             <svg className="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
             </svg>

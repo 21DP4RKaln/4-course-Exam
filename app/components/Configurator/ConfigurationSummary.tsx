@@ -23,7 +23,7 @@ export default function ConfigurationSummary({
   const fpsEstimates = estimateFPS(totalPrice);
 
   return (
-    <div className="bg-[#2A2A2A] rounded-lg overflow-hidden">
+    <div className="bg-[#211F38] rounded-lg overflow-hidden">
       <div className="p-4 border-b border-gray-700">
         <h2 className="text-xl font-semibold text-white">{t('summary')}</h2>
       </div>
