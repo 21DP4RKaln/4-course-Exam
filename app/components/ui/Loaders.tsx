@@ -5,7 +5,7 @@ import React from 'react';
 type LoadingVariant = 'spinner' | 'dots' | 'pulse' | 'skeleton';
 type LoadingSize = 'sm' | 'md' | 'lg' | 'xl';
 
-interface LoadingIndicatorProps {
+interface LoadingProps {
   variant?: LoadingVariant;
   size?: LoadingSize;
   fullScreen?: boolean;
@@ -15,16 +15,16 @@ interface LoadingIndicatorProps {
 }
 
 /**
- * Reusable loading indicator component with multiple variants
+ * Unified loading indicator component with multiple variants
  */
-export default function LoadingIndicator({
+export function Loading({
   variant = 'spinner',
   size = 'md',
   fullScreen = false,
   text,
   className = '',
   color = '#E63946'
-}: LoadingIndicatorProps) {
+}: LoadingProps) {
   // Size mappings
   const sizeMap = {
     sm: { height: 'h-6', width: 'w-6', border: 'border-2', text: 'text-sm' },
@@ -122,6 +122,29 @@ export default function LoadingIndicator({
           }
         `}</style>
       )}
+    </div>
+  );
+}
+
+/**
+ * Simple spinner for quick loading states
+ */
+export function Spinner() {
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-[#1A1A1A]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E63946]"></div>
+    </div>
+  );
+}
+
+/**
+ * Page loader with app branding
+ */
+export function PageLoader() {
+  return (
+    <div className="flex flex-col justify-center items-center min-h-screen bg-[#1A1A1A]">
+      <div className="mb-4 text-2xl font-bold text-white">IvaPro</div>
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E63946]"></div>
     </div>
   );
 }

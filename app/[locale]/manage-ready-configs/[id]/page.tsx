@@ -1,6 +1,6 @@
 'use client';
 
-import ReadyConfigForm from '../../../components/Admin/ReadyConfigForm';
+import ReadyConfigForm from '../../../../components/Admin/ReadyConfigForm';
 import { useParams } from 'next/navigation';
 
 export default function EditReadyConfigPage() {

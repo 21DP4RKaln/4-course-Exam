@@ -1,4 +1,3 @@
-// lib/jwt.ts
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
@@ -60,7 +59,7 @@ export async function verifyJwtToken(token: string): Promise<JwtPayload | null> 
  * Gets the JWT token from cookies and verifies it
  */
 export async function getTokenFromCookies(): Promise<JwtPayload | null> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const token = cookieStore.get('token')?.value;
   
   if (!token) {
@@ -83,4 +82,33 @@ export function createAuthCookie(token: string) {
     path: '/',
     sameSite: 'lax' as const
   };
+}
+
+/**
+ * Extracts user ID and role from token (for middleware)
+ */
+export async function getUserFromToken(token: string): Promise<{ userId: string; role: string } | null> {
+  try {
+    const payload = await verifyJwtToken(token);
+    if (!payload) return null;
+    
+    return { 
+      userId: payload.userId, 
+      role: payload.role 
+    };
+  } catch (error) {
+    console.error('Failed to extract user from token:', error);
+    return null;
+  }
+}
+
+/**
+ * Verifies a token from request cookies
+ * @param req - Request object with cookies
+ */
+export async function verifyRequestToken(req: Request): Promise<JwtPayload | null> {
+  const token = req.cookies.get('token')?.value;
+  if (!token) return null;
+  
+  return verifyJwtToken(token);
 }
