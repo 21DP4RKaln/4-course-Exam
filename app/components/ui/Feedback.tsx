@@ -132,9 +132,9 @@ export function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
 }
 
 /**
- * Contact form modal for business inquiries
+ * Footer contact form modal
  */
-export function ContactFormModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function FooterContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const t = useTranslations('footer');
   
   return (

@@ -1,4 +1,3 @@
-// app/i18n/index.ts - Combined internationalization utilities
 import { getRequestConfig } from 'next-intl/server';
 import { createSharedPathnamesNavigation } from 'next-intl/navigation';
 import { headers } from 'next/headers';

@@ -1,6 +1,121 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+
+// --------------------- COMPONENT LIST ---------------------
+
+interface Component {
+  id: string;
+  category: string;
+  name: string;
+  manufacturer: string;
+  price: number;
+  specs: Record<string, any>;
+  stock: number;
+}
+
+interface ComponentListProps {
+  components: Component[];
+  category: string;
+  selectedComponents: Record<string, Component>;
+  addComponent: (component: Component) => void;
+}
+
+export function ComponentList({
+  components,
+  category,
+  selectedComponents,
+  addComponent
+}: ComponentListProps) {
+  const t = useTranslations('configurator');
+  
+  const isSelected = (component: Component) => {
+    return selectedComponents[component.category]?.id === component.id;
+  };
+
+  const formatSpecs = (specs: Record<string, any>) => {
+    return Object.entries(specs).slice(0, 4).map(([key, value]) => {
+      const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+      return { key: formattedKey, value };
+    });
+  };
+
+  const getCategoryTranslationKey = (categoryName: string): string => {
+    return categoryName.toLowerCase().replace(/\s+/g, '');
+  };
+
+  return (
+    <div className="bg-[#2A2A2A] rounded-lg overflow-hidden">
+      <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+        {/* Use the helper function to format the category key properly */}
+        <h2 className="text-xl font-semibold text-white">
+          {t(`categories.${getCategoryTranslationKey(category)}`)}
+        </h2>
+        <span className="text-gray-400 text-sm">{components.length} {t('available')}</span>
+      </div>
+      
+      <div className="max-h-[600px] overflow-y-auto">
+        {components.length > 0 ? (
+          <div className="p-4 space-y-4">
+            {components.map((component) => (
+              <div 
+                key={component.id} 
+                className={`bg-gray-800 rounded-lg p-4 ${isSelected(component) ? 'ring-2 ring-[#E63946]' : ''}`}
+              >
+                <div className="flex justify-between">
+                  <div>
+                    <h3 className="text-white font-medium">{component.name}</h3>
+                    <p className="text-gray-400 text-sm">{component.manufacturer}</p>
+                    
+                    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                      {formatSpecs(component.specs).map(({ key, value }) => (
+                        <p key={key} className="text-gray-400 text-xs">
+                          <span className="text-gray-500">{key}:</span> {value}
+                        </p>
+                      ))}
+                    </div>
+                    
+                    {component.stock <= 0 && (
+                      <p className="mt-2 text-red-500 text-xs">{t('outOfStock')}</p>
+                    )}
+                  </div>
+                  
+                  <div className="flex flex-col items-end">
+                    <span className="text-white font-bold mb-2">€{component.price.toFixed(2)}</span>
+                    <button
+                      onClick={() => addComponent(component)}
+                      disabled={component.stock <= 0}
+                      className={`px-3 py-1 rounded text-sm ${
+                        isSelected(component)
+                          ? 'bg-green-700 text-white hover:bg-green-800'
+                          : 'bg-[#E63946] text-white hover:bg-[#FF4D5A]'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      {isSelected(component) 
+                        ? t('actions.selected') 
+                        : component.stock > 0 
+                          ? t('actions.add') 
+                          : t('actions.unavailable')
+                      }
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 text-center">
+            <p className="text-gray-400">{t('noComponentsFound')}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// --------------------- COMPONENT FILTERS ---------------------
 
 interface FilterOption {
   value: string;
@@ -42,14 +157,14 @@ interface ComponentFiltersProps {
   categoryData: CategoryData;
 }
 
-const ComponentFilters = ({
+export function ComponentFilters({
   category,
   filters,
   onFilterChange,
   minPrice = 0,
   maxPrice = 5000,
   categoryData = {}
-}: ComponentFiltersProps) => {
+}: ComponentFiltersProps) {
   const t = useTranslations('configurator');
   const [priceRange, setPriceRange] = useState<[number, number]>([
     filters.price?.[0] || minPrice,
@@ -581,4 +696,54 @@ const ComponentFilters = ({
 );
 }
 
-export default ComponentFilters;
+// --------------------- CONFIGURATION FORM ---------------------
+
+interface ConfigFormProps {
+  configName: string;
+  setConfigName: (name: string) => void;
+  handleSaveConfig: () => void;
+  handleAddToCart?: () => void;
+  savingConfig: boolean;
+  isAuthenticated?: boolean;
+}
+
+export function ConfigurationForm({
+  configName,
+  setConfigName,
+  handleSaveConfig,
+  handleAddToCart,
+  savingConfig,
+  isAuthenticated = true
+}: ConfigFormProps) {
+  const t = useTranslations('configurator');
+  
+  return (
+    <div className="bg-[#211F38] rounded-lg p-4 mb-6">
+      <label className="block text-sm font-medium text-gray-400 mb-2">
+        {t('configName')}
+      </label>
+      <input
+        type="text"
+        value={configName}
+        onChange={(e) => setConfigName(e.target.value)}
+        placeholder={t('configNamePlaceholder')}
+        className="w-full bg-[#1E1E1E] text-white rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E63946] border border-gray-700 mb-4"
+      />
+      
+      <div className="flex space-x-4">
+        <button
+          onClick={handleSaveConfig}
+          disabled={savingConfig}
+          className="flex-1 bg-[#E63946] hover:bg-[#FF4D5A] text-white rounded-lg py-3 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {savingConfig ? t('actions.saving') : t('actions.save')}
+        </button>
+        
+        {handleAddToCart && (
+          <button
+            onClick={handleAddToCart}
+            className="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg py-3 font-medium"
+          >
+            {t('actions.addToCart')}
+          </button>
+        )}

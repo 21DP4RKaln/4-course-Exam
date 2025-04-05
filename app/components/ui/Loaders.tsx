@@ -17,7 +17,7 @@ interface LoadingProps {
 /**
  * Unified loading indicator component with multiple variants
  */
-export function Loading({
+export function LoadingSpinner({
   variant = 'spinner',
   size = 'md',
   fullScreen = false,
@@ -127,9 +127,9 @@ export function Loading({
 }
 
 /**
- * Simple spinner for quick loading states
+ * Simple full-screen spinner for page loading
  */
-export function Spinner() {
+export default function FullPageSpinner() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-[#1A1A1A]">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E63946]"></div>
@@ -140,7 +140,7 @@ export function Spinner() {
 /**
  * Page loader with app branding
  */
-export function PageLoader() {
+export function BrandedPageLoader() {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-[#1A1A1A]">
       <div className="mb-4 text-2xl font-bold text-white">IvaPro</div>
