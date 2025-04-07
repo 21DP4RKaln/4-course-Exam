@@ -15,9 +15,9 @@ interface LoadingProps {
 }
 
 /**
- * Unified loading indicator component with multiple variants
+ * Vienots ielādes indikators ar vairākiem variantiem
  */
-export function LoadingSpinner({
+export function LoadingIndicator({
   variant = 'spinner',
   size = 'md',
   fullScreen = false,
@@ -25,7 +25,7 @@ export function LoadingSpinner({
   className = '',
   color = '#E63946'
 }: LoadingProps) {
-  // Size mappings
+  // Izmēra kartes
   const sizeMap = {
     sm: { height: 'h-6', width: 'w-6', border: 'border-2', text: 'text-sm' },
     md: { height: 'h-8', width: 'w-8', border: 'border-2', text: 'text-base' },
@@ -33,12 +33,12 @@ export function LoadingSpinner({
     xl: { height: 'h-16', width: 'w-16', border: 'border-[3px]', text: 'text-xl' },
   };
 
-  // Container classes based on fullScreen prop
+  // Konteinera klases balstoties uz fullScreen parametu
   const containerClasses = fullScreen
     ? 'fixed inset-0 flex justify-center items-center bg-black/50 z-50'
     : 'flex justify-center items-center';
 
-  // Render appropriate loading indicator based on variant
+  // Atainot atbilstošu ielādes indikatoru balstoties uz variantu
   const renderIndicator = () => {
     switch (variant) {
       case 'spinner':
@@ -113,7 +113,7 @@ export function LoadingSpinner({
         )}
       </div>
       
-      {/* Add styles for dot animation */}
+      {/* Pievienot stilus punktu animācijai */}
       {variant === 'dots' && (
         <style jsx global>{`
           @keyframes dotPulse {
@@ -127,9 +127,9 @@ export function LoadingSpinner({
 }
 
 /**
- * Simple full-screen spinner for page loading
+ * Pilnekrāna ielādes indikators visai lapai
  */
-export default function FullPageSpinner() {
+export function FullPageSpinner() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-[#1A1A1A]">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E63946]"></div>
@@ -138,7 +138,7 @@ export default function FullPageSpinner() {
 }
 
 /**
- * Page loader with app branding
+ * Lapas ielādes indikators ar zīmolu
  */
 export function BrandedPageLoader() {
   return (

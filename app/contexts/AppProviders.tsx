@@ -1,9 +1,11 @@
 // app/contexts/AppProviders.tsx
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { AuthProvider } from './AuthContext';
 import { CartProvider } from './CartContext';
 import { ToastProvider } from '../components/ui/Toaster';
 import { NextIntlClientProvider } from 'next-intl';
+import { useRouter, usePathname, useParams } from 'next/navigation';
+import { isAuthenticated, hasRequiredRole } from '@/lib/auth';
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -12,10 +14,16 @@ interface AppProvidersProps {
 }
 
 /**
- * Unified provider component that wraps the app with all necessary context providers
- * Simplifies the provider tree and ensures consistent provider order
+ * Vienots nodrošinātāju komponents, kas ietver lietotni ar visiem nepieciešamajiem konteksta nodrošinātājiem
+ * Vienkāršo nodrošinātāju koku un nodrošina konsekventu nodrošinātāju secību
  */
 export function AppProviders({ children, messages, locale }: AppProvidersProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <NextIntlClientProvider 
       messages={messages} 
@@ -26,7 +34,7 @@ export function AppProviders({ children, messages, locale }: AppProvidersProps) 
       <AuthProvider>
         <CartProvider>
           <ToastProvider>
-            {children}
+            {mounted ? children : null}
           </ToastProvider>
         </CartProvider>
       </AuthProvider>
@@ -34,77 +42,66 @@ export function AppProviders({ children, messages, locale }: AppProvidersProps) 
   );
 }
 
-/**
- * Custom hook to check if a user is authenticated
- * Combines the functionality of useAuth with route protection logic
- */
-export function useAuthentication() {
-  const { isAuthenticated, user, isLoading } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useParams();
-  const locale = params.locale || 'en';
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated && !isPublicRoute(pathname)) {
-      router.push(`/${locale}/login?redirect=${pathname}`);
-    }
-  }, [isAuthenticated, isLoading, pathname, router, locale]);
-
-  return { isAuthenticated, user, isLoading };
+interface ProtectedRouteProps {
+  children: ReactNode;
+  requiredRoles?: string[];
 }
 
 /**
- * Custom hook to check if a user has required role permissions
- * Combines role-based permissions with route protection
+ * Aizsargātu maršrutu komponents
+ * Izmanto, lai aizsargātu maršrutus, kas prasa autentifikāciju vai konkrētas lomas
  */
-export function useAuthorization(requiredRoles: string[] = []) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+export function ProtectedRoute({ children, requiredRoles = [] }: ProtectedRouteProps) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
   const locale = params.locale || 'en';
-
+  
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+  
   useEffect(() => {
-    if (!isLoading && isAuthenticated && user) {
-      if (requiredRoles.length > 0 && !requiredRoles.includes(user.role)) {
-        // Redirect to dashboard if user doesn't have required role
-        router.push(`/${locale}/dashboard`);
+    const checkAuth = async () => {
+      setIsChecking(true);
+
+      const authenticated = isAuthenticated();
+      
+      if (!authenticated) {
+        router.push(`/${locale}/login?redirect=${encodeURIComponent(pathname)}`);
+        return;
       }
-    }
-  }, [isAuthenticated, isLoading, user, requiredRoles, router, pathname, locale]);
 
-  return { 
-    user, 
-    isAuthorized: isAuthenticated && user && 
-      (requiredRoles.length === 0 || requiredRoles.includes(user.role)),
-    isLoading
-  };
+      if (requiredRoles.length > 0) {
+        const hasPermission = hasRequiredRole(requiredRoles);
+        
+        if (!hasPermission) {
+         
+          router.push(`/${locale}/dashboard`);
+          return;
+        }
+      }
+      
+      setIsAuthorized(true);
+      setIsChecking(false);
+    };
+    
+    checkAuth();
+  }, [router, pathname, locale, requiredRoles]);
+  
+  if (isChecking) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E63946]"></div>
+      </div>
+    );
+  }
+  
+  return isAuthorized ? <>{children}</> : null;
 }
 
 /**
- * Check if a route is public (doesn't require authentication)
+ * Eksportēt atsevišķu kontekstu āķus izmantošanai komponentos
  */
-function isPublicRoute(pathname: string): boolean {
-  const publicRoutes = [
-    '/login',
-    '/register',
-    '/',
-    '/about',
-    '/help',
-    '/ready-configs',
-    '/configurator'
-  ];
-  
-  // Extract path without locale
-  const segments = pathname.split('/');
-  const pathWithoutLocale = segments.length > 1 ? 
-    '/' + segments.slice(2).join('/') : pathname;
-  
-  return publicRoutes.some(route => pathWithoutLocale === route || pathWithoutLocale === '/');
-}
-
-// Re-export individual context hooks for use in components
 export { useAuth } from './AuthContext';
 export { useCart } from './CartContext';
 export { useToast } from '../components/ui/Toaster';

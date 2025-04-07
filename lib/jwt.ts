@@ -1,7 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
-// Define token types for better type safety
 export interface JwtPayload {
   userId: string;
   email?: string | null;
@@ -85,30 +84,30 @@ export function createAuthCookie(token: string) {
 }
 
 /**
- * Extracts user ID and role from token (for middleware)
+ * Unified function to get user info from token
+ * Replaces both getUserIdFromToken and getUserIdAndRoleFromToken
  */
-export async function getUserFromToken(token: string): Promise<{ userId: string; role: string } | null> {
-  try {
-    const payload = await verifyJwtToken(token);
-    if (!payload) return null;
-    
-    return { 
-      userId: payload.userId, 
-      role: payload.role 
-    };
-  } catch (error) {
-    console.error('Failed to extract user from token:', error);
+export function getUserInfoFromToken() {
+  const cookieStore = cookies();
+  const token = cookieStore.get('token');
+  
+  if (!token) {
     return null;
   }
-}
-
-/**
- * Verifies a token from request cookies
- * @param req - Request object with cookies
- */
-export async function verifyRequestToken(req: Request): Promise<JwtPayload | null> {
-  const token = req.cookies.get('token')?.value;
-  if (!token) return null;
   
-  return verifyJwtToken(token);
+  try {
+    const decoded = JWT.verify(
+      token.value,
+      JWT_SECRET
+    ) as JwtPayload;
+    
+    return {
+      userId: decoded.userId,
+      role: decoded.role,
+      email: decoded.email
+    };
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return null;
+  }
 }

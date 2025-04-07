@@ -1,3 +1,4 @@
+// app/i18n/index.ts
 import { getRequestConfig } from 'next-intl/server';
 import { createSharedPathnamesNavigation } from 'next-intl/navigation';
 import { headers } from 'next/headers';
@@ -5,28 +6,34 @@ import { notFound } from 'next/navigation';
 import { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 
-// Import all language files
+// Importēt visas valodu datnes
 import en from '../../messages/en.json';
 import lv from '../../messages/lv.json';
 import ru from '../../messages/ru.json';
 
-// Available locales and messages
+// Pieejamās lokalizācijas un ziņojumi
 export const locales = ['en', 'lv', 'ru'] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale = 'en';
 export const messages = { en, lv, ru };
 
-// i18n configuration
+// Laika joslu konfigurācija
+export const timeZones = {
+  default: 'Europe/Riga',
+  available: ['Europe/Riga', 'UTC']
+};
+
+// i18n konfigurācija
 export const i18nConfig = {
   locales,
   defaultLocale,
-  timeZone: 'Europe/Riga'
+  timeZone: timeZones.default
 };
 
-// Navigation utilities with internationalization
+// Navigācijas utilītfunkcijas ar internacionalizāciju
 export const { usePathname, useRouter } = createSharedPathnamesNavigation({ locales });
 
-// Request configuration for server components
+// Pieprasījuma konfigurācija servera komponentiem
 export default getRequestConfig(async ({ locale }) => {
   if (!locales.includes(locale as Locale)) {
     notFound();
@@ -35,11 +42,11 @@ export default getRequestConfig(async ({ locale }) => {
   return {
     messages: messages[locale as keyof typeof messages],
     locale: locale,
-    timeZone: 'Europe/Riga'
+    timeZone: timeZones.default
   };
 });
 
-// Client provider component for i18n
+// Klienta nodrošinātāja komponente internacionalizācijai
 export function I18nProvider({ 
   children, 
   locale, 
@@ -53,7 +60,7 @@ export function I18nProvider({
     <NextIntlClientProvider
       locale={locale}
       messages={messages}
-      timeZone="Europe/Riga"
+      timeZone={timeZones.default}
       now={new Date()}
     >
       {children}
@@ -61,11 +68,11 @@ export function I18nProvider({
   );
 }
 
-// Helper to get translated path
+// Palīgfunkcija tulkota ceļa iegūšanai
 export function getTranslatedPath(path: string, locale: string): string {
   const segments = path.split('/');
   
-  // Check if the first segment is a locale
+  // Pārbaudīt, vai pirmais segments ir lokalizācija
   if (locales.includes(segments[1] as Locale)) {
     segments[1] = locale;
   } else {
@@ -75,7 +82,7 @@ export function getTranslatedPath(path: string, locale: string): string {
   return segments.join('/');
 }
 
-// Helper to extract locale from path
+// Palīgfunkcija lokalizācijas izgūšanai no ceļa
 export function getLocaleFromPath(path: string): string {
   const segments = path.split('/');
   if (segments.length > 1 && locales.includes(segments[1] as Locale)) {
@@ -84,7 +91,7 @@ export function getLocaleFromPath(path: string): string {
   return defaultLocale;
 }
 
-// Helper to extract path without locale
+// Palīgfunkcija ceļa bez lokalizācijas izgūšanai
 export function getPathWithoutLocale(path: string): string {
   const segments = path.split('/');
   if (segments.length > 1 && locales.includes(segments[1] as Locale)) {
