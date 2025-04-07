@@ -1,18 +1,15 @@
-// middleware.ts - Optimized route protection and internationalization
 import { NextRequest, NextResponse } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './app/i18n';
 import { verifyJwtToken } from './lib/jwt';
+interface RouteConfig {
+  public: string[];   
+  protected: string[];  
+  specialist: string[]; 
+  admin: string[];      
+  excluded: string[];   
+}
 
-// Define route protection types
-type RouteConfig = {
-  public: string[];      // Routes accessible without authentication
-  specialist: string[];  // Routes requiring specialist or admin role
-  admin: string[];       // Routes requiring admin role only
-  excluded: string[];    // Paths to exclude from middleware processing
-};
-
-// Configure protected routes
 const routes: RouteConfig = {
   public: [
     '/login', 
@@ -23,6 +20,14 @@ const routes: RouteConfig = {
     '/peripherals',
     '/help',
     '/ready-configs',
+    '/configurator'
+  ],
+  
+  protected: [
+    '/dashboard',
+    '/profile',
+    '/cart',
+    '/checkout',
     '/configurator'
   ],
   
@@ -51,7 +56,7 @@ const routes: RouteConfig = {
   ]
 };
 
-// Create internationalization middleware
+// Izveido internacionalizācijas middleware
 const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
@@ -59,121 +64,140 @@ const intlMiddleware = createIntlMiddleware({
 });
 
 /**
- * Helper to check if path should be excluded from middleware
+ * Palīgfunkcija, lai pārbaudītu vai ceļu vajadzētu izslēgt no middleware
  */
 function isExcludedPath(pathname: string): boolean {
-  return routes.excluded.some(path => pathname.startsWith(path)) || pathname.includes('.');
+  return routes.excluded.some(path => pathname.startsWith(path)) || 
+         pathname.includes('.');
 }
 
 /**
- * Helper to extract path without locale
+ * Iegūst ceļu bez lokalizācijas prefiksa
  */
 function getPathWithoutLocale(pathname: string): string {
   const segments = pathname.split('/');
-  return segments.length > 1 && locales.includes(segments[1] as any)
-    ? '/' + segments.slice(2).join('/')
-    : pathname;
+  if (segments.length > 1 && locales.includes(segments[1] as any)) {
+    return '/' + segments.slice(2).join('/');
+  }
+  return pathname;
 }
 
 /**
- * Helper to get locale from path
+ * Iegūst lokalizāciju no ceļa
  */
 function getLocaleFromPath(pathname: string): string {
   const segments = pathname.split('/');
-  return segments.length > 1 && locales.includes(segments[1] as any)
-    ? segments[1]
-    : defaultLocale;
+  if (segments.length > 1 && locales.includes(segments[1] as any)) {
+    return segments[1];
+  }
+  return defaultLocale;
 }
 
 /**
- * Helper to check if path is public
+ * Pārbauda vai ceļš ir publisks
  */
 function isPublicPath(pathWithoutLocale: string): boolean {
   return routes.public.some(route => 
-    pathWithoutLocale === route || pathWithoutLocale === '/'
+    pathWithoutLocale === route || 
+    pathWithoutLocale === '/' || 
+    (route !== '/' && pathWithoutLocale.startsWith(route))
   );
 }
 
 /**
- * Helper to check if path requires specialist role
+ * Pārbauda vai ceļš ir aizsargāts (prasa jebkādu autentifikāciju)
+ */
+function isProtectedPath(pathWithoutLocale: string): boolean {
+  return routes.protected.some(path => 
+    pathWithoutLocale.startsWith(path)
+  );
+}
+
+/**
+ * Pārbauda vai ceļam ir nepieciešama speciālista loma
  */
 function isSpecialistPath(pathWithoutLocale: string): boolean {
-  return routes.specialist.some(path => pathWithoutLocale.startsWith(path));
+  return routes.specialist.some(path => 
+    pathWithoutLocale.startsWith(path)
+  );
 }
 
 /**
- * Helper to check if path requires admin role
+ * Pārbauda vai ceļam ir nepieciešama administratora loma
  */
 function isAdminPath(pathWithoutLocale: string): boolean {
-  return routes.admin.some(path => pathWithoutLocale.startsWith(path));
+  return routes.admin.some(path => 
+    pathWithoutLocale.startsWith(path)
+  );
 }
 
 /**
- * Main middleware function with improved route protection
+ * Galvenā middleware funkcija ar uzlabotu maršrutu aizsardzību
  */
 export default async function middleware(request: NextRequest) {
-  // Skip middleware for excluded paths
+  // Izlaižam middleware izslēgtajiem ceļiem (API, staticās datnes, utt.)
   const { pathname } = request.nextUrl;
   
   if (isExcludedPath(pathname)) {
     return NextResponse.next();
   }
   
-  // Setup internationalization
+  // Iestatīt internacionalizāciju
   const locale = getLocaleFromPath(pathname);
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-next-intl-locale', locale);
   requestHeaders.set('x-next-intl-timezone', 'Europe/Riga');
   
-  // Get path without locale
+  // Iegūst ceļu bez lokalizācijas prefiksa
   const pathWithoutLocale = getPathWithoutLocale(pathname);
   
-  // Apply intl middleware
+  // Pielieto internacionalizācijas middleware
   const response = intlMiddleware(request);
   
-  // Allow access to public routes
+  // Atļaut piekļuvi publiskajiem ceļiem
   if (isPublicPath(pathWithoutLocale)) {
     return response;
   }
   
-  // Get token and verify
+  // Iegūt un pārbaudīt tokenu
   const token = request.cookies.get('token')?.value;
   
   if (!token) {
-    console.log(`Access denied to ${pathname} - No token`);
+    console.log(`Piekļuve liegta: ${pathname} - Nav tokena`);
     const loginUrl = new URL(`/${locale}/login`, request.url);
+    // Saglabājam lapas URL lai pēc autentifikācijas būtu iespējams atgriezties
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
   
   const payload = await verifyJwtToken(token);
   if (!payload) {
-    console.log(`Access denied to ${pathname} - Invalid token`);
+    console.log(`Piekļuve liegta: ${pathname} - Nederīgs tokens`);
     const loginUrl = new URL(`/${locale}/login`, request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
   
-  // Check specialist routes
+  // Pārbauda speciālista ceļus
   if (isSpecialistPath(pathWithoutLocale) && 
       !['SPECIALIST', 'ADMIN'].includes(payload.role)) {
-    console.log(`Access denied to ${pathname} - Insufficient permissions`);
+    console.log(`Piekļuve liegta: ${pathname} - Nepietiekamas tiesības`);
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
   }
   
-  // Check admin routes
+  // Pārbauda administratora ceļus
   if (isAdminPath(pathWithoutLocale) && 
       payload.role !== 'ADMIN') {
-    console.log(`Access denied to ${pathname} - Insufficient permissions`);
+    console.log(`Piekļuve liegta: ${pathname} - Nepietiekamas tiesības`);
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
   }
   
-  // Access granted
-  console.log(`Access granted to ${pathname} - Valid token, role: ${payload.role}`);
+  // Piekļuve atļauta
+  console.log(`Piekļuve atļauta: ${pathname} - Derīgs tokens, loma: ${payload.role}`);
   return response;
 }
 
-// Configure path matcher
+// Konfigurējam ceļu mečeri
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
 };

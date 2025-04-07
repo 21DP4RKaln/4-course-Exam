@@ -1,10 +1,10 @@
-// app/api/auth/route.ts - Combined authentication handler
+// app/api/auth/route.ts - Consolidated authentication API handler
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { withErrorHandling, ApiErrors } from '@/lib/api';
+import { ApiErrors, withErrorHandling } from '@/lib/api';
 import { signJwtToken, verifyJwtToken, createAuthCookie } from '@/lib/jwt';
 
 // Login request types
@@ -24,12 +24,13 @@ interface RegisterRequest {
 }
 
 /**
- * Login handler
+ * Main API route handler for all auth operations
+ * Supports: login, register, logout, check, refresh
  */
 export async function POST(request: NextRequest) {
   // Determine the requested action from the URL
-  const { pathname } = request.nextUrl;
-  const action = pathname.split('/').pop();
+  const { pathname, searchParams } = request.nextUrl;
+  const action = searchParams.get('action') || pathname.split('/').pop();
   
   switch(action) {
     case 'login':
@@ -38,11 +39,25 @@ export async function POST(request: NextRequest) {
       return handleRegister(request);
     case 'logout':
       return handleLogout();
-    case 'check':
-      return handleAuthCheck();
+    case 'refresh':
+      return handleRefreshToken();
     default:
       return ApiErrors.badRequest('Invalid auth endpoint');
   }
+}
+
+/**
+ * GET handler for auth status check
+ */
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const action = searchParams.get('action') || 'check';
+  
+  if (action === 'check') {
+    return handleAuthCheck();
+  }
+  
+  return ApiErrors.badRequest('Invalid auth endpoint');
 }
 
 /**
@@ -216,6 +231,44 @@ async function handleLogout() {
 }
 
 /**
+ * Token refresh handler
+ */
+async function handleRefreshToken() {
+  return withErrorHandling(async () => {
+    // Get token from cookies
+    const cookieStore = cookies();
+    const token = cookieStore.get('token');
+    
+    if (!token) {
+      return ApiErrors.unauthorized('Not authenticated');
+    }
+    
+    // Verify token
+    const payload = await verifyJwtToken(token.value);
+    
+    if (!payload) {
+      return ApiErrors.unauthorized('Invalid or expired token');
+    }
+    
+    // Create a new token
+    const newToken = await signJwtToken(payload);
+    
+    // Set cookie and return response
+    const response = NextResponse.json({ 
+      success: true,
+      data: {
+        message: 'Token refreshed successfully'
+      }
+    });
+    
+    // Set HTTP-only cookie with JWT token
+    response.cookies.set(createAuthCookie(newToken));
+    
+    return response;
+  });
+}
+
+/**
  * Auth check handler
  */
 async function handleAuthCheck() {
@@ -244,16 +297,4 @@ async function handleAuthCheck() {
       }
     });
   });
-}
-
-// For the GET method, only allow auth checks
-export async function GET(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const action = pathname.split('/').pop();
-  
-  if (action === 'check') {
-    return handleAuthCheck();
-  }
-  
-  return ApiErrors.badRequest('Invalid auth endpoint');
 }

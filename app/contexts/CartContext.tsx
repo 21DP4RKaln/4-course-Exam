@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
 /**
  * Cart item interface for type safety
@@ -24,115 +24,120 @@ interface CartContextType {
   totalPrice: number;
 }
 
-// Create context with undefined default
+type CartAction = 
+  | { type: 'ADD_ITEM'; payload: Omit<CartItem, 'quantity'> }
+  | { type: 'REMOVE_ITEM'; payload: { id: string } }
+  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
+  | { type: 'CLEAR_CART' }
+  | { type: 'INITIALIZE'; payload: CartItem[] };
+
+const STORAGE_KEY = 'ivapro_cart';
+
+const initialState: { items: CartItem[] } = {
+  items: []
+};
+
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// Storage key for cart items
-const STORAGE_KEY = 'ivapro_cart';
+function cartReducer(state: { items: CartItem[] }, action: CartAction): { items: CartItem[] } {
+  switch (action.type) {
+    case 'ADD_ITEM': {
+      const existingItemIndex = state.items.findIndex(item => item.id === action.payload.id);
+      
+      if (existingItemIndex !== -1) {
+        const updatedItems = [...state.items];
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + 1
+        };
+        return { items: updatedItems };
+      } else {
+        return { 
+          items: [...state.items, { ...action.payload, quantity: 1 }] 
+        };
+      }
+    }
+    
+    case 'REMOVE_ITEM':
+      return { 
+        items: state.items.filter(item => item.id !== action.payload.id) 
+      };
+    
+    case 'UPDATE_QUANTITY': {
+      if (action.payload.quantity <= 0) {
+        return { 
+          items: state.items.filter(item => item.id !== action.payload.id) 
+        };
+      }
+      
+      return { 
+        items: state.items.map(item => 
+          item.id === action.payload.id 
+            ? { ...item, quantity: action.payload.quantity }
+            : item
+        ) 
+      };
+    }
+    
+    case 'CLEAR_CART':
+      return { items: [] };
+    
+    case 'INITIALIZE':
+      return { items: action.payload };
+    
+    default:
+      return state;
+  }
+}
 
 /**
  * Cart provider component
  */
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
-  
-  // Load cart from localStorage on mount
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+
   useEffect(() => {
-    const loadCart = () => {
-      try {
-        const savedCart = localStorage.getItem(STORAGE_KEY);
-        if (savedCart) {
-          setItems(JSON.parse(savedCart));
-        }
-      } catch (e) {
-        console.error('Failed to parse saved cart', e);
-        // Reset to empty cart if parsing fails
-        localStorage.removeItem(STORAGE_KEY);
-      } finally {
-        setIsInitialized(true);
+    try {
+      const savedCart = localStorage.getItem(STORAGE_KEY);
+      if (savedCart) {
+        dispatch({ type: 'INITIALIZE', payload: JSON.parse(savedCart) });
       }
-    };
-    
-    loadCart();
+    } catch (e) {
+      console.error('Failed to parse saved cart', e);
+      localStorage.removeItem(STORAGE_KEY);
+    }
   }, []);
-  
-  // Save cart to localStorage when it changes
+
   useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    if (state.items.length > 0 || localStorage.getItem(STORAGE_KEY)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
     }
-  }, [items, isInitialized]);
-  
-  /**
-   * Add an item to the cart
-   */
-  const addItem = useCallback((item: Omit<CartItem, 'quantity'>) => {
-    setItems(prevItems => {
-      const existingItem = prevItems.find(i => i.id === item.id);
-      
-      if (existingItem) {
-        return prevItems.map(i => 
-          i.id === item.id 
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
-        );
-      } else {
-        return [...prevItems, { ...item, quantity: 1 }];
-      }
-    });
-  }, []);
-  
-  /**
-   * Remove an item from the cart
-   */
-  const removeItem = useCallback((id: string) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== id));
-  }, []);
-  
-  /**
-   * Update an item's quantity
-   */
-  const updateQuantity = useCallback((id: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeItem(id);
-      return;
-    }
-    
-    setItems(prevItems => 
-      prevItems.map(item => 
-        item.id === id ? { ...item, quantity } : item
-      )
+  }, [state.items]);
+
+  const cartContextValue = React.useMemo(() => {
+    const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = state.items.reduce(
+      (sum, item) => sum + (item.price * item.quantity), 
+      0
     );
-  }, [removeItem]);
-  
-  /**
-   * Clear the cart
-   */
-  const clearCart = useCallback(() => {
-    setItems([]);
-  }, []);
-  
-  // Calculate cart totals
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  
-  const totalPrice = items.reduce(
-    (sum, item) => sum + (item.price * item.quantity), 
-    0
-  );
+    
+    return {
+      items: state.items,
+      addItem: (item: Omit<CartItem, 'quantity'>) => 
+        dispatch({ type: 'ADD_ITEM', payload: item }),
+      removeItem: (id: string) => 
+        dispatch({ type: 'REMOVE_ITEM', payload: { id } }),
+      updateQuantity: (id: string, quantity: number) => 
+        dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } }),
+      clearCart: () => 
+        dispatch({ type: 'CLEAR_CART' }),
+      totalItems,
+      totalPrice
+    };
+  }, [state.items]);
   
   return (
-    <CartContext.Provider 
-      value={{ 
-        items, 
-        addItem, 
-        removeItem, 
-        updateQuantity, 
-        clearCart,
-        totalItems,
-        totalPrice
-      }}
-    >
+    <CartContext.Provider value={cartContextValue}>
       {children}
     </CartContext.Provider>
   );
