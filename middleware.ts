@@ -2,15 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './app/i18n';
 import { verifyJwtToken } from './lib/jwt';
-interface RouteConfig {
-  public: string[];   
-  protected: string[];  
-  specialist: string[]; 
-  admin: string[];      
-  excluded: string[];   
-}
 
-const routes: RouteConfig = {
+const routeConfig = {
   public: [
     '/login', 
     '/register', 
@@ -22,7 +15,6 @@ const routes: RouteConfig = {
     '/ready-configs',
     '/configurator'
   ],
-  
   protected: [
     '/dashboard',
     '/profile',
@@ -30,14 +22,12 @@ const routes: RouteConfig = {
     '/checkout',
     '/configurator'
   ],
-  
   specialist: [
     '/specialist-dashboard',
     '/approve-configs',
     '/service-orders',
     '/specialist/ready-configs'
   ],
-  
   admin: [
     '/admin-dashboard',
     '/manage-users',
@@ -45,8 +35,7 @@ const routes: RouteConfig = {
     '/manage-ready-configs',
     '/admin/pending-configs'
   ],
-  
-  excluded: [
+  excludedPatterns: [
     '/api/',
     '/_next/',
     '/static/',
@@ -63,11 +52,13 @@ const intlMiddleware = createIntlMiddleware({
 });
 
 /**
- * Palīgfunkcija, lai pārbaudītu vai ceļu vajadzētu izslēgt no middleware
+ * Pārbauda vai ceļš atbilst kādam no norādītajiem paterniem
  */
-function isExcludedPath(pathname: string): boolean {
-  return routes.excluded.some(path => pathname.startsWith(path)) || 
-         pathname.includes('.');
+function pathMatchesPatterns(pathname: string, patterns: string[]): boolean {
+  return patterns.some(pattern => 
+    pathname.startsWith(pattern) || 
+    pathname.includes('.')
+  );
 }
 
 /**
@@ -93,50 +84,51 @@ function getLocaleFromPath(pathname: string): string {
 }
 
 /**
- * Pārbauda vai ceļš ir publisks
+ * Pārbauda vai ceļam ir nepieciešamas konkrētas tiesības
  */
-function isPublicPath(pathWithoutLocale: string): boolean {
-  return routes.public.some(route => 
-    pathWithoutLocale === route || 
-    pathWithoutLocale === '/' || 
-    (route !== '/' && pathWithoutLocale.startsWith(route))
-  );
+function checkPathPermissions(pathWithoutLocale: string, userId: string, userRole: string): { allowed: boolean, redirectPath?: string } {
+  if (routeConfig.public.some(path => 
+    pathWithoutLocale === path || 
+    pathWithoutLocale === '/' ||
+    (path !== '/' && pathWithoutLocale.startsWith(path))
+  )) {
+    return { allowed: true };
+  }
+
+  if (!userId) {
+    return { allowed: false };
+  }
+
+  if (routeConfig.protected.some(path => pathWithoutLocale.startsWith(path))) {
+    return { allowed: true };
+  }
+
+  if (routeConfig.specialist.some(path => pathWithoutLocale.startsWith(path))) {
+    if (['SPECIALIST', 'ADMIN'].includes(userRole)) {
+      return { allowed: true };
+    } else {
+      return { allowed: false, redirectPath: '/dashboard' };
+    }
+  }
+
+  if (routeConfig.admin.some(path => pathWithoutLocale.startsWith(path))) {
+    if (userRole === 'ADMIN') {
+      return { allowed: true };
+    } else {
+      return { allowed: false, redirectPath: '/dashboard' };
+    }
+  }
+
+  return { allowed: !!userId };
 }
 
 /**
- * Pārbauda vai ceļš ir aizsargāts (prasa jebkādu autentifikāciju)
- */
-function isProtectedPath(pathWithoutLocale: string): boolean {
-  return routes.protected.some(path => 
-    pathWithoutLocale.startsWith(path)
-  );
-}
-
-/**
- * Pārbauda vai ceļam ir nepieciešama speciālista loma
- */
-function isSpecialistPath(pathWithoutLocale: string): boolean {
-  return routes.specialist.some(path => 
-    pathWithoutLocale.startsWith(path)
-  );
-}
-
-/**
- * Pārbauda vai ceļam ir nepieciešama administratora loma
- */
-function isAdminPath(pathWithoutLocale: string): boolean {
-  return routes.admin.some(path => 
-    pathWithoutLocale.startsWith(path)
-  );
-}
-
-/**
- * Galvenā middleware funkcija ar uzlabotu maršrutu aizsardzību
+ * Galvenā middleware funkcija
  */
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
-  if (isExcludedPath(pathname)) {
+
+  if (pathMatchesPatterns(pathname, routeConfig.excludedPatterns)) {
     return NextResponse.next();
   }
 
@@ -149,40 +141,35 @@ export default async function middleware(request: NextRequest) {
 
   const response = intlMiddleware(request);
 
-  if (isPublicPath(pathWithoutLocale)) {
-    return response;
-  }
-  
   const token = request.cookies.get('token')?.value;
+  let userId = null;
+  let userRole = null;
   
-  if (!token) {
-    console.log(`Piekļuve liegta: ${pathname} - Nav tokena`);
-    const loginUrl = new URL(`/${locale}/login`, request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+  if (token) {
+    try {
+      const payload = await verifyJwtToken(token);
+      if (payload) {
+        userId = payload.userId;
+        userRole = payload.role;
+      }
+    } catch (error) {
+      console.error('Token verification failed:', error);
+    }
+  }
+
+  const { allowed, redirectPath } = checkPathPermissions(pathWithoutLocale, userId, userRole);
+  
+  if (!allowed) {
+    if (!userId) {
+      // Nav autentificēts
+      const loginUrl = new URL(`/${locale}/login`, request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    } else {
+      return NextResponse.redirect(new URL(`/${locale}${redirectPath || '/dashboard'}`, request.url));
+    }
   }
   
-  const payload = await verifyJwtToken(token);
-  if (!payload) {
-    console.log(`Piekļuve liegta: ${pathname} - Nederīgs tokens`);
-    const loginUrl = new URL(`/${locale}/login`, request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  if (isSpecialistPath(pathWithoutLocale) && 
-      !['SPECIALIST', 'ADMIN'].includes(payload.role)) {
-    console.log(`Piekļuve liegta: ${pathname} - Nepietiekamas tiesības`);
-    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
-  }
-
-  if (isAdminPath(pathWithoutLocale) && 
-      payload.role !== 'ADMIN') {
-    console.log(`Piekļuve liegta: ${pathname} - Nepietiekamas tiesības`);
-    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
-  }
-
-  console.log(`Piekļuve atļauta: ${pathname} - Derīgs tokens, loma: ${payload.role}`);
   return response;
 }
 
