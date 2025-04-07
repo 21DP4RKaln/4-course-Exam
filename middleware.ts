@@ -56,7 +56,6 @@ const routes: RouteConfig = {
   ]
 };
 
-// Izveido internacionalizācijas middleware
 const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
@@ -135,37 +134,30 @@ function isAdminPath(pathWithoutLocale: string): boolean {
  * Galvenā middleware funkcija ar uzlabotu maršrutu aizsardzību
  */
 export default async function middleware(request: NextRequest) {
-  // Izlaižam middleware izslēgtajiem ceļiem (API, staticās datnes, utt.)
   const { pathname } = request.nextUrl;
   
   if (isExcludedPath(pathname)) {
     return NextResponse.next();
   }
-  
-  // Iestatīt internacionalizāciju
+
   const locale = getLocaleFromPath(pathname);
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-next-intl-locale', locale);
   requestHeaders.set('x-next-intl-timezone', 'Europe/Riga');
-  
-  // Iegūst ceļu bez lokalizācijas prefiksa
+
   const pathWithoutLocale = getPathWithoutLocale(pathname);
-  
-  // Pielieto internacionalizācijas middleware
+
   const response = intlMiddleware(request);
-  
-  // Atļaut piekļuvi publiskajiem ceļiem
+
   if (isPublicPath(pathWithoutLocale)) {
     return response;
   }
   
-  // Iegūt un pārbaudīt tokenu
   const token = request.cookies.get('token')?.value;
   
   if (!token) {
     console.log(`Piekļuve liegta: ${pathname} - Nav tokena`);
     const loginUrl = new URL(`/${locale}/login`, request.url);
-    // Saglabājam lapas URL lai pēc autentifikācijas būtu iespējams atgriezties
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
@@ -177,27 +169,23 @@ export default async function middleware(request: NextRequest) {
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
-  
-  // Pārbauda speciālista ceļus
+
   if (isSpecialistPath(pathWithoutLocale) && 
       !['SPECIALIST', 'ADMIN'].includes(payload.role)) {
     console.log(`Piekļuve liegta: ${pathname} - Nepietiekamas tiesības`);
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
   }
-  
-  // Pārbauda administratora ceļus
+
   if (isAdminPath(pathWithoutLocale) && 
       payload.role !== 'ADMIN') {
     console.log(`Piekļuve liegta: ${pathname} - Nepietiekamas tiesības`);
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
   }
-  
-  // Piekļuve atļauta
+
   console.log(`Piekļuve atļauta: ${pathname} - Derīgs tokens, loma: ${payload.role}`);
   return response;
 }
 
-// Konfigurējam ceļu mečeri
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
 };

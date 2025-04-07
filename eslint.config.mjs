@@ -1,28 +1,21 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 
-// Configure next-intl plugin
 const withNextIntl = createNextIntlPlugin('./app/i18n/index.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
-    // Only use ESLint during build process, not development
     ignoreDuringBuilds: process.env.NODE_ENV !== 'production',
   },
-  // Experimental features
   experimental: {
-    // Server actions configuration
     serverActions: {
       allowedOrigins: ['*'],
       bodySizeLimit: '2mb'
     },
-    // Enable optimized image handling
     optimizeImages: true,
-    // Enable scroll restoration
     scrollRestoration: true,
   },
-  // Environment variables for client-side
   env: {
     NEXT_PUBLIC_DEFAULT_LOCALE: 'en',
     NEXT_PUBLIC_DEFAULT_TIMEZONE: 'Europe/Riga',
@@ -68,5 +61,4 @@ const nextConfig = {
   },
 };
 
-// Export the configuration with next-intl plugin
 export default withNextIntl(nextConfig);
