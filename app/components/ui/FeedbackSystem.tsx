@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
 
+// ====== BASE MODAL COMPONENT ======
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,7 +15,7 @@ interface ModalProps {
 }
 
 /**
- * Base modal component with customizable content
+ * Bāzes modālais logs ar pielāgojamu saturu
  */
 export function Modal({ 
   isOpen, 
@@ -59,8 +61,10 @@ export function Modal({
   );
 }
 
+// ====== CONTACT MODAL ======
+
 /**
- * Contact modal for customer support
+ * Klientu atbalsta modālais logs
  */
 export function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const t = useTranslations('contactModal');
@@ -80,7 +84,7 @@ export function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
           {t('description.second')}
         </p>
 
-        {/* Contact options */}
+        {/* Kontaktu opcijas */}
         <div>
           <h3 className="text-lg text-white mb-2">{t('callOrRequest')}</h3>
           <a 
@@ -91,7 +95,7 @@ export function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
           </a>
         </div>
 
-        {/* Messaging */}
+        {/* Ziņojumapmaiņa */}
         <div>
           <h3 className="text-lg text-white mb-2">{t('writeMessage')}</h3>
           <div className="flex gap-4">
@@ -110,7 +114,7 @@ export function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
           </div>
         </div>
         
-        {/* Email */}
+        {/* E-pasts */}
         <div>
           <h3 className="text-lg text-white mb-2">{t('writeEmail')}</h3>
           <div className="flex gap-4">
@@ -131,8 +135,10 @@ export function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
   );
 }
 
+// ====== FOOTER CONTACT MODAL ======
+
 /**
- * Footer contact form modal
+ * Kājenes kontaktu forma modālais logs
  */
 export function FooterContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const t = useTranslations('footer');
@@ -173,8 +179,10 @@ export function FooterContactModal({ isOpen, onClose }: { isOpen: boolean; onClo
   );
 }
 
+// ====== ERROR MESSAGES ======
+
 /**
- * Error message component with consistent styling
+ * Kļūdas ziņojuma komponents ar konsekventu stilizāciju
  */
 export function ErrorMessage({ message, onRetry }: { message: string; onRetry?: () => void }) {
   const t = useTranslations();
@@ -191,7 +199,7 @@ export function ErrorMessage({ message, onRetry }: { message: string; onRetry?: 
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" 
           />
         </svg>
-        <h2 className="text-xl font-bold text-white mb-4">Error</h2>
+        <h2 className="text-xl font-bold text-white mb-4">Kļūda</h2>
         <p className="text-gray-400 mb-6">{message}</p>
         
         <div className="flex justify-center space-x-4">
@@ -216,8 +224,10 @@ export function ErrorMessage({ message, onRetry }: { message: string; onRetry?: 
   );
 }
 
+// ====== SUCCESS MESSAGES ======
+
 /**
- * Success message component with consistent styling
+ * Veiksmīga ziņojuma komponents ar konsekventu stilizāciju
  */
 export function SuccessMessage({ 
   title, 
@@ -248,6 +258,31 @@ export function SuccessMessage({
           {actionText}
         </button>
       )}
+    </div>
+  );
+}
+
+// ====== NOT FOUND PAGE ======
+
+/**
+ * Lapa nav atrasta (404) kļūdas komponents
+ */
+export function NotFoundPage() {
+  const t = useTranslations('common');
+  const router = useRouter();
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#1A1A1A]">
+      <div className="max-w-md w-full p-8 bg-[#1E1E1E] rounded-lg shadow-lg text-center">
+        <h1 className="text-4xl font-bold text-white mb-4">404</h1>
+        <p className="text-gray-400 mb-6">{t('pageNotFound')}</p>
+        <button 
+          onClick={() => router.push('/')}
+          className="inline-block px-4 py-2 bg-[#E63946] text-white rounded-md hover:bg-[#FF4D5A] transition-colors"
+        >
+          {t('backToHome')}
+        </button>
+      </div>
     </div>
   );
 }

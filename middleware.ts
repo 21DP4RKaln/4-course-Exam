@@ -161,7 +161,6 @@ export default async function middleware(request: NextRequest) {
   
   if (!allowed) {
     if (!userId) {
-      // Nav autentificēts
       const loginUrl = new URL(`/${locale}/login`, request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
