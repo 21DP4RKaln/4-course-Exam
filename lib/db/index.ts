@@ -233,7 +233,9 @@ export const userService = {
   async changeRole(id: string, role: string) {
     return prisma.user.update({
       where: { id },
-      data: { role }
+      data: { 
+        role: role as 'CLIENT' | 'SPECIALIST' | 'ADMIN'
+      }
     });
   },
   
