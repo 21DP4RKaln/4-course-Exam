@@ -21,6 +21,19 @@ export default function Header() {
  
   const locale = pathname.split('/')[1]
 
+  const getDashboardLink = () => {
+    if (!isAuthenticated || !user) return `/${locale}/dashboard`
+    
+    switch (user.role) {
+      case 'ADMIN':
+        return `/${locale}/admin`
+      case 'SPECIALIST':
+        return `/${locale}/specialist`
+      default:
+        return `/${locale}/dashboard`
+    }
+  }
+
   return (
     <header className="bg-white dark:bg-dark-bg shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
@@ -78,7 +91,7 @@ export default function Header() {
             {isAuthenticated ? (
               <div className="relative flex items-center">
                 <Link 
-                  href={`/${locale}/dashboard`}
+                  href={getDashboardLink()}
                   className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
                 >
                   <User size={20} className="mr-1" />
@@ -135,7 +148,11 @@ export default function Header() {
       </div>
 
       {/* Mobile menu */}
-      <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+      <MobileMenu 
+        isOpen={mobileMenuOpen} 
+        onClose={() => setMobileMenuOpen(false)} 
+        dashboardLink={getDashboardLink()}
+      />
     </header>
   )
 }

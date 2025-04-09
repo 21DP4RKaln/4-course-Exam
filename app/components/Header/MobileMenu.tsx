@@ -11,9 +11,10 @@ import LanguageSwitcher from './LanguageSwitcher'
 interface MobileMenuProps {
   isOpen: boolean
   onClose: () => void
+  dashboardLink: string
 }
 
-export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMenuProps) {
   const t = useTranslations()
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
@@ -69,7 +70,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           {isAuthenticated ? (
             <>
               <Link 
-                href={`/${locale}/dashboard`}
+                href={dashboardLink}
                 className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
                 onClick={onClose}
               >

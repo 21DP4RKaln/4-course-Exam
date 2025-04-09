@@ -9,7 +9,8 @@ import {
   User, 
   Package, 
   Cpu,
-  Clock
+  Clock,
+  Settings
 } from 'lucide-react'
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs'
@@ -28,21 +29,30 @@ export default function DashboardPage() {
   const [dataLoading, setDataLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Handle role-based redirects
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.push(`/${locale}/auth/login`)
+    if (!loading) {
+      if (!isAuthenticated) {
+        // Not authenticated, redirect to login
+        router.push(`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`)
+      } else if (user?.role === 'ADMIN') {
+        // Redirect admins to admin panel
+        router.push(`/${locale}/admin`)
+      } else if (user?.role === 'SPECIALIST') {
+        // Redirect specialists to specialist panel
+        router.push(`/${locale}/specialist`)
+      }
     }
-  }, [isAuthenticated, loading, router, locale])
+  }, [isAuthenticated, loading, router, locale, pathname, user?.role])
 
   useEffect(() => {
-    if (!isAuthenticated || loading) return;
+    if (!isAuthenticated || loading || user?.role !== 'USER') return;
 
     const fetchData = async () => {
       setDataLoading(true);
       setError(null);
       
       try {
-        // Only fetch data for the active tab to optimize performance
         if (activeTab === 'configurations') {
           const configData = await getUserConfigurations(user!.id);
           setConfigurations(configData);
@@ -68,8 +78,8 @@ export default function DashboardPage() {
       </div>
     )
   }
-
-  if (!isAuthenticated) {
+ 
+  if (!isAuthenticated || user?.role !== 'USER') {
     return null 
   }
 
@@ -364,11 +374,23 @@ export default function DashboardPage() {
               </div>
               
               <div className="mt-8">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <Settings size={20} className="mr-2" />
                   Change Password
                 </h2>
                 <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg">
                   <div className="space-y-4">
+                    <div>
+                      <label className="form-label">
+                        Current Password
+                      </label>
+                      <input 
+                        type="password"
+                        className="form-input"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    
                     <div>
                       <label className="form-label">
                         New Password
