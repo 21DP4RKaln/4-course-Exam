@@ -77,25 +77,21 @@ export default function AdminPanelPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
-  
-  // Data states
+
   const [users, setUsers] = useState<UserData[]>([])
   const [orders, setOrders] = useState<OrderData[]>([])
   const [configurations, setConfigurations] = useState<ConfigurationData[]>([])
   const [components, setComponents] = useState<ComponentData[]>([])
-  
-  // Loading states for different tabs
+
   const [tabLoading, setTabLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
-  // Redirect if not authenticated or not an admin
+
   useEffect(() => {
     if (!loading && (!isAuthenticated || user?.role !== 'ADMIN')) {
       router.push(`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`)
     }
   }, [isAuthenticated, loading, router, locale, pathname, user?.role])
-  
-  // Fetch data based on active tab
+
   useEffect(() => {
     if (!isAuthenticated || user?.role !== 'ADMIN') return;
 
@@ -159,7 +155,7 @@ export default function AdminPanelPage() {
   }
   
   if (!isAuthenticated || user?.role !== 'ADMIN') {
-    return null // Will redirect in the useEffect
+    return null 
   }
   
   const formatDate = (dateString: string) => {
@@ -170,8 +166,7 @@ export default function AdminPanelPage() {
       year: 'numeric'
     }).format(date)
   }
-  
-  // Filter data based on search query
+ 
   const filteredData = {
     users: users.filter(user => 
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -191,8 +186,7 @@ export default function AdminPanelPage() {
       component.category.toLowerCase().includes(searchQuery.toLowerCase())
     )
   }
-  
-  // Pagination
+
   const getCurrentItems = () => {
     const currentItems = filteredData[activeTab]
     const indexOfLastItem = currentPage * itemsPerPage
@@ -226,8 +220,7 @@ export default function AdminPanelPage() {
     
     return roleColors[role as keyof typeof roleColors] || 'bg-gray-100 text-gray-800'
   }
-  
-  // Delete handlers
+
   const handleDelete = async (id: string, type: TabType) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
     
@@ -333,58 +326,61 @@ export default function AdminPanelPage() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((user: UserData) => (
-                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                        <User className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {user.name}
+              {items.map((item) => {
+                const user = item as UserData;
+                return (
+                  <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                          <User className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {user.email}
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {user.name}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {user.email}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(user.role)}`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {user.orderCount}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {formatDate(user.createdAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button 
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
-                        onClick={() => handleView(user.id, 'users')}
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <button 
-                        className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
-                        onClick={() => handleEdit(user.id, 'users')}
-                      >
-                        <Edit size={18} />
-                      </button>
-                      <button 
-                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                        onClick={() => handleDelete(user.id, 'users')}
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(user.role)}`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {user.orderCount}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(user.createdAt)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button 
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                          onClick={() => handleView(user.id, 'users')}
+                        >
+                          <Eye size={18} />
+                        </button>
+                        <button 
+                          className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
+                          onClick={() => handleEdit(user.id, 'users')}
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button 
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                          onClick={() => handleDelete(user.id, 'users')}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         );
@@ -418,51 +414,54 @@ export default function AdminPanelPage() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((order: OrderData) => (
-                <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                    #{order.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {order.userName}
-                    </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {order.email}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {order.itemCount}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                    €{order.totalAmount.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {formatDate(order.createdAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button 
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
-                        onClick={() => handleView(order.id, 'orders')}
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <button 
-                        className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
-                        onClick={() => handleEdit(order.id, 'orders')}
-                      >
-                        <Edit size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {items.map((item) => {
+                const order = item as OrderData;
+                return (
+                  <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      #{order.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {order.userName}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {order.email}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {order.itemCount}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      €{order.totalAmount.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(order.createdAt)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button 
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                          onClick={() => handleView(order.id, 'orders')}
+                        >
+                          <Eye size={18} />
+                        </button>
+                        <button 
+                          className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
+                          onClick={() => handleEdit(order.id, 'orders')}
+                        >
+                          <Edit size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         );
@@ -496,76 +495,79 @@ export default function AdminPanelPage() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((config: ConfigurationData) => (
-                <tr key={config.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {config.name}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      ID: {config.id}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {config.userName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(config.status)}`}>
-                      {config.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-col space-y-1">
-                      {config.isTemplate && (
-                        <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 rounded-full">
-                          Template
-                        </span>
-                      )}
-                      {config.isPublic && (
-                        <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
-                          Public
-                        </span>
-                      )}
-                      {!config.isTemplate && !config.isPublic && (
-                        <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300 rounded-full">
-                          Private
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                    €{config.totalPrice.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {formatDate(config.createdAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button 
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
-                        onClick={() => handleView(config.id, 'configurations')}
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <button 
-                        className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
-                        onClick={() => handleEdit(config.id, 'configurations')}
-                      >
-                        <Edit size={18} />
-                      </button>
-                      <button 
-                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                        onClick={() => handleDelete(config.id, 'configurations')}
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {items.map((item) => {
+                const config = item as ConfigurationData;
+                return (
+                  <tr key={config.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {config.name}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        ID: {config.id}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {config.userName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(config.status)}`}>
+                        {config.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col space-y-1">
+                        {config.isTemplate && (
+                          <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 rounded-full">
+                            Template
+                          </span>
+                        )}
+                        {config.isPublic && (
+                          <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
+                            Public
+                          </span>
+                        )}
+                        {!config.isTemplate && !config.isPublic && (
+                          <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300 rounded-full">
+                            Private
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      €{config.totalPrice.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(config.createdAt)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button 
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                          onClick={() => handleView(config.id, 'configurations')}
+                        >
+                          <Eye size={18} />
+                        </button>
+                        <button 
+                          className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
+                          onClick={() => handleEdit(config.id, 'configurations')}
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button 
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                          onClick={() => handleDelete(config.id, 'configurations')}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        )
+        );
         
       case 'components':
         return (
@@ -593,67 +595,70 @@ export default function AdminPanelPage() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((component: ComponentData) => (
-                <tr key={component.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {component.name}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      ID: {component.id}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300 capitalize">
-                      {component.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                    €{component.price.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      component.stock <= 5 
-                        ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                        : component.stock <= 10
-                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-                          : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                    }`}>
-                      {component.stock}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {formatDate(component.createdAt)}
-                  </td>
-                  <td className="px-6py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button 
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
-                        onClick={() => handleView(component.id, 'components')}
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <button 
-                        className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
-                        onClick={() => handleEdit(component.id, 'components')}
-                      >
-                        <Edit size={18} />
-                      </button>
-                      <button 
-                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                        onClick={() => handleDelete(component.id, 'components')}
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {items.map((item) => {
+                const component = item as ComponentData;
+                return (
+                  <tr key={component.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {component.name}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        ID: {component.id}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300 capitalize">
+                        {component.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      €{component.price.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        component.stock <= 5 
+                          ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                          : component.stock <= 10
+                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                            : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                      }`}>
+                        {component.stock}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(component.createdAt)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button 
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                          onClick={() => handleView(component.id, 'components')}
+                        >
+                          <Eye size={18} />
+                        </button>
+                        <button 
+                          className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
+                          onClick={() => handleEdit(component.id, 'components')}
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button 
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                          onClick={() => handleDelete(component.id, 'components')}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        )
+        );
       default:
-        return null
+        return null;
     }
   }
   
