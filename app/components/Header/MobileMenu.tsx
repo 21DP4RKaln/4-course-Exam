@@ -1,0 +1,114 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { useAuth } from '@/app/contexts/AuthContext'
+import { useTheme } from '@/app/contexts/ThemeContext'
+import { Sun, Moon, Home, Monitor, Cpu, User, LogOut } from 'lucide-react'
+import LanguageSwitcher from './LanguageSwitcher'
+
+interface MobileMenuProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+  const t = useTranslations()
+  const pathname = usePathname()
+  const { theme, toggleTheme } = useTheme()
+  const { user, isAuthenticated, logout } = useAuth()
+
+  const locale = pathname.split('/')[1]
+
+  if (!isOpen) return null
+
+  return (
+    <div className="md:hidden fixed inset-0 z-50 bg-white dark:bg-gray-900 overflow-y-auto">
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        <div className="flex items-center justify-between mb-8">
+          <LanguageSwitcher />
+          
+          <button 
+            onClick={toggleTheme}
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            aria-label={theme === 'dark' ? t('common.lightMode') : t('common.darkMode')}
+          >
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+        </div>
+
+        <nav className="space-y-6">
+          <Link 
+            href={`/${locale}`}
+            className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+            onClick={onClose}
+          >
+            <Home size={20} className="mr-3" />
+            {t('nav.home')}
+          </Link>
+
+          <Link 
+            href={`/${locale}/configurator`}
+            className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+            onClick={onClose}
+          >
+            <Cpu size={20} className="mr-3" />
+            {t('nav.configurator')}
+          </Link>
+
+          <Link 
+            href={`/${locale}/shop/ready-made`}
+            className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+            onClick={onClose}
+          >
+            <Monitor size={20} className="mr-3" />
+            {t('nav.readyMade')}
+          </Link>
+
+          {isAuthenticated ? (
+            <>
+              <Link 
+                href={`/${locale}/dashboard`}
+                className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                onClick={onClose}
+              >
+                <User size={20} className="mr-3" />
+                {t('nav.dashboard')}
+              </Link>
+
+              <button 
+                onClick={() => {
+                  logout()
+                  onClose()
+                }}
+                className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+              >
+                <LogOut size={20} className="mr-3" />
+                {t('nav.logout')}
+              </button>
+            </>
+          ) : (
+            <div className="pt-4 space-y-4">
+              <Link 
+                href={`/${locale}/auth/login`}
+                className="block w-full py-3 text-center text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                onClick={onClose}
+              >
+                {t('nav.login')}
+              </Link>
+              
+              <Link 
+                href={`/${locale}/auth/register`}
+                className="block w-full py-3 text-center text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                onClick={onClose}
+              >
+                {t('nav.register')}
+              </Link>
+            </div>
+          )}
+        </nav>
+      </div>
+    </div>
+    )
+}

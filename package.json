@@ -1,27 +1,43 @@
 {
-  "name": "exam-project",
+  "name": "ivapro-pc-configurator",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "@prisma/client": "^5.9.0",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.2.0",
+    "lucide-react": "^0.316.0",
+    "next": "15.0.0",
+    "next-intl": "^3.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.2.5"
+    "react-hook-form": "^7.50.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "15.2.5",
-    "@eslint/eslintrc": "^3"
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.0",
+    "postcss": "^8",
+    "prisma": "^5.9.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
 }

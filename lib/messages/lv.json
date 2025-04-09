@@ -1,0 +1,97 @@
+{
+    "common": {
+      "appName": "IvaPro PC Konfigurācija",
+      "language": "Valoda",
+      "darkMode": "Tumšais režīms",
+      "lightMode": "Gaišais režīms"
+    },
+    "nav": {
+      "home": "Sākums",
+      "configurator": "Konfigurātors",
+      "readyMade": "Gatavie Datori",
+      "cart": "Grozs",
+      "login": "Ieiet",
+      "register": "Reģistrēties",
+      "dashboard": "Panelis",
+      "logout": "Iziet"
+    },
+    "auth": {
+      "email": "E-pasts",
+      "password": "Parole",
+      "confirmPassword": "Apstiprināt paroli",
+      "name": "Vārds",
+      "loginTitle": "Ienākt savā kontā",
+      "registerTitle": "Izveidot kontu",
+      "noAccount": "Nav konta?",
+      "hasAccount": "Jau ir konts?",
+      "signUp": "Reģistrēties",
+      "signIn": "Ieiet",
+      "forgotPassword": "Aizmirsi paroli?",
+      "loginSuccess": "Ielogošanās veiksmīga",
+      "registerSuccess": "Reģistrācija veiksmīga"
+    },
+    "configurator": {
+      "title": "Datora Konfigurācija",
+      "selectCategory": "Izvēlies komponenta kategoriju",
+      "selectComponent": "Izvēlies komponentu",
+      "addToConfig": "Pievienot konfigurācijai",
+      "totalPrice": "Kopējā cena",
+      "saveDraft": "Saglabāt kā melnrakstu",
+      "submitConfig": "Iesniegt konfigurāciju",
+      "configName": "Konfigurācijas nosaukums",
+      "configDescription": "Apraksts (neobligāts)"
+    },
+    "cart": {
+      "title": "Tavs Grozs",
+      "empty": "Tavs grozs ir tukšs",
+      "continueShoping": "Turpināt iepirkties",
+      "checkout": "Apmaksāt",
+      "total": "Kopā",
+      "removeItem": "Noņemt",
+      "updateQuantity": "Atjaunināt"
+    },
+    "checkout": {
+      "title": "Apmaksa",
+      "shippingAddress": "Piegādes adrese",
+      "paymentMethod": "Maksājuma metode",
+      "orderSummary": "Pasūtījuma kopsavilkums",
+      "placeOrder": "Veikt pasūtījumu",
+      "orderSuccess": "Pasūtījums veiksmīgi veikts"
+    },
+    "dashboard": {
+      "title": "Panelis",
+      "myConfigurations": "Manas konfigurācijas",
+      "myOrders": "Mani pasūtījumi",
+      "profile": "Profils",
+      "noConfigurations": "Tev pagaidām nav konfigurāciju",
+      "noOrders": "Tev pagaidām nav pasūtījumu"
+    },
+    "admin": {
+      "title": "Administrācijas panelis",
+      "users": "Lietotāji",
+      "components": "Komponenti",
+      "orders": "Pasūtījumi",
+      "configurations": "Konfigurācijas"
+    },
+    "specialist": {
+      "title": "Speciālista panelis",
+      "pendingConfigs": "Konfigurācijas gaidīšanā",
+      "reviewConfig": "Pārskatīt konfigurāciju",
+      "approve": "Apstiprināt",
+      "reject": "Noraidīt",
+      "comment": "Komentārs"
+    },
+    "footer": {
+      "copyright": "© 2025 IvaPro PC Konfigurācija. Visas tiesības aizsargātas.",
+      "privacyPolicy": "Privātuma politika",
+      "termsOfService": "Lietošanas noteikumi",
+      "contact": "Sazināties ar mums"
+    },
+    "errors": {
+      "required": "Šis lauks ir obligāts",
+      "emailInvalid": "Nederīga e-pasta adrese",
+      "passwordLength": "Parolei jābūt vismaz 8 rakstzīmēm",
+      "passwordMatch": "Paroles nesakrīt",
+      "serverError": "Servera kļūda, lūdzu mēģini vēlāk"
+    }
+  }

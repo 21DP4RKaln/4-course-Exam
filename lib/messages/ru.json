@@ -1,0 +1,97 @@
+{
+    "common": {
+      "appName": "IvaPro PC Конфигуратор",
+      "language": "Язык",
+      "darkMode": "Темный режим",
+      "lightMode": "Светлый режим"
+    },
+    "nav": {
+      "home": "Главная",
+      "configurator": "Конфигуратор",
+      "readyMade": "Готовые ПК",
+      "cart": "Корзина",
+      "login": "Вход",
+      "register": "Регистрация",
+      "dashboard": "Панель",
+      "logout": "Выход"
+    },
+    "auth": {
+      "email": "Эл. почта",
+      "password": "Пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "name": "Имя",
+      "loginTitle": "Вход в аккаунт",
+      "registerTitle": "Создать аккаунт",
+      "noAccount": "Нет аккаунта?",
+      "hasAccount": "Уже есть аккаунт?",
+      "signUp": "Зарегистрироваться",
+      "signIn": "Войти",
+      "forgotPassword": "Забыли пароль?",
+      "loginSuccess": "Вход выполнен успешно",
+      "registerSuccess": "Регистрация выполнена успешно"
+    },
+    "configurator": {
+      "title": "Конфигуратор ПК",
+      "selectCategory": "Выберите категорию комплектующих",
+      "selectComponent": "Выберите комплектующие",
+      "addToConfig": "Добавить в конфигурацию",
+      "totalPrice": "Общая стоимость",
+      "saveDraft": "Сохранить как черновик",
+      "submitConfig": "Отправить конфигурацию",
+      "configName": "Название конфигурации",
+      "configDescription": "Описание (необязательно)"
+    },
+    "cart": {
+      "title": "Ваша корзина",
+      "empty": "Ваша корзина пуста",
+      "continueShoping": "Продолжить покупки",
+      "checkout": "Оформить заказ",
+      "total": "Итого",
+      "removeItem": "Удалить",
+      "updateQuantity": "Обновить"
+    },
+    "checkout": {
+      "title": "Оформление заказа",
+      "shippingAddress": "Адрес доставки",
+      "paymentMethod": "Способ оплаты",
+      "orderSummary": "Сводка заказа",
+      "placeOrder": "Разместить заказ",
+      "orderSuccess": "Заказ успешно размещен"
+    },
+    "dashboard": {
+      "title": "Панель управления",
+      "myConfigurations": "Мои конфигурации",
+      "myOrders": "Мои заказы",
+      "profile": "Профиль",
+      "noConfigurations": "У вас пока нет конфигураций",
+      "noOrders": "У вас пока нет заказов"
+    },
+    "admin": {
+      "title": "Панель администратора",
+      "users": "Пользователи",
+      "components": "Комплектующие",
+      "orders": "Заказы",
+      "configurations": "Конфигурации"
+    },
+    "specialist": {
+      "title": "Панель специалиста",
+      "pendingConfigs": "Ожидающие конфигурации",
+      "reviewConfig": "Просмотр конфигурации",
+      "approve": "Утвердить",
+      "reject": "Отклонить",
+      "comment": "Комментарий"
+    },
+    "footer": {
+      "copyright": "© 2025 IvaPro PC Конфигуратор. Все права защищены.",
+      "privacyPolicy": "Политика конфиденциальности",
+      "termsOfService": "Условия использования",
+      "contact": "Связаться с нами"
+    },
+    "errors": {
+      "required": "Это поле обязательно",
+      "emailInvalid": "Неверный адрес электронной почты",
+      "passwordLength": "Пароль должен содержать не менее 8 символов",
+      "passwordMatch": "Пароли не совпадают",
+      "serverError": "Ошибка сервера, пожалуйста, попробуйте позже"
+    }
+  }
