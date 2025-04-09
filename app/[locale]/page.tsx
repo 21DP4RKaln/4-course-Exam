@@ -8,6 +8,7 @@ export default function HomePage() {
   
   return (
     <div className="space-y-12">
+      <h1>{t('home.welcome')}</h1>
       <HeroSection />
       <FeaturedConfigurations />
       <ServicesSection />
