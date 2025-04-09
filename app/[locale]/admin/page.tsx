@@ -22,158 +22,49 @@ import {
   AlertTriangle
 } from 'lucide-react'
 
-// Mock data for users
-const mockUsers = [
-  {
-    id: 'user-1',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    role: 'USER',
-    createdAt: '2025-01-15T10:30:00Z',
-    orderCount: 3
-  },
-  {
-    id: 'user-2',
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    role: 'USER',
-    createdAt: '2025-02-20T14:45:00Z',
-    orderCount: 1
-  },
-  {
-    id: 'user-3',
-    name: 'Admin User',
-    email: 'admin@example.com',
-    role: 'ADMIN',
-    createdAt: '2024-12-01T09:00:00Z',
-    orderCount: 0
-  },
-  {
-    id: 'user-4',
-    name: 'Tech Specialist',
-    email: 'specialist@example.com',
-    role: 'SPECIALIST',
-    createdAt: '2025-01-10T11:20:00Z',
-    orderCount: 0
-  }
-]
-
-// Mock data for orders
-const mockOrders = [
-  {
-    id: 'ord-1',
-    userId: 'user-1',
-    userName: 'John Doe',
-    email: 'john.doe@example.com',
-    status: 'COMPLETED',
-    totalAmount: 2499,
-    createdAt: '2025-03-20T10:30:00Z',
-    itemCount: 1
-  },
-  {
-    id: 'ord-2',
-    userId: 'user-2',
-    userName: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    status: 'PROCESSING',
-    totalAmount: 1249,
-    createdAt: '2025-04-01T15:20:00Z',
-    itemCount: 3
-  },
-  {
-    id: 'ord-3',
-    userId: 'user-1',
-    userName: 'John Doe',
-    email: 'john.doe@example.com',
-    status: 'PENDING',
-    totalAmount: 899,
-    createdAt: '2025-04-05T09:15:00Z',
-    itemCount: 1
-  }
-]
-
-// Mock data for configurations
-const mockConfigurations = [
-  {
-    id: 'config-1',
-    name: 'Gaming Beast',
-    userId: 'user-1',
-    userName: 'John Doe',
-    status: 'APPROVED',
-    isTemplate: true,
-    isPublic: true,
-    totalPrice: 2499,
-    createdAt: '2025-03-15T10:30:00Z'
-  },
-  {
-    id: 'config-2',
-    name: 'Workstation Setup',
-    userId: 'user-1',
-    userName: 'John Doe',
-    status: 'DRAFT',
-    isTemplate: false,
-    isPublic: false,
-    totalPrice: 1899,
-    createdAt: '2025-04-02T14:45:00Z'
-  },
-  {
-    id: 'config-3',
-    name: 'Budget Gaming',
-    userId: 'user-2',
-    userName: 'Jane Smith',
-    status: 'SUBMITTED',
-    isTemplate: false,
-    isPublic: false,
-    totalPrice: 899,
-    createdAt: '2025-04-05T09:15:00Z'
-  }
-]
-
-// Mock data for components
-const mockComponents = [
-  {
-    id: 'comp-1',
-    name: 'Intel Core i9-14900K',
-    category: 'cpu',
-    price: 649.99,
-    stock: 15,
-    createdAt: '2025-01-10T10:00:00Z'
-  },
-  {
-    id: 'comp-2',
-    name: 'AMD Ryzen 9 7950X',
-    category: 'cpu',
-    price: 599.99,
-    stock: 20,
-    createdAt: '2025-01-10T10:00:00Z'
-  },
-  {
-    id: 'comp-3',
-    name: 'NVIDIA RTX 4080 16GB',
-    category: 'gpu',
-    price: 1199.99,
-    stock: 8,
-    createdAt: '2025-01-15T10:00:00Z'
-  },
-  {
-    id: 'comp-4',
-    name: 'ASUS ROG Maximus Z790',
-    category: 'motherboard',
-    price: 549.99,
-    stock: 12,
-    createdAt: '2025-01-12T10:00:00Z'
-  },
-  {
-    id: 'comp-5',
-    name: 'Corsair 32GB DDR5-6000',
-    category: 'ram',
-    price: 189.99,
-    stock: 25,
-    createdAt: '2025-01-20T10:00:00Z'
-  }
-]
-
+// Types
 type TabType = 'users' | 'orders' | 'components' | 'configurations'
+
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  orderCount: number;
+}
+
+interface OrderData {
+  id: string;
+  userId: string;
+  userName: string;
+  email: string;
+  status: string;
+  totalAmount: number;
+  createdAt: string;
+  itemCount: number;
+}
+
+interface ConfigurationData {
+  id: string;
+  name: string;
+  userId: string;
+  userName: string;
+  status: string;
+  isTemplate: boolean;
+  isPublic: boolean;
+  totalPrice: number;
+  createdAt: string;
+}
+
+interface ComponentData {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  createdAt: string;
+}
 
 export default function AdminPanelPage() {
   const t = useTranslations()
@@ -187,12 +78,77 @@ export default function AdminPanelPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
   
+  // Data states
+  const [users, setUsers] = useState<UserData[]>([])
+  const [orders, setOrders] = useState<OrderData[]>([])
+  const [configurations, setConfigurations] = useState<ConfigurationData[]>([])
+  const [components, setComponents] = useState<ComponentData[]>([])
+  
+  // Loading states for different tabs
+  const [tabLoading, setTabLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  
   // Redirect if not authenticated or not an admin
   useEffect(() => {
     if (!loading && (!isAuthenticated || user?.role !== 'ADMIN')) {
       router.push(`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`)
     }
   }, [isAuthenticated, loading, router, locale, pathname, user?.role])
+  
+  // Fetch data based on active tab
+  useEffect(() => {
+    if (!isAuthenticated || user?.role !== 'ADMIN') return;
+
+    const fetchData = async () => {
+      setTabLoading(true);
+      setError(null);
+      
+      try {
+        let endpoint = '';
+        
+        switch (activeTab) {
+          case 'users':
+            endpoint = '/api/admin/users';
+            const usersResponse = await fetch(endpoint);
+            if (!usersResponse.ok) throw new Error('Failed to fetch users');
+            const usersData = await usersResponse.json();
+            setUsers(usersData);
+            break;
+            
+          case 'orders':
+            endpoint = '/api/admin/orders';
+            const ordersResponse = await fetch(endpoint);
+            if (!ordersResponse.ok) throw new Error('Failed to fetch orders');
+            const ordersData = await ordersResponse.json();
+            setOrders(ordersData);
+            break;
+            
+          case 'configurations':
+            endpoint = '/api/admin/configurations';
+            const configsResponse = await fetch(endpoint);
+            if (!configsResponse.ok) throw new Error('Failed to fetch configurations');
+            const configsData = await configsResponse.json();
+            setConfigurations(configsData);
+            break;
+            
+          case 'components':
+            endpoint = '/api/admin/components';
+            const componentsResponse = await fetch(endpoint);
+            if (!componentsResponse.ok) throw new Error('Failed to fetch components');
+            const componentsData = await componentsResponse.json();
+            setComponents(componentsData);
+            break;
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setError('Failed to load data. Please try again later.');
+      } finally {
+        setTabLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [activeTab, isAuthenticated, user?.role]);
   
   if (loading) {
     return (
@@ -217,20 +173,20 @@ export default function AdminPanelPage() {
   
   // Filter data based on search query
   const filteredData = {
-    users: mockUsers.filter(user => 
+    users: users.filter(user => 
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
     ),
-    orders: mockOrders.filter(order => 
+    orders: orders.filter(order => 
       order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.email.toLowerCase().includes(searchQuery.toLowerCase())
     ),
-    configurations: mockConfigurations.filter(config => 
+    configurations: configurations.filter(config => 
       config.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       config.userName.toLowerCase().includes(searchQuery.toLowerCase())
     ),
-    components: mockComponents.filter(component => 
+    components: components.filter(component => 
       component.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       component.category.toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -271,8 +227,78 @@ export default function AdminPanelPage() {
     return roleColors[role as keyof typeof roleColors] || 'bg-gray-100 text-gray-800'
   }
   
+  // Delete handlers
+  const handleDelete = async (id: string, type: TabType) => {
+    if (!confirm('Are you sure you want to delete this item?')) return;
+    
+    try {
+      const response = await fetch(`/api/admin/${type}/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) throw new Error(`Failed to delete ${type} item`);
+
+      switch (type) {
+        case 'users':
+          setUsers(users.filter(user => user.id !== id));
+          break;
+        case 'orders':
+          setOrders(orders.filter(order => order.id !== id));
+          break;
+        case 'configurations':
+          setConfigurations(configurations.filter(config => config.id !== id));
+          break;
+        case 'components':
+          setComponents(components.filter(component => component.id !== id));
+          break;
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      alert('Failed to delete item. Please try again.');
+    }
+  };
+  
+  // Navigate to edit page
+  const handleEdit = (id: string, type: TabType) => {
+    router.push(`/${locale}/admin/${type}/edit/${id}`);
+  };
+  
+  // Navigate to view page
+  const handleView = (id: string, type: TabType) => {
+    router.push(`/${locale}/admin/${type}/view/${id}`);
+  };
+  
+  // Navigate to create page
+  const handleCreate = (type: TabType) => {
+    router.push(`/${locale}/admin/${type}/create`);
+  };
+  
   const renderTabContent = () => {
     const items = getCurrentItems()
+    
+    if (tabLoading) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mr-3"></div>
+          <span className="text-gray-600 dark:text-gray-400">Loading data...</span>
+        </div>
+      )
+    }
+    
+    if (error) {
+      return (
+        <div className="text-center py-8">
+          <AlertTriangle size={32} className="mx-auto text-red-500 mb-2" />
+          <p className="text-gray-600 dark:text-gray-400">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      )
+    }
     
     if (items.length === 0) {
       return (
@@ -307,7 +333,7 @@ export default function AdminPanelPage() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((user: typeof mockUsers[0]) => (
+              {items.map((user: UserData) => (
                 <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -337,13 +363,22 @@ export default function AdminPanelPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
+                      <button 
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                        onClick={() => handleView(user.id, 'users')}
+                      >
                         <Eye size={18} />
                       </button>
-                      <button className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300">
+                      <button 
+                        className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
+                        onClick={() => handleEdit(user.id, 'users')}
+                      >
                         <Edit size={18} />
                       </button>
-                      <button className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
+                      <button 
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                        onClick={() => handleDelete(user.id, 'users')}
+                      >
                         <Trash2 size={18} />
                       </button>
                     </div>
@@ -383,7 +418,7 @@ export default function AdminPanelPage() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((order: typeof mockOrders[0]) => (
+              {items.map((order: OrderData) => (
                 <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                     #{order.id}
@@ -412,10 +447,16 @@ export default function AdminPanelPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
+                      <button 
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                        onClick={() => handleView(order.id, 'orders')}
+                      >
                         <Eye size={18} />
                       </button>
-                      <button className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300">
+                      <button 
+                        className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
+                        onClick={() => handleEdit(order.id, 'orders')}
+                      >
                         <Edit size={18} />
                       </button>
                     </div>
@@ -455,7 +496,7 @@ export default function AdminPanelPage() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((config: typeof mockConfigurations[0]) => (
+              {items.map((config: ConfigurationData) => (
                 <tr key={config.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -500,13 +541,22 @@ export default function AdminPanelPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
+                      <button 
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                        onClick={() => handleView(config.id, 'configurations')}
+                      >
                         <Eye size={18} />
                       </button>
-                      <button className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300">
+                      <button 
+                        className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
+                        onClick={() => handleEdit(config.id, 'configurations')}
+                      >
                         <Edit size={18} />
                       </button>
-                      <button className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
+                      <button 
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                        onClick={() => handleDelete(config.id, 'configurations')}
+                      >
                         <Trash2 size={18} />
                       </button>
                     </div>
@@ -543,7 +593,7 @@ export default function AdminPanelPage() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((component: typeof mockComponents[0]) => (
+              {items.map((component: ComponentData) => (
                 <tr key={component.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -575,12 +625,24 @@ export default function AdminPanelPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {formatDate(component.createdAt)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300">
+                      <button 
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                        onClick={() => handleView(component.id, 'components')}
+                      >
+                        <Eye size={18} />
+                      </button>
+                      <button 
+                        className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
+                        onClick={() => handleEdit(component.id, 'components')}
+                      >
                         <Edit size={18} />
                       </button>
-                      <button className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
+                      <button 
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                        onClick={() => handleDelete(component.id, 'components')}
+                      >
                         <Trash2 size={18} />
                       </button>
                     </div>
@@ -590,22 +652,171 @@ export default function AdminPanelPage() {
             </tbody>
           </table>
         )
-        
       default:
         return null
     }
   }
   
+  // Handle tab switching
+  const handleTabSwitch = (tab: TabType) => {
+    setActiveTab(tab)
+    setCurrentPage(1)
+    setSearchQuery('')
+  }
+  
   return (
-    <div className="max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-        {t('admin.title')}
-      </h1>
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {t('admin.dashboard.title')}
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          {t('admin.dashboard.description')}
+        </p>
+      </div>
       
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-        {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+      {/* Tabs */}
+      <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex flex-wrap -mb-px">
           <button
-            className={`py-4 px-6 text-sm font-medium border-b-2 flex items-center ${
-              activeTab === 'users'
-                ? 'border-blue-600 text-blue-600 dark:border
+            className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
+              activeTab === 'users' 
+                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500' 
+                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
+            }`}
+            onClick={() => handleTabSwitch('users')}
+          >
+            <div className="flex items-center">
+              <Users size={18} className="mr-2" />
+              <span>{t('admin.tabs.users')}</span>
+            </div>
+          </button>
+          
+          <button
+            className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
+              activeTab === 'orders' 
+                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500' 
+                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
+            }`}
+            onClick={() => handleTabSwitch('orders')}
+          >
+            <div className="flex items-center">
+              <ShoppingCart size={18} className="mr-2" />
+              <span>{t('admin.tabs.orders')}</span>
+            </div>
+          </button>
+          
+          <button
+            className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
+              activeTab === 'configurations' 
+                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500' 
+                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
+            }`}
+            onClick={() => handleTabSwitch('configurations')}
+          >
+            <div className="flex items-center">
+              <Settings size={18} className="mr-2" />
+              <span>{t('admin.tabs.configurations')}</span>
+            </div>
+          </button>
+          
+          <button
+            className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
+              activeTab === 'components' 
+                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500' 
+                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
+            }`}
+            onClick={() => handleTabSwitch('components')}
+          >
+            <div className="flex items-center">
+              <Cpu size={18} className="mr-2" />
+              <span>{t('admin.tabs.components')}</span>
+            </div>
+          </button>
+        </div>
+      </div>
+      
+      {/* Search and Actions */}
+      <div className="flex flex-col md:flex-row justify-between mb-4 gap-4">
+        <div className="relative w-full md:w-96">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Search size={18} className="text-gray-500 dark:text-gray-400" />
+          </div>
+          <input
+            type="text"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+            placeholder={`${t('common.search')}...`}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setCurrentPage(1)
+            }}
+          />
+        </div>
+        
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="flex items-center text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-blue-500 dark:hover:bg-blue-600"
+            onClick={() => handleCreate(activeTab)}
+          >
+            <Plus size={18} className="mr-2" />
+            {t(`admin.actions.create.${activeTab}`)}
+          </button>
+          
+          <button
+            type="button"
+            className="flex items-center text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+          >
+            <Filter size={18} className="mr-2" />
+            {t('common.filter')}
+          </button>
+        </div>
+      </div>
+      
+      {/* Content */}
+      <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          {renderTabContent()}
+        </div>
+      </div>
+      
+      {/* Pagination */}
+      {!tabLoading && !error && filteredData[activeTab].length > 0 && (
+        <div className="flex justify-between items-center mt-4 pb-4">
+          <div className="text-sm text-gray-700 dark:text-gray-400">
+            {t('common.pagination.showing')} {(currentPage - 1) * itemsPerPage + 1} {t('common.pagination.to')}{' '}
+            {Math.min(currentPage * itemsPerPage, filteredData[activeTab].length)} {t('common.pagination.of')}{' '}
+            {filteredData[activeTab].length} {t(`admin.items.${activeTab}`)}
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md 
+                ${currentPage === 1
+                  ? 'text-gray-400 bg-gray-100 dark:text-gray-500 dark:bg-gray-700 cursor-not-allowed'
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700'
+                }`}
+            >
+              <ChevronLeft size={18} className="mr-1" />
+              {t('common.pagination.previous')}
+            </button>
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md 
+                ${currentPage === totalPages
+                  ? 'text-gray-400 bg-gray-100 dark:text-gray-500 dark:bg-gray-700 cursor-not-allowed'
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700'
+                }`}
+            >
+              {t('common.pagination.next')}
+              <ChevronRight size={18} className="ml-1" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

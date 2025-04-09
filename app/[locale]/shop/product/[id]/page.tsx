@@ -166,7 +166,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
       type: 'configuration',
       name: product.name,
       price: product.discountPrice || product.price,
-      imageUrl: product.imageUrl
+      imageUrl: product.imageUrl ?? ''
     }, quantity)
     
     // Show a toast or notification here
@@ -632,10 +632,19 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
                         type: 'configuration',
                         name: pc.name,
                         price: pc.discountPrice || pc.price,
-                        imageUrl: pc.imageUrl
+                        imageUrl: pc.imageUrl ?? ''
                       })}
                       className="p-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
                     >
                       <ShoppingCart size={20} />
                     </button>
-                  </div>
+                    </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        )}
+    </div>
+  )
+}                 

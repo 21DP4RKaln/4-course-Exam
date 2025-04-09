@@ -400,3 +400,108 @@ export default function SpecialistPanelPage() {
                         <div>
                           <p className="font-medium">Optimization suggestion</p>
                           <p className="text-sm mt-1">The selected power supply (650W) is adequate, but for future upgrades, considering a 750W PSU might be beneficial.</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Components list */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Components
+                      </h4>
+                      
+                      <div className="bg-gray-50 dark:bg-gray-900 rounded-md overflow-hidden">
+                        <div className="grid grid-cols-3 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-850 p-2">
+                          <div>Component</div>
+                          <div>Description</div>
+                          <div className="text-right">Price</div>
+                        </div>
+                        
+                        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                          {config.components.map((component) => (
+                            <div key={component.id} className="grid grid-cols-3 p-2 text-sm">
+                              <div className="flex items-center">
+                                {getCategoryIcon(component.category)}
+                                <span className="ml-2 font-medium text-gray-800 dark:text-gray-200">
+                                  {component.category.charAt(0).toUpperCase() + component.category.slice(1)}
+                                </span>
+                              </div>
+                              <div className="text-gray-700 dark:text-gray-300">
+                                {component.name}
+                              </div>
+                              <div className="text-right font-medium text-gray-900 dark:text-white">
+                                €{component.price.toFixed(2)}
+                              </div>
+                            </div>
+                          ))}
+                          
+                          <div className="grid grid-cols-3 p-2 bg-gray-50 dark:bg-gray-900">
+                            <div className="col-span-2 text-right font-medium text-gray-900 dark:text-white">
+                              Total:
+                            </div>
+                            <div className="text-right font-bold text-gray-900 dark:text-white">
+                              €{config.totalPrice.toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Review form */}
+                    <div>
+                      <div className="mb-4">
+                        <label htmlFor="comment" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          {t('specialist.comment')}
+                        </label>
+                        <textarea
+                          id="comment"
+                          rows={4}
+                          value={reviewComment}
+                          onChange={(e) => setReviewComment(e.target.value)}
+                          placeholder="Add your review comments, suggestions or reasons for rejection..."
+                          className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      
+                      <div className="flex space-x-4">
+                        <button
+                          onClick={handleApprove}
+                          className="flex-1 py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center"
+                        >
+                          <CheckCircle size={18} className="mr-2" />
+                          {t('specialist.approve')}
+                        </button>
+                        
+                        <button
+                          onClick={handleReject}
+                          className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center"
+                        >
+                          <XCircle size={18} className="mr-2" />
+                          {t('specialist.reject')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 h-full flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-gray-400 dark:text-gray-500 mb-3">
+                  <Cpu size={48} className="mx-auto" />
+                </div>
+                <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+                  Select a Configuration
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Select a configuration from the list to review its details and compatibility.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

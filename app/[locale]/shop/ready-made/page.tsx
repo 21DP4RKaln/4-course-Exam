@@ -260,10 +260,9 @@ export default function ReadyMadePCsPage() {
       type: 'configuration',
       name: pc.name,
       price: pc.discountPrice || pc.price,
-      imageUrl: pc.imageUrl
+      imageUrl: pc.imageUrl || ''
     })
-    
-    // Show a toast or notification here
+ 
   }
   
   const resetFilters = () => {
