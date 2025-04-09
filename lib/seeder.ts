@@ -4,7 +4,6 @@ const prisma = new PrismaClient()
 
 async function seed() {
   try {
-    // Create component categories
     const categoryData = [
       { name: 'CPU', description: 'Central Processing Unit' },
       { name: 'Motherboard', description: 'Main circuit board' },
@@ -28,8 +27,7 @@ async function seed() {
         },
       })
     }
-
-    // Create CPU components
+ 
     const cpuComponents = [
       {
         name: 'Intel Core i9-14900K',

@@ -9,6 +9,7 @@ import ComponentSelectionPanel from '@/app/components/Configurator/ComponentSele
 import ConfigurationSummary from '@/app/components/Configurator/ConfigurationSummary'
 import SelectedComponentsList from '@/app/components/Configurator/SelectedComponents'
 
+
 interface Component {
   id: string
   name: string
@@ -39,7 +40,6 @@ export default function ConfiguratorPage() {
   const [componentCategories, setComponentCategories] = useState<Category[]>([])
   const [isLoadingComponents, setIsLoadingComponents] = useState(false)
 
-  // Fetch component categories on initial load
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -47,35 +47,39 @@ export default function ConfiguratorPage() {
         if (!response.ok) throw new Error('Failed to fetch component categories')
         
         const data = await response.json()
+
+        const categoriesMap = new Map()
         
-        // Map categories to our format with icons
-        const mappedCategories = data.categories.map((cat: any) => {
-          let icon
-          
-          switch(cat.name.toLowerCase()) {
-            case 'cpu': icon = <Cpu size={24} />; break;
-            case 'motherboard': icon = <Server size={24} />; break;
-            case 'gpu': icon = <Monitor size={24} />; break;
-            case 'ram': icon = <HardDrive size={24} />; break;
-            case 'storage': icon = <HardDrive size={24} />; break;
-            case 'case': icon = <Layers size={24} />; break;
-            case 'cooling': icon = <Fan size={24} />; break;
-            case 'psu': icon = <Zap size={24} />; break;
-            default: icon = <Cpu size={24} />;
-          }
-          
-          return {
-            id: cat.name.toLowerCase(),
-            name: cat.name,
-            icon
+        data.categories.forEach((cat: any) => {
+          if (!categoriesMap.has(cat.name.toLowerCase())) {
+            let icon
+            
+            switch(cat.name.toLowerCase()) {
+              case 'cpu': icon = <Cpu size={24} />; break;
+              case 'motherboard': icon = <Server size={24} />; break;
+              case 'gpu': icon = <Monitor size={24} />; break;
+              case 'ram': icon = <HardDrive size={24} />; break;
+              case 'storage': icon = <HardDrive size={24} />; break;
+              case 'case': icon = <Layers size={24} />; break;
+              case 'cooling': icon = <Fan size={24} />; break;
+              case 'psu': icon = <Zap size={24} />; break;
+              default: icon = <Cpu size={24} />;
+            }
+            
+            categoriesMap.set(cat.name.toLowerCase(), {
+              id: cat.name.toLowerCase(),
+              name: cat.name,
+              icon
+            })
           }
         })
+
+        const uniqueCategories = Array.from(categoriesMap.values())
         
-        setComponentCategories(mappedCategories)
-        
-        // Set active category to first one if available
-        if (mappedCategories.length > 0) {
-          setActiveCategory(mappedCategories[0].id)
+        setComponentCategories(uniqueCategories)
+
+        if (uniqueCategories.length > 0) {
+          setActiveCategory(uniqueCategories[0].id)
         }
         
       } catch (error) {
@@ -86,7 +90,6 @@ export default function ConfiguratorPage() {
     fetchCategories()
   }, [])
 
-  // Fetch components when category changes
   useEffect(() => {
     const fetchComponents = async () => {
       if (!activeCategory) return
@@ -133,7 +136,6 @@ export default function ConfiguratorPage() {
 
     setLoading(true)
     try {
-      // In a real app, this would be an API call to save the configuration
       console.log('Saving configuration:', {
         name: configName,
         description: configDescription,
@@ -175,7 +177,6 @@ export default function ConfiguratorPage() {
 
     setLoading(true)
     try {
-      // In a real app, this would be an API call to submit the configuration
       console.log('Submitting configuration for review:', {
         name: configName,
         description: configDescription,
