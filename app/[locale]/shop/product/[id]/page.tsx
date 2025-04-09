@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
@@ -22,158 +22,101 @@ import {
   Fan,
   Zap,
   Server,
-  AlertTriangle
+  AlertTriangle,
+  Eye
 } from 'lucide-react'
+import type { PC, PCWithRelated } from '@/lib/services/shopService'
 
-// Mock data similar to ready-made page
-const mockPCs = [
-  {
-    id: 'pc1',
-    name: 'Apex Gaming Beast',
-    category: 'gaming',
-    description: 'High-end gaming PC with RTX 4080, i9-14900K, 64GB RAM',
-    longDescription: `Experience gaming like never before with the Apex Gaming Beast. This high-performance gaming PC is equipped with the latest Intel Core i9-14900K processor and NVIDIA RTX 4080 graphics card to deliver exceptional performance for even the most demanding games at 4K resolution with ray tracing enabled. 
-    
-    The 64GB of high-speed DDR5 memory ensures smooth multitasking capabilities, while the combination of a fast 2TB NVMe SSD and a spacious 4TB HDD provides plenty of storage for your entire game library and media collection. The premium cooling system keeps temperatures low even during intense gaming sessions, ensuring consistent performance and longevity.`,
-    specs: {
-      cpu: 'Intel Core i9-14900K',
-      gpu: 'NVIDIA RTX 4080 16GB',
-      ram: '64GB DDR5-6000',
-      storage: '2TB NVMe SSD + 4TB HDD',
-      psu: '1000W Gold',
-      motherboard: 'ASUS ROG Maximus Z790',
-      cooling: 'Premium 360mm AIO Liquid Cooling',
-      case: 'NZXT H7 Flow'
-    },
-    price: 2899.99,
-    discountPrice: 2699.99,
-    imageUrl: null,
-    featured: true,
-    stock: 5,
-    ratings: {
-      average: 4.8,
-      count: 24
-    },
-    related: ['pc5', 'pc2', 'pc8']
-  },
-  {
-    id: 'pc2',
-    name: 'Creator Pro Workstation',
-    category: 'workstation',
-    description: 'Designed for content creators and 3D rendering professionals',
-    longDescription: `The Creator Pro Workstation is purpose-built for professionals in content creation, 3D modeling, video editing, and other demanding creative workflows. The combination of the AMD Ryzen 9 7950X and the powerful NVIDIA RTX 4090 provides industry-leading rendering performance and support for the latest professional applications.
-    
-    With 128GB of DDR5 memory, you'll never have to worry about running out of RAM, even with the most memory-intensive tasks. The 4TB NVMe SSD provides lightning-fast storage for your projects, while the 8TB HDD offers ample space for archives and completed projects. The workstation is also optimized for thermal performance and low noise operation, perfect for creative studios.`,
-    specs: {
-      cpu: 'AMD Ryzen 9 7950X',
-      gpu: 'NVIDIA RTX 4090 24GB',
-      ram: '128GB DDR5-6400',
-      storage: '4TB NVMe SSD + 8TB HDD',
-      psu: '1200W Platinum',
-      motherboard: 'MSI MEG X670E ACE',
-      cooling: 'Custom Loop Liquid Cooling',
-      case: 'Fractal Design Meshify 2 XL'
-    },
-    price: 3999.99,
-    discountPrice: null,
-    imageUrl: null,
-    featured: true,
-    stock: 3,
-    ratings: {
-      average: 4.9,
-      count: 16
-    },
-    related: ['pc8', 'pc5', 'pc7']
-  },
-  {
-    id: 'pc5',
-    name: 'Compact Gaming Pro',
-    category: 'gaming',
-    description: 'Powerful gaming in a compact form factor',
-    longDescription: `Don't let the size fool you — the Compact Gaming Pro delivers desktop-class gaming performance in a space-saving design. Perfect for gamers with limited desk space or those who want a powerful system that can be easily transported.
-    
-    Featuring the Intel Core i7-14700K and NVIDIA RTX 4070 Ti, this compact powerhouse can handle any modern game at high framerates. The 32GB of DDR5 memory and 2TB NVMe SSD provide plenty of headroom for multitasking and your full game library. Despite its compact size, the system features premium cooling solutions to maintain optimal temperatures under load.`,
-    specs: {
-      cpu: 'Intel Core i7-14700K',
-      gpu: 'NVIDIA RTX 4070 Ti 12GB',
-      ram: '32GB DDR5-6000',
-      storage: '2TB NVMe SSD',
-      psu: '850W Gold',
-      motherboard: 'ASUS ROG Strix Z790-I Gaming',
-      cooling: 'Noctua NH-D15S Chromax.Black',
-      case: 'Lian Li O11 Dynamic Mini'
-    },
-    price: 1899.99,
-    discountPrice: 1799.99,
-    imageUrl: null,
-    featured: true,
-    stock: 7,
-    ratings: {
-      average: 4.7,
-      count: 31
-    },
-    related: ['pc1', 'pc4', 'pc3']
-  }
-]
-
-// Dynamic page component
 export default function ProductDetailsPage() {
-    const params = useParams()
-    const productId = params.id as string
+  const params = useParams()
+  const productId = params.id as string
     
-    const router = useRouter()
-    const t = useTranslations()
-    const pathname = usePathname()
-    const { addItem } = useCart()
-    const locale = pathname.split('/')[1]
+  const router = useRouter()
+  const t = useTranslations()
+  const pathname = usePathname()
+  const { addItem } = useCart()
+  const locale = pathname.split('/')[1]
     
-    const [quantity, setQuantity] = useState(1)
-    const [activeTab, setActiveTab] = useState('description')
-    const [isSpecsOpen, setIsSpecsOpen] = useState(false)
-    
-    // Find the product by ID
-    const product = mockPCs.find(pc => pc.id === productId)
-    
-    // Handle invalid product ID
-    if (!product) {
-      return (
-        <div className="max-w-4xl mx-auto text-center py-12">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-            <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Product Not Found
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              The product you're looking for doesn't exist or has been removed.
-            </p>
-            <Link 
-              href={`/${locale}/shop/ready-made`}
-              className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
-            >
-              <ArrowLeft size={18} className="mr-2" />
-              Back to Shop
-            </Link>
-          </div>
-        </div>
-      )
+  const [quantity, setQuantity] = useState(1)
+  const [activeTab, setActiveTab] = useState('description')
+  const [isSpecsOpen, setIsSpecsOpen] = useState(false)
+  const [product, setProduct] = useState<PCWithRelated | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Fetch product data
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true)
+      try {
+        const response = await fetch(`/api/shop/product/${productId}`)
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('Product not found')
+          } else {
+            setError('Failed to load product')
+          }
+          return
+        }
+        
+        const data = await response.json()
+        setProduct(data)
+      } catch (error) {
+        console.error('Error fetching product:', error)
+        setError('Failed to load product. Please try again.')
+      } finally {
+        setLoading(false)
+      }
     }
-  
-  // Get related products
-  const relatedProducts = product.related
-  .map(id => mockPCs.find(pc => pc.id === id))
-  .filter(Boolean) as typeof mockPCs
+    
+    fetchProduct()
+  }, [productId])
 
-const handleAddToCart = () => {
-  addItem({
-    id: product.id,
-    type: 'configuration',
-    name: product.name,
-    price: product.discountPrice || product.price,
-    imageUrl: product.imageUrl ?? ''
-  }, quantity)
-}
+  // Handle loading state
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto flex justify-center items-center py-24">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      </div>
+    )
+  }
+
+  // Handle error state
+  if (error || !product) {
+    return (
+      <div className="max-w-4xl mx-auto text-center py-12">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+          <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            {error || 'Product Not Found'}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            The product you're looking for doesn't exist or has been removed.
+          </p>
+          <Link 
+            href={`/${locale}/shop/ready-made`}
+            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
+          >
+            <ArrowLeft size={18} className="mr-2" />
+            Back to Shop
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      type: 'configuration',
+      name: product.name,
+      price: product.discountPrice || product.price,
+      imageUrl: product.imageUrl ?? ''
+    }, quantity)
+  }
   
-const handleBuyNow = () => {
+  const handleBuyNow = () => {
     handleAddToCart()
     router.push(`/${locale}/cart`)
   }
@@ -218,7 +161,7 @@ const handleBuyNow = () => {
                     <Star 
                       key={i}
                       size={16} 
-                      className={i < Math.floor(product.ratings.average) 
+                      className={i < Math.floor(product.ratings?.average || 0) 
                         ? "text-yellow-400 fill-yellow-400" 
                         : "text-gray-300 dark:text-gray-600"
                       }
@@ -226,7 +169,7 @@ const handleBuyNow = () => {
                   ))}
                 </div>
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {product.ratings.average.toFixed(1)} ({product.ratings.count} reviews)
+                  {product.ratings?.average.toFixed(1)} ({product.ratings?.count} reviews)
                 </span>
               </div>
               
@@ -246,7 +189,7 @@ const handleBuyNow = () => {
                       €{product.price.toFixed(2)}
                     </span>
                     <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 text-xs font-medium rounded-md">
-                      Save €{(product.price - product.discountPrice).toFixed(2)}
+                      Save €{(product.price - (product.discountPrice || 0)).toFixed(2)}
                     </span>
                   </>
                 ) : (
@@ -283,43 +226,55 @@ const handleBuyNow = () => {
               </button>
               
               {isSpecsOpen && (
-                <div className="mt-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg grid grid-cols-2 gap-3">
-                  <div className="flex items-center">
-                    <Cpu size={16} className="text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {product.specs.cpu}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Monitor size={16} className="text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {product.specs.gpu}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <HardDrive size={16} className="text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {product.specs.ram}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <HardDrive size={16} className="text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {product.specs.storage}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Zap size={16} className="text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {product.specs.psu}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Server size={16} className="text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {product.specs.motherboard}
-                    </span>
-                  </div>
+                <div className="mt-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {product.specs.cpu && (
+                    <div className="flex items-center">
+                      <Cpu size={16} className="text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {product.specs.cpu}
+                      </span>
+                    </div>
+                  )}
+                  {product.specs.gpu && (
+                    <div className="flex items-center">
+                      <Monitor size={16} className="text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {product.specs.gpu}
+                      </span>
+                    </div>
+                  )}
+                  {product.specs.ram && (
+                    <div className="flex items-center">
+                      <HardDrive size={16} className="text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {product.specs.ram}
+                      </span>
+                    </div>
+                  )}
+                  {product.specs.storage && (
+                    <div className="flex items-center">
+                      <HardDrive size={16} className="text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {product.specs.storage}
+                      </span>
+                    </div>
+                  )}
+                  {product.specs.psu && (
+                    <div className="flex items-center">
+                      <Zap size={16} className="text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {product.specs.psu}
+                      </span>
+                    </div>
+                  )}
+                  {product.specs.motherboard && (
+                    <div className="flex items-center">
+                      <Server size={16} className="text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {product.specs.motherboard}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -430,14 +385,14 @@ const handleBuyNow = () => {
               }`}
               onClick={() => setActiveTab('reviews')}
             >
-              Reviews ({product.ratings.count})
+              Reviews ({product.ratings?.count || 0})
             </button>
           </div>
           
           <div className="p-6">
             {activeTab === 'description' && (
               <div className="prose dark:prose-invert max-w-none">
-                <p className="whitespace-pre-line">{product.longDescription}</p>
+                <p className="whitespace-pre-line">{product.longDescription || product.description}</p>
               </div>
             )}
             
@@ -473,7 +428,7 @@ const handleBuyNow = () => {
                           <Star 
                             key={i}
                             size={18} 
-                            className={i < Math.floor(product.ratings.average) 
+                            className={i < Math.floor(product.ratings?.average || 0) 
                               ? "text-yellow-400 fill-yellow-400" 
                               : "text-gray-300 dark:text-gray-600"
                             }
@@ -481,7 +436,7 @@ const handleBuyNow = () => {
                         ))}
                       </div>
                       <span className="ml-2 text-gray-600 dark:text-gray-400">
-                        Based on {product.ratings.count} reviews
+                        Based on {product.ratings?.count || 0} reviews
                       </span>
                     </div>
                   </div>
@@ -491,7 +446,7 @@ const handleBuyNow = () => {
                   </button>
                 </div>
                 
-                {/* Sample reviews */}
+                {/* Sample reviews - in a real app these would come from the database */}
                 <div className="space-y-6">
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div className="flex items-start">
@@ -576,14 +531,14 @@ const handleBuyNow = () => {
       </div>
       
       {/* Related products */}
-      {relatedProducts.length > 0 && (
+      {product.related && product.related.length > 0 && (
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             Related Products
           </h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relatedProducts.map((pc) => (
+            {product.related.map((pc) => (
               <div 
                 key={pc.id}
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
@@ -639,13 +594,13 @@ const handleBuyNow = () => {
                     >
                       <ShoppingCart size={20} />
                     </button>
-                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-        )}
+      )}
     </div>
   )
-}                 
+}

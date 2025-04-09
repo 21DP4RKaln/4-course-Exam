@@ -169,7 +169,7 @@ export default function AdminPanelPage() {
  
   const filteredData = {
     users: users.filter(user => 
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
     ),
     orders: orders.filter(order => 
@@ -337,7 +337,7 @@ export default function AdminPanelPage() {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {user.name}
+                            {user.name || 'Anonymous'}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
                             {user.email}
@@ -661,167 +661,3 @@ export default function AdminPanelPage() {
         return null;
     }
   }
-  
-  // Handle tab switching
-  const handleTabSwitch = (tab: TabType) => {
-    setActiveTab(tab)
-    setCurrentPage(1)
-    setSearchQuery('')
-  }
-  
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          {t('admin.dashboard.title')}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {t('admin.dashboard.description')}
-        </p>
-      </div>
-      
-      {/* Tabs */}
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex flex-wrap -mb-px">
-          <button
-            className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
-              activeTab === 'users' 
-                ? 'border-red-600 text-red-600 dark:border-red-500 dark:text-red-500' 
-                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
-            }`}
-            onClick={() => handleTabSwitch('users')}
-          >
-            <div className="flex items-center">
-              <Users size={18} className="mr-2" />
-              <span>{t('admin.tabs.users')}</span>
-            </div>
-          </button>
-          
-          <button
-            className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
-              activeTab === 'orders' 
-                ? 'border-red-600 text-red-600 dark:border-red-500 dark:text-red-500' 
-                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
-            }`}
-            onClick={() => handleTabSwitch('orders')}
-          >
-            <div className="flex items-center">
-              <ShoppingCart size={18} className="mr-2" />
-              <span>{t('admin.tabs.orders')}</span>
-            </div>
-          </button>
-          
-          <button
-            className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
-              activeTab === 'configurations' 
-                ? 'border-red-600 text-red-600 dark:border-red-500 dark:text-red-500' 
-                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
-            }`}
-            onClick={() => handleTabSwitch('configurations')}
-          >
-            <div className="flex items-center">
-              <Settings size={18} className="mr-2" />
-              <span>{t('admin.tabs.configurations')}</span>
-            </div>
-          </button>
-          
-          <button
-            className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
-              activeTab === 'components' 
-                ? 'border-red-600 text-red-600 dark:border-red-500 dark:text-red-500' 
-                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
-            }`}
-            onClick={() => handleTabSwitch('components')}
-          >
-            <div className="flex items-center">
-              <Cpu size={18} className="mr-2" />
-              <span>{t('admin.tabs.components')}</span>
-            </div>
-          </button>
-        </div>
-      </div>
-      
-      {/* Search and Actions */}
-      <div className="flex flex-col md:flex-row justify-between mb-4 gap-4">
-        <div className="relative w-full md:w-96">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <Search size={18} className="text-gray-500 dark:text-gray-400" />
-          </div>
-          <input
-            type="text"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-red-500 focus:border-red-500"
-            placeholder={`${t('common.search')}...`}
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value)
-              setCurrentPage(1)
-            }}
-          />
-        </div>
-        
-        <div className="flex gap-2">
-          <button
-            type="button"
-            className="flex items-center text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-red-500 dark:hover:bg-red-600"
-            onClick={() => handleCreate(activeTab)}
-          >
-            <Plus size={18} className="mr-2" />
-            {t(`admin.actions.create.${activeTab}`)}
-          </button>
-          
-          <button
-            type="button"
-            className="flex items-center text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
-          >
-            <Filter size={18} className="mr-2" />
-            {t('common.filter')}
-          </button>
-        </div>
-      </div>
-      
-      {/* Content */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          {renderTabContent()}
-        </div>
-      </div>
-      
-      {/* Pagination */}
-      {!tabLoading && !error && filteredData[activeTab].length > 0 && (
-        <div className="flex justify-between items-center mt-4 pb-4">
-          <div className="text-sm text-gray-700 dark:text-gray-400">
-            {t('common.pagination.showing')} {(currentPage - 1) * itemsPerPage + 1} {t('common.pagination.to')}{' '}
-            {Math.min(currentPage * itemsPerPage, filteredData[activeTab].length)} {t('common.pagination.of')}{' '}
-            {filteredData[activeTab].length} {t(`admin.items.${activeTab}`)}
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md 
-                ${currentPage === 1
-                  ? 'text-gray-400 bg-gray-100 dark:text-gray-500 dark:bg-gray-700 cursor-not-allowed'
-                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700'
-                }`}
-            >
-              <ChevronLeft size={18} className="mr-1" />
-              {t('common.pagination.previous')}
-            </button>
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md 
-                ${currentPage === totalPages
-                  ? 'text-gray-400 bg-gray-100 dark:text-gray-500 dark:bg-gray-700 cursor-not-allowed'
-                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700'
-                }`}
-            >
-              {t('common.pagination.next')}
-              <ChevronRight size={18} className="ml-1" />
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}

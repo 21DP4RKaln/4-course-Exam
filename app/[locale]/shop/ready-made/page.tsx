@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useCart } from '@/app/contexts/CartContext'
+import Link from 'next/link'
 import { 
   ShoppingCart, 
   Heart, 
@@ -17,159 +18,13 @@ import {
   X,
   Info
 } from 'lucide-react'
+import { getReadyMadePCs, type PC } from '@/lib/services/shopService'
 
 const pcCategories = [
   { id: 'gaming', name: 'Gaming PCs' },
   { id: 'workstation', name: 'Workstations' },
   { id: 'office', name: 'Office PCs' },
   { id: 'budget', name: 'Budget PCs' },
-]
-
-const mockPCs = [
-  {
-    id: 'pc1',
-    name: 'Apex Gaming Beast',
-    category: 'gaming',
-    description: 'High-end gaming PC with RTX 4080, i9-14900K, 64GB RAM',
-    specs: {
-      cpu: 'Intel Core i9-14900K',
-      gpu: 'NVIDIA RTX 4080 16GB',
-      ram: '64GB DDR5-6000',
-      storage: '2TB NVMe SSD + 4TB HDD',
-      psu: '1000W Gold'
-    },
-    price: 2899.99,
-    discountPrice: 2699.99,
-    imageUrl: null,
-    featured: true,
-    stock: 5
-  },
-  {
-    id: 'pc2',
-    name: 'Creator Pro Workstation',
-    category: 'workstation',
-    description: 'Designed for content creators and 3D rendering professionals',
-    specs: {
-      cpu: 'AMD Ryzen 9 7950X',
-      gpu: 'NVIDIA RTX 4090 24GB',
-      ram: '128GB DDR5-6400',
-      storage: '4TB NVMe SSD + 8TB HDD',
-      psu: '1200W Platinum'
-    },
-    price: 3999.99,
-    discountPrice: null,
-    imageUrl: null,
-    featured: true,
-    stock: 3
-  },
-  {
-    id: 'pc3',
-    name: 'Office Productivity',
-    category: 'office',
-    description: 'Reliable PC for everyday office tasks and productivity',
-    specs: {
-      cpu: 'Intel Core i5-13600K',
-      gpu: 'Intel UHD Graphics 770',
-      ram: '16GB DDR5-5200',
-      storage: '1TB NVMe SSD',
-      psu: '550W Bronze'
-    },
-    price: 899.99,
-    discountPrice: 849.99,
-    imageUrl: null,
-    featured: false,
-    stock: 15
-  },
-  {
-    id: 'pc4',
-    name: 'Starter Gaming',
-    category: 'budget',
-    description: 'Affordable entry-level gaming PC with great performance',
-    specs: {
-      cpu: 'AMD Ryzen 5 7600X',
-      gpu: 'NVIDIA RTX 4060 8GB',
-      ram: '16GB DDR5-5600',
-      storage: '1TB NVMe SSD',
-      psu: '650W Bronze'
-    },
-    price: 999.99,
-    discountPrice: null,
-    imageUrl: null,
-    featured: false,
-    stock: 10
-  },
-  {
-    id: 'pc5',
-    name: 'Compact Gaming Pro',
-    category: 'gaming',
-    description: 'Powerful gaming in a compact form factor',
-    specs: {
-      cpu: 'Intel Core i7-14700K',
-      gpu: 'NVIDIA RTX 4070 Ti 12GB',
-      ram: '32GB DDR5-6000',
-      storage: '2TB NVMe SSD',
-      psu: '850W Gold'
-    },
-    price: 1899.99,
-    discountPrice: 1799.99,
-    imageUrl: null,
-    featured: true,
-    stock: 7
-  },
-  {
-    id: 'pc6',
-    name: 'Budget Office',
-    category: 'budget',
-    description: 'Affordable PC for basic office work and web browsing',
-    specs: {
-      cpu: 'Intel Core i3-13100',
-      gpu: 'Intel UHD Graphics 730',
-      ram: '8GB DDR4-3200',
-      storage: '512GB NVMe SSD',
-      psu: '450W Bronze'
-    },
-    price: 599.99,
-    discountPrice: 549.99,
-    imageUrl: null,
-    featured: false,
-    stock: 20
-  },
-  {
-    id: 'pc7',
-    name: 'Multimedia Center',
-    category: 'office',
-    description: 'Perfect for media consumption and light productivity',
-    specs: {
-      cpu: 'AMD Ryzen 5 7600X',
-      gpu: 'AMD Radeon RX 6650 XT 8GB',
-      ram: '16GB DDR5-5600',
-      storage: '1TB NVMe SSD + 2TB HDD',
-      psu: '650W Bronze'
-    },
-    price: 1099.99,
-    discountPrice: null,
-    imageUrl: null,
-    featured: false,
-    stock: 12
-  },
-  {
-    id: 'pc8',
-    name: 'Enterprise Workstation',
-    category: 'workstation',
-    description: 'High-performance workstation for enterprise environments',
-    specs: {
-      cpu: 'Intel Core i9-14900K',
-      gpu: 'NVIDIA RTX A5000 24GB',
-      ram: '64GB DDR5-6000 ECC',
-      storage: '2TB NVMe SSD + 4TB HDD',
-      psu: '1000W Platinum'
-    },
-    price: 4499.99,
-    discountPrice: 4299.99,
-    imageUrl: null,
-    featured: true,
-    stock: 2
-  }
 ]
 
 interface FilterState {
@@ -182,8 +37,13 @@ interface FilterState {
 export default function ReadyMadePCsPage() {
   const t = useTranslations()
   const pathname = usePathname()
+  const router = useRouter()
   const { addItem } = useCart()
   const locale = pathname.split('/')[1]
+  
+  const [pcs, setPcs] = useState<PC[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   
   const [filters, setFilters] = useState<FilterState>({
     category: 'all',
@@ -193,13 +53,40 @@ export default function ReadyMadePCsPage() {
   })
   
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
-  const [filteredPCs, setFilteredPCs] = useState(mockPCs)
+  const [filteredPCs, setFilteredPCs] = useState<PC[]>([])
   const [hoveredPC, setHoveredPC] = useState<string | null>(null)
   const [expandedSpecs, setExpandedSpecs] = useState<string | null>(null)
   
+  // Fetch PCs from the API
+  useEffect(() => {
+    const fetchPCs = async () => {
+      setLoading(true)
+      try {
+        // In a real application with API routes:
+        // const response = await fetch('/api/shop/ready-made')
+        // const data = await response.json()
+        // setPcs(data)
+        
+        // For this example, we'll call the service directly from the client
+        // Note: In a real app, you'd call an API endpoint instead
+        const data = await getReadyMadePCs()
+        setPcs(data)
+      } catch (err) {
+        console.error('Error fetching ready-made PCs:', err)
+        setError('Failed to load products. Please try again later.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchPCs()
+  }, [])
+  
   // Apply filters
   useEffect(() => {
-    let result = [...mockPCs]
+    if (pcs.length === 0) return
+    
+    let result = [...pcs]
     
     // Filter by category
     if (filters.category !== 'all') {
@@ -244,7 +131,7 @@ export default function ReadyMadePCsPage() {
     }
     
     setFilteredPCs(result)
-  }, [filters])
+  }, [filters, pcs])
   
   const toggleSpecs = (id: string) => {
     if (expandedSpecs === id) {
@@ -254,7 +141,7 @@ export default function ReadyMadePCsPage() {
     }
   }
   
-  const handleAddToCart = (pc: typeof mockPCs[0]) => {
+  const handleAddToCart = (pc: PC) => {
     addItem({
       id: pc.id,
       type: 'configuration',
@@ -262,7 +149,6 @@ export default function ReadyMadePCsPage() {
       price: pc.discountPrice || pc.price,
       imageUrl: pc.imageUrl || ''
     })
- 
   }
   
   const resetFilters = () => {
@@ -272,6 +158,33 @@ export default function ReadyMadePCsPage() {
       sort: 'featured',
       search: ''
     })
+  }
+
+  // Handle loading state
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto flex justify-center items-center py-24">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      </div>
+    )
+  }
+  
+  // Handle error state
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto text-center py-16">
+        <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          {error}
+        </h2>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
+        >
+          Try Again
+        </button>
+      </div>
+    )
   }
 
   return (
