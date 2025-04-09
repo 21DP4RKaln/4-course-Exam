@@ -30,31 +30,18 @@ IvaPro-PC-Configurator/
 │   ├── [locale]/         # Localized routes
 │   │   ├── (auth)/       # Authentication routes (login, register)
 │   │   ├── (shop)/       # Shop routes (configurator, ready configs)
-│   │   ├── cart/         # 
-│   │   ├── configurator/ # 
-│   │   ├── dashboard/    # 
-│   │   ├── specialist/   # 
-│   │   ├── checkout/     # 
 │   │   └── ...           # Other localized routes
 │   ├── api/              # API endpoints
 │   │   ├── auth/         # Authentication APIs
 │   │   ├── admin/        # Admin APIs
-│   │   ├── specialist/   # 
-│   │   ├── components/   # 
-│   │   ├── configurations/ # 
-│   │   ├── profile/      # 
 │   │   └── ...           # Other API endpoints
 │   ├── components/       # Reusable components
 │   │   ├── Admin/        # Admin components
 │   │   ├── Cart/         # Cart components
 │   │   ├── Configurator/ # Configurator components
-│   │   ├── Dashboard/    # 
-│   │   ├── Footer/       # 
-│   │   ├── Home/         #
 │   │   ├── Header/       # Header components
 │   │   ├── ui/           # UI components
 │   │   └── ...           # Other components
-│   ├── i18n/
 │   └── contexts/         # React contexts
 ├── lib/                  # Utility libraries
 │   ├── prismaService.ts  # Prisma client service
@@ -67,8 +54,8 @@ IvaPro-PC-Configurator/
 │   ├── en.json           # English translations
 │   ├── lv.json           # Latvian translations
 │   └── ru.json           # Russian translations
-├── public/               # Static assets
-└── tailwind.config.js    # Static assets
+└── public/               # Static assets
+ 
 
 ```
 
