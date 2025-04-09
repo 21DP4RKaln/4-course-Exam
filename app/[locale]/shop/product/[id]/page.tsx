@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/app/contexts/CartContext'
 import { 
@@ -117,62 +117,63 @@ const mockPCs = [
 ]
 
 // Dynamic page component
-export default function ProductDetailsPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const t = useTranslations()
-  const pathname = usePathname()
-  const { addItem } = useCart()
-  const locale = pathname.split('/')[1]
-  
-  const [quantity, setQuantity] = useState(1)
-  const [activeTab, setActiveTab] = useState('description')
-  const [isSpecsOpen, setIsSpecsOpen] = useState(false)
-  
-  // Find the product by ID
-  const product = mockPCs.find(pc => pc.id === params.id)
-  
-  // Handle invalid product ID
-  if (!product) {
-    return (
-      <div className="max-w-4xl mx-auto text-center py-12">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-          <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Product Not Found
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            The product you're looking for doesn't exist or has been removed.
-          </p>
-          <Link 
-            href={`/${locale}/shop/ready-made`}
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-flex items-center"
-          >
-            <ArrowLeft size={18} className="mr-2" />
-            Back to Shop
-          </Link>
+export default function ProductDetailsPage() {
+    const params = useParams()
+    const productId = params.id as string
+    
+    const router = useRouter()
+    const t = useTranslations()
+    const pathname = usePathname()
+    const { addItem } = useCart()
+    const locale = pathname.split('/')[1]
+    
+    const [quantity, setQuantity] = useState(1)
+    const [activeTab, setActiveTab] = useState('description')
+    const [isSpecsOpen, setIsSpecsOpen] = useState(false)
+    
+    // Find the product by ID
+    const product = mockPCs.find(pc => pc.id === productId)
+    
+    // Handle invalid product ID
+    if (!product) {
+      return (
+        <div className="max-w-4xl mx-auto text-center py-12">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+            <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Product Not Found
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-8">
+              The product you're looking for doesn't exist or has been removed.
+            </p>
+            <Link 
+              href={`/${locale}/shop/ready-made`}
+              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-flex items-center"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              Back to Shop
+            </Link>
+          </div>
         </div>
-      </div>
-    )
-  }
+      )
+    }
   
   // Get related products
   const relatedProducts = product.related
-    .map(id => mockPCs.find(pc => pc.id === id))
-    .filter(Boolean) as typeof mockPCs
+  .map(id => mockPCs.find(pc => pc.id === id))
+  .filter(Boolean) as typeof mockPCs
+
+const handleAddToCart = () => {
+  addItem({
+    id: product.id,
+    type: 'configuration',
+    name: product.name,
+    price: product.discountPrice || product.price,
+    imageUrl: product.imageUrl ?? ''
+  }, quantity)
+}
   
-  const handleAddToCart = () => {
-    addItem({
-      id: product.id,
-      type: 'configuration',
-      name: product.name,
-      price: product.discountPrice || product.price,
-      imageUrl: product.imageUrl ?? ''
-    }, quantity)
-    
-    // Show a toast or notification here
-  }
-  
-  const handleBuyNow = () => {
+const handleBuyNow = () => {
     handleAddToCart()
     router.push(`/${locale}/cart`)
   }

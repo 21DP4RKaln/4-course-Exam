@@ -10,10 +10,9 @@ import {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Record<string, string> }
 ) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -25,8 +24,7 @@ export async function GET(
     }
 
     const userId = params.id
-    
-    // Get user with orders
+  
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -44,7 +42,6 @@ export async function GET(
       return createNotFoundResponse('User not found')
     }
 
-    // Transform data to format expected by frontend
     const formattedUser = {
       id: user.id,
       name: user.name || 'Anonymous',
@@ -71,10 +68,9 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Record<string, string> }
 ) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -86,8 +82,7 @@ export async function DELETE(
     }
 
     const userId = params.id
-    
-    // Check if user exists and is not an admin (prevent admin deletion)
+  
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { role: true }
@@ -101,7 +96,6 @@ export async function DELETE(
       return createForbiddenResponse('Cannot delete other admin accounts')
     }
 
-    // Delete user
     await prisma.user.delete({
       where: { id: userId }
     })

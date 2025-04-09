@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
 import {
@@ -20,12 +20,10 @@ import {
   ChevronDown
 } from 'lucide-react'
 
-type OrderPageParams = {
-  id: string;
-  locale: string;
-}
-
-export default function OrderDetailsPage({ params }: { params: OrderPageParams }) {
+export default function OrderDetailsPage() {
+  const params = useParams()
+  const orderId = params.id as string
+  
   const router = useRouter()
   const t = useTranslations()
   const pathname = usePathname()
@@ -44,7 +42,7 @@ export default function OrderDetailsPage({ params }: { params: OrderPageParams }
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
-        const response = await fetch(`/api/orders/${params.id}`);
+        const response = await fetch(`/api/orders/${orderId}`);
         if (response.ok) {
           const data = await response.json();
           setOrder(data);
@@ -60,7 +58,7 @@ export default function OrderDetailsPage({ params }: { params: OrderPageParams }
     if (isAuthenticated && !loading) {
       fetchOrderData();
     }
-  }, [params.id, isAuthenticated, loading]);
+  }, [orderId, isAuthenticated, loading]);
   
   if (loading) {
     return (
@@ -147,10 +145,6 @@ export default function OrderDetailsPage({ params }: { params: OrderPageParams }
     }
   }
   
-  // Rest of the component implementation...
-  // This would include all the JSX to display the order details, status, timeline, etc.
-  // For brevity, this part is omitted but would be present in the actual implementation
-
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-6">
@@ -164,9 +158,8 @@ export default function OrderDetailsPage({ params }: { params: OrderPageParams }
       </div>
       
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-        {/* Order details would be rendered here */}
         <div className="p-6">
-          <h1 className="text-2xl font-bold">Order #{params.id}</h1>
+          <h1 className="text-2xl font-bold">Order #{orderId}</h1>
           <p>Order details content here...</p>
         </div>
       </div>
