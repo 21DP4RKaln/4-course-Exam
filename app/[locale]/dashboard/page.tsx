@@ -92,7 +92,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
       </div>
     )
   }
@@ -114,12 +114,12 @@ export default function DashboardPage() {
     const statusColors = {
       // Configuration statuses
       'DRAFT': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-      'SUBMITTED': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      'SUBMITTED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'APPROVED': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       'REJECTED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       // Order statuses
       'PENDING': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      'PROCESSING': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      'PROCESSING': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'COMPLETED': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       'CANCELLED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
     }
@@ -135,7 +135,7 @@ export default function DashboardPage() {
         </h1>
         
         <div className="flex items-center space-x-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg">
+          <div className="bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-lg">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {t('common.welcome')},
             </p>
@@ -181,7 +181,7 @@ export default function DashboardPage() {
                 </p>
                 <button
                   onClick={() => router.push(`/${locale}/configurator`)}
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                 >
                   {t('nav.configurator')}
                 </button>
@@ -194,7 +194,7 @@ export default function DashboardPage() {
                   </h2>
                   <button
                     onClick={() => router.push(`/${locale}/configurator`)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
                   >
                     + New Configuration
                   </button>
@@ -237,7 +237,7 @@ export default function DashboardPage() {
                             </button>
                             {config.status === 'APPROVED' && (
                               <button
-                                className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+                                className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
                               >
                                 Order
                               </button>

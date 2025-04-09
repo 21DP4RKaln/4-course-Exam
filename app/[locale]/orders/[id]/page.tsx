@@ -63,7 +63,7 @@ export default function OrderDetailsPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
       </div>
     )
   }
@@ -85,7 +85,7 @@ export default function OrderDetailsPage() {
           </p>
           <Link 
             href={`/${locale}/dashboard`}
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-flex items-center"
+            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
           >
             <ArrowLeft size={18} className="mr-2" />
             Back to Dashboard
@@ -120,7 +120,7 @@ export default function OrderDetailsPage() {
       case 'COMPLETED':
         return <CheckCircle className="h-8 w-8 text-green-500" />
       case 'PROCESSING':
-        return <Clock className="h-8 w-8 text-blue-500" />
+        return <Clock className="h-8 w-8 text-red-500" />
       case 'PENDING':
         return <Clock className="h-8 w-8 text-amber-500" />
       case 'CANCELLED':
@@ -135,7 +135,7 @@ export default function OrderDetailsPage() {
       case 'COMPLETED':
         return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
       case 'PROCESSING':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
       case 'PENDING':
         return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
       case 'CANCELLED':
@@ -150,7 +150,7 @@ export default function OrderDetailsPage() {
       <div className="mb-6">
         <Link 
           href={`/${locale}/dashboard`}
-          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
         >
           <ArrowLeft size={18} className="mr-2" />
           Back to Dashboard

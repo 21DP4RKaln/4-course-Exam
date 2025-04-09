@@ -149,7 +149,7 @@ export default function AdminPanelPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
       </div>
     )
   }
@@ -199,12 +199,12 @@ export default function AdminPanelPage() {
   const getStatusColor = (status: string) => {
     const statusColors = {
       'COMPLETED': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      'PROCESSING': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      'PROCESSING': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'PENDING': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
       'CANCELLED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'APPROVED': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       'DRAFT': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-      'SUBMITTED': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      'SUBMITTED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'REJECTED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
     }
     
@@ -215,7 +215,7 @@ export default function AdminPanelPage() {
     const roleColors = {
       'ADMIN': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'SPECIALIST': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-      'USER': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+      'USER': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
     }
     
     return roleColors[role as keyof typeof roleColors] || 'bg-gray-100 text-gray-800'
@@ -272,7 +272,7 @@ export default function AdminPanelPage() {
     if (tabLoading) {
       return (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mr-3"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mr-3"></div>
           <span className="text-gray-600 dark:text-gray-400">Loading data...</span>
         </div>
       );
@@ -285,7 +285,7 @@ export default function AdminPanelPage() {
           <p className="text-gray-600 dark:text-gray-400">{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
           >
             Retry
           </button>
@@ -359,7 +359,7 @@ export default function AdminPanelPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button 
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                           onClick={() => handleView(user.id, 'users')}
                         >
                           <Eye size={18} />
@@ -446,7 +446,7 @@ export default function AdminPanelPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button 
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                           onClick={() => handleView(order.id, 'orders')}
                         >
                           <Eye size={18} />
@@ -523,7 +523,7 @@ export default function AdminPanelPage() {
                           </span>
                         )}
                         {config.isPublic && (
-                          <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
+                          <span className="px-2 py-0.5 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-full">
                             Public
                           </span>
                         )}
@@ -543,7 +543,7 @@ export default function AdminPanelPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button 
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                           onClick={() => handleView(config.id, 'configurations')}
                         >
                           <Eye size={18} />
@@ -632,7 +632,7 @@ export default function AdminPanelPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button 
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                           onClick={() => handleView(component.id, 'components')}
                         >
                           <Eye size={18} />
@@ -686,7 +686,7 @@ export default function AdminPanelPage() {
           <button
             className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
               activeTab === 'users' 
-                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500' 
+                ? 'border-red-600 text-red-600 dark:border-red-500 dark:text-red-500' 
                 : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
             }`}
             onClick={() => handleTabSwitch('users')}
@@ -700,7 +700,7 @@ export default function AdminPanelPage() {
           <button
             className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
               activeTab === 'orders' 
-                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500' 
+                ? 'border-red-600 text-red-600 dark:border-red-500 dark:text-red-500' 
                 : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
             }`}
             onClick={() => handleTabSwitch('orders')}
@@ -714,7 +714,7 @@ export default function AdminPanelPage() {
           <button
             className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
               activeTab === 'configurations' 
-                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500' 
+                ? 'border-red-600 text-red-600 dark:border-red-500 dark:text-red-500' 
                 : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
             }`}
             onClick={() => handleTabSwitch('configurations')}
@@ -728,7 +728,7 @@ export default function AdminPanelPage() {
           <button
             className={`mr-2 inline-block p-4 border-b-2 rounded-t-lg ${
               activeTab === 'components' 
-                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500' 
+                ? 'border-red-600 text-red-600 dark:border-red-500 dark:text-red-500' 
                 : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
             }`}
             onClick={() => handleTabSwitch('components')}
@@ -749,7 +749,7 @@ export default function AdminPanelPage() {
           </div>
           <input
             type="text"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-red-500 focus:border-red-500"
             placeholder={`${t('common.search')}...`}
             value={searchQuery}
             onChange={(e) => {
@@ -762,7 +762,7 @@ export default function AdminPanelPage() {
         <div className="flex gap-2">
           <button
             type="button"
-            className="flex items-center text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-blue-500 dark:hover:bg-blue-600"
+            className="flex items-center text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-red-500 dark:hover:bg-red-600"
             onClick={() => handleCreate(activeTab)}
           >
             <Plus size={18} className="mr-2" />

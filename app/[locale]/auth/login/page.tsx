@@ -47,8 +47,8 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-md mx-auto">
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8">
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
+      <div className="bg-light-card dark:bg-dark-card shadow-md rounded-lg p-8">
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-dark-text">
           {t('auth.loginTitle')}
         </h1>
 
@@ -71,7 +71,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 {...register('email')}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-dark-border rounded-md bg-white dark:bg-dark-card text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 placeholder="john@example.com"
               />
             </div>
@@ -85,7 +85,7 @@ export default function LoginPage() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t('auth.password')}
               </label>
-              <Link href={`/${locale}/auth/forgot-password`} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+              <Link href={`/${locale}/auth/forgot-password`} className="text-sm text-red-600 dark:text-red-400 hover:underline">
                 {t('auth.forgotPassword')}
               </Link>
             </div>
@@ -97,7 +97,7 @@ export default function LoginPage() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
-                className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-dark-border rounded-md bg-white dark:bg-dark-card text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 placeholder="••••••••"
               />
               <button
@@ -120,7 +120,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? 'Loading...' : t('auth.signIn')}
           </button>
@@ -129,7 +129,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {t('auth.noAccount')}{' '}
-            <Link href={`/${locale}/auth/register`} className="text-blue-600 dark:text-blue-400 hover:underline">
+            <Link href={`/${locale}/auth/register`} className="text-red-600 dark:text-red-400 hover:underline">
               {t('auth.signUp')}
             </Link>
           </p>

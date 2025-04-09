@@ -49,7 +49,7 @@ export default function FeaturedConfigurations() {
         </h2>
         <Link
           href={`/${locale}/shop/ready-made`}
-          className="flex items-center text-blue-600 dark:text-blue-400 hover:underline"
+          className="flex items-center text-red-600 dark:text-red-400 hover:underline"
         >
           View all <ChevronRight size={16} className="ml-1" />
         </Link>
@@ -83,7 +83,7 @@ export default function FeaturedConfigurations() {
                   <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400">
                     <Heart size={20} />
                   </button>
-                  <button className="p-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                  <button className="p-2 text-white bg-red-600 rounded-md hover:bg-red-700">
                     <ShoppingCart size={20} />
                   </button>
                 </div>

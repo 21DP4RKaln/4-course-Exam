@@ -148,7 +148,7 @@ export default function ProductDetailsPage() {
             </p>
             <Link 
               href={`/${locale}/shop/ready-made`}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-flex items-center"
+              className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
             >
               <ArrowLeft size={18} className="mr-2" />
               Back to Shop
@@ -183,7 +183,7 @@ const handleBuyNow = () => {
       <div className="mb-6">
         <Link 
           href={`/${locale}/shop/ready-made`}
-          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
         >
           <ArrowLeft size={18} className="mr-2" />
           Back to all PCs
@@ -203,7 +203,7 @@ const handleBuyNow = () => {
           <div className="flex flex-col">
             <div className="mb-4">
               {product.category && (
-                <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-md mb-2">
+                <span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-md mb-2">
                   {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
                 </span>
               )}
@@ -353,7 +353,7 @@ const handleBuyNow = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
-                  className="flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   <ShoppingCart size={18} className="mr-2" />
                   Add to Cart
@@ -362,19 +362,19 @@ const handleBuyNow = () => {
                 <button
                   onClick={handleBuyNow}
                   disabled={product.stock === 0}
-                  className="flex items-center justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   Buy Now
                 </button>
               </div>
               
               <div className="flex space-x-4">
-                <button className="flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                <button className="flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400">
                   <Heart size={18} className="mr-1" />
                   <span className="text-sm">Add to Wishlist</span>
                 </button>
                 
-                <button className="flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                <button className="flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400">
                   <Share2 size={18} className="mr-1" />
                   <span className="text-sm">Share</span>
                 </button>
@@ -405,7 +405,7 @@ const handleBuyNow = () => {
             <button
               className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'description'
-                  ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                  ? 'border-red-600 text-red-600 dark:border-red-400 dark:text-red-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('description')}
@@ -415,7 +415,7 @@ const handleBuyNow = () => {
             <button
               className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'specifications'
-                  ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                  ? 'border-red-600 text-red-600 dark:border-red-400 dark:text-red-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('specifications')}
@@ -425,7 +425,7 @@ const handleBuyNow = () => {
             <button
               className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'reviews'
-                  ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                  ? 'border-red-600 text-red-600 dark:border-red-400 dark:text-red-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('reviews')}
@@ -486,7 +486,7 @@ const handleBuyNow = () => {
                     </div>
                   </div>
                   
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                  <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
                     Write a Review
                   </button>
                 </div>
@@ -496,7 +496,7 @@ const handleBuyNow = () => {
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-semibold">
+                        <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center text-red-600 dark:text-red-400 font-semibold">
                           JD
                         </div>
                       </div>
@@ -564,7 +564,7 @@ const handleBuyNow = () => {
                   </div>
                   
                   <div className="text-center pt-4">
-                    <button className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
+                    <button className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium">
                       Load More Reviews
                     </button>
                   </div>
@@ -599,7 +599,7 @@ const handleBuyNow = () => {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                     <Link 
                       href={`/${locale}/shop/product/${pc.id}`}
-                      className="hover:text-blue-600 dark:hover:text-blue-400"
+                      className="hover:text-red-600 dark:hover:text-red-400"
                     >
                       {pc.name}
                     </Link>
@@ -635,7 +635,7 @@ const handleBuyNow = () => {
                         price: pc.discountPrice || pc.price,
                         imageUrl: pc.imageUrl ?? ''
                       })}
-                      className="p-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                      className="p-2 text-white bg-red-600 rounded-md hover:bg-red-700"
                     >
                       <ShoppingCart size={20} />
                     </button>

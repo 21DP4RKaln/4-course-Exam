@@ -41,9 +41,9 @@ export default function ComponentSelectionPanel({
           {components.map((component) => (
             <div 
               key={component.id}
-              className={`border rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-colors ${
+              className={`border rounded-lg p-4 cursor-pointer hover:border-red-500 transition-colors ${
                 selectedComponent?.id === component.id 
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                  ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
                   : 'border-gray-200 dark:border-gray-700'
               }`}
               onClick={() => onSelectComponent(component)}

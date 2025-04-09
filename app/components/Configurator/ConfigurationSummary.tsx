@@ -52,7 +52,7 @@ export default function ConfigurationSummary({
       </div>
       
       {/* Display notification about review process */}
-      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 text-sm rounded-md">
+      <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 text-sm rounded-md">
         Submitting your configuration will send it for review by our specialists,
         who will check component compatibility and suggest optimizations if needed.
       </div>

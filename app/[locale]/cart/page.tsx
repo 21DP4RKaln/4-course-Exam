@@ -50,7 +50,7 @@ export default function CartPage() {
           </p>
           <Link 
             href={`/${locale}/shop/ready-made`}
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-flex items-center"
+            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
           >
             <ArrowLeft size={18} className="mr-2" />
             {t('cart.continueShoping')}
@@ -139,7 +139,7 @@ export default function CartPage() {
               <div className="flex items-center justify-between">
                 <Link 
                   href={`/${locale}/configurator`}
-                  className="text-blue-600 dark:text-blue-400 hover:underline flex items-center"
+                  className="text-red-600 dark:text-red-400 hover:underline flex items-center"
                 >
                   <ArrowLeft size={18} className="mr-1" />
                   {t('cart.continueShoping')}
@@ -191,7 +191,7 @@ export default function CartPage() {
             <button
               onClick={handleCheckout}
               disabled={isProcessing}
-              className="w-full mt-6 flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full mt-6 flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isProcessing ? (
                 <>

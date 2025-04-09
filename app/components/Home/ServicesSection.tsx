@@ -43,7 +43,7 @@ export default function ServicesSection() {
             key={index}
             className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
           >
-            <div className="text-blue-600 dark:text-blue-400 mb-4">
+            <div className="text-red-600 dark:text-red-400 mb-4">
               {service.icon}
             </div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">

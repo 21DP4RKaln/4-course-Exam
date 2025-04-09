@@ -4,12 +4,26 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111827;
+  --card: #f9fafb;
+  --card-foreground: #111827;
+  --border: #e5e7eb;
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
+  --accent: #f3f4f6;
+  --accent-hover: #e5e7eb;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0f0f0f;
+  --foreground: #f9fafb;
+  --card: #1f1f1f;
+  --card-foreground: #f9fafb;
+  --border: #2d2d2d;
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
+  --accent: #1f1f1f;
+  --accent-hover: #2d2d2d;
 }
 
 body {
@@ -23,7 +37,7 @@ body {
 }
 
 .form-input {
-  @apply block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-dark-card text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent;
 }
 
 .form-error {
@@ -31,9 +45,9 @@ body {
 }
 
 .btn-primary {
-  @apply px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed;
+  @apply px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed;
 }
 
 .btn-outline {
-  @apply px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed;
+  @apply px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-dark-card focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed;
 }

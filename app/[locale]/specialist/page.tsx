@@ -80,7 +80,7 @@ const mockConfigurations = [
       { id: 'gpu-3', category: 'gpu', name: 'NVIDIA RTX 4060 8GB', price: 299.99 },
       { id: 'mb-3', category: 'motherboard', name: 'MSI B650 Gaming Plus', price: 149.99 },
       { id: 'ram-3', category: 'ram', name: 'Corsair Vengeance 16GB DDR5-5600', price: 89.99 },
-      { id: 'storage-3', category: 'storage', name: 'WD Blue SN570 1TB NVMe SSD', price: 79.99 },
+      { id: 'storage-3', category: 'storage', name: 'WD red SN570 1TB NVMe SSD', price: 79.99 },
       { id: 'psu-3', category: 'psu', name: 'EVGA SuperNOVA 650 G5', price: 89.99 },
       { id: 'case-3', category: 'case', name: 'NZXT H5 Flow', price: 94.99 },
       { id: 'cooling-3', category: 'cooling', name: 'be quiet! Pure Rock 2', price: 44.99 }
@@ -111,7 +111,7 @@ export default function SpecialistPanelPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
       </div>
     )
   }
@@ -180,7 +180,7 @@ export default function SpecialistPanelPage() {
   const getCategoryIcon = (category: string) => {
     switch(category) {
       case 'cpu':
-        return <Cpu size={16} className="text-blue-500" />
+        return <Cpu size={16} className="text-red-500" />
       case 'gpu':
         return <Monitor size={16} className="text-purple-500" />
       case 'motherboard':
@@ -226,7 +226,7 @@ export default function SpecialistPanelPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search configurations..."
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
               </div>
               
@@ -237,7 +237,7 @@ export default function SpecialistPanelPage() {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="block w-full pl-10 pr-8 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="block w-full pl-10 pr-8 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 >
                   <option value="all">All Statuses</option>
                   <option value="SUBMITTED">Submitted</option>
@@ -260,7 +260,7 @@ export default function SpecialistPanelPage() {
                     key={config.id}
                     className={`bg-gray-50 dark:bg-gray-900 rounded-lg border ${
                       selectedConfig === config.id 
-                        ? 'border-blue-500 dark:border-blue-500' 
+                        ? 'border-red-500 dark:border-red-500' 
                         : 'border-gray-200 dark:border-gray-700'
                     } overflow-hidden`}
                   >
@@ -283,7 +283,7 @@ export default function SpecialistPanelPage() {
                         <div className="flex items-center">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                             config.status === 'SUBMITTED' 
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' 
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' 
                               : config.status === 'APPROVED'
                                 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                                 : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
@@ -336,7 +336,7 @@ export default function SpecialistPanelPage() {
                             e.stopPropagation();
                             handleSelectConfig(config.id);
                           }}
-                          className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center"
+                          className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center"
                         >
                           {t('specialist.reviewConfig')}
                           <ChevronRight size={18} className="ml-1" />
@@ -459,7 +459,7 @@ export default function SpecialistPanelPage() {
                           value={reviewComment}
                           onChange={(e) => setReviewComment(e.target.value)}
                           placeholder="Add your review comments, suggestions or reasons for rejection..."
-                          className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         />
                       </div>
                       

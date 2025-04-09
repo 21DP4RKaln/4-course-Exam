@@ -23,7 +23,7 @@ export default function HeroSection() {
           <div className="flex flex-wrap gap-4">
             <Link
               href={`/${locale}/configurator`}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-lg font-semibold"
+              className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 text-lg font-semibold"
             >
               {t('nav.configurator')}
             </Link>
@@ -47,7 +47,7 @@ export default function HeroSection() {
         </div>
         <div className="relative h-[400px] w-full rounded-xl overflow-hidden shadow-2xl">
           {/* Placeholder for actual image */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-purple-600 flex items-center justify-center">
             <span className="text-white text-lg font-medium">PC Image Placeholder</span>
           </div>
           {/* Uncomment when you have an actual image

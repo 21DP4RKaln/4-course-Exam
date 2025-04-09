@@ -123,7 +123,7 @@ export default function CheckoutPage() {
           <div className="mt-8 space-x-4">
             <Link 
               href={`/${locale}/dashboard`}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-block"
+              className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-block"
             >
               View My Orders
             </Link>
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
                       id="fullName"
                       type="text"
                       {...register('fullName')}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     />
                   </div>
                   {errors.fullName && (
@@ -190,7 +190,7 @@ export default function CheckoutPage() {
                       id="email"
                       type="email"
                       {...register('email')}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     />
                   </div>
                   {errors.email && (
@@ -210,7 +210,7 @@ export default function CheckoutPage() {
                       id="phone"
                       type="tel"
                       {...register('phone')}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     />
                   </div>
                   {errors.phone && (
@@ -226,7 +226,7 @@ export default function CheckoutPage() {
                     id="address"
                     type="text"
                     {...register('address')}
-                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   />
                   {errors.address && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.address.message}</p>
@@ -241,7 +241,7 @@ export default function CheckoutPage() {
                     id="city"
                     type="text"
                     {...register('city')}
-                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   />
                   {errors.city && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.city.message}</p>
@@ -256,7 +256,7 @@ export default function CheckoutPage() {
                     id="postalCode"
                     type="text"
                     {...register('postalCode')}
-                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   />
                   {errors.postalCode && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.postalCode.message}</p>
@@ -270,7 +270,7 @@ export default function CheckoutPage() {
                   <select
                     id="country"
                     {...register('country')}
-                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   >
                     <option value="">Select a country</option>
                     <option value="LV">Latvia</option>
@@ -296,14 +296,14 @@ export default function CheckoutPage() {
               </h2>
               
               <div className="space-y-4">
-                <div className="relative border border-gray-300 dark:border-gray-700 rounded-md p-4 flex cursor-pointer hover:border-blue-500 dark:hover:border-blue-400"
+                <div className="relative border border-gray-300 dark:border-gray-700 rounded-md p-4 flex cursor-pointer hover:border-red-500 dark:hover:border-red-400"
                      onClick={() => setValue('paymentMethod', 'card')}>
                   <input
                     type="radio"
                     id="card"
                     value="card"
                     {...register('paymentMethod')}
-                    className="mr-3 h-5 w-5 accent-blue-600"
+                    className="mr-3 h-5 w-5 accent-red-600"
                   />
                   <div className="flex flex-col">
                     <label htmlFor="card" className="block text-sm font-medium text-gray-900 dark:text-white cursor-pointer">
@@ -344,14 +344,14 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 
-                <div className="relative border border-gray-300 dark:border-gray-700 rounded-md p-4 flex cursor-pointer hover:border-blue-500 dark:hover:border-blue-400"
+                <div className="relative border border-gray-300 dark:border-gray-700 rounded-md p-4 flex cursor-pointer hover:border-red-500 dark:hover:border-red-400"
                      onClick={() => setValue('paymentMethod', 'paypal')}>
                   <input
                     type="radio"
                     id="paypal"
                     value="paypal"
                     {...register('paymentMethod')}
-                    className="mr-3 h-5 w-5 accent-blue-600"
+                    className="mr-3 h-5 w-5 accent-red-600"
                   />
                   <div>
                     <label htmlFor="paypal" className="block text-sm font-medium text-gray-900 dark:text-white cursor-pointer">
@@ -363,14 +363,14 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 
-                <div className="relative border border-gray-300 dark:border-gray-700 rounded-md p-4 flex cursor-pointer hover:border-blue-500 dark:hover:border-blue-400"
+                <div className="relative border border-gray-300 dark:border-gray-700 rounded-md p-4 flex cursor-pointer hover:border-red-500 dark:hover:border-red-400"
                      onClick={() => setValue('paymentMethod', 'bank')}>
                   <input
                     type="radio"
                     id="bank"
                     value="bank"
                     {...register('paymentMethod')}
-                    className="mr-3 h-5 w-5 accent-blue-600"
+                    className="mr-3 h-5 w-5 accent-red-600"
                   />
                   <div>
                     <label htmlFor="bank" className="block text-sm font-medium text-gray-900 dark:text-white cursor-pointer">
@@ -444,7 +444,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>

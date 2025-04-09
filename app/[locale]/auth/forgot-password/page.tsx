@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-6">
               <Link 
                 href={`/${locale}/auth/login`}
-                className="text-blue-600 dark:text-blue-400 hover:underline flex items-center justify-center"
+                className="text-red-600 dark:text-red-400 hover:underline flex items-center justify-center"
               >
                 <ArrowLeft size={16} className="mr-1" />
                 Back to login
@@ -106,7 +106,7 @@ export default function ForgotPasswordPage() {
                 id="email"
                 type="email"
                 {...register('email')}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 placeholder="john@example.com"
               />
             </div>
@@ -118,7 +118,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="flex items-center">
@@ -134,7 +134,7 @@ export default function ForgotPasswordPage() {
         <div className="mt-6 text-center">
           <Link 
             href={`/${locale}/auth/login`}
-            className="text-blue-600 dark:text-blue-400 hover:underline flex items-center justify-center"
+            className="text-red-600 dark:text-red-400 hover:underline flex items-center justify-center"
           >
             <ArrowLeft size={16} className="mr-1" />
             Back to login

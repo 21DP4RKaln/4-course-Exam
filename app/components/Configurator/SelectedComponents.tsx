@@ -84,7 +84,7 @@ export default function SelectedComponentsList({
                 )}
                 <button 
                   onClick={() => onEdit(category.id)}
-                  className="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="p-1 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                   aria-label={`Edit ${category.name}`}
                 >
                   <Edit size={18} />

@@ -25,13 +25,13 @@ export default function Footer() {
               Modern PC configuration platform for custom and ready-made computers.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+              <a href="#" className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+              <a href="#" className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+              <a href="#" className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
                 <Instagram size={20} />
               </a>
             </div>
@@ -46,7 +46,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href={`/${locale}/configurator`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('nav.configurator')}
                 </Link>
@@ -54,7 +54,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href={`/${locale}/shop/ready-made`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('nav.readyMade')}
                 </Link>
@@ -62,7 +62,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href={`/${locale}/dashboard`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('nav.dashboard')}
                 </Link>
@@ -79,7 +79,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href={`/${locale}/privacy-policy`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('footer.privacyPolicy')}
                 </Link>
@@ -87,7 +87,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href={`/${locale}/terms-of-service`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('footer.termsOfService')}
                 </Link>
@@ -95,7 +95,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href={`/${locale}/contact`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('footer.contact')}
                 </Link>
@@ -123,7 +123,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center">
                 <Mail size={18} className="mr-2 text-gray-500 dark:text-gray-400" />
-                <a href="mailto:info@ivapro.com" className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+                <a href="mailto:info@ivapro.com" className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
                   info@ivapro.com
                 </a>
               </li>

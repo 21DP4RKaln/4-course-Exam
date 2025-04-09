@@ -292,7 +292,7 @@ export default function ReadyMadePCsPage() {
               value={filters.search}
               onChange={(e) => setFilters({...filters, search: e.target.value})}
               placeholder="Search PCs..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             {filters.search && (
               <button
@@ -317,7 +317,7 @@ export default function ReadyMadePCsPage() {
             value={filters.search}
             onChange={(e) => setFilters({...filters, search: e.target.value})}
             placeholder="Search PCs..."
-            className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
           />
           {filters.search && (
             <button
@@ -342,7 +342,7 @@ export default function ReadyMadePCsPage() {
               </h2>
               <button
                 onClick={resetFilters}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-sm text-red-600 dark:text-red-400 hover:underline"
               >
                 Reset
               </button>
@@ -360,7 +360,7 @@ export default function ReadyMadePCsPage() {
                     type="radio"
                     checked={filters.category === 'all'}
                     onChange={() => setFilters({...filters, category: 'all'})}
-                    className="h-4 w-4 text-blue-600 accent-blue-600"
+                    className="h-4 w-4 text-red-600 accent-red-600"
                   />
                   <label htmlFor="all" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                     All Categories
@@ -374,7 +374,7 @@ export default function ReadyMadePCsPage() {
                       type="radio"
                       checked={filters.category === category.id}
                       onChange={() => setFilters({...filters, category: category.id})}
-                      className="h-4 w-4 text-blue-600 accent-blue-600"
+                      className="h-4 w-4 text-red-600 accent-red-600"
                     />
                     <label htmlFor={category.id} className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                       {category.name}
@@ -402,7 +402,7 @@ export default function ReadyMadePCsPage() {
                       ...filters, 
                       priceRange: [parseInt(e.target.value), filters.priceRange[1]]
                     })}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 dark:bg-gray-700"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-gray-700"
                   />
                 </div>
               </div>
@@ -420,7 +420,7 @@ export default function ReadyMadePCsPage() {
                       ...filters, 
                       priceRange: [filters.priceRange[0], parseInt(e.target.value)]
                     })}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 dark:bg-gray-700"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-gray-700"
                   />
                 </div>
               </div>
@@ -443,7 +443,7 @@ export default function ReadyMadePCsPage() {
               <select
                 value={filters.sort}
                 onChange={(e) => setFilters({...filters, sort: e.target.value})}
-                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
               >
                 <option value="featured">Featured</option>
                 <option value="price-asc">Price: Low to High</option>
@@ -476,7 +476,7 @@ export default function ReadyMadePCsPage() {
               </h2>
               <button
                 onClick={resetFilters}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-sm text-red-600 dark:text-red-400 hover:underline"
               >
                 Reset
               </button>
@@ -492,7 +492,7 @@ export default function ReadyMadePCsPage() {
                 <select
                   value={filters.category}
                   onChange={(e) => setFilters({...filters, category: e.target.value})}
-                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
                   <option value="all">All Categories</option>
                   {pcCategories.map(category => (
@@ -511,7 +511,7 @@ export default function ReadyMadePCsPage() {
                 <select
                   value={filters.sort}
                   onChange={(e) => setFilters({...filters, sort: e.target.value})}
-                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
                   <option value="featured">Featured</option>
                   <option value="price-asc">Price: Low to High</option>
@@ -538,7 +538,7 @@ export default function ReadyMadePCsPage() {
                       ...filters, 
                       priceRange: [filters.priceRange[0], parseInt(e.target.value)]
                     })}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 dark:bg-gray-700"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-gray-700"
                   />
                   <span className="text-sm text-gray-600 dark:text-gray-400">€5000</span>
                 </div>
@@ -554,7 +554,7 @@ export default function ReadyMadePCsPage() {
               </button>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700"
               >
                 Apply
               </button>
@@ -575,7 +575,7 @@ export default function ReadyMadePCsPage() {
               </p>
               <button
                 onClick={resetFilters}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
               >
                 Reset Filters
               </button>
@@ -597,7 +597,7 @@ export default function ReadyMadePCsPage() {
                     
                     {/* Featured badge */}
                     {pc.featured && (
-                      <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                      <span className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">
                         Featured
                       </span>
                     )}
@@ -617,7 +617,7 @@ export default function ReadyMadePCsPage() {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleAddToCart(pc)}
-                            className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+                            className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
                             aria-label="Add to cart"
                           >
                             <ShoppingCart size={20} />
@@ -640,7 +640,7 @@ export default function ReadyMadePCsPage() {
                       </h3>
                       <button
                         onClick={() => toggleSpecs(pc.id)}
-                        className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                        className="text-red-600 dark:text-red-400 hover:underline text-sm"
                       >
                         Specs
                       </button>
@@ -702,7 +702,7 @@ export default function ReadyMadePCsPage() {
                       
                       <button
                         onClick={() => handleAddToCart(pc)}
-                        className="p-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        className="p-2 text-white bg-red-600 rounded-md hover:bg-red-700"
                       >
                         <ShoppingCart size={20} />
                       </button>
