@@ -1,7 +1,7 @@
 import { I18nProvider } from '@/app/i18n/providers';
 import { getMessages } from '@/app/i18n/messages';
 import { ReactNode } from 'react';
-import '../globals.css';
+import '@/src/app/globals.css';
 import Header from '@/app/components/Header/Header';
 import Footer from '@/app/components/Footer/Footer';
 import { AuthProvider } from '@/app/contexts/AuthContext';

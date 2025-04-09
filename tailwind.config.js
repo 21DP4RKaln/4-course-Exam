@@ -1,15 +1,13 @@
 /** @type {import('tailwindcss').Config} */
-import forms from '@tailwindcss/forms';
-import typography from '@tailwindcss/typography';
-import aspectRatio from '@tailwindcss/aspect-ratio';
-
 module.exports = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -26,9 +24,6 @@ module.exports = {
           900: '#001433',
         },
       },
-      fontFamily: {
-        sans: ['var(--font-inter)'],
-      },
     },
     container: {
       center: true,
@@ -42,8 +37,8 @@ module.exports = {
     },
   },
   plugins: [
-    forms,
-    typography,
-    aspectRatio,
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/aspect-ratio'),
   ],
 }

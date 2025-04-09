@@ -1,50 +1,37 @@
-// Modify your middleware.ts file
-import createMiddleware from 'next-intl/middleware';
-import { NextRequest, NextResponse } from 'next/server';
-import { locales, defaultLocale } from './app/i18n/config';
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { locales, defaultLocale } from './app/i18n/config'
 
-const PUBLIC_FILE = /\.(?!js$|tsx?$)([^.]+)$/;
-const API_PATTERN = /^\/api\//;
-const FAVICON_PATTERN = /^\/favicon\.ico$/;
+const PUBLIC_PATHS = [
+  /^\/_next\//,
+  /\/api\//,
+  /\/favicon\.ico$/,
+  /\.(jpg|jpeg|png|gif|svg|css|js)$/,
+]
 
-const intlMiddleware = createMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: 'as-needed'
-});
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-export default function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  if (PUBLIC_FILE.test(pathname) || API_PATTERN.test(pathname) || FAVICON_PATTERN.test(pathname)) {
-    return;
+  if (PUBLIC_PATHS.some(pattern => pattern.test(pathname))) {
+    return NextResponse.next()
   }
 
-  if (pathname === '/') {
-    const preferredLocale = 
-      request.cookies.get('NEXT_LOCALE')?.value || 
-      defaultLocale;
-    
-    return NextResponse.redirect(
-      new URL(`/${preferredLocale}`, request.url)
-    );
+  const pathnameHasLocale = locales.some(
+    locale => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
+  )
+
+  if (pathnameHasLocale) {
+    return NextResponse.next()
   }
 
-  const locale = pathname.split('/')[1];
-
-  if (locale && !locales.includes(locale as typeof locales[number]) && locale !== '') {
-    const preferredLocale = 
-      request.cookies.get('NEXT_LOCALE')?.value || 
-      defaultLocale;
-    
-    return NextResponse.redirect(
-      new URL(`/${preferredLocale}${pathname}`, request.url)
-    );
-  }
-
-  return intlMiddleware(request);
+  return NextResponse.redirect(
+    new URL(
+      `/${defaultLocale}${pathname === '/' ? '' : pathname}`,
+      request.url
+    )
+  )
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|.*\\.).*)']
-};
+  matcher: ['/((?!api|_next|.*\\..*).*)']
+}
