@@ -16,7 +16,8 @@ import {
   Zap,
   Search,
   X,
-  Info
+  Info,
+  AlertTriangle
 } from 'lucide-react'
 import { getReadyMadePCs, type PC } from '@/lib/services/shopService'
 
