@@ -3,7 +3,11 @@
       "appName": "IvaPro PC Configurator",
       "language": "Language",
       "darkMode": "Dark mode",
-      "lightMode": "Light mode"
+      "lightMode": "Light mode",
+      "title": "PC Configurator",
+      "home": "Home",
+      "configurator": "Configurator",
+      "notFound": "Page not found"
     },
     "nav": {
       "home": "Home",
@@ -93,5 +97,16 @@
       "passwordLength": "Password must be at least 8 characters",
       "passwordMatch": "Passwords do not match",
       "serverError": "Server error, please try again later"
-    }
+    },
+  "components": {
+    "cpu": "CPU",
+    "motherboard": "Motherboard",
+    "gpu": "Graphics Card",
+    "ram": "Memory",
+    "storage": "Storage",
+    "case": "Case",
+    "cooling": "Cooling",
+    "psu": "Power Supply"
+  }
+
   }
