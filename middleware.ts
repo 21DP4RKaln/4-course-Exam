@@ -1,3 +1,4 @@
+// Modify your middleware.ts file
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { locales, defaultLocale } from './app/i18n/config';
@@ -18,10 +19,20 @@ export default function middleware(request: NextRequest) {
   if (PUBLIC_FILE.test(pathname) || API_PATTERN.test(pathname) || FAVICON_PATTERN.test(pathname)) {
     return;
   }
- 
+
+  if (pathname === '/') {
+    const preferredLocale = 
+      request.cookies.get('NEXT_LOCALE')?.value || 
+      defaultLocale;
+    
+    return NextResponse.redirect(
+      new URL(`/${preferredLocale}`, request.url)
+    );
+  }
+
   const locale = pathname.split('/')[1];
 
-  if (!locales.includes(locale as typeof locales[number])) {
+  if (locale && !locales.includes(locale as typeof locales[number]) && locale !== '') {
     const preferredLocale = 
       request.cookies.get('NEXT_LOCALE')?.value || 
       defaultLocale;
