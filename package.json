@@ -9,7 +9,8 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "seed": "tsx lib/seeder.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -25,6 +26,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.50.0",
     "tailwind-merge": "^3.2.0",
+    "tsx": "^4.19.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {

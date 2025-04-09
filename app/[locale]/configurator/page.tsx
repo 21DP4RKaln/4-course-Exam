@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
@@ -9,36 +9,111 @@ import ComponentSelectionPanel from '@/app/components/Configurator/ComponentSele
 import ConfigurationSummary from '@/app/components/Configurator/ConfigurationSummary'
 import SelectedComponentsList from '@/app/components/Configurator/SelectedComponents'
 
-const componentCategories = [
-  { id: 'cpu', name: 'CPU', icon: <Cpu size={24} /> },
-  { id: 'motherboard', name: 'Motherboard', icon: <Server size={24} /> },
-  { id: 'gpu', name: 'Graphics Card', icon: <Monitor size={24} /> },
-  { id: 'ram', name: 'Memory', icon: <HardDrive size={24} /> },
-  { id: 'storage', name: 'Storage', icon: <HardDrive size={24} /> },
-  { id: 'case', name: 'Case', icon: <Layers size={24} /> },
-  { id: 'cooling', name: 'Cooling', icon: <Fan size={24} /> },
-  { id: 'psu', name: 'Power Supply', icon: <Zap size={24} /> },
-]
+interface Component {
+  id: string
+  name: string
+  price: number
+  description: string
+  imageUrl?: string
+}
+
+interface Category {
+  id: string
+  name: string
+  icon: React.ReactNode
+}
 
 export default function ConfiguratorPage() {
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const { isAuthenticated } = useAuth()
+  const locale = pathname.split('/')[1]
+  
   const [activeCategory, setActiveCategory] = useState('cpu')
-  const [selectedComponents, setSelectedComponents] = useState<Record<string, { id: string; name: string; price: number; description: string } | undefined>>({})
+  const [selectedComponents, setSelectedComponents] = useState<Record<string, Component | undefined>>({})
   const [configName, setConfigName] = useState('')
   const [configDescription, setConfigDescription] = useState('')
-  const [currentComponents, setCurrentComponents] = useState<Array<{ id: string; name: string; price: number; description: string }>>([])
+  const [currentComponents, setCurrentComponents] = useState<Component[]>([])
   const [loading, setLoading] = useState(false)
+  const [componentCategories, setComponentCategories] = useState<Category[]>([])
+  const [isLoadingComponents, setIsLoadingComponents] = useState(false)
 
+  // Fetch component categories on initial load
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/components')
+        if (!response.ok) throw new Error('Failed to fetch component categories')
+        
+        const data = await response.json()
+        
+        // Map categories to our format with icons
+        const mappedCategories = data.categories.map((cat: any) => {
+          let icon
+          
+          switch(cat.name.toLowerCase()) {
+            case 'cpu': icon = <Cpu size={24} />; break;
+            case 'motherboard': icon = <Server size={24} />; break;
+            case 'gpu': icon = <Monitor size={24} />; break;
+            case 'ram': icon = <HardDrive size={24} />; break;
+            case 'storage': icon = <HardDrive size={24} />; break;
+            case 'case': icon = <Layers size={24} />; break;
+            case 'cooling': icon = <Fan size={24} />; break;
+            case 'psu': icon = <Zap size={24} />; break;
+            default: icon = <Cpu size={24} />;
+          }
+          
+          return {
+            id: cat.name.toLowerCase(),
+            name: cat.name,
+            icon
+          }
+        })
+        
+        setComponentCategories(mappedCategories)
+        
+        // Set active category to first one if available
+        if (mappedCategories.length > 0) {
+          setActiveCategory(mappedCategories[0].id)
+        }
+        
+      } catch (error) {
+        console.error('Error fetching component categories:', error)
+      }
+    }
+    
+    fetchCategories()
+  }, [])
+
+  // Fetch components when category changes
+  useEffect(() => {
+    const fetchComponents = async () => {
+      if (!activeCategory) return
+      
+      setIsLoadingComponents(true)
+      try {
+        const response = await fetch(`/api/components?category=${activeCategory}`)
+        if (!response.ok) throw new Error('Failed to fetch components')
+        
+        const data = await response.json()
+        setCurrentComponents(data.components || [])
+      } catch (error) {
+        console.error('Error fetching components:', error)
+      } finally {
+        setIsLoadingComponents(false)
+      }
+    }
+    
+    fetchComponents()
+  }, [activeCategory])
 
   const totalPrice = Object.values(selectedComponents).reduce(
     (sum, component) => sum + (component?.price || 0),
     0
   )
 
-  const handleSelectComponent = (component: { id: string; name: string; price: number; description: string }) => {
+  const handleSelectComponent = (component: Component) => {
     setSelectedComponents(current => ({
       ...current,
       [activeCategory]: component
@@ -47,7 +122,7 @@ export default function ConfiguratorPage() {
 
   const handleSaveConfiguration = async () => {
     if (!isAuthenticated) {
-      router.push(`/${pathname.split('/')[1]}/auth/login`)
+      router.push(`/${locale}/auth/login`)
       return
     }
 
@@ -58,6 +133,7 @@ export default function ConfiguratorPage() {
 
     setLoading(true)
     try {
+      // In a real app, this would be an API call to save the configuration
       console.log('Saving configuration:', {
         name: configName,
         description: configDescription,
@@ -77,7 +153,7 @@ export default function ConfiguratorPage() {
 
   const handleSubmitConfiguration = async () => {
     if (!isAuthenticated) {
-      router.push(`/${pathname.split('/')[1]}/auth/login`)
+      router.push(`/${locale}/auth/login`)
       return
     }
 
@@ -86,7 +162,10 @@ export default function ConfiguratorPage() {
       return
     }
 
-    const requiredCategories = ['cpu', 'motherboard', 'ram', 'storage', 'psu']
+    const requiredCategories = componentCategories
+      .filter(cat => ['cpu', 'motherboard', 'ram', 'storage', 'psu'].includes(cat.id))
+      .map(cat => cat.id)
+    
     const missingComponents = requiredCategories.filter(cat => !selectedComponents[cat])
 
     if (missingComponents.length > 0) {
@@ -96,6 +175,7 @@ export default function ConfiguratorPage() {
 
     setLoading(true)
     try {
+      // In a real app, this would be an API call to submit the configuration
       console.log('Submitting configuration for review:', {
         name: configName,
         description: configDescription,
@@ -156,6 +236,7 @@ export default function ConfiguratorPage() {
             selectedComponent={selectedComponents[activeCategory]}
             onSelectComponent={handleSelectComponent}
             category={activeCategory}
+            isLoading={isLoadingComponents}
           />
 
           {/* Selected components list */}

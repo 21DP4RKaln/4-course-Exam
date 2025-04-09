@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
 import {
   Cpu,
@@ -24,69 +23,11 @@ import {
   Fan
 } from 'lucide-react'
 
-// Mock data for pending configurations
-const mockConfigurations = [
-  {
-    id: 'config-1',
-    name: 'High-End Gaming PC',
-    userId: 'user-1',
-    userName: 'John Doe',
-    email: 'john.doe@example.com',
-    status: 'SUBMITTED',
-    totalPrice: 2499.99,
-    createdAt: '2025-04-05T14:30:00Z',
-    components: [
-      { id: 'cpu-1', category: 'cpu', name: 'Intel Core i9-14900K', price: 649.99 },
-      { id: 'gpu-1', category: 'gpu', name: 'NVIDIA RTX 4080 16GB', price: 1199.99 },
-      { id: 'mb-1', category: 'motherboard', name: 'ASUS ROG Maximus Z790', price: 549.99 },
-      { id: 'ram-1', category: 'ram', name: 'Corsair 32GB DDR5-6000', price: 189.99 },
-      { id: 'storage-1', category: 'storage', name: 'Samsung 2TB 990 Pro NVMe SSD', price: 199.99 },
-      { id: 'psu-1', category: 'psu', name: 'Corsair RM1000x', price: 189.99 },
-      { id: 'case-1', category: 'case', name: 'Lian Li O11 Dynamic EVO', price: 159.99 },
-      { id: 'cooling-1', category: 'cooling', name: 'NZXT Kraken Z73', price: 249.99 }
-    ]
-  },
-  {
-    id: 'config-2',
-    name: 'Workstation Build',
-    userId: 'user-2',
-    userName: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    status: 'SUBMITTED',
-    totalPrice: 3899.99,
-    createdAt: '2025-04-07T09:15:00Z',
-    components: [
-      { id: 'cpu-2', category: 'cpu', name: 'AMD Ryzen 9 7950X', price: 599.99 },
-      { id: 'gpu-2', category: 'gpu', name: 'NVIDIA RTX 4090 24GB', price: 1599.99 },
-      { id: 'mb-2', category: 'motherboard', name: 'MSI MEG X670E ACE', price: 549.99 },
-      { id: 'ram-2', category: 'ram', name: 'G.Skill Trident Z5 64GB DDR5-6400', price: 349.99 },
-      { id: 'storage-2', category: 'storage', name: 'Samsung 4TB 990 Pro NVMe SSD', price: 399.99 },
-      { id: 'psu-2', category: 'psu', name: 'Seasonic PRIME TX-1300', price: 299.99 },
-      { id: 'case-2', category: 'case', name: 'Fractal Design Meshify 2 XL', price: 199.99 },
-      { id: 'cooling-2', category: 'cooling', name: 'EKWB Custom Loop', price: 699.99 }
-    ]
-  },
-  {
-    id: 'config-3',
-    name: 'Budget Gaming PC',
-    userId: 'user-3',
-    userName: 'Alex Johnson',
-    email: 'alex.johnson@example.com',
-    status: 'SUBMITTED',
-    totalPrice: 899.99,
-    createdAt: '2025-04-08T16:45:00Z',
-    components: [
-      { id: 'cpu-3', category: 'cpu', name: 'AMD Ryzen 5 7600X', price: 249.99 },
-      { id: 'gpu-3', category: 'gpu', name: 'NVIDIA RTX 4060 8GB', price: 299.99 },
-      { id: 'mb-3', category: 'motherboard', name: 'MSI B650 Gaming Plus', price: 149.99 },
-      { id: 'ram-3', category: 'ram', name: 'Corsair Vengeance 16GB DDR5-5600', price: 89.99 },
-      { id: 'storage-3', category: 'storage', name: 'WD red SN570 1TB NVMe SSD', price: 79.99 },
-      { id: 'psu-3', category: 'psu', name: 'EVGA SuperNOVA 650 G5', price: 89.99 },
-      { id: 'case-3', category: 'case', name: 'NZXT H5 Flow', price: 94.99 },
-      { id: 'cooling-3', category: 'cooling', name: 'be quiet! Pure Rock 2', price: 44.99 }
-    ]
-  }
-]
+import { 
+  getPendingConfigurations, 
+  reviewConfiguration, 
+  type PendingConfiguration 
+} from '@/lib/services/specialistService'
 
 export default function SpecialistPanelPage() {
   const t = useTranslations()
@@ -94,12 +35,18 @@ export default function SpecialistPanelPage() {
   const pathname = usePathname()
   const { user, isAuthenticated, loading } = useAuth()
   const locale = pathname.split('/')[1]
-  
+
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedConfig, setExpandedConfig] = useState<string | null>(null)
   const [selectedConfig, setSelectedConfig] = useState<string | null>(null)
   const [reviewComment, setReviewComment] = useState('')
-  const [filterStatus, setFilterStatus] = useState('all')
+  const [filterStatus, setFilterStatus] = useState('SUBMITTED')
+  
+  // Data state
+  const [configurations, setConfigurations] = useState<PendingConfiguration[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
+  const [actionLoading, setActionLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   // Redirect if not authenticated or not a specialist
   useEffect(() => {
@@ -108,6 +55,29 @@ export default function SpecialistPanelPage() {
     }
   }, [isAuthenticated, loading, router, locale, pathname, user?.role])
   
+  // Fetch configurations from the database
+  useEffect(() => {
+    if (!isAuthenticated || user?.role !== 'SPECIALIST') return
+    
+    const fetchConfigurations = async () => {
+      setDataLoading(true)
+      setError(null)
+      
+      try {
+        const configData = await getPendingConfigurations()
+        setConfigurations(configData)
+      } catch (err) {
+        console.error('Error fetching configurations:', err)
+        setError('Failed to load configurations. Please try again later.')
+      } finally {
+        setDataLoading(false)
+      }
+    }
+    
+    fetchConfigurations()
+  }, [isAuthenticated, user?.role])
+  
+  // Loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
@@ -116,10 +86,12 @@ export default function SpecialistPanelPage() {
     )
   }
   
+  // Auth check - will redirect in useEffect
   if (!isAuthenticated || user?.role !== 'SPECIALIST') {
-    return null // Will redirect in the useEffect
+    return null
   }
   
+  // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return new Intl.DateTimeFormat(locale, { 
@@ -131,9 +103,9 @@ export default function SpecialistPanelPage() {
     }).format(date)
   }
   
-  // Filter configurations based on search and status
-  const filteredConfigurations = mockConfigurations.filter(config => {
-    const matchesSearch = 
+  // Filter configurations based on search query and filter status
+  const filteredConfigurations = configurations.filter(config => {
+    const matchesSearch = searchQuery === '' || 
       config.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       config.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       config.components.some(comp => comp.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -143,63 +115,101 @@ export default function SpecialistPanelPage() {
     return matchesSearch && matchesStatus
   })
   
+  // Toggle expanded view for a configuration
   const toggleExpandConfig = (id: string) => {
-    if (expandedConfig === id) {
-      setExpandedConfig(null)
-    } else {
-      setExpandedConfig(id)
-    }
+    setExpandedConfig(prevId => prevId === id ? null : id)
   }
   
+  // Select a configuration for review
   const handleSelectConfig = (id: string) => {
     setSelectedConfig(id)
     setReviewComment('')
   }
   
-  const handleApprove = () => {
-    // In a real application, this would make an API call to update the configuration status
-    console.log(`Approved configuration ${selectedConfig} with comment: ${reviewComment}`)
-    alert('Configuration approved successfully')
-    setSelectedConfig(null)
-    setReviewComment('')
+  // Approve the selected configuration
+  const handleApprove = async () => {
+    if (!selectedConfig) return
+    
+    setActionLoading(true)
+    try {
+      const success = await reviewConfiguration(
+        selectedConfig, 
+        'APPROVED', 
+        reviewComment || 'Configuration approved by specialist'
+      )
+      
+      if (success) {
+        alert('Configuration approved successfully')
+        // Remove from the list
+        setConfigurations(prevConfigs => 
+          prevConfigs.filter(c => c.id !== selectedConfig)
+        )
+        setSelectedConfig(null)
+        setReviewComment('')
+      } else {
+        setError('Failed to approve configuration')
+      }
+    } catch (err) {
+      console.error('Error approving configuration:', err)
+      setError('An error occurred while approving the configuration')
+    } finally {
+      setActionLoading(false)
+    }
   }
   
-  const handleReject = () => {
-    // In a real application, this would make an API call to update the configuration status
+  // Reject the selected configuration
+  const handleReject = async () => {
+    if (!selectedConfig) return
+    
     if (!reviewComment) {
       alert('Please provide a reason for rejection')
       return
     }
     
-    console.log(`Rejected configuration ${selectedConfig} with comment: ${reviewComment}`)
-    alert('Configuration rejected successfully')
-    setSelectedConfig(null)
-    setReviewComment('')
-  }
-  
-  const getCategoryIcon = (category: string) => {
-    switch(category) {
-      case 'cpu':
-        return <Cpu size={16} className="text-red-500" />
-      case 'gpu':
-        return <Monitor size={16} className="text-purple-500" />
-      case 'motherboard':
-        return <Server size={16} className="text-amber-500" />
-      case 'ram':
-        return <HardDrive size={16} className="text-green-500" />
-      case 'storage':
-        return <HardDrive size={16} className="text-indigo-500" />
-      case 'psu':
-        return <Zap size={16} className="text-yellow-500" />
-      case 'case':
-        return <Layers size={16} className="text-red-500" />
-      case 'cooling':
-        return <Fan size={16} className="text-cyan-500" />
-      default:
-        return <Cpu size={16} className="text-gray-500" />
+    setActionLoading(true)
+    try {
+      const success = await reviewConfiguration(
+        selectedConfig, 
+        'REJECTED', 
+        reviewComment
+      )
+      
+      if (success) {
+        alert('Configuration rejected successfully')
+        // Remove from the list
+        setConfigurations(prevConfigs => 
+          prevConfigs.filter(c => c.id !== selectedConfig)
+        )
+        setSelectedConfig(null)
+        setReviewComment('')
+      } else {
+        setError('Failed to reject configuration')
+      }
+    } catch (err) {
+      console.error('Error rejecting configuration:', err)
+      setError('An error occurred while rejecting the configuration')
+    } finally {
+      setActionLoading(false)
     }
   }
   
+  // Get icon for component category
+  const getCategoryIcon = (category: string) => {
+    const lowerCaseCategory = category.toLowerCase()
+    
+    if (lowerCaseCategory.includes('cpu')) return <Cpu size={16} className="text-red-500" />
+    if (lowerCaseCategory.includes('gpu') || lowerCaseCategory.includes('graphics')) return <Monitor size={16} className="text-purple-500" />
+    if (lowerCaseCategory.includes('motherboard')) return <Server size={16} className="text-amber-500" />
+    if (lowerCaseCategory.includes('memory') || lowerCaseCategory.includes('ram')) return <HardDrive size={16} className="text-green-500" />
+    if (lowerCaseCategory.includes('storage')) return <HardDrive size={16} className="text-indigo-500" />
+    if (lowerCaseCategory.includes('power') || lowerCaseCategory.includes('psu')) return <Zap size={16} className="text-yellow-500" />
+    if (lowerCaseCategory.includes('case')) return <Layers size={16} className="text-red-500" />
+    if (lowerCaseCategory.includes('cooling')) return <Fan size={16} className="text-cyan-500" />
+    
+    return <Cpu size={16} className="text-gray-500" />
+  }
+  
+  // Main component render
   return (
     <div className="max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
@@ -215,7 +225,7 @@ export default function SpecialistPanelPage() {
               {t('specialist.pendingConfigs')}
             </h2>
             
-            {/* Search and filter */}
+            {/* Search and filter controls */}
             <div className="mb-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
               <div className="relative flex-grow">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -248,7 +258,23 @@ export default function SpecialistPanelPage() {
             </div>
             
             {/* Configuration list */}
-            {filteredConfigurations.length === 0 ? (
+            {dataLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mr-3"></div>
+                <span className="text-gray-600 dark:text-gray-400">Loading configurations...</span>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <AlertTriangle size={32} className="mx-auto text-red-500 mb-2" />
+                <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : filteredConfigurations.length === 0 ? (
               <div className="text-center py-8">
                 <AlertTriangle size={32} className="mx-auto text-amber-500 mb-2" />
                 <p className="text-gray-600 dark:text-gray-400">No configurations found. Try adjusting your filters.</p>
@@ -281,13 +307,7 @@ export default function SpecialistPanelPage() {
                         </div>
                         
                         <div className="flex items-center">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            config.status === 'SUBMITTED' 
-                              ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' 
-                              : config.status === 'APPROVED'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                          } mr-2`}>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 mr-2`}>
                             {config.status}
                           </span>
                           <ChevronDown 
@@ -360,7 +380,7 @@ export default function SpecialistPanelPage() {
               
               {/* Configuration details */}
               {(() => {
-                const config = mockConfigurations.find(c => c.id === selectedConfig)
+                const config = configurations.find(c => c.id === selectedConfig)
                 if (!config) return null
                 
                 return (
@@ -386,6 +406,7 @@ export default function SpecialistPanelPage() {
                         Compatibility Check
                       </h4>
                       
+                      {/* This would be replaced with actual compatibility check logic */}
                       <div className="p-3 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-md flex items-start">
                         <CheckCircle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
                         <div>
@@ -394,14 +415,23 @@ export default function SpecialistPanelPage() {
                         </div>
                       </div>
                       
-                      {/* Example warning - in a real application, this would be conditional */}
-                      <div className="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded-md flex items-start mt-2">
-                        <AlertTriangle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium">Optimization suggestion</p>
-                          <p className="text-sm mt-1">The selected power supply (650W) is adequate, but for future upgrades, considering a 750W PSU might be beneficial.</p>
+                      {/* Power supply suggestion based on actual components */}
+                      {config.components.some(c => 
+                        c.category.toLowerCase().includes('power') && 
+                        c.name.toLowerCase().includes('650w') &&
+                        config.components.some(g => 
+                          g.category.toLowerCase().includes('gpu') && 
+                          g.name.toLowerCase().includes('rtx')
+                        )
+                      ) && (
+                        <div className="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded-md flex items-start mt-2">
+                          <AlertTriangle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">Optimization suggestion</p>
+                            <p className="text-sm mt-1">The selected power supply (650W) may be insufficient for the high-end GPU. Consider upgrading to a 750W or 850W PSU for better stability.</p>
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                     
                     {/* Components list */}
@@ -423,7 +453,7 @@ export default function SpecialistPanelPage() {
                               <div className="flex items-center">
                                 {getCategoryIcon(component.category)}
                                 <span className="ml-2 font-medium text-gray-800 dark:text-gray-200">
-                                  {component.category.charAt(0).toUpperCase() + component.category.slice(1)}
+                                  {component.category}
                                 </span>
                               </div>
                               <div className="text-gray-700 dark:text-gray-300">
@@ -466,18 +496,32 @@ export default function SpecialistPanelPage() {
                       <div className="flex space-x-4">
                         <button
                           onClick={handleApprove}
-                          className="flex-1 py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center"
+                          disabled={actionLoading}
+                          className="flex-1 py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                          <CheckCircle size={18} className="mr-2" />
-                          {t('specialist.approve')}
+                          {actionLoading ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                          ) : (
+                            <>
+                              <CheckCircle size={18} className="mr-2" />
+                              {t('specialist.approve')}
+                            </>
+                          )}
                         </button>
                         
                         <button
                           onClick={handleReject}
-                          className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center"
+                          disabled={actionLoading}
+                          className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                          <XCircle size={18} className="mr-2" />
-                          {t('specialist.reject')}
+                          {actionLoading ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                          ) : (
+                            <>
+                              <XCircle size={18} className="mr-2" />
+                              {t('specialist.reject')}
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>

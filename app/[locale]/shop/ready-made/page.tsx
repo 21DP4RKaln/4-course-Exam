@@ -63,13 +63,6 @@ export default function ReadyMadePCsPage() {
     const fetchPCs = async () => {
       setLoading(true)
       try {
-        // In a real application with API routes:
-        // const response = await fetch('/api/shop/ready-made')
-        // const data = await response.json()
-        // setPcs(data)
-        
-        // For this example, we'll call the service directly from the client
-        // Note: In a real app, you'd call an API endpoint instead
         const data = await getReadyMadePCs()
         setPcs(data)
       } catch (err) {
@@ -614,12 +607,20 @@ export default function ReadyMadePCsPage() {
                         )}
                       </div>
                       
-                      <button
-                        onClick={() => handleAddToCart(pc)}
-                        className="p-2 text-white bg-red-600 rounded-md hover:bg-red-700"
-                      >
-                        <ShoppingCart size={20} />
-                      </button>
+                      <div className="flex space-x-2">
+                        <Link 
+                          href={`/${locale}/shop/product/${pc.id}`}
+                          className="p-2 text-gray-700 border border-gray-300 dark:border-gray-600 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          View
+                        </Link>
+                        <button
+                          onClick={() => handleAddToCart(pc)}
+                          className="p-2 text-white bg-red-600 rounded-md hover:bg-red-700"
+                        >
+                          <ShoppingCart size={20} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

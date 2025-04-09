@@ -13,67 +13,7 @@ import {
 } from 'lucide-react'
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs'
-
-interface Configuration {
-  id: string
-  name: string
-  description?: string
-  status: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED'
-  totalPrice: number
-  createdAt: string
-}
-
-interface Order {
-  id: string
-  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED'
-  totalAmount: number
-  createdAt: string
-  configurationName?: string
-}
-
-const mockConfigurations: Configuration[] = [
-  {
-    id: '1',
-    name: 'Gaming Beast',
-    description: 'High-end gaming PC with RTX 4080, i9 processor',
-    status: 'APPROVED',
-    totalPrice: 2499,
-    createdAt: '2025-03-15T10:30:00Z'
-  },
-  {
-    id: '2',
-    name: 'Workstation Setup',
-    description: 'For professional work and video editing',
-    status: 'DRAFT',
-    totalPrice: 1899,
-    createdAt: '2025-04-02T14:45:00Z'
-  },
-  {
-    id: '3',
-    name: 'Budget Gaming',
-    description: 'Affordable gaming PC with good performance',
-    status: 'SUBMITTED',
-    totalPrice: 899,
-    createdAt: '2025-04-05T09:15:00Z'
-  }
-]
-
-const mockOrders: Order[] = [
-  {
-    id: 'ord-1',
-    status: 'COMPLETED',
-    totalAmount: 2499,
-    createdAt: '2025-03-20T10:30:00Z',
-    configurationName: 'Gaming Beast'
-  },
-  {
-    id: 'ord-2',
-    status: 'PROCESSING',
-    totalAmount: 1249,
-    createdAt: '2025-04-01T15:20:00Z',
-    configurationName: 'Office PC'
-  }
-]
+import { getUserConfigurations, getUserOrders, type UserConfiguration, type UserOrder } from '@/lib/services/dashboardService'
 
 export default function DashboardPage() {
   const t = useTranslations()
@@ -82,12 +22,44 @@ export default function DashboardPage() {
   const { user, isAuthenticated, loading } = useAuth()
   const [activeTab, setActiveTab] = useState('configurations')
   const locale = pathname.split('/')[1]
+  
+  const [configurations, setConfigurations] = useState<UserConfiguration[]>([])
+  const [orders, setOrders] = useState<UserOrder[]>([])
+  const [dataLoading, setDataLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.push(`/${locale}/auth/login`)
     }
   }, [isAuthenticated, loading, router, locale])
+
+  useEffect(() => {
+    if (!isAuthenticated || loading) return;
+
+    const fetchData = async () => {
+      setDataLoading(true);
+      setError(null);
+      
+      try {
+        // Only fetch data for the active tab to optimize performance
+        if (activeTab === 'configurations') {
+          const configData = await getUserConfigurations(user!.id);
+          setConfigurations(configData);
+        } else if (activeTab === 'orders') {
+          const orderData = await getUserOrders(user!.id);
+          setOrders(orderData);
+        }
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+        setError('Failed to load data. Please try again later.');
+      } finally {
+        setDataLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [activeTab, isAuthenticated, loading, user]);
 
   if (loading) {
     return (
@@ -174,7 +146,22 @@ export default function DashboardPage() {
           
           {/* My Configurations Tab */}
           <TabsContent value="configurations" className="p-6">
-            {mockConfigurations.length === 0 ? (
+            {dataLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mr-3"></div>
+                <span className="text-gray-600 dark:text-gray-400">Loading configurations...</span>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <p className="text-red-600 dark:text-red-400">{error}</p>
+                <button
+                  onClick={() => setActiveTab('configurations')}
+                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : configurations.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-600 dark:text-gray-400">
                   {t('dashboard.noConfigurations')}
@@ -201,7 +188,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {mockConfigurations.map((config) => (
+                  {configurations.map((config) => (
                     <div key={config.id} className="py-4">
                       <div className="flex flex-col md:flex-row md:items-center justify-between">
                         <div className="mb-3 md:mb-0">
@@ -237,6 +224,7 @@ export default function DashboardPage() {
                             </button>
                             {config.status === 'APPROVED' && (
                               <button
+                                onClick={() => router.push(`/${locale}/shop/product/${config.id}`)}
                                 className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
                               >
                                 Order
@@ -254,7 +242,22 @@ export default function DashboardPage() {
           
           {/* My Orders Tab */}
           <TabsContent value="orders" className="p-6">
-            {mockOrders.length === 0 ? (
+            {dataLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mr-3"></div>
+                <span className="text-gray-600 dark:text-gray-400">Loading orders...</span>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <p className="text-red-600 dark:text-red-400">{error}</p>
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : orders.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-600 dark:text-gray-400">
                   {t('dashboard.noOrders')}
@@ -288,7 +291,7 @@ export default function DashboardPage() {
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                      {mockOrders.map((order) => (
+                      {orders.map((order) => (
                         <tr 
                           key={order.id}
                           className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
@@ -366,17 +369,6 @@ export default function DashboardPage() {
                 </h2>
                 <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg">
                   <div className="space-y-4">
-                    <div>
-                      <label className="form-label">
-                        Current Password
-                      </label>
-                      <input 
-                        type="password"
-                        className="form-input"
-                        placeholder="••••••••"
-                      />
-                    </div>
-                    
                     <div>
                       <label className="form-label">
                         New Password

@@ -16,13 +16,15 @@ interface ComponentSelectionPanelProps {
   selectedComponent: Component | undefined
   onSelectComponent: (component: Component) => void
   category: string
+  isLoading?: boolean
 }
 
 export default function ComponentSelectionPanel({
   components,
   selectedComponent,
   onSelectComponent,
-  category
+  category,
+  isLoading = false
 }: ComponentSelectionPanelProps) {
   const t = useTranslations()
 
@@ -32,7 +34,12 @@ export default function ComponentSelectionPanel({
         {t('configurator.selectComponent')}
       </h2>
 
-      {components.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mr-3"></div>
+          <span className="text-gray-600 dark:text-gray-400">Loading components...</span>
+        </div>
+      ) : components.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-400">
           No components available in this category.
         </p>
