@@ -40,7 +40,7 @@ export default function LoginPage() {
       setError(null)
       await login(data.email, data.password)
       router.push(`/${locale}/dashboard`)
-    } catch (err) {
+    } catch {
       setError('Invalid email or password. Please try again.')
     }
   }

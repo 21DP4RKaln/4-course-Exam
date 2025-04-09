@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
-import { Cpu, Monitor, Memory, HardDrive, Layers, Fan, Zap, Server } from 'lucide-react'
+import { Cpu, Monitor, HardDrive, Layers, Fan, Zap, Server } from 'lucide-react'
 import ComponentSelectionPanel from '@/app/components/Configurator/ComponentSelectionPanel'
 import ConfigurationSummary from '@/app/components/Configurator/ConfigurationSummary'
 import SelectedComponentsList from '@/app/components/Configurator/SelectedComponents'
@@ -13,7 +13,7 @@ const componentCategories = [
   { id: 'cpu', name: 'CPU', icon: <Cpu size={24} /> },
   { id: 'motherboard', name: 'Motherboard', icon: <Server size={24} /> },
   { id: 'gpu', name: 'Graphics Card', icon: <Monitor size={24} /> },
-  { id: 'ram', name: 'Memory', icon: <Memory size={24} /> },
+  { id: 'ram', name: 'Memory', icon: <HardDrive size={24} /> },
   { id: 'storage', name: 'Storage', icon: <HardDrive size={24} /> },
   { id: 'case', name: 'Case', icon: <Layers size={24} /> },
   { id: 'cooling', name: 'Cooling', icon: <Fan size={24} /> },
@@ -41,7 +41,7 @@ export default function ConfiguratorPage() {
   const router = useRouter()
   const { isAuthenticated } = useAuth()
   const [activeCategory, setActiveCategory] = useState('cpu')
-  const [selectedComponents, setSelectedComponents] = useState<Record<string, any>>({})
+  const [selectedComponents, setSelectedComponents] = useState<Record<string, { id: string; name: string; price: number; description: string } | undefined>>({})
   const [configName, setConfigName] = useState('')
   const [configDescription, setConfigDescription] = useState('')
   const [loading, setLoading] = useState(false)

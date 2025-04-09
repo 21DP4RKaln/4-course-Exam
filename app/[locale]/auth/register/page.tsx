@@ -46,7 +46,7 @@ export default function RegisterPage() {
       setError(null)
       await registerUser(data.email, data.password, data.name)
       router.push(`/${locale}/dashboard`)
-    } catch (err) {
+    } catch {
       setError('Registration failed. Please try again.')
     }
   }

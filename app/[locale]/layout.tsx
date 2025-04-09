@@ -1,5 +1,5 @@
 import { I18nProvider } from '@/app/i18n/providers'
-import { Locale, defaultLocale } from '@/app/i18n/config'
+import { defaultLocale } from '@/app/i18n/config'
 
 export default async function LocaleLayout({
   children,
@@ -16,14 +16,14 @@ export default async function LocaleLayout({
     console.error(`Failed to load messages for locale: ${locale}`, error);
     try {
       messages = (await import(`@/messages/${defaultLocale}.json`)).default;
-    } catch {
+    } catch (fallbackError) {
+      console.error(`Failed to load default messages too:`, fallbackError);
       messages = {};
     }
   }
 
   return (
     <I18nProvider locale={locale} messages={messages}>
-      {/* Your existing providers */}
       {children}
     </I18nProvider>
   )
