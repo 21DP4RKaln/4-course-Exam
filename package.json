@@ -14,7 +14,9 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.9.0",
+    "@radix-ui/react-tabs": "^1.1.4",
     "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
     "jose": "^5.2.0",
     "lucide-react": "^0.316.0",
     "next": "^15.2.5",
@@ -22,6 +24,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.50.0",
+    "tailwind-merge": "^3.2.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

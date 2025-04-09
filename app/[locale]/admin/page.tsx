@@ -274,7 +274,7 @@ export default function AdminPanelPage() {
   };
   
   const renderTabContent = () => {
-    const items = getCurrentItems()
+    const items = getCurrentItems();
     
     if (tabLoading) {
       return (
@@ -282,7 +282,7 @@ export default function AdminPanelPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mr-3"></div>
           <span className="text-gray-600 dark:text-gray-400">Loading data...</span>
         </div>
-      )
+      );
     }
     
     if (error) {
@@ -297,7 +297,7 @@ export default function AdminPanelPage() {
             Retry
           </button>
         </div>
-      )
+      );
     }
     
     if (items.length === 0) {
@@ -306,7 +306,7 @@ export default function AdminPanelPage() {
           <AlertTriangle size={32} className="mx-auto text-amber-500 mb-2" />
           <p className="text-gray-600 dark:text-gray-400">No items found. Try adjusting your search query.</p>
         </div>
-      )
+      );
     }
     
     switch (activeTab) {
@@ -387,7 +387,7 @@ export default function AdminPanelPage() {
               ))}
             </tbody>
           </table>
-        )
+        );
         
       case 'orders':
         return (
@@ -465,7 +465,7 @@ export default function AdminPanelPage() {
               ))}
             </tbody>
           </table>
-        )
+        );
         
       case 'configurations':
         return (

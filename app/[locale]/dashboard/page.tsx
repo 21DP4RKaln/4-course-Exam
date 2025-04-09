@@ -8,10 +8,11 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import { 
   User, 
   Package, 
-  Settings, 
-  Clock, 
-  Cpu
+  Cpu,
+  Clock
 } from 'lucide-react'
+
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs'
 
 interface Configuration {
   id: string
@@ -353,10 +354,7 @@ export default function DashboardPage() {
                     />
                   </div>
                   
-                  <button
-                    className="w-full mt-4 btn-primary"
-                  >
-                    <Settings size={18} className="mr-2" />
+                  <button className="w-full mt-4 btn-primary">
                     Update Profile
                   </button>
                 </div>
@@ -401,9 +399,7 @@ export default function DashboardPage() {
                       />
                     </div>
                     
-                    <button
-                      className="w-full mt-4 btn-primary"
-                    >
+                    <button className="w-full mt-4 btn-primary">
                       Update Password
                     </button>
                   </div>
