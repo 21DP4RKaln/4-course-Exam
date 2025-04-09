@@ -43,8 +43,7 @@ export default function ProductDetailsPage() {
   const [product, setProduct] = useState<PCWithRelated | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  
-  // Fetch product data
+ 
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true)

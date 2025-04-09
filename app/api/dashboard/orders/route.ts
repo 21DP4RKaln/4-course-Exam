@@ -5,7 +5,6 @@ import { getUserOrders } from '@/lib/services/dashboardService'
 
 export async function GET(request: NextRequest) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
