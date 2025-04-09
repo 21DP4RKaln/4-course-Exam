@@ -6,7 +6,10 @@ export default getRequestConfig(async ({ locale }) => {
     throw new Error(`Invalid locale: ${locale}`);
   }
 
+  const messages = (await import(`./lib/messages/${locale}.json`)).default;
+
   return {
-    messages: (await import(`./lib/messages/${locale}.json`)).default
+    messages,
+    timeZone: 'UTC'
   };
 });
