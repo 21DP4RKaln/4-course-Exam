@@ -10,6 +10,28 @@ export default getRequestConfig(async ({ locale }) => {
 
   return {
     messages,
-    timeZone: 'UTC'
+    timeZone: 'UTC',
+    now: new Date(), 
+    formats: {
+      dateTime: {
+        short: {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        },
+        long: {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          weekday: 'long'
+        }
+      },
+      number: {
+        currency: {
+          style: 'currency',
+          currency: 'EUR'
+        }
+      }
+    }
   };
 });

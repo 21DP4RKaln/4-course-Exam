@@ -7,9 +7,9 @@ import { locales } from '@/app/i18n/config'
 import { ChevronDown } from 'lucide-react'
 
 const languageNames: Record<string, string> = {
-  en: 'English',
-  lv: 'Latviešu',
-  ru: 'Русский',
+  en: 'EN',
+  lv: 'LV',
+  ru: 'RU',
 }
 
 export default function LanguageSwitcher() {
