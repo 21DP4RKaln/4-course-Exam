@@ -1,3 +1,5 @@
+'use client'
+
 import { useTranslations } from 'next-intl'
 import HeroSection from '@/app/components/Home/HeroSection'
 import FeaturedConfigurations from '@/app/components/Home/FeaturedConfigurations'
@@ -8,7 +10,7 @@ export default function HomePage() {
   
   return (
     <div className="space-y-12">
-      <h1>{t('home.welcome')}</h1>
+      <h1 className="text-3xl font-bold">{t('home.welcome')}</h1>
       <HeroSection />
       <FeaturedConfigurations />
       <ServicesSection />

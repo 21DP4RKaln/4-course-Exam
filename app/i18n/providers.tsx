@@ -15,7 +15,6 @@ export function I18nProvider({ locale, messages, children }: Props) {
       locale={locale} 
       messages={messages}
       timeZone="UTC"
-      // You can add more options here as needed
     >
       {children}
     </NextIntlClientProvider>

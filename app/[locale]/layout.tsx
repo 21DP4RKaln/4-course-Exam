@@ -7,6 +7,9 @@ import Footer from '@/app/components/Footer/Footer';
 import { AuthProvider } from '@/app/contexts/AuthContext';
 import { CartProvider } from '@/app/contexts/CartContext';
 import { ThemeProvider } from '@/app/contexts/ThemeContext';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'] });
 
 type Props = {
   children: ReactNode;
@@ -20,20 +23,24 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages(locale);
 
   return (
-    <I18nProvider locale={locale} messages={messages}>
-      <ThemeProvider>
-        <AuthProvider>
-          <CartProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-grow container mx-auto px-4 py-8">
-                {children}
-              </main>
-              <Footer />
-            </div>
-          </CartProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </I18nProvider>
+    <html lang={locale} suppressHydrationWarning>
+      <body className={inter.className}>
+        <I18nProvider locale={locale} messages={messages}>
+          <ThemeProvider>
+            <AuthProvider>
+              <CartProvider>
+                <div className="flex flex-col min-h-screen">
+                  <Header />
+                  <main className="flex-grow container mx-auto px-4 py-8">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+              </CartProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </I18nProvider>
+      </body>
+    </html>
   );
 }

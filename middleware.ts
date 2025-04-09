@@ -1,9 +1,10 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
-import { isValidLocale, locales, defaultLocale } from './app/i18n/config';
+import { locales, defaultLocale } from './app/i18n/config';
 
-const PUBLIC_FILE = /\.(.*)$/;
-const API_PATTERN = /^\/api\/.*/;
+const PUBLIC_FILE = /\.(?!js$|tsx?$)([^.]+)$/;
+const API_PATTERN = /^\/api\//;
+const FAVICON_PATTERN = /^\/favicon\.ico$/;
 
 const intlMiddleware = createMiddleware({
   locales,
@@ -14,13 +15,13 @@ const intlMiddleware = createMiddleware({
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (PUBLIC_FILE.test(pathname) || API_PATTERN.test(pathname)) {
+  if (PUBLIC_FILE.test(pathname) || API_PATTERN.test(pathname) || FAVICON_PATTERN.test(pathname)) {
     return;
   }
  
   const locale = pathname.split('/')[1];
 
-  if (!isValidLocale(locale)) {
+  if (!locales.includes(locale as typeof locales[number])) {
     const preferredLocale = 
       request.cookies.get('NEXT_LOCALE')?.value || 
       defaultLocale;
@@ -34,5 +35,5 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  matcher: ['/((?!api|_next|.*\\.).*)']
 };
