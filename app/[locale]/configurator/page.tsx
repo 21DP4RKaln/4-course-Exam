@@ -20,21 +20,6 @@ const componentCategories = [
   { id: 'psu', name: 'Power Supply', icon: <Zap size={24} /> },
 ]
 
-const mockComponents = {
-  cpu: [
-    { id: 'cpu1', name: 'Intel Core i9-14900K', price: 649.99, description: 'High-end gaming CPU, 24 cores' },
-    { id: 'cpu2', name: 'AMD Ryzen 9 7950X', price: 599.99, description: '16 cores, 32 threads, 5.7GHz' },
-    { id: 'cpu3', name: 'Intel Core i7-14700K', price: 449.99, description: '20 cores, high performance' },
-    { id: 'cpu4', name: 'AMD Ryzen 7 7700X', price: 349.99, description: '8 cores, 16 threads, 5.4GHz' },
-  ],
-  motherboard: [
-    { id: 'mb1', name: 'ASUS ROG Maximus Z790', price: 549.99, description: 'High-end Intel motherboard' },
-    { id: 'mb2', name: 'MSI MPG X670E', price: 499.99, description: 'Top-tier AMD motherboard' },
-    { id: 'mb3', name: 'Gigabyte Z790 AORUS', price: 349.99, description: 'Mid-range Intel motherboard' },
-    { id: 'mb4', name: 'ASRock B650 Pro RS', price: 199.99, description: 'Budget AMD motherboard' },
-  ],
-}
-
 export default function ConfiguratorPage() {
   const t = useTranslations()
   const pathname = usePathname()
@@ -44,9 +29,9 @@ export default function ConfiguratorPage() {
   const [selectedComponents, setSelectedComponents] = useState<Record<string, { id: string; name: string; price: number; description: string } | undefined>>({})
   const [configName, setConfigName] = useState('')
   const [configDescription, setConfigDescription] = useState('')
+  const [currentComponents, setCurrentComponents] = useState<Array<{ id: string; name: string; price: number; description: string }>>([])
   const [loading, setLoading] = useState(false)
-  
-  const currentComponents = mockComponents[activeCategory as keyof typeof mockComponents] || []
+
 
   const totalPrice = Object.values(selectedComponents).reduce(
     (sum, component) => sum + (component?.price || 0),
