@@ -7,9 +7,8 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import { Cpu, Monitor, Memory, HardDrive, Layers, Fan, Zap, Server, Save, Send } from 'lucide-react'
 import ComponentSelectionPanel from '@/app/components/Configurator/ComponentSelectionPanel'
 import ConfigurationSummary from '@/app/components/Configurator/ConfigurationSummary'
-import SelectedComponentsList from '@/app/components/Configurator/SelectedComponentsList'
+import SelectedComponentsList from '@/app/components/Configurator/SelectedComponents'
 
-// Component categories
 const componentCategories = [
   { id: 'cpu', name: 'CPU', icon: <Cpu size={24} /> },
   { id: 'motherboard', name: 'Motherboard', icon: <Server size={24} /> },
@@ -21,7 +20,6 @@ const componentCategories = [
   { id: 'psu', name: 'Power Supply', icon: <Zap size={24} /> },
 ]
 
-// Mock components for development (will be fetched from API)
 const mockComponents = {
   cpu: [
     { id: 'cpu1', name: 'Intel Core i9-14900K', price: 649.99, description: 'High-end gaming CPU, 24 cores' },
@@ -35,7 +33,6 @@ const mockComponents = {
     { id: 'mb3', name: 'Gigabyte Z790 AORUS', price: 349.99, description: 'Mid-range Intel motherboard' },
     { id: 'mb4', name: 'ASRock B650 Pro RS', price: 199.99, description: 'Budget AMD motherboard' },
   ],
-  // Other component types would be populated similarly
 }
 
 export default function ConfiguratorPage() {
@@ -48,17 +45,14 @@ export default function ConfiguratorPage() {
   const [configName, setConfigName] = useState('')
   const [configDescription, setConfigDescription] = useState('')
   const [loading, setLoading] = useState(false)
-
-  // Get components for active category
+  
   const currentComponents = mockComponents[activeCategory as keyof typeof mockComponents] || []
 
-  // Calculate total price
   const totalPrice = Object.values(selectedComponents).reduce(
     (sum, component) => sum + component.price,
     0
   )
 
-  // Handle component selection
   const handleSelectComponent = (component: any) => {
     setSelectedComponents(current => ({
       ...current,
@@ -66,10 +60,8 @@ export default function ConfiguratorPage() {
     }))
   }
 
-  // Handle saving configuration
   const handleSaveConfiguration = async () => {
     if (!isAuthenticated) {
-      // Redirect to login if not authenticated
       router.push(`/${pathname.split('/')[1]}/auth/login`)
       return
     }
@@ -81,15 +73,13 @@ export default function ConfiguratorPage() {
 
     setLoading(true)
     try {
-      // This would be an API call to save the configuration
       console.log('Saving configuration:', {
         name: configName,
         description: configDescription,
         components: selectedComponents,
         totalPrice
       })
-      
-      // Mock successful save
+
       setTimeout(() => {
         alert('Configuration saved successfully!')
         setLoading(false)
@@ -100,10 +90,8 @@ export default function ConfiguratorPage() {
     }
   }
 
-  // Handle submitting configuration for review
   const handleSubmitConfiguration = async () => {
     if (!isAuthenticated) {
-      // Redirect to login if not authenticated
       router.push(`/${pathname.split('/')[1]}/auth/login`)
       return
     }
@@ -113,7 +101,6 @@ export default function ConfiguratorPage() {
       return
     }
 
-    // Check if all required components are selected
     const requiredCategories = ['cpu', 'motherboard', 'ram', 'storage', 'psu']
     const missingComponents = requiredCategories.filter(cat => !selectedComponents[cat])
 
@@ -124,15 +111,13 @@ export default function ConfiguratorPage() {
 
     setLoading(true)
     try {
-      // This would be an API call to submit the configuration
       console.log('Submitting configuration for review:', {
         name: configName,
         description: configDescription,
         components: selectedComponents,
         totalPrice
       })
-      
-      // Mock successful submission
+ 
       setTimeout(() => {
         alert('Configuration submitted for review!')
         setLoading(false)

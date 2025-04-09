@@ -14,12 +14,10 @@ export default async function LocaleLayout({
   children: React.ReactNode
   params: { locale: string }
 }) {
-  // Pārbaudīt, vai lokalizācija ir atbalstīta
   if (!Object.values(Locale).includes(locale as Locale)) {
     notFound()
   }
 
-  // Ielādēt tulkojumus
   let messages
   try {
     messages = (await import(`@/messages/${locale}.json`)).default

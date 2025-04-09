@@ -23,14 +23,12 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
-// Lokālā glabātuve groza vienumiem
 const CART_STORAGE_KEY = 'ivaproCart'
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [initialized, setInitialized] = useState(false)
 
-  // Ielādēt grozu no lokālās glabātuves
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem(CART_STORAGE_KEY)
@@ -43,8 +41,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setInitialized(true)
     }
   }, [])
-
-  // Saglabāt grozā izmaiņas lokālajā glabātuvē
+ 
   useEffect(() => {
     if (initialized) {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
@@ -53,16 +50,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (item: Omit<CartItem, 'quantity'>, quantity = 1) => {
     setItems(currentItems => {
-      // Pārbaudīt, vai prece jau ir grozā
       const existingItemIndex = currentItems.findIndex(i => i.id === item.id)
       
       if (existingItemIndex >= 0) {
-        // Atjaunināt esošā vienuma daudzumu
         const updatedItems = [...currentItems]
         updatedItems[existingItemIndex].quantity += quantity
         return updatedItems
       } else {
-        // Pievienot jaunu vienumu
         return [...currentItems, { ...item, quantity }]
       }
     })
