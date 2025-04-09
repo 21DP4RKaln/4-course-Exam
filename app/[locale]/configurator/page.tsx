@@ -49,11 +49,11 @@ export default function ConfiguratorPage() {
   const currentComponents = mockComponents[activeCategory as keyof typeof mockComponents] || []
 
   const totalPrice = Object.values(selectedComponents).reduce(
-    (sum, component) => sum + component.price,
+    (sum, component) => sum + (component?.price || 0),
     0
   )
 
-  const handleSelectComponent = (component: any) => {
+  const handleSelectComponent = (component: { id: string; name: string; price: number; description: string }) => {
     setSelectedComponents(current => ({
       ...current,
       [activeCategory]: component
