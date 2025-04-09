@@ -1,21 +1,24 @@
 import { I18nProvider } from '@/app/i18n/providers'
 import { defaultLocale } from '@/app/i18n/config'
+import { ReactNode } from 'react'
 
-export default async function LocaleLayout({
-  children,
-  params: { locale }
-}: {
-  children: React.ReactNode
-  params: { locale: string }
-}) {
+type Props = {
+  children: ReactNode;
+  params: {
+    locale: string;
+  };
+};
+
+export default async function LocaleLayout({ children, params }: Props) {
+  const { locale } = params;
   let messages;
   
   try {
-    messages = (await import(`@/messages/${locale}.json`)).default;
+    messages = (await import(`@/lib/messages/${locale}.json`)).default;
   } catch (error) {
     console.error(`Failed to load messages for locale: ${locale}`, error);
     try {
-      messages = (await import(`@/messages/${defaultLocale}.json`)).default;
+      messages = (await import(`@/lib/messages/${defaultLocale}.json`)).default;
     } catch (fallbackError) {
       console.error(`Failed to load default messages too:`, fallbackError);
       messages = {};
