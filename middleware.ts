@@ -1,29 +1,38 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { isValidLocale, defaultLocale } from './app/i18n/config'
+import createMiddleware from 'next-intl/middleware';
+import { NextRequest, NextResponse } from 'next/server';
+import { isValidLocale, locales, defaultLocale } from './app/i18n/config';
 
-const PUBLIC_FILE = /\.(.*)$/
-const API_PATTERN = /^\/api\/.*/
+const PUBLIC_FILE = /\.(.*)$/;
+const API_PATTERN = /^\/api\/.*/;
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
- 
-  if (
-    PUBLIC_FILE.test(pathname) || 
-    API_PATTERN.test(pathname)
-  ) {
-    return
+const intlMiddleware = createMiddleware({
+  locales,
+  defaultLocale,
+  localePrefix: 'as-needed'
+});
+
+export default function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (PUBLIC_FILE.test(pathname) || API_PATTERN.test(pathname)) {
+    return;
   }
-
-  const locale = pathname.split('/')[1]
+ 
+  const locale = pathname.split('/')[1];
 
   if (!isValidLocale(locale)) {
     const preferredLocale = 
       request.cookies.get('NEXT_LOCALE')?.value || 
-      defaultLocale
- 
+      defaultLocale;
+    
     return NextResponse.redirect(
       new URL(`/${preferredLocale}${pathname}`, request.url)
-    )
+    );
   }
+
+  return intlMiddleware(request);
 }
+
+export const config = {
+  matcher: ['/((?!api|_next|.*\\..*).*)']
+};
