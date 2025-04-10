@@ -25,47 +25,6 @@ import {
 // Types
 type TabType = 'users' | 'orders' | 'components' | 'configurations'
 
-interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  createdAt: string;
-  orderCount: number;
-}
-
-interface OrderData {
-  id: string;
-  userId: string;
-  userName: string;
-  email: string;
-  status: string;
-  totalAmount: number;
-  createdAt: string;
-  itemCount: number;
-}
-
-interface ConfigurationData {
-  id: string;
-  name: string;
-  userId: string;
-  userName: string;
-  status: string;
-  isTemplate: boolean;
-  isPublic: boolean;
-  totalPrice: number;
-  createdAt: string;
-}
-
-interface ComponentData {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  stock: number;
-  createdAt: string;
-}
-
 export default function AdminPanelPage() {
   const t = useTranslations()
   const router = useRouter()
@@ -78,9 +37,42 @@ export default function AdminPanelPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
 
+  type UserData = {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    orderCount?: number;
+    createdAt: string;
+  };
+
   const [users, setUsers] = useState<UserData[]>([])
+  type OrderData = {
+    id: string;
+    userName: string;
+    email: string;
+    status: string;
+    totalAmount: number;
+  };
+
   const [orders, setOrders] = useState<OrderData[]>([])
+  type ConfigurationData = {
+    id: string;
+    name: string;
+    userName: string;
+    status: string;
+    totalPrice?: number;
+  };
+  
   const [configurations, setConfigurations] = useState<ConfigurationData[]>([])
+  type ComponentData = {
+    id: string;
+    name: string;
+    category: string;
+    price?: number;
+    stock?: number;
+  };
+  
   const [components, setComponents] = useState<ComponentData[]>([])
 
   const [tabLoading, setTabLoading] = useState(false)
@@ -104,34 +96,70 @@ export default function AdminPanelPage() {
         
         switch (activeTab) {
           case 'users':
-            endpoint = '/api/admin/users';
+            endpoint = '/api/admin';  // Izmaiņa šeit - izmantojam /api/admin, jo tieši šis API ir definēts
+            console.log('Fetching from endpoint:', endpoint);
             const usersResponse = await fetch(endpoint);
-            if (!usersResponse.ok) throw new Error('Failed to fetch users');
+            console.log('Response status:', usersResponse.status);
+            
+            if (!usersResponse.ok) {
+              const errorText = await usersResponse.text();
+              console.error('Error response:', errorText);
+              throw new Error(`Failed to fetch users: ${usersResponse.status} ${errorText}`);
+            }
+            
             const usersData = await usersResponse.json();
+            console.log('Users data:', usersData);
             setUsers(usersData);
             break;
             
           case 'orders':
             endpoint = '/api/admin/orders';
+            console.log('Fetching from endpoint:', endpoint);
             const ordersResponse = await fetch(endpoint);
-            if (!ordersResponse.ok) throw new Error('Failed to fetch orders');
+            console.log('Response status:', ordersResponse.status);
+            
+            if (!ordersResponse.ok) {
+              const errorText = await ordersResponse.text();
+              console.error('Error response:', errorText);
+              throw new Error(`Failed to fetch orders: ${ordersResponse.status} ${errorText}`);
+            }
+            
             const ordersData = await ordersResponse.json();
+            console.log('Orders data:', ordersData);
             setOrders(ordersData);
             break;
             
           case 'configurations':
             endpoint = '/api/admin/configurations';
+            console.log('Fetching from endpoint:', endpoint);
             const configsResponse = await fetch(endpoint);
-            if (!configsResponse.ok) throw new Error('Failed to fetch configurations');
+            console.log('Response status:', configsResponse.status);
+            
+            if (!configsResponse.ok) {
+              const errorText = await configsResponse.text();
+              console.error('Error response:', errorText);
+              throw new Error(`Failed to fetch configurations: ${configsResponse.status} ${errorText}`);
+            }
+            
             const configsData = await configsResponse.json();
+            console.log('Configurations data:', configsData);
             setConfigurations(configsData);
             break;
             
           case 'components':
             endpoint = '/api/admin/components';
+            console.log('Fetching from endpoint:', endpoint);
             const componentsResponse = await fetch(endpoint);
-            if (!componentsResponse.ok) throw new Error('Failed to fetch components');
+            console.log('Response status:', componentsResponse.status);
+            
+            if (!componentsResponse.ok) {
+              const errorText = await componentsResponse.text();
+              console.error('Error response:', errorText);
+              throw new Error(`Failed to fetch components: ${componentsResponse.status} ${errorText}`);
+            }
+            
             const componentsData = await componentsResponse.json();
+            console.log('Components data:', componentsData);
             setComponents(componentsData);
             break;
         }
@@ -215,7 +243,7 @@ export default function AdminPanelPage() {
     const roleColors = {
       'ADMIN': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'SPECIALIST': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-      'USER': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      'USER': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
     }
     
     return roleColors[role as keyof typeof roleColors] || 'bg-gray-100 text-gray-800'
@@ -302,363 +330,255 @@ export default function AdminPanelPage() {
       );
     }
     
-    switch (activeTab) {
-      case 'users':
-        return (
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  User
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Role
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Orders
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Registered
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((item) => {
-                const user = item as UserData;
-                return (
-                  <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+    // Atlikušā daļa ar tabulu renderēšanu...
+    
+    // Atgriezām vienkāršotu tabulu, lai pārbaudītu, vai dati tiek ielādēti
+    return (
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-900">
+            <tr>
+              {activeTab === 'users' && (
+                <>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Orders</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Registered</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                </>
+              )}
+              
+              {activeTab === 'orders' && (
+                <>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                </>
+              )}
+              
+              {activeTab === 'configurations' && (
+                <>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Configuration</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Creator</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                </>
+              )}
+              
+              {activeTab === 'components' && (
+                <>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Component</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                </>
+              )}
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {items.map((item: any) => (
+              <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                {activeTab === 'users' && (
+                  <>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                           <User className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {user.name || 'Anonymous'}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {user.email}
-                          </div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">{item.name || 'Anonymous'}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{item.email}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(user.role)}`}>
-                        {user.role}
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(item.role)}`}>
+                        {item.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {user.orderCount}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(user.createdAt)}
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.orderCount || 0}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{formatDate(item.createdAt)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button 
                           className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                          onClick={() => handleView(user.id, 'users')}
+                          onClick={() => handleView(item.id, 'users')}
                         >
                           <Eye size={18} />
                         </button>
                         <button 
                           className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
-                          onClick={() => handleEdit(user.id, 'users')}
+                          onClick={() => handleEdit(item.id, 'users')}
                         >
                           <Edit size={18} />
                         </button>
                         <button 
                           className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                          onClick={() => handleDelete(user.id, 'users')}
+                          onClick={() => handleDelete(item.id, 'users')}
                         >
                           <Trash2 size={18} />
                         </button>
                       </div>
                     </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        );
-        
-      case 'orders':
-        return (
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Order ID
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Items
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Total
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Date
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((item) => {
-                const order = item as OrderData;
-                return (
-                  <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      #{order.id}
-                    </td>
+                  </>
+                )}
+                
+                {activeTab === 'orders' && (
+                  <>
+                    <td className="px-6 py-4 whitespace-nowrap">{item.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item.userName || item.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {order.userName}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {order.email}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                        {order.status}
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(item.status)}`}>
+                        {item.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {order.itemCount}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      €{order.totalAmount.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(order.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap">€{item.totalAmount?.toFixed(2)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button 
-                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                          onClick={() => handleView(order.id, 'orders')}
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <button 
-                          className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
-                          onClick={() => handleEdit(order.id, 'orders')}
-                        >
-                          <Edit size={18} />
-                        </button>
+                        <button onClick={() => handleView(item.id, 'orders')}><Eye size={18} /></button>
+                        <button onClick={() => handleEdit(item.id, 'orders')}><Edit size={18} /></button>
                       </div>
                     </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        );
-        
-      case 'configurations':
-        return (
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Configuration
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Created By
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Visibility
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Price
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Date
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((item) => {
-                const config = item as ConfigurationData;
-                return (
-                  <tr key={config.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  </>
+                )}
+                
+                {activeTab === 'configurations' && (
+                  <>
+                    <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item.userName}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {config.name}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        ID: {config.id}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {config.userName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(config.status)}`}>
-                        {config.status}
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(item.status)}`}>
+                        {item.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex flex-col space-y-1">
-                        {config.isTemplate && (
-                          <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 rounded-full">
-                            Template
-                          </span>
-                        )}
-                        {config.isPublic && (
-                          <span className="px-2 py-0.5 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-full">
-                            Public
-                          </span>
-                        )}
-                        {!config.isTemplate && !config.isPublic && (
-                          <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300 rounded-full">
-                            Private
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      €{config.totalPrice.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(config.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap">€{item.totalPrice?.toFixed(2)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button 
-                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                          onClick={() => handleView(config.id, 'configurations')}
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <button 
-                          className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
-                          onClick={() => handleEdit(config.id, 'configurations')}
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button 
-                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                          onClick={() => handleDelete(config.id, 'configurations')}
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        <button onClick={() => handleView(item.id, 'configurations')}><Eye size={18} /></button>
+                        <button onClick={() => handleEdit(item.id, 'configurations')}><Edit size={18} /></button>
+                        <button onClick={() => handleDelete(item.id, 'configurations')}><Trash2 size={18} /></button>
                       </div>
                     </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        );
-        
-      case 'components':
-        return (
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Component
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Category
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Price
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Stock
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Added
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((item) => {
-                const component = item as ComponentData;
-                return (
-                  <tr key={component.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {component.name}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        ID: {component.id}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300 capitalize">
-                        {component.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      €{component.price.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        component.stock <= 5 
-                          ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                          : component.stock <= 10
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-                            : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                      }`}>
-                        {component.stock}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(component.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  </>
+                )}
+                
+                {activeTab === 'components' && (
+                  <>
+                    <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item.category}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">€{item.price?.toFixed(2)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item.stock}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button 
-                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                          onClick={() => handleView(component.id, 'components')}
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <button 
-                          className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300"
-                          onClick={() => handleEdit(component.id, 'components')}
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button 
-                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                          onClick={() => handleDelete(component.id, 'components')}
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        <button onClick={() => handleView(item.id, 'components')}><Eye size={18} /></button>
+                        <button onClick={() => handleEdit(item.id, 'components')}><Edit size={18} /></button>
+                        <button onClick={() => handleDelete(item.id, 'components')}><Trash2 size={18} /></button>
                       </div>
                     </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        );
-      default:
-        return null;
-    }
-  }
+                  </>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+  
+  return (
+    <div className="max-w-6xl mx-auto my-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Admin Panel</h1>
+        
+        <div className="flex space-x-2">
+          <button 
+            onClick={() => setActiveTab('users')}
+            className={`px-4 py-2 rounded-md ${activeTab === 'users' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+          >
+            Users
+          </button>
+          <button 
+            onClick={() => setActiveTab('orders')}
+            className={`px-4 py-2 rounded-md ${activeTab === 'orders' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+          >
+            Orders
+          </button>
+          <button 
+            onClick={() => setActiveTab('configurations')}
+            className={`px-4 py-2 rounded-md ${activeTab === 'configurations' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+          >
+            Configurations
+          </button>
+          <button 
+            onClick={() => setActiveTab('components')}
+            className={`px-4 py-2 rounded-md ${activeTab === 'components' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+          >
+            Components
+          </button>
+        </div>
+      </div>
+      
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div className="flex justify-between mb-6">
+          <div className="relative w-64">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
+            />
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={18} className="text-gray-400" />
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => handleCreate(activeTab)}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center"
+          >
+            <Plus size={18} className="mr-1" />
+            {`Add ${activeTab.slice(0, -1)}`}
+          </button>
+        </div>
+        
+        {renderTabContent()}
+        
+        {/* Pagination */}
+        {filteredData[activeTab].length > itemsPerPage && (
+          <div className="mt-6 flex justify-between items-center">
+            <div>
+              Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredData[activeTab].length)} of {filteredData[activeTab].length} entries
+            </div>
+            
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              
+              <span className="px-3 py-1">
+                Page {currentPage} of {totalPages}
+              </span>
+              
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
