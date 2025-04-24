@@ -15,7 +15,7 @@ import {
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs'
 import { getUserConfigurations, getUserOrders, type UserConfiguration, type UserOrder } from '@/lib/services/dashboardService'
-import ProfileTab from '@/app/components/Dashboard/ProfileTab'
+import ProfileTab from '@/app/components/Dashboard/Components'
 
 export default function DashboardPage() {
   const t = useTranslations()

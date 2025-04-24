@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -14,7 +14,9 @@ import {
   DollarSign,
   FileText,
   Plus,
-  Trash2
+  Trash2,
+  ImagePlus,
+  X
 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -26,6 +28,7 @@ const componentSchema = z.object({
   price: z.number().positive('Price must be positive'),
   stock: z.number().int().nonnegative('Stock cannot be negative'),
   categoryId: z.string().min(1, 'Category is required'),
+  sku: z.string().optional(),
 })
 
 type ComponentFormData = z.infer<typeof componentSchema>
@@ -44,6 +47,9 @@ export default function CreateComponentPage() {
   const [specifications, setSpecifications] = useState<{key: string, value: string}[]>([
     { key: '', value: '' }
   ])
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   const {
     register,
@@ -58,6 +64,7 @@ export default function CreateComponentPage() {
       price: 0,
       stock: 0,
       categoryId: '',
+      sku: '',
     }
   })
  
@@ -90,6 +97,32 @@ export default function CreateComponentPage() {
     fetchCategories()
   }, [isAuthenticated, user?.role])
 
+  const handleImageClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      setImageFile(file)
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setImageFile(null)
+    setImagePreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   const addSpecification = () => {
     setSpecifications([...specifications, { key: '', value: '' }])
   }
@@ -119,17 +152,30 @@ export default function CreateComponentPage() {
         return acc
       }, {} as Record<string, string>)
       
-      const componentData = {
-        ...data,
-        specifications: specificationsObject
+      // Create FormData for file upload
+      const formData = new FormData()
+      formData.append('name', data.name)
+      formData.append('price', data.price.toString())
+      formData.append('stock', data.stock.toString())
+      formData.append('categoryId', data.categoryId)
+      
+      if (data.description) {
+        formData.append('description', data.description)
+      }
+      
+      if (data.sku) {
+        formData.append('sku', data.sku)
+      }
+      
+      formData.append('specifications', JSON.stringify(specificationsObject))
+      
+      if (imageFile) {
+        formData.append('image', imageFile)
       }
       
       const response = await fetch('/api/admin/components', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(componentData),
+        body: formData,
       })
       
       if (!response.ok) {
@@ -185,6 +231,57 @@ export default function CreateComponentPage() {
           )}
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Component Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Component Image
+              </label>
+              <div className="flex items-center space-x-4">
+                <div 
+                  onClick={handleImageClick}
+                  className={`w-40 h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-red-500 transition-colors overflow-hidden relative ${
+                    imagePreview ? 'border-gray-300 dark:border-gray-600' : 'border-gray-400 dark:border-gray-500'
+                  }`}
+                >
+                  {imagePreview ? (
+                    <img 
+                      src={imagePreview} 
+                      alt="Component preview" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <>
+                      <ImagePlus size={32} className="text-gray-400 dark:text-gray-500 mb-2" />
+                      <span className="text-xs text-gray-500 dark:text-gray-400 text-center px-2">
+                        Click to upload image
+                      </span>
+                    </>
+                  )}
+                </div>
+                
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                
+                {imagePreview && (
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full hover:bg-red-200 dark:hover:bg-red-800/30"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Upload a product image (optional). Max size: 2MB.
+              </p>
+            </div>
+
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Name
@@ -227,7 +324,7 @@ export default function CreateComponentPage() {
               )}
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Price (€)
@@ -268,6 +365,22 @@ export default function CreateComponentPage() {
                 </div>
                 {errors.stock && (
                   <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.stock.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <label htmlFor="sku" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  SKU (Optional)
+                </label>
+                <input
+                  id="sku"
+                  type="text"
+                  {...register('sku')}
+                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Product SKU"
+                />
+                {errors.sku && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.sku.message}</p>
                 )}
               </div>
             </div>

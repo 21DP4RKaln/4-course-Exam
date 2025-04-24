@@ -15,7 +15,8 @@ import {
   ArrowLeft,
   Edit,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Phone
 } from 'lucide-react'
 
 export default function UserDetailPage() {
@@ -146,23 +147,42 @@ export default function UserDetailPage() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
             <div className="p-6">
               <div className="flex flex-col items-center">
-                <div className="h-24 w-24 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
-                  <User size={48} className="text-red-600 dark:text-red-400" />
+                {/* Profile image */}
+                <div className="h-24 w-24 rounded-full overflow-hidden bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+                  {user.profileImageUrl ? (
+                    <img 
+                      src={user.profileImageUrl} 
+                      alt={user.name || 'User'} 
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <User size={48} className="text-red-600 dark:text-red-400" />
+                  )}
                 </div>
                 
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                   {user.name || 'Anonymous User'}
                 </h1>
                 
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  {user.email}
-                </p>
-                
                 <div className="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 mb-4">
                   {user.role}
                 </div>
                 
                 <div className="flex flex-col w-full text-sm text-gray-600 dark:text-gray-400 space-y-3 mt-2">
+                  {user.email && (
+                    <div className="flex items-center">
+                      <Mail size={16} className="mr-2" />
+                      <span>{user.email}</span>
+                    </div>
+                  )}
+                  
+                  {user.phone && (
+                    <div className="flex items-center">
+                      <Phone size={16} className="mr-2" />
+                      <span>{user.phone}</span>
+                    </div>
+                  )}
+                  
                   <div className="flex items-center">
                     <Calendar size={16} className="mr-2" />
                     <span>Registered: {formatDate(user.createdAt)}</span>
@@ -214,10 +234,32 @@ export default function UserDetailPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">First Name</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {user.firstName || '-'}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Last Name</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {user.lastName || '-'}
+                    </p>
+                  </div>
+                  
+                  <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
                     <p className="font-medium text-gray-900 dark:text-white flex items-center">
                       <Mail size={16} className="mr-2 text-gray-400" />
-                      {user.email}
+                      {user.email || '-'}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+                    <p className="font-medium text-gray-900 dark:text-white flex items-center">
+                      <Phone size={16} className="mr-2 text-gray-400" />
+                      {user.phone || '-'}
                     </p>
                   </div>
                   
@@ -233,13 +275,6 @@ export default function UserDetailPage() {
                     <p className="text-sm text-gray-500 dark:text-gray-400">Created At</p>
                     <p className="font-medium text-gray-900 dark:text-white">
                       {formatDate(user.createdAt)}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Last Updated</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {formatDate(user.updatedAt)}
                     </p>
                   </div>
                 </div>
@@ -279,7 +314,7 @@ export default function UserDetailPage() {
                           <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                             {order.id}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             {formatDate(order.createdAt)}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm">

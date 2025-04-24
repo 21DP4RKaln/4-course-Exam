@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
@@ -9,44 +9,46 @@ import {
   ArrowLeft,
   Save,
   AlertTriangle,
-  Cpu,
-  Package,
-  DollarSign,
-  FileText,
-  Plus,
-  Trash2
+  User,
+  Mail,
+  ShieldCheck,
+  Phone,
+  Image as ImageIcon,
+  X,
+  ImagePlus
 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-const componentSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  description: z.string().optional(),
-  price: z.number().positive('Price must be positive'),
-  stock: z.number().int().nonnegative('Stock cannot be negative'),
-  categoryId: z.string().min(1, 'Category is required'),
+const userSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  email: z.string().email('Invalid email address').optional().nullable(),
+  phone: z.string().optional().nullable(),
+  role: z.enum(['USER', 'ADMIN', 'SPECIALIST'])
 })
 
-type ComponentFormData = z.infer<typeof componentSchema>
+type UserFormData = z.infer<typeof userSchema>
 
-export default function EditComponentPage() {
+export default function EditUserPage() {
   const params = useParams()
-  const componentId = params.id as string
+  const userId = params.id as string
   
   const router = useRouter()
   const t = useTranslations()
   const pathname = usePathname()
-  const { user, isAuthenticated, loading } = useAuth()
+  const { user: currentUser, isAuthenticated, loading } = useAuth()
   const locale = pathname.split('/')[1]
   
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [categories, setCategories] = useState<{id: string, name: string}[]>([])
-  const [specifications, setSpecifications] = useState<{key: string, value: string}[]>([
-    { key: '', value: '' }
-  ])
+  const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [deleteImage, setDeleteImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   const {
     register,
@@ -54,129 +56,138 @@ export default function EditComponentPage() {
     formState: { errors },
     reset,
     setValue
-  } = useForm<ComponentFormData>({
-    resolver: zodResolver(componentSchema),
+  } = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      price: 0,
-      stock: 0,
-      categoryId: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      role: 'USER'
     }
   })
-
+ 
   useEffect(() => {
-    if (!loading && (!isAuthenticated || user?.role !== 'ADMIN')) {
+    if (!loading && (!isAuthenticated || currentUser?.role !== 'ADMIN')) {
       router.push(`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`)
     }
-  }, [isAuthenticated, loading, router, locale, pathname, user?.role])
-
-
+  }, [isAuthenticated, loading, router, locale, pathname, currentUser?.role])
+  
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'ADMIN') return
+    if (!isAuthenticated || currentUser?.role !== 'ADMIN') return
 
-    const fetchData = async () => {
+    const fetchUser = async () => {
       setIsLoading(true)
       try {
-        const categoriesResponse = await fetch('/api/components')
-        if (!categoriesResponse.ok) {
-          throw new Error('Failed to fetch categories')
-        }
-        const categoriesData = await categoriesResponse.json()
-        setCategories(categoriesData.categories)
-
-        const componentResponse = await fetch(`/api/admin/components/${componentId}`)
+        const response = await fetch(`/api/admin/users/${userId}`)
         
-        if (!componentResponse.ok) {
-          throw new Error(componentResponse.status === 404 
-            ? 'Component not found' 
-            : 'Failed to fetch component details')
+        if (!response.ok) {
+          throw new Error(response.status === 404 
+            ? 'User not found' 
+            : 'Failed to fetch user details')
         }
         
-        const componentData = await componentResponse.json()
+        const userData = await response.json()
 
-        setValue('name', componentData.name)
-        setValue('description', componentData.description || '')
-        setValue('price', componentData.price)
-        setValue('stock', componentData.stock)
-        setValue('categoryId', componentData.categoryId)
-
-        if (componentData.specifications && typeof componentData.specifications === 'object') {
-          const specEntries = Object.entries(componentData.specifications).map(
-            ([key, value]) => ({ key, value: String(value) })
-          )
-          
-          if (specEntries.length > 0) {
-            setSpecifications(specEntries)
-          }
+        setValue('firstName', userData.firstName || '')
+        setValue('lastName', userData.lastName || '')
+        setValue('email', userData.email || '')
+        setValue('phone', userData.phone || '')
+        setValue('role', userData.role)
+        
+        // Set image if exists
+        if (userData.profileImageUrl) {
+          setExistingImageUrl(userData.profileImageUrl)
+          setImagePreview(userData.profileImageUrl)
         }
         
       } catch (error) {
-        console.error('Error fetching data:', error)
-        setError('Failed to load component details')
+        console.error('Error fetching user:', error)
+        setError('Failed to load user details')
       } finally {
         setIsLoading(false)
       }
     }
     
-    fetchData()
-  }, [componentId, isAuthenticated, user?.role, setValue])
+    fetchUser()
+  }, [userId, isAuthenticated, currentUser?.role, setValue])
 
-  const addSpecification = () => {
-    setSpecifications([...specifications, { key: '', value: '' }])
-  }
-  
-  const updateSpecification = (index: number, field: 'key' | 'value', value: string) => {
-    const updatedSpecs = [...specifications]
-    updatedSpecs[index][field] = value
-    setSpecifications(updatedSpecs)
-  }
-  
-  const removeSpecification = (index: number) => {
-    const updatedSpecs = specifications.filter((_, i) => i !== index)
-    setSpecifications(updatedSpecs)
+  const handleImageClick = () => {
+    fileInputRef.current?.click()
   }
 
-  const onSubmit = async (data: ComponentFormData) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      setImageFile(file)
+      setDeleteImage(false)
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setImageFile(null)
+    setImagePreview(null)
+    if (existingImageUrl) {
+      setDeleteImage(true)
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const onSubmit = async (data: UserFormData) => {
     setIsSubmitting(true)
     setError(null)
     
     try {
-      const filteredSpecs = specifications.filter(spec => 
-        spec.key.trim() !== '' && spec.value.trim() !== ''
-      )
-
-      const specificationsObject = filteredSpecs.reduce((acc, spec) => {
-        acc[spec.key.trim()] = spec.value.trim()
-        return acc
-      }, {} as Record<string, string>)
+      // Validate at least one contact method is provided
+      if (!data.email && !data.phone) {
+        throw new Error('Either email or phone is required')
+      }
       
-      const response = await fetch(`/api/admin/components/${componentId}`, {
+      // Create FormData for file upload
+      const formData = new FormData()
+      
+      // Add form fields to FormData
+      if (data.firstName) formData.append('firstName', data.firstName)
+      if (data.lastName) formData.append('lastName', data.lastName)
+      if (data.email) formData.append('email', data.email)
+      if (data.phone) formData.append('phone', data.phone)
+      formData.append('role', data.role)
+      
+      // Handle image operations
+      if (imageFile) {
+        formData.append('profileImage', imageFile)
+      } else if (deleteImage) {
+        formData.append('deleteImage', 'true')
+      }
+      
+      const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          specifications: specificationsObject
-        }),
+        body: formData,
       })
       
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error?.message || 'Failed to update component')
+        throw new Error(errorData.error?.message || 'Failed to update user')
       }
       
-      router.push(`/${locale}/admin/components/view/${componentId}`)
-    } catch (error) {
-      console.error('Error updating component:', error)
-      setError('Failed to update component. Please try again.')
+      router.push(`/${locale}/admin/users/view/${userId}`)
+    } catch (error: any) {
+      console.error('Error updating user:', error)
+      setError(error.message || 'Failed to update user. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
-  
-  // Handle loading state
+
   if (loading || isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
@@ -185,8 +196,7 @@ export default function EditComponentPage() {
     )
   }
   
-  // Auth check
-  if (!isAuthenticated || user?.role !== 'ADMIN') {
+  if (!isAuthenticated || currentUser?.role !== 'ADMIN') {
     return null
   }
   
@@ -205,7 +215,7 @@ export default function EditComponentPage() {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            Edit Component
+            Edit User
           </h1>
           
           {error && (
@@ -216,168 +226,177 @@ export default function EditComponentPage() {
           )}
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Profile Image */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Name
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Profile Image
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Cpu size={18} className="text-gray-400" />
+              <div className="flex items-center space-x-4">
+                <div 
+                  onClick={handleImageClick}
+                  className={`w-40 h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-red-500 transition-colors overflow-hidden relative ${
+                    imagePreview ? 'border-gray-300 dark:border-gray-600' : 'border-gray-400 dark:border-gray-500'
+                  }`}
+                >
+                  {imagePreview ? (
+                    <img 
+                      src={imagePreview} 
+                      alt="Profile preview" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <>
+                      <ImagePlus size={32} className="text-gray-400 dark:text-gray-500 mb-2" />
+                      <span className="text-xs text-gray-500 dark:text-gray-400 text-center px-2">
+                        Click to upload image
+                      </span>
+                    </>
+                  )}
                 </div>
+                
                 <input
-                  id="name"
-                  type="text"
-                  {...register('name')}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Component name"
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="hidden"
                 />
+                
+                {imagePreview && (
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full hover:bg-red-200 dark:hover:bg-red-800/30"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
               </div>
-              {errors.name && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
-              )}
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {deleteImage 
+                  ? "Profile image will be removed on save" 
+                  : imageFile 
+                    ? "New profile image will be uploaded on save" 
+                    : "Upload a profile image (optional). Max size: 2MB."}
+              </p>
             </div>
             
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Description
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FileText size={18} className="text-gray-400" />
-                </div>
-                <textarea
-                  id="description"
-                  rows={3}
-                  {...register('description')}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Component description"
-                ></textarea>
-              </div>
-              {errors.description && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description.message}</p>
-              )}
-            </div>
-            
+            {/* Name Fields - First Name & Last Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Price (€)
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  First Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <DollarSign size={18} className="text-gray-400" />
+                    <User size={18} className="text-gray-400" />
                   </div>
                   <input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    {...register('price', { valueAsNumber: true })}
+                    id="firstName"
+                    type="text"
+                    {...register('firstName')}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="0.00"
+                    placeholder="First name"
                   />
                 </div>
-                {errors.price && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.price.message}</p>
+                {errors.firstName && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.firstName.message}</p>
                 )}
               </div>
               
               <div>
-                <label htmlFor="stock" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Stock
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Last Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Package size={18} className="text-gray-400" />
+                    <User size={18} className="text-gray-400" />
                   </div>
                   <input
-                    id="stock"
-                    type="number"
-                    {...register('stock', { valueAsNumber: true })}
+                    id="lastName"
+                    type="text"
+                    {...register('lastName')}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="0"
+                    placeholder="Last name"
                   />
                 </div>
-                {errors.stock && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.stock.message}</p>
+                {errors.lastName && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.lastName.message}</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail size={18} className="text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    {...register('email')}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="user@example.com"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Phone size={18} className="text-gray-400" />
+                  </div>
+                  <input
+                    id="phone"
+                    type="tel"
+                    {...register('phone')}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="+371 12345678"
+                  />
+                </div>
+                {errors.phone && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone.message}</p>
                 )}
               </div>
             </div>
             
             <div>
-              <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Category
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Role
               </label>
-              <select
-                id="categoryId"
-                {...register('categoryId')}
-                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              {errors.categoryId && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.categoryId.message}</p>
-              )}
-            </div>
-            
-            {/* Specifications section */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Specifications
-                </label>
-                <button
-                  type="button"
-                  onClick={addSpecification}
-                  className="flex items-center text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <ShieldCheck size={18} className="text-gray-400" />
+                </div>
+                <select
+                  id="role"
+                  {...register('role')}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 >
-                  <Plus size={16} className="mr-1" />
-                  Add Specification
-                </button>
+                  <option value="USER">User</option>
+                  <option value="SPECIALIST">Specialist</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
               </div>
-              
-              <div className="space-y-3">
-                {specifications.map((spec, index) => (
-                  <div key={index} className="flex space-x-2">
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        value={spec.key}
-                        onChange={(e) => updateSpecification(index, 'key', e.target.value)}
-                        placeholder="Name (e.g. Core Count)"
-                        className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        value={spec.value}
-                        onChange={(e) => updateSpecification(index, 'value', e.target.value)}
-                        placeholder="Value (e.g. 8)"
-                        className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <button
-                        type="button"
-                        onClick={() => removeSpecification(index)}
-                        className="h-full px-3 py-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {errors.role && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.role.message}</p>
+              )}
             </div>
             
             <div className="flex space-x-4 pt-4">
               <Link
-                href={`/${locale}/admin/components/view/${componentId}`}
+                href={`/${locale}/admin/users/view/${userId}`}
                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center"
               >
                 Cancel

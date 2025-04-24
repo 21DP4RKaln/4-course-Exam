@@ -1,23 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useCart } from '@/app/contexts/CartContext'
 import { useTheme } from '@/app/contexts/ThemeContext'
-import { Sun, Moon, Menu, X, ShoppingCart, User, LogOut } from 'lucide-react'
+import { 
+  Sun, 
+  Moon, 
+  Menu, 
+  X, 
+  ShoppingCart, 
+  User, 
+  LogOut, 
+  ChevronDown,
+  Monitor,
+  Cpu,
+  Wrench,
+  Keyboard
+} from 'lucide-react'
 import LanguageSwitcher from './LanguageSwitcher'
 import MobileMenu from './MobileMenu'
 
-export default function Header() {
+export default function EnhancedHeader() {
   const t = useTranslations()
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
   const { user, isAuthenticated, logout } = useAuth()
   const { totalItems } = useCart()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+  // Dropdown states
+  const [pcDropdownOpen, setPcDropdownOpen] = useState(false)
+  const pcDropdownRef = useRef<HTMLDivElement>(null)
  
   const locale = pathname.split('/')[1]
 
@@ -34,8 +51,22 @@ export default function Header() {
     }
   }
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (pcDropdownRef.current && !pcDropdownRef.current.contains(event.target as Node)) {
+        setPcDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [])
+
   return (
-    <header className="bg-white dark:bg-dark-bg shadow-sm sticky top-0 z-50">
+    <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -47,17 +78,68 @@ export default function Header() {
 
           {/* Main navigation (hidden on mobile) */}
           <nav className="hidden md:flex items-center space-x-6">
+            {/* PC Options Dropdown */}
+            <div className="relative" ref={pcDropdownRef}>
+              <button
+                className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+                onClick={() => setPcDropdownOpen(!pcDropdownOpen)}
+                aria-expanded={pcDropdownOpen}
+              >
+                <span>PCs</span>
+                <ChevronDown size={16} className="ml-1" />
+              </button>
+              
+              {pcDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md overflow-hidden z-50">
+                  <div className="py-1">
+                    <Link
+                      href={`/${locale}/configurator`}
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setPcDropdownOpen(false)}
+                    >
+                      <Cpu size={16} className="inline-block mr-2" />
+                      {t('nav.configurator')}
+                    </Link>
+                    <Link
+                      href={`/${locale}/shop/ready-made`}
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setPcDropdownOpen(false)}
+                    >
+                      <Monitor size={16} className="inline-block mr-2" />
+                      {t('nav.readyMade')}
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* New navigation links */}
             <Link 
-              href={`/${locale}/configurator`}
+              href={`/${locale}/components`}
               className="text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
             >
-              {t('nav.configurator')}
+              <span>Components</span>
             </Link>
+            
             <Link 
-              href={`/${locale}/shop/ready-made`}
+              href={`/${locale}/peripherals`}
               className="text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
             >
-              {t('nav.readyMade')}
+              <span>Peripherals</span>
+            </Link>
+            
+            <Link 
+              href={`/${locale}/repairs`}
+              className="text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+            >
+              <span>Repairs</span>
+            </Link>
+            
+            <Link 
+              href={`/${locale}/about`}
+              className="text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+            >
+              <span>About Us</span>
             </Link>
           </nav>
 
@@ -68,7 +150,7 @@ export default function Header() {
             {/* Theme toggle */}
             <button 
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-dark-card"
+              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
               aria-label={theme === 'dark' ? t('common.lightMode') : t('common.darkMode')}
             >
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
@@ -77,7 +159,7 @@ export default function Header() {
             {/* Cart */}
             <Link 
               href={`/${locale}/cart`}
-              className="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-dark-card"
+              className="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
             >
               <ShoppingCart size={20} />
               {totalItems > 0 && (

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
-import ProfileTab from '@/app/components/Dashboard/ProfileTab'
+import ProfileTab from '@/app/components/Dashboard/Components'
 import {
   User,
   Users,
@@ -22,7 +22,8 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertTriangle,
-  UserCog
+  UserCog,
+  Image as ImageIcon
 } from 'lucide-react'
 
 type TabType = 'users' | 'orders' | 'components' | 'configurations'
@@ -42,9 +43,13 @@ export default function AdminPanelPage() {
 
   interface UserType {
     id: string;
-    name: string;
-    email: string;
+    name?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
     role: string;
+    profileImageUrl?: string;
     orderCount?: number;
     createdAt: string;
   }
@@ -74,6 +79,7 @@ export default function AdminPanelPage() {
     category: string;
     price?: number;
     stock?: number;
+    imageUrl?: string;
   }
 
   const [components, setComponents] = useState<ComponentType[]>([])
@@ -195,8 +201,11 @@ export default function AdminPanelPage() {
  
   const filteredData = {
     users: users.filter(user => 
-      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+      (user.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (user.firstName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (user.lastName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (user.email?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (user.phone?.toLowerCase() || '').includes(searchQuery.toLowerCase())
     ),
     orders: orders.filter(order => 
       order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -357,7 +366,7 @@ export default function AdminPanelPage() {
                 <>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Orders</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Registered</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </>
@@ -402,10 +411,22 @@ export default function AdminPanelPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                          <User className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                          {item.profileImageUrl ? (
+                            <img 
+                              src={item.profileImageUrl} 
+                              alt={item.name || 'User'} 
+                              className="h-10 w-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <User className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                          )}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">{item.name || 'Anonymous'}</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {item.firstName && item.lastName 
+                              ? `${item.firstName} ${item.lastName}`
+                              : item.name || 'Anonymous'}
+                          </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">{item.email}</div>
                         </div>
                       </div>
@@ -415,8 +436,15 @@ export default function AdminPanelPage() {
                         {item.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.orderCount || 0}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{formatDate(item.createdAt)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900 dark:text-white">{item.email}</div>
+                      {item.phone && (
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{item.phone}</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(item.createdAt)}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button 
@@ -450,7 +478,10 @@ export default function AdminPanelPage() {
                 {activeTab === 'orders' && (
                   <>
                     <td className="px-6 py-4 whitespace-nowrap">{item.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{item.userName || item.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">{item.userName || 'Anonymous'}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{item.email}</div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(item.status)}`}>
                         {item.status}
@@ -518,7 +549,22 @@ export default function AdminPanelPage() {
                 
                 {activeTab === 'components' && (
                   <>
-                    <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-3">
+                          {item.imageUrl ? (
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              className="h-10 w-10 object-cover rounded"
+                            />
+                          ) : (
+                            <ImageIcon size={18} className="text-gray-400" />
+                          )}
+                        </div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">{item.name}</div>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">{item.category}</td>
                     <td className="px-6 py-4 whitespace-nowrap">€{item.price?.toFixed(2)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item.stock}</td>
@@ -562,7 +608,7 @@ export default function AdminPanelPage() {
   return (
     <div className="max-w-6xl mx-auto my-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Admin Panel</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
         
         <div className="flex space-x-2">
           <button 
@@ -574,31 +620,31 @@ export default function AdminPanelPage() {
           </button>
           {!showProfileSettings && (
             <>
-          <button 
-            onClick={() => setActiveTab('users')}
-            className={`px-4 py-2 rounded-md ${activeTab === 'users' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white'}`}
-          >
-            Users
-          </button>
-          <button 
-            onClick={() => setActiveTab('orders')}
-            className={`px-4 py-2 rounded-md ${activeTab === 'orders' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white'}`}
-          >
-            Orders
-          </button>
-          <button 
-            onClick={() => setActiveTab('configurations')}
-            className={`px-4 py-2 rounded-md ${activeTab === 'configurations' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white'}`}
-          >
-            Configurations
-          </button>
-          <button 
-            onClick={() => setActiveTab('components')}
-            className={`px-4 py-2 rounded-md ${activeTab === 'components' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white'}`}
-          >
-            Components
-          </button>
-          </>
+              <button 
+                onClick={() => setActiveTab('users')}
+                className={`px-4 py-2 rounded-md ${activeTab === 'users' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white'}`}
+              >
+                Users
+              </button>
+              <button 
+                onClick={() => setActiveTab('orders')}
+                className={`px-4 py-2 rounded-md ${activeTab === 'orders' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white'}`}
+              >
+                Orders
+              </button>
+              <button 
+                onClick={() => setActiveTab('configurations')}
+                className={`px-4 py-2 rounded-md ${activeTab === 'configurations' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white'}`}
+              >
+                Configurations
+              </button>
+              <button 
+                onClick={() => setActiveTab('components')}
+                className={`px-4 py-2 rounded-md ${activeTab === 'components' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white'}`}
+              >
+                Components
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -608,11 +654,6 @@ export default function AdminPanelPage() {
         <ProfileTab />
       </div>
     ) : (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        {/* Admin panel content... */}
-      </div>
-    )}
-      
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div className="flex justify-between mb-6">
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
@@ -675,6 +716,7 @@ export default function AdminPanelPage() {
           </div>
         )}
       </div>
+    )}
     </div>
   );
 }

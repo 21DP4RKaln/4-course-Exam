@@ -7,7 +7,10 @@ import {
   createServerErrorResponse,
   createBadRequestResponse 
 } from '@/lib/apiErrors'
-import { z } from 'zod'
+import { writeFile, mkdir } from 'fs/promises'
+import { join } from 'path'
+import { existsSync } from 'fs'
+import { randomUUID } from 'crypto'
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,19 +23,14 @@ export async function GET(request: NextRequest) {
     if (!payload || payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin access required')
     }
-  
+
     const components = await prisma.component.findMany({
-      select: {
-        id: true,
-        name: true,
+      include: {
         category: {
           select: {
             name: true
           }
-        },
-        price: true,
-        stock: true,
-        createdAt: true
+        }
       },
       orderBy: {
         createdAt: 'desc'
@@ -45,6 +43,7 @@ export async function GET(request: NextRequest) {
       category: component.category.name,
       price: component.price,
       stock: component.stock,
+      imageUrl: component.imageUrl,
       createdAt: component.createdAt.toISOString()
     }))
 
@@ -67,25 +66,21 @@ export async function POST(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    const body = await request.json()
+    const formData = await request.formData()
 
-    const componentSchema = z.object({
-      name: z.string().min(2, 'Name must be at least 2 characters'),
-      description: z.string().optional(),
-      price: z.number().positive('Price must be positive'),
-      stock: z.number().int().nonnegative('Stock cannot be negative'),
-      categoryId: z.string().min(1, 'Category is required'),
-      specifications: z.record(z.string()).optional()
-    })
+    const name = formData.get('name') as string
+    const description = formData.get('description') as string || null
+    const price = parseFloat(formData.get('price') as string)
+    const stock = parseInt(formData.get('stock') as string)
+    const categoryId = formData.get('categoryId') as string
+    const sku = formData.get('sku') as string || null
+    const specificationsString = formData.get('specifications') as string
+    const specifications = specificationsString ? JSON.parse(specificationsString) : {}
+    const image = formData.get('image') as File | null
 
-    const validationResult = componentSchema.safeParse(body)
-    if (!validationResult.success) {
-      return createBadRequestResponse('Invalid input data', {
-        errors: validationResult.error.format()
-      })
+    if (!name || !categoryId || isNaN(price) || isNaN(stock)) {
+      return createBadRequestResponse('Missing required fields')
     }
-    
-    const { name, description, price, stock, categoryId, specifications } = validationResult.data
 
     const categoryExists = await prisma.componentCategory.findUnique({
       where: { id: categoryId }
@@ -95,19 +90,82 @@ export async function POST(request: NextRequest) {
       return createBadRequestResponse('Invalid category')
     }
 
+    if (sku) {
+      const existingSku = await prisma.component.findUnique({
+        where: { sku }
+      })
+      
+      if (existingSku) {
+        return createBadRequestResponse('SKU already exists')
+      }
+    }
+
+    const componentSku = sku || `${categoryId.substring(0, 3).toUpperCase()}-${Date.now().toString().substring(7)}`
+
+    let imageUrl = null
+    if (image) {
+      const bytes = await image.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+
+      const originalName = image.name
+      const extension = originalName.split('.').pop() || 'jpg'
+      const filename = `${randomUUID()}.${extension}`
+
+      const uploadDir = join(process.cwd(), 'public', 'uploads', 'components')
+      if (!existsSync(uploadDir)) {
+        await mkdir(uploadDir, { recursive: true })
+      }
+      
+      const imagePath = join(uploadDir, filename)
+      await writeFile(imagePath, buffer)
+   
+      imageUrl = `/uploads/components/${filename}`
+    }
+  
     const component = await prisma.component.create({
       data: {
+        id: randomUUID(),
         name,
         description,
         price,
         stock,
         categoryId,
-        specifications: specifications || {}
+        sku: componentSku,
+        specifications,
+        imageUrl,
       },
       include: {
         category: true
       }
     })
+
+    if (Object.keys(specifications).length > 0) {
+      for (const [key, value] of Object.entries(specifications)) {
+        let specKey = await prisma.specificationKey.findFirst({
+          where: { name: key }
+        })
+        
+        if (!specKey) {
+          specKey = await prisma.specificationKey.create({
+            data: {
+              id: randomUUID(),
+              name: key,
+              displayName: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim(),
+              categoryId: categoryId
+            }
+          })
+        }
+
+        await prisma.componentSpec.create({
+          data: {
+            id: randomUUID(),
+            componentId: component.id,
+            specKeyId: specKey.id,
+            value: value as string
+          }
+        })
+      }
+    }
 
     return NextResponse.json({
       id: component.id,
@@ -117,7 +175,9 @@ export async function POST(request: NextRequest) {
       stock: component.stock,
       categoryId: component.categoryId,
       category: component.category.name,
-      specifications: component.specifications
+      sku: component.sku,
+      imageUrl: component.imageUrl,
+      specifications
     })
   } catch (error) {
     console.error('Error creating component:', error)

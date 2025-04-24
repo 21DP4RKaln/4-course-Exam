@@ -8,7 +8,10 @@ import {
   createServerErrorResponse,
   createBadRequestResponse 
 } from '@/lib/apiErrors'
-import { z } from 'zod'
+import { writeFile, mkdir, unlink } from 'fs/promises'
+import { join } from 'path'
+import { existsSync } from 'fs'
+import { randomUUID } from 'crypto'
 
 export async function GET(
   request: NextRequest,
@@ -30,12 +33,23 @@ export async function GET(
     const component = await prisma.component.findUnique({
       where: { id: componentId },
       include: {
-        category: true
+        category: true,
+        specValues: {
+          include: {
+            specKey: true
+          }
+        }
       }
     })
 
     if (!component) {
       return createNotFoundResponse('Component not found')
+    }
+
+    const specifications: Record<string, string> = { ...(component.specifications as any || {}) }
+
+    for (const specValue of component.specValues) {
+      specifications[specValue.specKey.name] = specValue.value
     }
 
     const formattedComponent = {
@@ -45,9 +59,10 @@ export async function GET(
       price: component.price,
       stock: component.stock,
       imageUrl: component.imageUrl,
+      sku: component.sku,
       categoryId: component.categoryId,
       category: component.category.name,
-      specifications: component.specifications,
+      specifications,
       createdAt: component.createdAt.toISOString(),
       updatedAt: component.updatedAt.toISOString()
     }
@@ -76,25 +91,22 @@ export async function PUT(
 
     const componentId = params.id
 
-    const body = await request.json()
-    
-    const componentSchema = z.object({
-      name: z.string().min(2, 'Name must be at least 2 characters'),
-      description: z.string().optional(),
-      price: z.number().positive('Price must be positive'),
-      stock: z.number().int().nonnegative('Stock cannot be negative'),
-      categoryId: z.string().min(1, 'Category is required'),
-      specifications: z.record(z.string()).optional()
-    })
-    
-    const validationResult = componentSchema.safeParse(body)
-    if (!validationResult.success) {
-      return createBadRequestResponse('Invalid input data', {
-        errors: validationResult.error.format()
-      })
+    const formData = await request.formData()
+
+    const name = formData.get('name') as string
+    const description = formData.get('description') as string || null
+    const price = parseFloat(formData.get('price') as string)
+    const stock = parseInt(formData.get('stock') as string)
+    const categoryId = formData.get('categoryId') as string
+    const sku = formData.get('sku') as string || null
+    const specificationsString = formData.get('specifications') as string
+    const specifications = specificationsString ? JSON.parse(specificationsString) : {}
+    const image = formData.get('image') as File | null
+    const deleteImage = formData.get('deleteImage') === 'true'
+
+    if (!name || !categoryId || isNaN(price) || isNaN(stock)) {
+      return createBadRequestResponse('Missing required fields')
     }
-    
-    const { name, description, price, stock, categoryId, specifications } = validationResult.data
 
     const existingComponent = await prisma.component.findUnique({
       where: { id: componentId }
@@ -104,12 +116,50 @@ export async function PUT(
       return createNotFoundResponse('Component not found')
     }
 
-    const categoryExists = await prisma.componentCategory.findUnique({
-      where: { id: categoryId }
-    })
-    
-    if (!categoryExists) {
-      return createBadRequestResponse('Invalid category')
+    if (sku && sku !== existingComponent.sku) {
+      const existingSku = await prisma.component.findUnique({
+        where: { sku }
+      })
+      
+      if (existingSku) {
+        return createBadRequestResponse('SKU already exists')
+      }
+    }
+
+    let imageUrl = existingComponent.imageUrl
+
+    if ((deleteImage || image) && existingComponent.imageUrl) {
+      try {
+        const imagePath = join(process.cwd(), 'public', existingComponent.imageUrl)
+        if (existsSync(imagePath)) {
+          await unlink(imagePath)
+        }
+        
+        if (deleteImage) {
+          imageUrl = null
+        }
+      } catch (error) {
+        console.error('Error deleting old image:', error)
+      }
+    }
+
+    if (image) {
+      const bytes = await image.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+
+      const originalName = image.name
+      const extension = originalName.split('.').pop() || 'jpg'
+      const filename = `${randomUUID()}.${extension}`
+
+      const uploadDir = join(process.cwd(), 'public', 'uploads', 'components')
+      if (!existsSync(uploadDir)) {
+        await mkdir(uploadDir, { recursive: true })
+      }
+      
+      const imagePath = join(uploadDir, filename)
+      await writeFile(imagePath, buffer)
+
+      imageUrl = `/uploads/components/${filename}`
     }
 
     const updatedComponent = await prisma.component.update({
@@ -120,12 +170,46 @@ export async function PUT(
         price,
         stock,
         categoryId,
-        specifications: specifications || {}
+        sku,
+        specifications,
+        imageUrl,
       },
       include: {
         category: true
       }
     })
+
+    await prisma.componentSpec.deleteMany({
+      where: { componentId }
+    })
+
+    if (Object.keys(specifications).length > 0) {
+      for (const [key, value] of Object.entries(specifications)) {
+        let specKey = await prisma.specificationKey.findFirst({
+          where: { name: key }
+        })
+        
+        if (!specKey) {
+          specKey = await prisma.specificationKey.create({
+            data: {
+              id: randomUUID(),
+              name: key,
+              displayName: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim(),
+              categoryId
+            }
+          })
+        }
+
+        await prisma.componentSpec.create({
+          data: {
+            id: randomUUID(),
+            componentId,
+            specKeyId: specKey.id,
+            value: value as string
+          }
+        })
+      }
+    }
 
     return NextResponse.json({
       id: updatedComponent.id,
@@ -135,7 +219,9 @@ export async function PUT(
       stock: updatedComponent.stock,
       categoryId: updatedComponent.categoryId,
       category: updatedComponent.category.name,
-      specifications: updatedComponent.specifications
+      sku: updatedComponent.sku,
+      imageUrl: updatedComponent.imageUrl,
+      specifications
     })
   } catch (error) {
     console.error('Error updating component:', error)
@@ -159,24 +245,36 @@ export async function DELETE(
     }
 
     const componentId = params.id
-
+ 
     const component = await prisma.component.findUnique({
-      where: { id: componentId }
+      where: { id: componentId },
+      include: {
+        configItems: true
+      }
     })
 
     if (!component) {
       return createNotFoundResponse('Component not found')
     }
-
-    const configItems = await prisma.configItem.findFirst({
-      where: {
-        componentId: componentId
-      }
-    })
-    
-    if (configItems) {
+  
+    if (component.configItems.length > 0) {
       return createBadRequestResponse('Cannot delete component because it is used in configurations')
     }
+
+    if (component.imageUrl) {
+      try {
+        const imagePath = join(process.cwd(), 'public', component.imageUrl)
+        if (existsSync(imagePath)) {
+          await unlink(imagePath)
+        }
+      } catch (error) {
+        console.error('Error deleting component image:', error)
+      }
+    }
+
+    await prisma.componentSpec.deleteMany({
+      where: { componentId }
+    })
 
     await prisma.component.delete({
       where: { id: componentId }

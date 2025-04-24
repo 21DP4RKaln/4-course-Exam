@@ -5,7 +5,19 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useTheme } from '@/app/contexts/ThemeContext'
-import { Sun, Moon, Home, Monitor, Cpu, User, LogOut } from 'lucide-react'
+import { 
+  Sun, 
+  Moon, 
+  Home, 
+  Monitor, 
+  Cpu, 
+  User, 
+  LogOut,
+  Keyboard,
+  Wrench,
+  Info,
+  ChevronRight
+} from 'lucide-react'
 import LanguageSwitcher from './LanguageSwitcher'
 
 interface MobileMenuProps {
@@ -14,7 +26,7 @@ interface MobileMenuProps {
   dashboardLink: string
 }
 
-export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMenuProps) {
+export default function EnhancedMobileMenu({ isOpen, onClose, dashboardLink }: MobileMenuProps) {
   const t = useTranslations()
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
@@ -49,22 +61,64 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             {t('nav.home')}
           </Link>
 
+          {/* PC Options Group */}
+          <div className="space-y-2 pl-8 border-l-2 border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">PCs</h3>
+            
+            <Link 
+              href={`/${locale}/configurator`}
+              className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+              onClick={onClose}
+            >
+              <Cpu size={20} className="mr-3" />
+              {t('nav.configurator')}
+            </Link>
+
+            <Link 
+              href={`/${locale}/shop/ready-made`}
+              className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+              onClick={onClose}
+            >
+              <Monitor size={20} className="mr-3" />
+              {t('nav.readyMade')}
+            </Link>
+          </div>
+
+          {/* New navigation links */}
           <Link 
-            href={`/${locale}/configurator`}
+            href={`/${locale}/components`}
             className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
             onClick={onClose}
           >
             <Cpu size={20} className="mr-3" />
-            {t('nav.configurator')}
+            Components
           </Link>
-
+          
           <Link 
-            href={`/${locale}/shop/ready-made`}
+            href={`/${locale}/peripherals`}
             className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
             onClick={onClose}
           >
-            <Monitor size={20} className="mr-3" />
-            {t('nav.readyMade')}
+            <Keyboard size={20} className="mr-3" />
+            Peripherals
+          </Link>
+          
+          <Link 
+            href={`/${locale}/repairs`}
+            className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+            onClick={onClose}
+          >
+            <Wrench size={20} className="mr-3" />
+            Repairs
+          </Link>
+          
+          <Link 
+            href={`/${locale}/about`}
+            className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+            onClick={onClose}
+          >
+            <Info size={20} className="mr-3" />
+            About Us
           </Link>
 
           {isAuthenticated ? (
@@ -111,5 +165,5 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
         </nav>
       </div>
     </div>
-    )
+  )
 }

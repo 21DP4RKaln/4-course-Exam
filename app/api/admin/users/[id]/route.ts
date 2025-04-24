@@ -8,7 +8,10 @@ import {
   createServerErrorResponse,
   createBadRequestResponse 
 } from '@/lib/apiErrors'
-import { z } from 'zod'
+import { writeFile, mkdir, unlink } from 'fs/promises'
+import { join } from 'path'
+import { existsSync } from 'fs'
+import { randomUUID } from 'crypto'
 
 export async function GET(
   request: NextRequest,
@@ -47,8 +50,12 @@ export async function GET(
     const formattedUser = {
       id: user.id,
       name: user.name || 'Anonymous',
-      email: user.email,
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      email: user.email || '',
+      phone: user.phone || '',
       role: user.role,
+      profileImageUrl: user.profileImageUrl,
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
       orderCount: user._count.orders,
@@ -87,7 +94,7 @@ export async function DELETE(
   
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { role: true }
+      select: { role: true, profileImageUrl: true }
     })
 
     if (!user) {
@@ -96,6 +103,18 @@ export async function DELETE(
 
     if (user.role === 'ADMIN' && userId !== payload.userId) {
       return createForbiddenResponse('Cannot delete other admin accounts')
+    }
+
+    // Delete profile image if exists
+    if (user.profileImageUrl) {
+      try {
+        const imagePath = join(process.cwd(), 'public', user.profileImageUrl)
+        if (existsSync(imagePath)) {
+          await unlink(imagePath)
+        }
+      } catch (error) {
+        console.error('Error deleting profile image:', error)
+      }
     }
 
     await prisma.user.delete({
@@ -126,22 +145,24 @@ export async function PUT(
 
     const userId = params.id
 
-    const body = await request.json()
+    // Parse form data for profile image upload
+    const formData = await request.formData()
     
-    const userSchema = z.object({
-      name: z.string().optional(),
-      email: z.string().email('Invalid email address'),
-      role: z.enum(['USER', 'ADMIN', 'SPECIALIST'])
-    })
-    
-    const validationResult = userSchema.safeParse(body)
-    if (!validationResult.success) {
-      return createBadRequestResponse('Invalid input data', {
-        errors: validationResult.error.format()
-      })
+    const firstName = formData.get('firstName') as string
+    const lastName = formData.get('lastName') as string
+    const email = formData.get('email') as string
+    const phone = formData.get('phone') as string
+    const role = formData.get('role') as 'USER' | 'ADMIN' | 'SPECIALIST'
+    const profileImage = formData.get('profileImage') as File | null
+    const deleteImage = formData.get('deleteImage') === 'true'
+
+    if (!role) {
+      return createBadRequestResponse('Role is required')
     }
     
-    const { name, email, role } = validationResult.data
+    if (!email && !phone) {
+      return createBadRequestResponse('Either email or phone is required')
+    }
 
     const existingUser = await prisma.user.findUnique({
       where: { id: userId }
@@ -151,7 +172,8 @@ export async function PUT(
       return createNotFoundResponse('User not found')
     }
     
-    if (email !== existingUser.email) {
+    // Check if email is already in use by another user
+    if (email && email !== existingUser.email) {
       const emailExists = await prisma.user.findUnique({
         where: { email }
       })
@@ -160,21 +182,89 @@ export async function PUT(
         return createBadRequestResponse('Email is already in use')
       }
     }
+    
+    // Check if phone is already in use by another user
+    if (phone && phone !== existingUser.phone) {
+      const phoneExists = await prisma.user.findFirst({
+        where: { phone }
+      })
+      
+      if (phoneExists) {
+        return createBadRequestResponse('Phone number is already in use')
+      }
+    }
+
+    // Prepare update data
+    const updateData: any = {
+      firstName: firstName || null,
+      lastName: lastName || null,
+      email: email || null,
+      phone: phone || null,
+      role
+    }
+
+    // Calculate name from first and last name
+    const newFirstName = firstName || existingUser.firstName || '';
+    const newLastName = lastName || existingUser.lastName || '';
+    updateData.name = [newFirstName, newLastName].filter(Boolean).join(' ') || null;
+
+    // Handle profile image - delete existing if requested
+    if (deleteImage && existingUser.profileImageUrl) {
+      try {
+        const imagePath = join(process.cwd(), 'public', existingUser.profileImageUrl)
+        if (existsSync(imagePath)) {
+          await unlink(imagePath)
+        }
+        updateData.profileImageUrl = null
+      } catch (error) {
+        console.error('Error deleting profile image:', error)
+      }
+    }
+
+    // Handle profile image - upload new if provided
+    if (profileImage) {
+      const bytes = await profileImage.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+
+      const filename = `${randomUUID()}-${profileImage.name}`
+      const uploadDir = join(process.cwd(), 'public', 'uploads', 'profiles')
+      
+      if (!existsSync(uploadDir)) {
+        await mkdir(uploadDir, { recursive: true })
+      }
+
+      const imagePath = join(uploadDir, filename)
+      await writeFile(imagePath, buffer)
+
+      // Delete old image if exists and different from new one
+      if (existingUser.profileImageUrl) {
+        try {
+          const oldImagePath = join(process.cwd(), 'public', existingUser.profileImageUrl)
+          if (existsSync(oldImagePath)) {
+            await unlink(oldImagePath)
+          }
+        } catch (error) {
+          console.error('Error deleting old profile image:', error)
+        }
+      }
+
+      updateData.profileImageUrl = `/uploads/profiles/${filename}`
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: {
-        name,
-        email,
-        role
-      }
+      data: updateData
     })
 
     return NextResponse.json({
       id: updatedUser.id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
       name: updatedUser.name,
       email: updatedUser.email,
-      role: updatedUser.role
+      phone: updatedUser.phone,
+      role: updatedUser.role,
+      profileImageUrl: updatedUser.profileImageUrl
     })
   }
   catch (error) {

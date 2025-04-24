@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useAuth } from '@/app/contexts/AuthContext'
 import {
   Cpu,
@@ -14,7 +15,9 @@ import {
   ArrowLeft,
   Edit,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Image as ImageIcon,
+  Barcode
 } from 'lucide-react'
 
 export default function ComponentDetailPage() {
@@ -170,6 +173,30 @@ export default function ComponentDetailPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
+              {/* Component Image */}
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Component Image
+                </h2>
+                
+                <div className="flex justify-center">
+                  {component.imageUrl ? (
+                    <div className="relative h-64 w-full rounded-lg overflow-hidden">
+                      <img 
+                        src={component.imageUrl} 
+                        alt={component.name}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-64 w-full rounded-lg bg-gray-200 dark:bg-gray-800 flex flex-col items-center justify-center">
+                      <ImageIcon size={48} className="text-gray-400 dark:text-gray-600 mb-2" />
+                      <p className="text-gray-500 dark:text-gray-400">No image available</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
               <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Component Details
@@ -200,6 +227,16 @@ export default function ComponentDetailPage() {
                     </div>
                   </div>
                   
+                  {component.sku && (
+                    <div className="flex items-start">
+                      <Barcode size={18} className="text-gray-500 dark:text-gray-400 mt-0.5 mr-3" />
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">SKU</p>
+                        <p className="font-medium text-gray-900 dark:text-white">{component.sku}</p>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="flex items-start">
                     <Calendar size={18} className="text-gray-500 dark:text-gray-400 mt-0.5 mr-3" />
                     <div>
@@ -212,7 +249,7 @@ export default function ComponentDetailPage() {
             </div>
             
             <div>
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-full">
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Description
                 </h2>
@@ -220,29 +257,29 @@ export default function ComponentDetailPage() {
                   {component.description || 'No description available.'}
                 </p>
               </div>
+              
+              {/* Specifications if available */}
+              {component.specifications && Object.keys(component.specifications).length > 0 && (
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Specifications
+                  </h2>
+                  
+                  <div className="grid grid-cols-1 gap-4">
+                    {Object.entries(component.specifications).map(([key, value]: [string, any]) => (
+                      <div key={key} className="flex items-start">
+                        <Tag size={18} className="text-gray-500 dark:text-gray-400 mt-0.5 mr-3" />
+                        <div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{key.replace('_', ' ')}</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{value.toString()}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          
-          {/* Specifications if available */}
-          {component.specifications && (
-            <div className="mt-6 bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Specifications
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(component.specifications).map(([key, value]: [string, any]) => (
-                  <div key={key} className="flex items-start">
-                    <Tag size={18} className="text-gray-500 dark:text-gray-400 mt-0.5 mr-3" />
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{key.replace('_', ' ')}</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{value.toString()}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

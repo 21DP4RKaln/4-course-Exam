@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
-import ProfileTab from '@/app/components/Dashboard/ProfileTab'
+import ProfileTab from '@/app/components/Dashboard/Components'
 import {
   Cpu,
   ChevronRight,
