@@ -11,9 +11,10 @@ import LanguageSwitcher from './LanguageSwitcher'
 interface MobileMenuProps {
   isOpen: boolean
   onClose: () => void
+  dashboardLink: string
 }
 
-export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMenuProps) {
   const t = useTranslations()
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
@@ -41,7 +42,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         <nav className="space-y-6">
           <Link 
             href={`/${locale}`}
-            className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+            className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
             onClick={onClose}
           >
             <Home size={20} className="mr-3" />
@@ -50,7 +51,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           <Link 
             href={`/${locale}/configurator`}
-            className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+            className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
             onClick={onClose}
           >
             <Cpu size={20} className="mr-3" />
@@ -59,7 +60,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           <Link 
             href={`/${locale}/shop/ready-made`}
-            className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+            className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
             onClick={onClose}
           >
             <Monitor size={20} className="mr-3" />
@@ -69,8 +70,8 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           {isAuthenticated ? (
             <>
               <Link 
-                href={`/${locale}/dashboard`}
-                className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                href={dashboardLink}
+                className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
                 onClick={onClose}
               >
                 <User size={20} className="mr-3" />
@@ -82,7 +83,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   logout()
                   onClose()
                 }}
-                className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
               >
                 <LogOut size={20} className="mr-3" />
                 {t('nav.logout')}
@@ -92,7 +93,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <div className="pt-4 space-y-4">
               <Link 
                 href={`/${locale}/auth/login`}
-                className="block w-full py-3 text-center text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                className="block w-full py-3 text-center text-red-600 dark:text-red-400 border border-red-600 dark:border-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30"
                 onClick={onClose}
               >
                 {t('nav.login')}
@@ -100,7 +101,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               
               <Link 
                 href={`/${locale}/auth/register`}
-                className="block w-full py-3 text-center text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                className="block w-full py-3 text-center text-white bg-red-600 rounded-md hover:bg-red-700"
                 onClick={onClose}
               >
                 {t('nav.register')}

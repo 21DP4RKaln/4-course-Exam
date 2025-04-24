@@ -45,13 +45,13 @@ export default function FeaturedConfigurations() {
     <section className="py-12">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Popular Configurations
+        {t('nav.Popular')}
         </h2>
         <Link
           href={`/${locale}/shop/ready-made`}
-          className="flex items-center text-blue-600 dark:text-blue-400 hover:underline"
+          className="flex items-center text-red-600 dark:text-red-400 hover:underline"
         >
-          View all <ChevronRight size={16} className="ml-1" />
+          {t('button.view')} <ChevronRight size={16} className="ml-1" />
         </Link>
       </div>
 
@@ -83,7 +83,7 @@ export default function FeaturedConfigurations() {
                   <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400">
                     <Heart size={20} />
                   </button>
-                  <button className="p-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                  <button className="p-2 text-white bg-red-600 rounded-md hover:bg-red-700">
                     <ShoppingCart size={20} />
                   </button>
                 </div>

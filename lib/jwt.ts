@@ -27,8 +27,10 @@ export async function signJWT(payload: JWTPayload) {
 export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   try {
     const { payload } = await jwtVerify(token, secretKey)
+    console.log("JWT verification successful, payload:", payload) 
     return payload as JWTPayload
   } catch (error) {
+    console.error("JWT verification failed:", error)
     return null
   }
 }
@@ -37,6 +39,10 @@ export async function verifyJWT(token: string): Promise<JWTPayload | null> {
  * Retrieves the JWT token from the request cookies.
  */
 export function getJWTFromRequest(request: NextRequest): string | null {
-  const token = request.cookies.get('authToken')?.value
-  return token || null
+  const token = request.cookies.get('authToken')?.value || 
+               request.headers.get('Authorization')?.replace('Bearer ', '') ||
+               null
+  
+  console.log("Token extracted from request:", token ? "Found" : "Not found")
+  return token
 }

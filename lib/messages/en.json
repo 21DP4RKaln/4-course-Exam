@@ -1,97 +1,145 @@
 {
-    "common": {
-      "appName": "IvaPro PC Configurator",
-      "language": "Language",
-      "darkMode": "Dark mode",
-      "lightMode": "Light mode"
-    },
-    "nav": {
-      "home": "Home",
-      "configurator": "Configurator",
-      "readyMade": "Ready-Made PCs",
-      "cart": "Cart",
-      "login": "Login",
-      "register": "Register",
-      "dashboard": "Dashboard",
-      "logout": "Logout"
-    },
-    "auth": {
-      "email": "Email",
-      "password": "Password",
-      "confirmPassword": "Confirm Password",
-      "name": "Name",
-      "loginTitle": "Login to your account",
-      "registerTitle": "Create an account",
-      "noAccount": "Don't have an account?",
-      "hasAccount": "Already have an account?",
-      "signUp": "Sign up",
-      "signIn": "Sign in",
-      "forgotPassword": "Forgot password?",
-      "loginSuccess": "Login successful",
-      "registerSuccess": "Registration successful"
-    },
-    "configurator": {
-      "title": "Custom PC Configurator",
-      "selectCategory": "Select a component category",
-      "selectComponent": "Select a component",
-      "addToConfig": "Add to configuration",
-      "totalPrice": "Total price",
-      "saveDraft": "Save as draft",
-      "submitConfig": "Submit configuration",
-      "configName": "Configuration name",
-      "configDescription": "Description (optional)"
-    },
-    "cart": {
-      "title": "Your Cart",
-      "empty": "Your cart is empty",
-      "continueShoping": "Continue shopping",
-      "checkout": "Checkout",
-      "total": "Total",
-      "removeItem": "Remove",
-      "updateQuantity": "Update"
-    },
-    "checkout": {
-      "title": "Checkout",
-      "shippingAddress": "Shipping Address",
-      "paymentMethod": "Payment Method",
-      "orderSummary": "Order Summary",
-      "placeOrder": "Place Order",
-      "orderSuccess": "Order placed successfully"
-    },
-    "dashboard": {
-      "title": "Dashboard",
-      "myConfigurations": "My Configurations",
-      "myOrders": "My Orders",
-      "profile": "Profile",
-      "noConfigurations": "You don't have any configurations yet",
-      "noOrders": "You don't have any orders yet"
-    },
-    "admin": {
-      "title": "Admin Panel",
-      "users": "Users",
-      "components": "Components",
-      "orders": "Orders",
-      "configurations": "Configurations"
-    },
-    "specialist": {
-      "title": "Specialist Panel",
-      "pendingConfigs": "Pending Configurations",
-      "reviewConfig": "Review Configuration",
-      "approve": "Approve",
-      "reject": "Reject",
-      "comment": "Comment"
-    },
-    "footer": {
-      "copyright": "© 2025 IvaPro PC Configurator. All rights reserved.",
-      "privacyPolicy": "Privacy Policy",
-      "termsOfService": "Terms of Service",
-      "contact": "Contact Us"
-    },
-    "errors": {
-      "required": "This field is required",
-      "emailInvalid": "Invalid email address",
-      "passwordLength": "Password must be at least 8 characters",
-      "passwordMatch": "Passwords do not match",
-      "serverError": "Server error, please try again later"
-    }
+  "common": {
+    "appName": "IvaPro",
+    "language": "Language",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "title": "PC Configurator",
+    "home": "Home",
+    "configurator": "Configurator",
+    "Text": "Modern PC configuration platform for custom and ready-made computers.",
+    "notFound": "Page not found"
+  },
+  "nav": {
+    "home": "Home",
+    "Name": "Build Or Choose Your Dream PC",
+    "Info": "Custom configurations, expert advice, and premium components for gamers, creators, and professionals.",
+    "configurator": "Configurator",
+    "readyMade": "Ready-Made PCs",
+    "cart": "Cart",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "shipping": "Free shipping in Riga",
+    "warranty": "2-year warranty",
+    "support": "Expert support",
+    "Choose": "Why Choose IvaPro?",
+    "Answer": "We provide end-to-end service for all your PC needs, from configuration to delivery and support.",
+    "Building": "Custom PC Building",
+    "Text1": "Create your dream PC with our easy-to-use configurator. Choose from premium components that match your needs and budget.",
+    "Validation": "Expert Validation",
+    "Text2": "Every configuration is reviewed by our specialists to ensure compatibility and optimal performance.",
+    "Quality": "Premium Quality",
+    "Text3": "We use only high-quality, tested components from trusted manufacturers with full warranty coverage.",
+    "Support": "24/7 Support",
+    "Text4": "Our expert team is available to help you with any questions or issues, before and after your purchase.",
+    "Popular": "Popular Configurations",
+    "logout": "Logout"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Name",
+    "loginTitle": "Login to your account",
+    "registerTitle": "Create an account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "forgotPassword": "Forgot password?",
+    "loginSuccess": "Login successful",
+    "registerSuccess": "Registration successful"
+  },
+  "button":{
+    "view": "View all",
+    "": ""
+  },
+  "configurator": {
+    "title": "Custom PC Configurator",
+    "selectCategory": "Select a component category",
+    "selectComponent": "Select a component",
+    "addToConfig": "Add to configuration",
+    "totalPrice": "Total price",
+    "saveDraft": "Save as draft",
+    "submitConfig": "Submit configuration",
+    "configName": "Configuration name",
+    "configDescription": "Description (optional)"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "continueShoping": "Continue shopping",
+    "checkout": "Checkout",
+    "total": "Total",
+    "removeItem": "Remove",
+    "updateQuantity": "Update"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shippingAddress": "Shipping Address",
+    "paymentMethod": "Payment Method",
+    "orderSummary": "Order Summary",
+    "placeOrder": "Place Order",
+    "orderSuccess": "Order placed successfully"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "myConfigurations": "My Configurations",
+    "myOrders": "My Orders",
+    "profile": "Profile",
+    "noConfigurations": "You don't have any configurations yet",
+    "noOrders": "You don't have any orders yet"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "users": "Users",
+    "components": "Components",
+    "orders": "Orders",
+    "configurations": "Configurations"
+  },
+  "specialist": {
+    "title": "Specialist Panel",
+    "pendingConfigs": "Pending Configurations",
+    "reviewConfig": "Review Configuration",
+    "approve": "Approve",
+    "reject": "Reject",
+    "comment": "Comment"
+  },
+  "footer": {
+    "copyright": "© 2025 IvaPro PC Configurator. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "link": "Quick Links",
+    "legal": "Legal",
+    "address": "Somewhere in Latvia, Riga",
+    "number": "+371 12345678",
+    "mail": "info@ivapro.com",
+    "contact": "Contact Us"
+  },
+  "errors": {
+    "required": "This field is required",
+    "emailInvalid": "Invalid email address",
+    "passwordLength": "Password must be at least 8 characters",
+    "passwordMatch": "Passwords do not match",
+    "serverError": "Server error, please try again later"
+  },
+  "components": {
+    "cpu": "CPU",
+    "motherboard": "Motherboard",
+    "gpu": "Graphics Card",
+    "ram": "Memory",
+    "storage": "Storage",
+    "case": "Case",
+    "cooling": "Cooling",
+    "psu": "Power Supply"
+  },
+  "Error": {
+    "Auth_check": "Authentication check failed:",
+    "Log_fail": "Login failed",
+    "Log_Err": "Login error:",
+    "Reg_fail": "Registration failed",
+    "Reg_Err": "Registration error:",
+    "": ""
   }
+}

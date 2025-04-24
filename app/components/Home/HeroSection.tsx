@@ -15,15 +15,15 @@ export default function HeroSection() {
       <div className="grid md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-            Build Your Dream PC with IvaPro
+          {t('nav.Name')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Custom configurations, expert advice, and premium components for gamers, creators, and professionals.
+          {t('nav.Info')}
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
               href={`/${locale}/configurator`}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-lg font-semibold"
+              className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 text-lg font-semibold"
             >
               {t('nav.configurator')}
             </Link>
@@ -36,29 +36,28 @@ export default function HeroSection() {
           </div>
           <div className="pt-4 flex items-center text-gray-500 dark:text-gray-400">
             <span className="mr-2">✓</span>
-            <span>Free shipping</span>
+            <span>{t('nav.shipping')}</span>
             <span className="mx-3">|</span>
             <span className="mr-2">✓</span>
-            <span>2-year warranty</span>
+            <span>{t('nav.warranty')}</span>
             <span className="mx-3">|</span>
             <span className="mr-2">✓</span>
-            <span>Expert support</span>
+            <span>{t('nav.support')}</span>
           </div>
         </div>
         <div className="relative h-[400px] w-full rounded-xl overflow-hidden shadow-2xl">
           {/* Placeholder for actual image */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white text-lg font-medium">PC Image Placeholder</span>
+          <div className="opacity-30 absolute inset-0 bg-gradient-to-r from-purple-600 to-red-500 flex items-center justify-center">
           </div>
-          {/* Uncomment when you have an actual image
+          {/* Uncomment when you have an actual image */}
           <Image
-            src="/images/hero-pc.jpg"
+            src="/images/dark-pc.png"
             alt="Custom gaming PC"
             fill
             className="object-cover"
             priority
           />
-          */}
+          
         </div>
       </div>
     </section>

@@ -7,9 +7,9 @@ import { locales } from '@/app/i18n/config'
 import { ChevronDown } from 'lucide-react'
 
 const languageNames: Record<string, string> = {
-  en: 'English',
-  lv: 'Latviešu',
-  ru: 'Русский',
+  en: 'EN',
+  lv: 'LV',
+  ru: 'RU',
 }
 
 export default function LanguageSwitcher() {
@@ -47,7 +47,7 @@ export default function LanguageSwitcher() {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        className="flex items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+        className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
@@ -63,7 +63,7 @@ export default function LanguageSwitcher() {
                 key={locale}
                 className={`w-full text-left px-4 py-2 text-sm ${
                   locale === currentLocale
-                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                    ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
                     : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                 }`}
                 onClick={() => changeLocale(locale)}

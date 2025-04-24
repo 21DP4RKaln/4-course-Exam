@@ -9,35 +9,41 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "seed": "tsx lib/seeder.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.9.0",
+    "@radix-ui/react-tabs": "^1.1.4",
     "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
     "jose": "^5.2.0",
     "lucide-react": "^0.316.0",
-    "next": "15.0.0",
+    "next": "^15.2.5",
     "next-intl": "^3.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.50.0",
+    "tailwind-merge": "^3.2.0",
+    "tsx": "^4.19.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",
-    "@tailwindcss/forms": "^0.5.7",
-    "@tailwindcss/typography": "^0.5.10",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
+    "@types/uuid": "^10.0.0",
+    "autoprefixer": "^10.4.21",
     "eslint": "^8",
     "eslint-config-next": "15.0.0",
-    "postcss": "^8",
+    "postcss": "^8.5.3",
     "prisma": "^5.9.0",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }

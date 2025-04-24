@@ -1,33 +1,37 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { isValidLocale, locales, defaultLocale } from './app/i18n/config'
+import { locales, defaultLocale } from './app/i18n/config'
 
-const PUBLIC_FILE = /\.(.*)$/
-const API_PATTERN = /^\/api\/.*/
+const PUBLIC_PATHS = [
+  /^\/_next\//,
+  /\/api\//,
+  /\/favicon\.ico$/,
+  /\.(jpg|jpeg|png|gif|svg|css|js)$/,
+]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
- 
-  if (
-    PUBLIC_FILE.test(pathname) || 
-    API_PATTERN.test(pathname)
-  ) {
-    return
+
+  if (PUBLIC_PATHS.some(pattern => pattern.test(pathname))) {
+    return NextResponse.next()
   }
 
-  let locale = pathname.split('/')[1]
+  const pathnameHasLocale = locales.some(
+    locale => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
+  )
 
-  if (!isValidLocale(locale)) {
-    const preferredLocale = 
-      request.cookies.get('NEXT_LOCALE')?.value || 
-      defaultLocale
- 
-    return NextResponse.redirect(
-      new URL(`/${preferredLocale}${pathname}`, request.url)
+  if (pathnameHasLocale) {
+    return NextResponse.next()
+  }
+
+  return NextResponse.redirect(
+    new URL(
+      `/${defaultLocale}${pathname === '/' ? '' : pathname}`,
+      request.url
     )
-  }
+  )
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+  matcher: ['/((?!api|_next|.*\\..*).*)']
 }

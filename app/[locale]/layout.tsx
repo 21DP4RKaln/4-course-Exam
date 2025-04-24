@@ -1,48 +1,46 @@
-import { I18nProvider } from '@/app/i18n/providers'
-import { AuthProvider } from '@/app/contexts/AuthContext'
-import { CartProvider } from '@/app/contexts/CartContext'
-import { Locale, defaultLocale } from '@/app/i18n/config'
-import { ThemeProvider } from '@/app/contexts/ThemeContext'
-import { notFound } from 'next/navigation'
-import Header from '@/app/components/Header/Header'
-import Footer from '@/app/components/Footer/Footer'
+import { I18nProvider } from '@/app/i18n/providers';
+import { getMessages } from '@/app/i18n/messages';
+import { ReactNode } from 'react';
+import '@/app/globals.css';
+import Header from '@/app/components/Header/Header';
+import Footer from '@/app/components/Footer/Footer';
+import { AuthProvider } from '@/app/contexts/AuthContext';
+import { CartProvider } from '@/app/contexts/CartContext';
+import { ThemeProvider } from '@/app/contexts/ThemeContext';
+import { Inter } from 'next/font/google';
 
-export default async function LocaleLayout({
-  children,
-  params: { locale },
-}: {
-  children: React.ReactNode
-  params: { locale: string }
-}) {
-  // Pārbaudīt, vai lokalizācija ir atbalstīta
-  if (!Object.values(Locale).includes(locale as Locale)) {
-    notFound()
-  }
+const inter = Inter({ subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'] });
 
-  // Ielādēt tulkojumus
-  let messages
-  try {
-    messages = (await import(`@/messages/${locale}.json`)).default
-  } catch (error) {
-    console.error(`Failed to load messages for locale: ${locale}`, error)
-    notFound()
-  }
+type Props = {
+  children: ReactNode;
+  params: {
+    locale: string;
+  };
+};
+
+export default async function LocaleLayout({ children, params }: Props) {
+  const locale = params.locale;
+  const messages = await getMessages(locale);
 
   return (
-    <I18nProvider locale={locale} messages={messages}>
-      <ThemeProvider>
-        <AuthProvider>
-          <CartProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-grow container mx-auto px-4 py-8">
-                {children}
-              </main>
-              <Footer />
-            </div>
-          </CartProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </I18nProvider>
-  )
+    <html lang={locale} suppressHydrationWarning>
+      <body className={inter.className}>
+        <I18nProvider locale={locale} messages={messages}>
+          <ThemeProvider>
+            <AuthProvider>
+              <CartProvider>
+                <div className="flex flex-col min-h-screen">
+                  <Header />
+                  <main className="flex-grow container mx-auto px-4 py-8">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+              </CartProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </I18nProvider>
+      </body>
+    </html>
+  );
 }

@@ -22,16 +22,16 @@ export default function Footer() {
               {t('common.appName')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Modern PC configuration platform for custom and ready-made computers.
+              {t('common.Text')}
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+              <a href="#" className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+              <a href="#" className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+              <a href="#" className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
                 <Instagram size={20} />
               </a>
             </div>
@@ -40,13 +40,13 @@ export default function Footer() {
           {/* Ātras saites */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
-              Quick Links
+            {t('footer.link')}
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link 
                   href={`/${locale}/configurator`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('nav.configurator')}
                 </Link>
@@ -54,17 +54,9 @@ export default function Footer() {
               <li>
                 <Link 
                   href={`/${locale}/shop/ready-made`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('nav.readyMade')}
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href={`/${locale}/dashboard`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-                >
-                  {t('nav.dashboard')}
                 </Link>
               </li>
             </ul>
@@ -73,13 +65,13 @@ export default function Footer() {
           {/* Juridiskā informācija */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
-              Legal
+            {t('footer.legal')}
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link 
                   href={`/${locale}/privacy-policy`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('footer.privacyPolicy')}
                 </Link>
@@ -87,17 +79,9 @@ export default function Footer() {
               <li>
                 <Link 
                   href={`/${locale}/terms-of-service`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 >
                   {t('footer.termsOfService')}
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href={`/${locale}/contact`}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-                >
-                  {t('footer.contact')}
                 </Link>
               </li>
             </ul>
@@ -106,25 +90,25 @@ export default function Footer() {
           {/* Kontakti */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
-              Contact Us
+              {t('footer.contact')}
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin size={18} className="mr-2 text-gray-500 dark:text-gray-400 mt-0.5" />
                 <span className="text-gray-600 dark:text-gray-400">
-                  1234 Main Street, City, Country
+                  {t('footer.address')}
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone size={18} className="mr-2 text-gray-500 dark:text-gray-400" />
                 <span className="text-gray-600 dark:text-gray-400">
-                  +371 12345678
+                  {t('footer.number')}
                 </span>
               </li>
               <li className="flex items-center">
                 <Mail size={18} className="mr-2 text-gray-500 dark:text-gray-400" />
-                <a href="mailto:info@ivapro.com" className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
-                  info@ivapro.com
+                <a href="mailto:info@ivapro.com" className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
+                  {t('footer.mail')}
                 </a>
               </li>
             </ul>

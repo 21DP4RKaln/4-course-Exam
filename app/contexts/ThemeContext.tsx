@@ -1,17 +1,54 @@
-import { useTranslations } from 'next-intl'
-import Link from 'next/link'
-import HeroSection from '@/app/components/Home/HeroSection'
-import FeaturedConfigurations from '@/app/components/Home/FeaturedConfigurations'
-import ServicesSection from '@/app/components/Home/ServicesSection'
+'use client'
 
-export default function HomePage() {
-  const t = useTranslations()
-  
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+
+type Theme = 'light' | 'dark'
+type ThemeContextType = {
+  theme: Theme
+  toggleTheme: () => void
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<Theme>('light')
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as Theme | null
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+    if (savedTheme) {
+      setTheme(savedTheme)
+    } else if (prefersDark) {
+      setTheme('dark')
+    }
+  }, [])
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'))
+  }
+
   return (
-    <div className="space-y-12">
-      <HeroSection />
-      <FeaturedConfigurations />
-      <ServicesSection />
-    </div>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
   )
+}
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext)
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider')
+  }
+  return context
 }

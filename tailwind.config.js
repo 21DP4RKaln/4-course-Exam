@@ -1,45 +1,61 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: [
-      './pages/**/*.{js,ts,jsx,tsx,mdx}',
-      './components/**/*.{js,ts,jsx,tsx,mdx}',
-      './app/**/*.{js,ts,jsx,tsx,mdx}',
-    ],
-    darkMode: 'class',
-    theme: {
-      extend: {
-        colors: {
-          primary: {
-            50: '#e6f0ff',
-            100: '#cce0ff',
-            200: '#99c2ff',
-            300: '#66a3ff',
-            400: '#3385ff',
-            500: '#0066ff',
-            600: '#0052cc',
-            700: '#003d99',
-            800: '#002966',
-            900: '#001433',
-          },
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#fee2e2',
+          100: '#fecaca',
+          200: '#fca5a5',
+          300: '#f87171',
+          400: '#ef4444',
+          500: '#dc2626',
+          600: '#b91c1c',
+          700: '#991b1b',
+          800: '#7f1d1d',
+          900: '#450a0a',
         },
-        fontFamily: {
-          sans: ['var(--font-inter)'],
+        // Light mode colors
+        light: {
+          bg: '#ffffff',
+          card: '#f9fafb',
+          border: '#e5e7eb',
+          text: '#111827',
+          textSecondary: '#4b5563',
+        },
+        // Dark mode colors
+        dark: {
+          bg: '#0f0f0f',
+          card: '#1f1f1f',
+          border: '#2d2d2d',
+          text: '#f9fafb',
+          textSecondary: '#9ca3af',
         },
       },
-      container: {
-        center: true,
-        padding: {
-          DEFAULT: '1rem',
-          sm: '2rem',
-          lg: '4rem',
-          xl: '5rem',
-          '2xl': '6rem',
-        },
+      fontFamily: {
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
       },
     },
-    plugins: [
-      require('@tailwindcss/forms'),
-      require('@tailwindcss/typography'),
-      require('@tailwindcss/aspect-ratio'),
-    ],
-  }
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: '1rem',
+        sm: '2rem',
+        lg: '4rem',
+        xl: '5rem',
+        '2xl': '6rem',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
+}

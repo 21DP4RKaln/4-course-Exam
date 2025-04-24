@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,17 +7,132 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Lietotāju modeļi
 model User {
   id              String          @id @default(uuid())
-  email           String          @unique
+  email           String?         @unique
   password        String
   name            String?
   role            Role            @default(USER)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+  firstName       String?
+  lastName        String?
+  phone           String?         @unique
+  profileImageUrl String?
   configurations  Configuration[]
   orders          Order[]
+
+  @@map("user")
+}
+
+model ComponentCategory {
+  id           String      @id @default(uuid())
+  name         String      @unique
+  description  String?
+  displayOrder Int         @default(0)
+  slug         String      @unique
+  components   Component[]
+
+  specificationKeys SpecificationKey[]
+
+  @@map("componentcategory")
+}
+
+model Component {
+  id             String        @id @default(uuid())
+  name           String
+  description    String?       @db.Text
+  price          Float
+  stock          Int           @default(0)
+  imageUrl       String?
+  categoryId     String
+  specifications Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  sku            String?       @unique
+  category       ComponentCategory @relation(fields: [categoryId], references: [id])
+  configItems    ConfigItem[]
+  specValues     ComponentSpec[]
+
+  @@index([categoryId, sku])
+  @@map("component")
+}
+
+model SpecificationKey {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  displayName String
+  categoryId  String?
+  category    ComponentCategory? @relation(fields: [categoryId], references: [id])
+  specValues  ComponentSpec[]
+
+  @@index([categoryId])
+  @@map("specificationkey")
+}
+
+model ComponentSpec {
+  id          String           @id @default(uuid())
+  componentId String
+  specKeyId   String
+  value       String           @db.Text
+  component   Component        @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  specKey     SpecificationKey @relation(fields: [specKeyId], references: [id])
+
+  @@unique([componentId, specKeyId])
+  @@index([specKeyId, value(length: 191)])
+  @@map("componentspec")
+}
+
+model ConfigItem {
+  id              String        @id @default(uuid())
+  configurationId String
+  componentId     String
+  quantity        Int           @default(1)
+  component       Component     @relation(fields: [componentId], references: [id])
+  configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+
+  @@map("configitem")
+}
+
+model Configuration {
+  id          String             @id @default(uuid())
+  name        String
+  description String?            @db.Text
+  userId      String?
+  totalPrice  Float
+  status      ConfigStatus       @default(DRAFT)
+  isTemplate  Boolean            @default(false)
+  isPublic    Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  components  ConfigItem[]
+  user        User?              @relation(fields: [userId], references: [id])
+  orders      Order[]
+
+  @@map("configuration")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  userId          String
+  configurationId String?
+  status          OrderStatus   @default(PENDING)
+  totalAmount     Float
+  shippingAddress String?       @db.Text
+  paymentMethod   String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  configuration   Configuration? @relation(fields: [configurationId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+
+  @@map("order")
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
 }
 
 enum Role {
@@ -29,80 +141,9 @@ enum Role {
   SPECIALIST
 }
 
-// Komponentu modeļi
-model ComponentCategory {
-  id          String      @id @default(uuid())
-  name        String
-  description String?
-  components  Component[]
-}
-
-model Component {
-  id              String            @id @default(uuid())
-  name            String
-  description     String?           @db.Text
-  price           Float
-  stock           Int               @default(0)
-  imageUrl        String?
-  categoryId      String
-  category        ComponentCategory @relation(fields: [categoryId], references: [id])
-  specifications  Json?
-  configItems     ConfigItem[]
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-}
-
-// Konfigurācija modeļi
-model Configuration {
-  id              String        @id @default(uuid())
-  name            String
-  description     String?       @db.Text
-  userId          String?
-  user            User?         @relation(fields: [userId], references: [id])
-  totalPrice      Float
-  status          ConfigStatus  @default(DRAFT)
-  isTemplate      Boolean       @default(false)
-  isPublic        Boolean       @default(false)
-  components      ConfigItem[]
-  orders          Order[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-}
-
 enum ConfigStatus {
   DRAFT
   SUBMITTED
   APPROVED
   REJECTED
-}
-
-model ConfigItem {
-  id              String        @id @default(uuid())
-  configurationId String
-  configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
-  componentId     String
-  component       Component     @relation(fields: [componentId], references: [id])
-  quantity        Int           @default(1)
-}
-
-// Pasūtījumu modeļi
-model Order {
-  id              String        @id @default(uuid())
-  userId          String
-  user            User          @relation(fields: [userId], references: [id])
-  configurationId String?
-  configuration   Configuration? @relation(fields: [configurationId], references: [id])
-  status          OrderStatus   @default(PENDING)
-  totalAmount     Float
-  shippingAddress String?       @db.Text
-  paymentMethod   String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-}
-
-enum OrderStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  CANCELLED
 }
