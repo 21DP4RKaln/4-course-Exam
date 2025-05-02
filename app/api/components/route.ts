@@ -7,24 +7,26 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const search = searchParams.get('search') || ''
     const specFilters = searchParams.getAll('spec') || []
+    const type = searchParams.get('type') || 'components' 
 
-    const categories = await prisma.componentCategory.findMany({
-      orderBy: {
-        displayOrder: 'asc'
-      }
-    })
+    const categories = await getCategories(type)
 
-    let components = []
-    let availableSpecifications = []
+    let components: any[] = [] 
+    let featuredProducts: any[] = []
+    let availableSpecifications: any[] = []
 
     if (category) {
       const whereClause: any = {
         category: {
-          name: {
-            equals: category,
-            mode: 'insensitive'
-          }
+          slug: category
         }
+      }
+
+      // If we're looking for peripherals, add type filtering
+      if (type === 'peripherals') {
+        whereClause.category.type = 'peripheral'
+      } else if (type === 'components') {
+        whereClause.category.type = 'component'
       }
 
       if (search) {
@@ -52,16 +54,16 @@ export async function GET(request: NextRequest) {
       const specKeys = await prisma.specificationKey.findMany({
         where: {
           OR: [
-            { categoryId: null }, // Global specs
-            { category: { name: { equals: category, mode: 'insensitive' } } } 
+            { componentCategoryId: null }, 
+            { componentCategoryId: category }
           ]
         },
         include: {
-          specValues: {
+          componentSpecValues: {
             where: {
               component: {
                 category: {
-                  name: { equals: category, mode: 'insensitive' }
+                  slug: category
                 }
               }
             },
@@ -77,9 +79,9 @@ export async function GET(request: NextRequest) {
         id: key.id,
         name: key.name,
         displayName: key.displayName,
-        values: key.specValues.map(spec => spec.value)
-      }))
- 
+        values: key.componentSpecValues.map(spec => spec.value)
+      })).filter(spec => spec.values.length > 0) // Only include specs with values
+   
       components = fetchedComponents.map(comp => {
         const specifications: Record<string, string> = {}
         comp.specValues.forEach(spec => {
@@ -97,8 +99,11 @@ export async function GET(request: NextRequest) {
           description: comp.description || '',
           price: comp.price,
           stock: comp.stock,
-          imageUrl: comp.imageUrl || '',
-          specifications: combinedSpecs
+          imageUrl: comp.imageUrl,
+          categoryId: comp.categoryId,
+          categoryName: comp.category.name,
+          specifications: combinedSpecs,
+          sku: comp.sku || ''
         }
       })
 
@@ -110,17 +115,15 @@ export async function GET(request: NextRequest) {
           })
         })
       }
+    } else if (type === 'peripherals' || type === 'components') {
+      featuredProducts = await getFeaturedProducts(type)
     }
 
     return NextResponse.json({
-      categories: categories.map(cat => ({
-        id: cat.id,
-        name: cat.name,
-        slug: cat.slug,
-        description: cat.description
-      })),
+      categories,
       components,
-      specifications: availableSpecifications
+      specifications: availableSpecifications,
+      featuredProducts
     })
   } catch (error) {
     console.error('Error fetching components:', error)
@@ -131,68 +134,100 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+async function getCategories(type: string) {
   try {
-    const data = await request.json()
-    const { name, description, price, stock, categoryId, specifications, sku = null } = data
+    const whereClause: any = {}
+    
+    if (type === 'peripherals') {
+      whereClause.type = 'peripheral'
+    } else if (type === 'components') {
+      whereClause.type = 'component'
+    }
 
-    const generatedSku = sku || `${categoryId.substring(0, 3).toUpperCase()}-${Date.now().toString().substring(7)}`
-
-    const component = await prisma.component.create({
-      data: {
-        name,
-        sku: generatedSku,
-        description,
-        price: parseFloat(price),
-        stock: parseInt(stock),
-        categoryId,
-        specifications: specifications || {},
+    const categories = await prisma.componentCategory.findMany({
+      where: whereClause,
+      orderBy: {
+        displayOrder: 'asc'
+      },
+      include: {
+        _count: {
+          select: {
+            components: true
+          }
+        }
       }
     })
 
-    if (specifications && typeof specifications === 'object') {
-      for (const [key, value] of Object.entries(specifications)) {
-        let specKey = await prisma.specificationKey.findFirst({
-          where: {
-            name: key
-          }
-        })
-        
-        if (!specKey) {
-          specKey = await prisma.specificationKey.create({
-            data: {
-              name: key,
-              displayName: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim(),
-              categoryId: categoryId
-            }
-          })
-        }
+    return categories.map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      description: cat.description,
+      componentCount: cat._count.components
+    }))
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+    return []
+  }
+}
 
-        await prisma.componentSpec.create({
-          data: {
-            componentId: component.id,
-            specKeyId: specKey.id,
-            value: value.toString()
-          }
-        })
+async function getFeaturedProducts(type: string) {
+  try {
+    const whereClause: any = {
+      stock: {
+        gt: 0
       }
     }
     
-    return NextResponse.json({ 
-      id: component.id,
-      name: component.name,
-      sku: component.sku,
-      description: component.description,
-      price: component.price,
-      stock: component.stock,
-      categoryId: component.categoryId,
-      specifications: specifications || {}
+    if (type === 'peripherals') {
+      whereClause.category = {
+        type: 'peripheral'
+      }
+    } else if (type === 'components') {
+      whereClause.category = {
+        type: 'component'
+      }
+    }
+
+    const featuredProducts = await prisma.component.findMany({
+      where: whereClause,
+      include: {
+        category: true,
+        specValues: {
+          include: {
+            specKey: true
+          }
+        }
+      },
+      orderBy: {
+        price: 'desc'
+      },
+      take: 4
+    })
+
+    return featuredProducts.map(product => {
+      const specifications: Record<string, string> = {}
+      product.specValues.forEach(spec => {
+        specifications[spec.specKey.name] = spec.value
+      })
+
+      return {
+        id: product.id,
+        name: product.name,
+        description: product.description || '',
+        price: product.price,
+        discountPrice: product.price > 100 ? Math.round(product.price * 0.9 * 100) / 100 : null,
+        categoryId: product.categoryId,
+        categoryName: product.category.name,
+        imageUrl: product.imageUrl || '',
+        stock: product.stock,
+        rating: 4.5,
+        ratingCount: Math.floor(Math.random() * 50) + 10,
+        specifications
+      }
     })
   } catch (error) {
-    console.error('Error creating component:', error)
-    return NextResponse.json(
-      { error: 'Failed to create component' },
-      { status: 500 }
-    )
+    console.error('Error fetching featured products:', error)
+    return []
   }
 }

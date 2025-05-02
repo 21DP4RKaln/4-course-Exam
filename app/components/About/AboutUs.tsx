@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -14,69 +15,164 @@ import {
   ThumbsUp,
   Wrench,
   Monitor,
-  CheckCircle
+  CheckCircle,
+  Star,
+  Circle,
+  ChevronRight,
+  User
 } from 'lucide-react'
 
-// Mock team members
-const teamMembers = [
-  {
-    name: 'Jānis Bērziņš',
-    position: 'Founder & CEO',
-    bio: 'Computer engineer with over 15 years of experience in building custom PCs and managing tech businesses.',
-    image: null,
-  },
-  {
-    name: 'Anna Liepiņa',
-    position: 'Technical Director',
-    bio: 'Hardware specialist with extensive knowledge of component compatibility and PC optimization.',
-    image: null,
-  },
-  {
-    name: 'Mārtiņš Ozols',
-    position: 'Lead PC Builder',
-    bio: 'Master craftsman with attention to detail and passion for creating perfectly optimized builds.',
-    image: null,
-  },
-  {
-    name: 'Laura Kalna',
-    position: 'Customer Support Manager',
-    bio: 'Dedicated to providing exceptional customer experiences and technical support.',
-    image: null,
-  },
-]
+// Types for data models
+interface TeamMember {
+  name: string;
+  position: string;
+  bio: string;
+}
 
-// Mock milestones
-const milestones = [
-  { year: 2018, title: 'Founded in Riga', description: 'IvaPro was established as a small custom PC building shop.' },
-  { year: 2020, title: 'Online Store Launch', description: 'Expanded to e-commerce with our configurator tool.' },
-  { year: 2022, title: 'Service Center Opening', description: 'Opened our dedicated repair and service center.' },
-  { year: 2024, title: 'Expanded to Baltic Region', description: 'Started operations in Lithuania and Estonia.' },
-]
+interface Milestone {
+  year: string;
+  title: string;
+  description: string;
+}
 
-// Mock stats
-const stats = [
-  { label: 'Customers Served', value: '5,000+' },
-  { label: 'PCs Built', value: '3,800+' },
-  { label: 'Years in Business', value: '6' },
-  { label: 'Satisfaction Rate', value: '98%' },
-]
+interface Stat {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}
 
-export default function AboutPage() {
+interface Review {
+  name: string;
+  rating: number;
+  comment: string;
+  date: string;
+  profileImage?: string | null;
+}
+
+// Interface for Google Reviews data
+interface GoogleReviewsData {
+  reviews: Review[];
+  averageRating: number;
+  totalReviews: number;
+}
+
+export default function AboutUs() {
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const locale = pathname.split('/')[1]
+
+  // State for the data that will be fetched from the database
+  const [stats, setStats] = useState<Stat[]>([])
+  const [googleReviewsData, setGoogleReviewsData] = useState<GoogleReviewsData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Get dynamic data from translations with proper typing
+  const teamMembers: TeamMember[] = Array.isArray(t.raw('about.team')) 
+    ? t.raw('about.team') as TeamMember[]
+    : [];
+
+  const milestones: Milestone[] = Array.isArray(t.raw('about.milestones'))
+    ? t.raw('about.milestones') as Milestone[]
+    : [];
+
+  // Fetch statistics from the database
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true)
+        
+        // Fetch real stats from the API
+        const response = await fetch('/api/stats/about')
+        if (!response.ok) {
+          throw new Error('Failed to fetch statistics')
+        }
+        
+        const data = await response.json()
+        
+        // Map the fetched data to our stats format
+        const mappedStats: Stat[] = [
+          {
+            icon: <Monitor size={24} className="text-red-600 dark:text-red-400" />,
+            label: t('about.statComputers'),
+            value: `${data.computersBuilt}`
+          },
+          {
+            icon: <Users size={24} className="text-red-600 dark:text-red-400" />,
+            label: t('about.statCustomers'),
+            value: `${data.customers}`
+          },
+          {
+            icon: <CheckCircle size={24} className="text-red-600 dark:text-red-400" />,
+            label: t('about.statOrders'),
+            value: `${data.completedOrders}`
+          },
+          {
+            icon: <Trophy size={24} className="text-red-600 dark:text-red-400" />,
+            label: t('about.statExperience'),
+            value: `${data.yearsInBusiness}`
+          }
+        ];
+        
+        setStats(mappedStats)
+        
+        // Fetch Google Business Reviews - in a real app this would use the Google Places API
+        const googleReviewsResponse = await fetch('/api/reviews/google')
+        if (!googleReviewsResponse.ok) {
+          throw new Error('Failed to fetch Google reviews data')
+        }
+        
+        const googleReviewsData = await googleReviewsResponse.json()
+        setGoogleReviewsData(googleReviewsData)
+        
+      } catch (err) {
+        console.error('Error fetching data:', err)
+        setError('Failed to load data. Please try again later.')
+        
+        // Fallback to some basic stats if API fails
+        // In production, you might want to handle this differently
+        const fallbackStats: Stat[] = [
+          {
+            icon: <Monitor size={24} className="text-red-600 dark:text-red-400" />,
+            label: t('about.statComputers'),
+            value: '1,000+'
+          },
+          {
+            icon: <Users size={24} className="text-red-600 dark:text-red-400" />,
+            label: t('about.statCustomers'),
+            value: '2,500+'
+          },
+          {
+            icon: <CheckCircle size={24} className="text-red-600 dark:text-red-400" />,
+            label: t('about.statOrders'),
+            value: '3,000+'
+          },
+          {
+            icon: <Trophy size={24} className="text-red-600 dark:text-red-400" />,
+            label: t('about.statExperience'),
+            value: '5+'
+          }
+        ];
+        
+        setStats(fallbackStats)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchStats()
+  }, [t])
 
   return (
     <div className="max-w-7xl mx-auto">
       {/* Hero section */}
       <div className="mb-16">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          About IvaPro
+          {t('about.title')}
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl">
-          We're passionate about building the perfect PC for every customer's needs.
-          From gaming rigs to professional workstations, we deliver quality, performance, and reliability.
+          {t('about.subtitle')}
         </p>
       </div>
       
@@ -84,27 +180,12 @@ export default function AboutPage() {
       <div className="grid md:grid-cols-2 gap-12 mb-16 items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            Our Story
+            {t('about.ourStory')}
           </h2>
           <div className="space-y-4 text-gray-600 dark:text-gray-400">
-            <p>
-              IvaPro started in 2018 as a small custom PC building shop in Riga, Latvia. 
-              Founded by Jānis Bērziņš, a computer engineer with a passion for building 
-              high-performance systems, our company began with a simple mission: to create 
-              custom PCs that perfectly match each customer's needs and preferences.
-            </p>
-            <p>
-              What started as a one-person operation quickly grew as word spread about our 
-              attention to detail, quality components, and excellent customer service. 
-              By 2020, we had expanded to e-commerce with our online configurator tool, 
-              allowing customers to design their dream PCs from anywhere.
-            </p>
-            <p>
-              In 2022, we opened our dedicated repair and service center, adding technical 
-              support and repair services to our offerings. Today, IvaPro is a trusted name 
-              in the Baltic region, known for building reliable, high-performance computers 
-              and providing exceptional customer support.
-            </p>
+            <p>{t('about.storyParagraph1')}</p>
+            <p>{t('about.storyParagraph2')}</p>
+            <p>{t('about.storyParagraph3')}</p>
           </div>
         </div>
         <div className="bg-gray-200 dark:bg-gray-700 rounded-lg h-96 flex items-center justify-center">
@@ -115,7 +196,7 @@ export default function AboutPage() {
       {/* Core values */}
       <div className="mb-16">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-          Our Core Values
+          {t('about.coreValues')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
@@ -123,11 +204,10 @@ export default function AboutPage() {
               <Trophy size={32} />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-              Quality
+              {t('about.qualityTitle')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              We never compromise on component quality. Every PC we build uses carefully 
-              selected parts from trusted manufacturers, ensuring reliability and performance.
+              {t('about.qualityText')}
             </p>
           </div>
           
@@ -136,11 +216,10 @@ export default function AboutPage() {
               <Wrench size={32} />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-              Expertise
+              {t('about.expertiseTitle')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Our team consists of certified technicians and experienced builders who stay 
-              up-to-date with the latest technologies and best practices in PC building.
+              {t('about.expertiseText')}
             </p>
           </div>
           
@@ -149,20 +228,142 @@ export default function AboutPage() {
               <ThumbsUp size={32} />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-              Customer Satisfaction
+              {t('about.satisfactionTitle')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Your satisfaction is our top priority. We're committed to providing excellent 
-              service before, during, and after your purchase with comprehensive support.
+              {t('about.satisfactionText')}
             </p>
           </div>
+        </div>
+      </div>
+      
+      {/* Stats */}
+      <div className="mb-16 bg-gray-50 dark:bg-gray-900 rounded-lg py-10">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+          {t('about.byTheNumbers')}
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto px-4">
+          {loading ? (
+            // Show loading state for statistics
+            <div className="col-span-4 flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div>
+            </div>
+          ) : (
+            stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="flex justify-center mb-3">
+                  {stat.icon}
+                </div>
+                <p className="text-3xl md:text-4xl font-bold text-red-600 dark:text-red-400 mb-2">
+                  {stat.value}
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {stat.label}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+      
+      {/* Google Business Reviews */}
+      <div className="mb-16">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            {t('about.customerReviews')}
+          </h2>
+          
+          {googleReviewsData && (
+            <div className="flex items-center">
+              <div className="text-yellow-400 dark:text-yellow-500 flex items-center mr-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star 
+                    key={i} 
+                    fill="currentColor" 
+                    size={24} 
+                    opacity={i < Math.floor(googleReviewsData.averageRating) ? 1 : 0.5}
+                  />
+                ))}
+              </div>
+              <span className="text-lg font-semibold">{googleReviewsData.averageRating.toFixed(1)}/5</span>
+            </div>
+          )}
+        </div>
+        
+        {loading ? (
+          // Show loading state for reviews
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
+          </div>
+        ) : error ? (
+          // Show error state
+          <div className="text-center py-8 text-red-500">
+            {error}
+          </div>
+        ) : googleReviewsData ? (
+          // Show reviews when data is available
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {googleReviewsData.reviews.map((review, index) => (
+              <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div className="flex items-center mb-3">
+                  {review.profileImage ? (
+                    <img 
+                      src={review.profileImage} 
+                      alt={review.name}
+                      className="w-10 h-10 rounded-full mr-3 object-cover"
+                    />
+                  ) : (
+                    <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-3">
+                      <User className="text-yellow-700 dark:text-yellow-400" size={20} />
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-semibold">{review.name}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {new Date(review.date).toLocaleDateString(locale === 'lv' ? 'lv-LV' : (locale === 'ru' ? 'ru-RU' : 'en-US'), {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex text-yellow-400 dark:text-yellow-500 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} fill="currentColor" size={16} opacity={i < review.rating ? 1 : 0.5} />
+                  ))}
+                </div>
+                
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  "{review.comment}"
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          // Fallback if no Google reviews data is available
+          <div className="text-center py-8">
+            <p className="text-gray-500 dark:text-gray-400">No reviews available at this time.</p>
+          </div>
+        )}
+        
+        <div className="mt-4 text-center">
+          <a 
+            href="https://business.google.com/reviews" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-yellow-600 dark:text-yellow-500 font-medium"
+          >
+            {t('about.viewAllReviews')} <ChevronRight size={16} className="ml-1" />
+          </a>
         </div>
       </div>
       
       {/* Milestones */}
       <div className="mb-16">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-          Our Journey
+          {t('about.journey')}
         </h2>
         <div className="relative">
           {/* Timeline line */}
@@ -202,67 +403,19 @@ export default function AboutPage() {
         </div>
       </div>
       
-      {/* Stats */}
-      <div className="mb-16 bg-gray-50 dark:bg-gray-900 rounded-lg py-10">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-          IvaPro by the Numbers
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto px-4">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-red-600 dark:text-red-400 mb-2">
-                {stat.value}
-              </p>
-              <p className="text-gray-600 dark:text-gray-400">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* Team */}
-      <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-          Meet Our Team
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {teamMembers.map((member, index) => (
-            <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-              <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Profile Photo
-                </span>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-                  {member.name}
-                </h3>
-                <p className="text-red-600 dark:text-red-400 text-sm mb-3">
-                  {member.position}
-                </p>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  {member.bio}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      
       {/* Contact section */}
       <div className="grid md:grid-cols-2 gap-8 mb-16">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            Visit Our Store
+            {t('about.visitStore')}
           </h2>
           <div className="space-y-4">
             <div className="flex items-start">
               <MapPin size={20} className="text-red-600 dark:text-red-400 mt-1 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-white mb-1">Store Address</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-1">{t('about.storeAddress')}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Brīvības iela 151, Riga, LV-1012, Latvia
+                  {t('contact.address')}
                 </p>
               </div>
             </div>
@@ -270,11 +423,10 @@ export default function AboutPage() {
             <div className="flex items-start">
               <Clock size={20} className="text-red-600 dark:text-red-400 mt-1 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-white mb-1">Opening Hours</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-1">{t('about.openingHours')}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Monday - Friday: 10:00 - 19:00<br />
-                  Saturday: 10:00 - 16:00<br />
-                  Sunday: Closed
+                  {t('contact.workingHours')}<br />
+                  {t('contact.weekends')}<br />
                 </p>
               </div>
             </div>
@@ -282,9 +434,9 @@ export default function AboutPage() {
             <div className="flex items-start">
               <Phone size={20} className="text-red-600 dark:text-red-400 mt-1 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-white mb-1">Phone</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-1">{t('about.phone')}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  +371 12345678
+                  {t('contact.phone')}
                 </p>
               </div>
             </div>
@@ -292,40 +444,45 @@ export default function AboutPage() {
             <div className="flex items-start">
               <Mail size={20} className="text-red-600 dark:text-red-400 mt-1 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-white mb-1">Email</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-1">{t('about.email')}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  info@ivapro.com
+                  {t('contact.email')}
                 </p>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="bg-gray-200 dark:bg-gray-700 rounded-lg h-64 md:h-auto flex items-center justify-center">
-          <span className="text-gray-500 dark:text-gray-400">Map Location</span>
+        <div className="bg-gray-200 dark:bg-gray-700 rounded-lg h-64 md:h-auto flex items-center justify-center relative w-full overflow-hidden">
+          <iframe
+            className="absolute top-0 left-0 w-full h-full border-0"
+            loading="lazy"
+            allowFullScreen
+            src="https://maps.google.com/maps?q=Kri%C5%A1j%C4%81%C5%86a+Valdem%C4%81ra+iela+1C%2C+Centra+rajons%2C+R%C4%ABga%2C+LV-1010&z=15&output=embed"
+          ></iframe>
         </div>
       </div>
       
       {/* CTA section */}
       <div className="bg-red-600 text-white rounded-lg p-8 text-center mb-8">
         <h2 className="text-2xl font-bold mb-4">
-          Ready to Build Your Dream PC?
+          {t('about.ctaTitle')}
         </h2>
         <p className="mb-6 max-w-2xl mx-auto">
-          Whether you want a custom-built PC or need help choosing the right components, our team is here to help you every step of the way.
+          {t('about.ctaText')}
         </p>
         <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
           <Link
             href={`/${locale}/configurator`}
             className="px-6 py-3 bg-white text-red-600 font-semibold rounded-md hover:bg-gray-100"
           >
-            Start Building
+            {t('about.startBuilding')}
           </Link>
           <Link
             href={`/${locale}/shop/ready-made`}
             className="px-6 py-3 bg-transparent border border-white text-white font-semibold rounded-md hover:bg-red-700"
           >
-            Browse Ready-Made PCs
+            {t('about.browseReadyMade')}
           </Link>
         </div>
       </div>

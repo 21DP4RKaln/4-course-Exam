@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 
 type CartItem = {
   id: string
-  type: 'component' | 'configuration'
+  type: 'component' | 'configuration' | 'product' | 'peripheral'
   name: string
   price: number
   quantity: number

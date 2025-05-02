@@ -1,0 +1,12 @@
+{
+    "crons": [
+      {
+        "path": "/api/cron/reset-views",
+        "schedule": "0 0 1 * *"
+      }
+    ],
+    "env": {
+      "RESET_VIEWS_API_KEY": "@reset_views_api_key",
+      "CRON_SECRET": "@cron_secret"
+    }
+  }

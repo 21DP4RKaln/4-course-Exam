@@ -4,9 +4,16 @@ import { useState, useRef, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { locales } from '@/app/i18n/config'
-import { ChevronDown } from 'lucide-react'
+import { useTheme } from '@/app/contexts/ThemeContext'
+import { Globe, ChevronDown, Check } from 'lucide-react'
 
 const languageNames: Record<string, string> = {
+  en: 'English',
+  lv: 'Latviski',
+  ru: 'Русский',
+}
+
+const languageCodes: Record<string, string> = {
   en: 'EN',
   lv: 'LV',
   ru: 'RU',
@@ -16,6 +23,7 @@ export default function LanguageSwitcher() {
   const t = useTranslations()
   const router = useRouter()
   const pathname = usePathname()
+  const { theme } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -47,28 +55,38 @@ export default function LanguageSwitcher() {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        className="flex items-center text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+        className={`flex items-center space-x-1 rounded-full p-2 transition-colors ${
+          pathname.includes('/about') || theme !== 'dark'
+            ? 'text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800' 
+            : 'text-white hover:bg-white/10'
+        }`}
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
-        <span>{languageNames[currentLocale]}</span>
-        <ChevronDown size={16} className="ml-1" />
+        <Globe size={18} />
+        <span className="ml-1 text-sm font-medium">{languageCodes[currentLocale]}</span>
+        <ChevronDown size={14} className={`ml-0.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-lg rounded-md overflow-hidden z-50">
+        <div className="absolute top-full right-0 mt-1 w-40 bg-white dark:bg-dark-card rounded-xl shadow-soft dark:shadow-medium overflow-hidden z-50 border border-gray-100 dark:border-gray-800">
           <div className="py-1">
             {locales.map((locale) => (
               <button
                 key={locale}
-                className={`w-full text-left px-4 py-2 text-sm ${
+                className={`w-full flex items-center px-4 py-2 text-sm ${
                   locale === currentLocale
-                    ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                    ? `${theme === 'dark' 
+                        ? 'bg-brand-red-50/10 text-brand-red-500' 
+                        : 'bg-brand-blue-50 text-brand-blue-600'}`
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
                 }`}
                 onClick={() => changeLocale(locale)}
               >
-                {languageNames[locale]}
+                <span className="flex-1 text-left">{languageNames[locale]}</span>
+                {locale === currentLocale && (
+                  <Check size={16} className={`${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-600'}`} />
+                )}
               </button>
             ))}
           </div>

@@ -139,30 +139,6 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* Profile Image Selection (Optional) */}
-        <div className="mb-6 flex flex-col items-center">
-          <div 
-            onClick={handleImageClick}
-            className="relative w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center cursor-pointer overflow-hidden mb-2"
-          >
-            {imagePreview ? (
-              <img src={imagePreview} alt="Profile Preview" className="w-full h-full object-cover" />
-            ) : (
-              <Upload size={24} className="text-gray-400" />
-            )}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              accept="image/*"
-              className="hidden"
-            />
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            (Optional) Add profile picture
-          </p>
-        </div>
-
         {/* Contact Method Selection */}
         <div className="mb-6">
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
