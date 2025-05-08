@@ -52,21 +52,22 @@ export interface PC {
           specs[categoryName] = configItem.component.name;
         });
   
+        const category = getConfigCategory(specs);
         const discountPrice = config.isPublic ? Math.round(config.totalPrice * 0.9 * 100) / 100 : null;
   
         return {
           id: config.id,
           name: config.name,
-          category: getConfigCategory(specs),
+          category,
           description: config.description || '',
           specs,
           price: config.totalPrice,
           discountPrice,
-          imageUrl: null, // Could be updated to fetch actual image URLs
+          imageUrl: `/products/Ready-made-pc/${category === 'Gaming PC' ? 'AMD' : category === 'Workstation' ? 'Workstation' : 'Office'}-gamingPC${Math.floor(Math.random() * 3) + 1}.png`,
           featured: config.isPublic,
-          stock: 10, // This should come from actual inventory data
+          stock: 10,
           ratings: {
-            average: 4.5, // This should come from actual ratings
+            average: 4.5,
             count: 15,
           },
         };
@@ -83,10 +84,7 @@ export interface PC {
   export async function getPCById(id: string): Promise<PCWithRelated | null> {
     try {
       const configuration = await prisma.configuration.findUnique({
-        where: {
-          id,
-          isTemplate: true, 
-        },
+        where: { id },
         include: {
           components: {
             include: {
@@ -109,14 +107,15 @@ export interface PC {
         const categoryName = configItem.component.category.name.toLowerCase();
         specs[categoryName] = configItem.component.name;
       });
-   
-      const discountPrice = configuration.isPublic ? Math.round(configuration.totalPrice * 0.9 * 100) / 100 : null;
   
       const category = getConfigCategory(specs);
+      const discountPrice = configuration.isPublic ? Math.round(configuration.totalPrice * 0.9 * 100) / 100 : null;
   
+      // Get related PCs
       const relatedConfigurations = await prisma.configuration.findMany({
         where: {
           isTemplate: true,
+          isPublic: true,
           id: { not: id },
         },
         include: {
@@ -132,7 +131,7 @@ export interface PC {
         },
         take: 3, 
       });
-   
+  
       const relatedPCs = relatedConfigurations.map((config) => {
         const relatedSpecs: Record<string, string> = {};
         config.components.forEach((configItem) => {
@@ -140,15 +139,17 @@ export interface PC {
           relatedSpecs[categoryName] = configItem.component.name;
         });
   
+        const relatedCategory = getConfigCategory(relatedSpecs);
+  
         return {
           id: config.id,
           name: config.name,
-          category: getConfigCategory(relatedSpecs),
+          category: relatedCategory,
           description: config.description || '',
           specs: relatedSpecs,
           price: config.totalPrice,
           discountPrice: config.isPublic ? Math.round(config.totalPrice * 0.9 * 100) / 100 : null,
-          imageUrl: null,
+          imageUrl: `/products/Ready-made-pc/${relatedCategory === 'Gaming PC' ? 'AMD' : relatedCategory === 'Workstation' ? 'Workstation' : 'Office'}-gamingPC${Math.floor(Math.random() * 3) + 1}.png`,
           featured: config.isPublic,
           stock: 10,
           ratings: {
@@ -157,7 +158,7 @@ export interface PC {
           },
         };
       });
-   
+  
       return {
         id: configuration.id,
         name: configuration.name,
@@ -167,7 +168,7 @@ export interface PC {
         specs,
         price: configuration.totalPrice,
         discountPrice,
-        imageUrl: null,
+        imageUrl: `/products/Ready-made-pc/${category === 'Gaming PC' ? 'AMD' : category === 'Workstation' ? 'Workstation' : 'Office'}-gamingPC${Math.floor(Math.random() * 3) + 1}.png`,
         featured: configuration.isPublic,
         stock: 10,
         ratings: {
@@ -196,4 +197,3 @@ export interface PC {
       return 'office';
     }
   }
-  

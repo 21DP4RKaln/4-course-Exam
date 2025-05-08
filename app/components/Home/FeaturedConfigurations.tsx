@@ -6,8 +6,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useCart } from '@/app/contexts/CartContext'
+import { useWishlist } from '@/app/contexts/WishlistContext'
+import { useAuth } from '@/app/contexts/AuthContext'
 import { useTheme } from '@/app/contexts/ThemeContext'
-import { ShoppingCart, Heart, ChevronRight, Trophy, Flame, PlusCircle, ArrowRight } from 'lucide-react'
+import { ShoppingCart, Heart, ChevronRight, Trophy, Flame, ArrowRight, Tag } from 'lucide-react'
+import Loading from '@/app/components/ui/Loading'
+import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
 
 interface Configuration {
   id: string
@@ -26,11 +30,15 @@ export default function FeaturedConfigurations() {
   const locale = pathname.split('/')[1]
   const { addItem } = useCart()
   const { theme } = useTheme()
+  const { isAuthenticated } = useAuth()
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
   
   const [configurations, setConfigurations] = useState<Configuration[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+
+  const defaultImageUrl = '/images/Default-image.png'
 
   useEffect(() => {
     const fetchConfigurations = async () => {
@@ -66,8 +74,27 @@ export default function FeaturedConfigurations() {
       type: 'configuration',
       name: config.name,
       price: config.discountPrice || config.price,
-      imageUrl: config.imageUrl || ''
+      imageUrl: config.imageUrl || defaultImageUrl
     })
+  }
+
+  const handleWishlistToggle = async (config: Configuration, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    if (!isAuthenticated) {
+      window.location.href = `/${locale}/auth/login`
+      return
+    }
+
+    const inWishlist = isInWishlist(config.id, 'CONFIGURATION')
+    if (inWishlist) {
+      await removeFromWishlist(config.id, 'CONFIGURATION')
+    } else {
+      await addToWishlist(config.id, 'CONFIGURATION')
+    }
   }
 
   const getDiscountPercentage = (price: number, discountPrice?: number | null) => {
@@ -79,35 +106,17 @@ export default function FeaturedConfigurations() {
     return (
       <section className={`py-24 ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}>
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {t('nav.Popular')}
-            </h2>
-            <div className={`h-6 w-24 animate-pulse rounded ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((i) => (
-              <div 
-                key={i} 
-                className={`rounded-2xl animate-pulse overflow-hidden ${
-                  theme === 'dark' ? 'bg-dark-card' : 'bg-white'
-                } shadow-soft`}
-              >
-                <div className={`h-48 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-                <div className="p-4 space-y-3">
-                  <div className={`h-6 rounded ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-                  <div className={`h-4 rounded ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-                  <div className="flex justify-between items-center">
-                    <div className={`h-6 w-20 rounded ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-                    <div className="flex space-x-2">
-                      <div className={`h-8 w-8 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-                      <div className={`h-8 w-8 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-                    </div>
-                  </div>
+          <div className="animate-pulse">
+            <div className="h-10 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+                  <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                  <div className="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -133,7 +142,7 @@ export default function FeaturedConfigurations() {
                 : 'text-brand-blue-600 hover:text-brand-blue-500'
             } transition-colors group`}
           >
-            <span>{t('button.view')}</span>
+            <span>{t('buttons.viewAll')}</span> 
             <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>
@@ -142,6 +151,7 @@ export default function FeaturedConfigurations() {
           {configurations.map((config) => {
             const discountPercentage = getDiscountPercentage(config.price, config.discountPrice);
             const isHovered = hoveredItem === config.id;
+            const inWishlist = isInWishlist(config.id, 'CONFIGURATION');
             
             return (
               <Link 
@@ -164,7 +174,7 @@ export default function FeaturedConfigurations() {
                         : 'bg-amber-50 text-amber-700 border border-amber-100'
                     }`}>
                       <Trophy size={12} className="mr-1" />
-                      Top Pick
+                      {t('nav.topPick')}
                     </span>
                   )}
                   
@@ -172,10 +182,10 @@ export default function FeaturedConfigurations() {
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                       theme === 'dark' 
                         ? 'bg-brand-red-900/40 text-brand-red-400 border border-brand-red-800' 
-                        : 'bg-brand-red-50 text-brand-red-700 border border-brand-red-100'
+                        : 'bg-brand-blue-50 text-brand-blue-700 border border-brand-blue-100'
                     }`}>
                       <Flame size={12} className="mr-1" />
-                      Popular
+                      {t('nav.popular')}
                     </span>
                   )}
                   
@@ -185,45 +195,23 @@ export default function FeaturedConfigurations() {
                         ? 'bg-green-900/40 text-green-400 border border-green-800' 
                         : 'bg-green-50 text-green-700 border border-green-100'
                     }`}>
-                      {discountPercentage}% Off
+                      <Tag size={12} className="mr-1" />
+                      {t('nav.discount', { percent: discountPercentage })}
                     </span>
                   )}
                 </div>
                 
-                {/* Image */}
+                {/* Product image */}
                 <div className="relative aspect-square overflow-hidden">
-                  {config.imageUrl ? (
-                    <Image 
-                      src={config.imageUrl} 
-                      alt={config.name}
-                      width={300}
-                      height={300}
-                      className={`w-full h-full object-contain transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
-                    />
-                  ) : (
-                    <div className={`w-full h-full flex items-center justify-center ${
-                      theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'
-                    }`}>
-                      <span className={`${
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
-                        PC Configuration
-                      </span>
-                    </div>
-                  )}
+                  <Image 
+                    src={(config.imageUrl || defaultImageUrl).trim()} 
+                    alt={config.name}
+                    width={300}
+                    height={300}
+                    className={`w-full h-full object-contain transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
+                  />
                   
-                  {/* Category badge */}
-                  <div className="absolute bottom-3 left-3">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
-                      theme === 'dark' 
-                        ? 'bg-black/40 text-white border border-gray-800' 
-                        : 'bg-white/40 text-gray-900 border border-gray-200'
-                    }`}>
-                      PC Configuration
-                    </span>
-                  </div>
-                  
-                  {/* Hover overlay */}
+                  {/* Action buttons overlay */}
                   <div className={`absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 ${
                     isHovered ? 'opacity-100' : 'opacity-0'
                   } bg-black/30 backdrop-blur-xs`}>
@@ -234,20 +222,25 @@ export default function FeaturedConfigurations() {
                           ? 'bg-brand-red-600 hover:bg-brand-red-700 text-white'
                           : 'bg-brand-blue-600 hover:bg-brand-blue-700 text-white'
                       }`}
-                      aria-label="Add to cart"
+                      aria-label={t('buttons.addToCart')}
                     >
                       <ShoppingCart size={18} />
                     </button>
                     
                     <button
+                      onClick={(e) => handleWishlistToggle(config, e)}
                       className={`p-3 rounded-full transition-colors ${
-                        theme === 'dark'
-                          ? 'bg-white/10 hover:bg-white/20 text-white'
-                          : 'bg-white hover:bg-gray-100 text-gray-800'
+                        inWishlist
+                          ? theme === 'dark'
+                            ? 'bg-brand-red-600 text-white hover:bg-brand-red-700'
+                            : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
+                          : theme === 'dark'
+                            ? 'bg-white/10 hover:bg-white/20 text-white'
+                            : 'bg-white hover:bg-gray-100 text-gray-800'
                       } backdrop-blur-sm`}
-                      aria-label="Add to wishlist"
+                      aria-label={t('buttons.addToWishlist')}
                     >
-                      <Heart size={18} />
+                      <Heart size={18} fill={inWishlist ? 'currentColor' : 'none'} />
                     </button>
                   </div>
                 </div>
@@ -288,65 +281,11 @@ export default function FeaturedConfigurations() {
                         </span>
                       )}
                     </div>
-                    
-                    <button 
-                      onClick={(e) => handleAddToCart(config, e)}
-                      className={`p-2 rounded-full transition-colors ${
-                        theme === 'dark'
-                          ? 'bg-brand-red-600 hover:bg-brand-red-700 text-white'
-                          : 'bg-brand-blue-600 hover:bg-brand-blue-700 text-white'
-                      }`}
-                    >
-                      <PlusCircle size={18} />
-                    </button>
                   </div>
                 </div>
               </Link>
             )
           })}
-        </div>
-        
-        {/* "Build Your Own" CTA Card */}
-        <div className={`mt-16 rounded-2xl overflow-hidden ${
-          theme === 'dark' 
-            ? 'bg-gradient-to-r from-dark-card to-black border border-gray-800' 
-            : 'bg-gradient-to-r from-white to-gray-50 border border-gray-100'
-        } shadow-medium`}>
-          <div className="p-8 md:p-10 flex flex-col items-center text-center">
-            <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 ${
-              theme === 'dark' 
-                ? 'bg-brand-red-900/30'
-                : 'bg-brand-blue-50'
-            }`}>
-              <PlusCircle className={`h-8 w-8 ${
-                theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'
-              }`} />
-            </div>
-            
-            <h3 className={`text-2xl font-bold mb-3 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>
-              Build Your Custom PC
-            </h3>
-            
-            <p className={`max-w-2xl mb-8 ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              Create a PC that perfectly matches your needs. Choose every component and build the system of your dreams.
-            </p>
-            
-            <Link
-              href={`/${locale}/configurator`}
-              className={`inline-flex items-center px-6 py-3 rounded-xl text-white font-medium transition-all ${
-                theme === 'dark' 
-                  ? 'bg-brand-red-600 hover:bg-brand-red-700 shadow hover:shadow-xl hover:shadow-brand-red-600/20' 
-                  : 'bg-brand-blue-600 hover:bg-brand-blue-700 shadow hover:shadow-xl hover:shadow-brand-blue-600/20'
-              }`}
-            >
-              Start Building
-              <ArrowRight size={16} className="ml-2" />
-            </Link>
-          </div>
         </div>
       </div>
     </section>

@@ -17,9 +17,6 @@ export interface ApiError {
   }
 }
 
-/**
- * 
- */
 export function createErrorResponse(
   type: ErrorType,
   message: string,

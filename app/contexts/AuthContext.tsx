@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 
 type User = {
@@ -25,7 +25,7 @@ type AuthContextType = {
   isAuthenticated: boolean
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const t = useTranslations()
@@ -33,31 +33,70 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
-  const locale = pathname.split('/')[1]
+  const searchParams = useSearchParams()
+  const locale = pathname?.split('/')[1] || 'en'
+  const [initialCheckDone, setInitialCheckDone] = useState(false)
 
   useEffect(() => {
+    let mounted = true
+
     const checkAuth = async () => {
+      if (!mounted) return
+
       try {
         const response = await fetch('/api/auth/me')
+        if (!mounted) return
+
         if (response.ok) {
           const userData = await response.json()
-          console.log("Login response data:", userData)
+          if (!mounted) return
+          
           setUser(userData)
         }
       } catch (error) {
-        console.error(t('Error.Auth_check'), error)
+        console.error('Error checking authentication:', error)
       } finally {
-        setLoading(false)
+        if (mounted) {
+          setLoading(false)
+          setInitialCheckDone(true)
+        }
       }
     }
 
     checkAuth()
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
-  const getDashboardLink = () => {
-    if (!user) return `/${locale}/dashboard`
-    
-    switch (user.role) {
+  // Separate effect for handling route protection
+  useEffect(() => {
+    if (!initialCheckDone || loading) return
+
+    const isAdminRoute = pathname?.startsWith(`/${locale}/admin`)
+    const isSpecialistRoute = pathname?.startsWith(`/${locale}/specialist`)
+
+    if (isAdminRoute || isSpecialistRoute) {
+      if (!user) {
+        router.replace(`/${locale}/auth?redirect=${encodeURIComponent(pathname)}`)
+        return
+      }
+
+      if (isAdminRoute && user.role !== 'ADMIN') {
+        router.replace(`/${locale}/unauthorized`)
+        return
+      }
+
+      if (isSpecialistRoute && !['ADMIN', 'SPECIALIST'].includes(user.role)) {
+        router.replace(`/${locale}/unauthorized`)
+        return
+      }
+    }
+  }, [pathname, locale, router, user, loading, initialCheckDone])
+
+  const getDashboardLink = (role: string) => {
+    switch (role) {
       case 'ADMIN':
         return `/${locale}/admin`
       case 'SPECIALIST':
@@ -67,35 +106,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const login = async (emailOrPhone: string, password: string) => {
+  const login = async (identifier: string, password: string) => {
     setLoading(true)
     try {
-      const isEmail = emailOrPhone.includes('@')
-      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          email: isEmail ? emailOrPhone : undefined,
-          phone: !isEmail ? emailOrPhone : undefined,
+          email: identifier.includes('@') ? identifier : undefined,
+          phone: !identifier.includes('@') ? identifier : undefined,
           password 
         }),
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error?.message || t('Error.Log_fail'))
+        // Parse the error message properly
+        const errorData = await response.json()
+        throw new Error(errorData.error?.message || 'Login failed')
       }
 
+      // Get user data from response
       const userData = await response.json()
       setUser(userData)
-  
-      const redirectPath = getDashboardLink()
-      router.push(redirectPath)
-    } catch (error) {
-      console.error(t('Error.Log_Err'), error)
+      
+      // Get the redirect URL if it exists
+      const redirect = searchParams.get('redirect')
+      
+      // Redirect based on user role
+      if (userData.role === 'ADMIN') {
+        router.push(`/${locale}/admin`)
+      } else if (userData.role === 'SPECIALIST') {
+        router.push(`/${locale}/specialist`)
+      } else {
+        if (redirect) {
+          router.push(`/${locale}/${redirect}`)
+        } else {
+          router.push(`/${locale}/dashboard`)
+        }
+      }
+    } catch (error: any) {
+      console.error('Login error:', error)
       throw error
     } finally {
       setLoading(false)
@@ -127,15 +179,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.error?.message || t('Error.Reg_fail'))
+        throw new Error(error.error?.message || 'Registration failed')
       }
 
       const userData = await response.json()
       setUser(userData)
 
+      // New users are always USER role, so redirect to dashboard
       router.push(`/${locale}/dashboard`)
-    } catch (error) {
-      console.error(t('Error.Reg_Err'), error)
+    } catch (error: any) {
+      console.error('Registration error:', error)
       throw error
     } finally {
       setLoading(false)
@@ -185,6 +238,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: 'POST',
       })
       setUser(null)
+      // Redirect to home page after logout
       router.push(`/${locale}`)
     } catch (error) {
       console.error('Logout error:', error)

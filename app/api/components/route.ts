@@ -21,8 +21,7 @@ export async function GET(request: NextRequest) {
           slug: category
         }
       }
-
-      // If we're looking for peripherals, add type filtering
+      
       if (type === 'peripherals') {
         whereClause.category.type = 'peripheral'
       } else if (type === 'components') {
@@ -80,16 +79,22 @@ export async function GET(request: NextRequest) {
         name: key.name,
         displayName: key.displayName,
         values: key.componentSpecValues.map(spec => spec.value)
-      })).filter(spec => spec.values.length > 0) // Only include specs with values
+      })).filter(spec => spec.values.length > 0)
    
       components = fetchedComponents.map(comp => {
         const specifications: Record<string, string> = {}
         comp.specValues.forEach(spec => {
           specifications[spec.specKey.name] = spec.value
         })
+   
+        const existingSpecs = comp.specifications
+          ? (typeof comp.specifications === 'string' 
+              ? JSON.parse(comp.specifications) as Record<string, string>
+              : comp.specifications as Record<string, string>)
+          : {}
 
         const combinedSpecs = {
-          ...comp.specifications as Record<string, string>,
+          ...existingSpecs,
           ...specifications
         }
 

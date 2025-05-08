@@ -4,12 +4,11 @@ import { ReactNode } from 'react';
 import '@/app/globals.css';
 import { Inter } from 'next/font/google';
 import { Metadata, Viewport } from 'next';
-import Header from '@/app/components/Header/Header';
-import Footer from '@/app/components/Footer/Footer';
-import ClientProviders from '@/app/ClientProviders';
 import { AuthProvider } from '@/app/contexts/AuthContext';
 import { CartProvider } from '@/app/contexts/CartContext';
 import { ThemeProvider } from '@/app/contexts/ThemeContext';
+import { WishlistProvider } from '@/app/contexts/WishlistContext';
+import ClientLayout from './ClientLayout';
 
 const inter = Inter({ 
   subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
@@ -44,28 +43,25 @@ type Props = {
   };
 };
 
-export default async function LocaleLayout({ children, params }: Props) {
-  const locale = params.locale;
+export default async function LocaleLayout({
+  children,
+  params: { locale },
+}: Props) {
   const messages = await getMessages(locale);
 
   return (
     <html lang={locale} suppressHydrationWarning className="scroll-smooth">
-      <head>
-        {/* head content */}
-      </head>
       <body className={`${inter.className} antialiased`}>
         <I18nProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <AuthProvider>
-              <CartProvider>
-                <div className="flex flex-col min-h-screen">
-                  <Header />
-                  <main className="flex-grow pt-16">
+              <WishlistProvider>
+                <CartProvider>
+                  <ClientLayout>
                     {children}
-                  </main>
-                  <Footer />
-                </div>
-              </CartProvider>
+                  </ClientLayout>
+                </CartProvider>
+              </WishlistProvider>
             </AuthProvider>
           </ThemeProvider>
         </I18nProvider>

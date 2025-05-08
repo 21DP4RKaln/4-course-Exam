@@ -1,50 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prismaService'
+import { NextRequest, NextResponse } from 'next/server';
+import { 
+  incrementProductView, 
+  resetViewCounts 
+} from '@/lib/services/unifiedProductService';
+import { 
+  createBadRequestResponse,
+  createUnauthorizedResponse,
+  createServerErrorResponse 
+} from '@/lib/apiErrors';
 
 /**
  * API route to increment view count for a product
  */
 export async function POST(request: NextRequest) {
   try {
-    const { productId, productType } = await request.json()
+    const { productId, productType } = await request.json();
     
     if (!productId || !productType) {
-      return NextResponse.json(
-        { error: 'Product ID and type are required' },
-        { status: 400 }
-      )
+      return createBadRequestResponse('Product ID and type are required');
     }
+
+    await incrementProductView(productId, productType);
     
-    // Increment view count based on product type
-    if (productType === 'configuration') {
-      await prisma.configuration.update({
-        where: { id: productId },
-        data: { viewCount: { increment: 1 } }
-      })
-    } else if (productType === 'component') {
-      await prisma.component.update({
-        where: { id: productId },
-        data: { viewCount: { increment: 1 } }
-      })
-    } else if (productType === 'peripheral') {
-      await prisma.peripheral.update({
-        where: { id: productId },
-        data: { viewCount: { increment: 1 } }
-      })
-    } else {
-      return NextResponse.json(
-        { error: 'Invalid product type' },
-        { status: 400 }
-      )
-    }
-    
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error incrementing view count:', error)
-    return NextResponse.json(
-      { error: 'Failed to increment view count' },
-      { status: 500 }
-    )
+    console.error('Error incrementing view count:', error);
+    return createServerErrorResponse('Failed to increment view count');
   }
 }
 
@@ -53,44 +34,25 @@ export async function POST(request: NextRequest) {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const apiKey = searchParams.get('apiKey')
+    const { searchParams } = new URL(request.url);
+    const apiKey = searchParams.get('apiKey');
     
-    // Security check - verify API key
     if (apiKey !== process.env.RESET_VIEWS_API_KEY) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return createUnauthorizedResponse('Unauthorized access');
     }
+   
+    const result = await resetViewCounts();
     
-    // Reset view counts for all product types
-    const [configurationsResult, componentsResult, peripheralsResult] = await Promise.all([
-      prisma.configuration.updateMany({
-        data: { viewCount: 0 }
-      }),
-      prisma.component.updateMany({
-        data: { viewCount: 0 }
-      }),
-      prisma.peripheral.updateMany({
-        data: { viewCount: 0 }
-      })
-    ])
+    console.log(`[CRON] Monthly view counts reset - ${new Date().toISOString()}:`, result.resetCounts);
     
     return NextResponse.json({
       success: true,
-      timestamp: new Date().toISOString(),
-      resetCounts: {
-        configurations: configurationsResult.count,
-        components: componentsResult.count,
-        peripherals: peripheralsResult.count
-      }
-    })
+      message: 'View counts reset successfully for the new month',
+      details: result.resetCounts,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    console.error('Error resetting view counts:', error)
-    return NextResponse.json(
-      { error: 'Failed to reset view counts' },
-      { status: 500 }
-    )
+    console.error('Error resetting view counts:', error);
+    return createServerErrorResponse('Failed to reset view counts');
   }
 }

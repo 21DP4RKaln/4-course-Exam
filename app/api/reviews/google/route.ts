@@ -91,8 +91,7 @@ export async function GET(request: NextRequest) {
     
   } catch (error) {
     console.error('Error retrieving Google reviews:', error)
-    
-    // Include fallback data for development/testing
+   
     if (process.env.NODE_ENV !== 'production') {
       return NextResponse.json({
         reviews: [

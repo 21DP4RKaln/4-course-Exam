@@ -9,7 +9,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Use CSS variables for dynamic colors
         border: 'var(--border)',
         input: 'var(--input)',
         ring: 'var(--ring)',
@@ -39,8 +38,6 @@ module.exports = {
           DEFAULT: 'var(--card)',
           foreground: 'var(--card-foreground)',
         },
-        
-        // Core brand colors
         brand: {
           red: {
             DEFAULT: '#dc2626',
@@ -99,17 +96,14 @@ module.exports = {
         },
       },
       textColor: {
-        // Add text utility classes
         foreground: 'var(--foreground)',
         background: 'var(--background)',
       },
       backgroundColor: {
-        // Add background utility classes
         foreground: 'var(--foreground)',
         background: 'var(--background)',
       },
       borderColor: {
-        // Add border utility classes
         border: 'var(--border)',
         input: 'var(--input)',
         ring: 'var(--ring)',
@@ -137,6 +131,9 @@ module.exports = {
         'blue-to-white': 'linear-gradient(to right, #0066CC, #ffffff)',
         'neutral-gradient': 'linear-gradient(to right, #64748b, #94a3b8)',
       },
+      opacity: {
+        '80': '0.8'
+      }
     },
     container: {
       center: true,
@@ -156,4 +153,13 @@ module.exports = {
     require('@tailwindcss/typography'),
     require('@tailwindcss/aspect-ratio'),
   ],
+  safelist: [
+    'hover:bg-secondary',
+    'hover:bg-primary',
+    'hover:bg-destructive',
+    'hover:bg-opacity-80',
+    'hover:bg-secondary/80',
+    'hover:bg-primary/80',
+    'hover:bg-destructive/80'
+  ]
 }

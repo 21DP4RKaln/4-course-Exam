@@ -3,10 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useTheme } from '@/app/contexts/ThemeContext'
 import { useCart } from '@/app/contexts/CartContext'
-import { ShoppingCart, Star, ChevronDown, ChevronUp, PlusCircle, Heart, Tag } from 'lucide-react'
+import { useAuth } from '@/app/contexts/AuthContext'
+import { useWishlist } from '@/app/contexts/WishlistContext'
+import { ShoppingCart, Star, ChevronDown, ChevronUp, Heart, Tag } from 'lucide-react'
 
 interface ProductCardProps {
   id: string
@@ -45,10 +48,34 @@ export default function ProductCard({
 }: ProductCardProps) {
   const pathname = usePathname()
   const locale = pathname.split('/')[1]
+  const t = useTranslations()
   const { theme } = useTheme()
   const [showSpecs, setShowSpecs] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const { addItem } = useCart()
+  const { isAuthenticated } = useAuth()
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
+  const router = useRouter()
+
+  const defaultImageUrl = '/images/Default-image.png'
+
+  const isProductInWishlist = isInWishlist(id, type.toUpperCase())
+
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!isAuthenticated) {
+      router.push(`/${locale}/auth/login`)
+      return
+    }
+
+    if (isProductInWishlist) {
+      await removeFromWishlist(id, type.toUpperCase())
+    } else {
+      await addToWishlist(id, type.toUpperCase())
+    }
+  }
 
   const getProductLink = () => {
     if (linkPrefix) {
@@ -62,7 +89,7 @@ export default function ProductCard({
     } else if (type === 'peripheral') {
       return `/${locale}/peripherals/${category.toLowerCase()}/${id}`
     }
-    
+     
     return `/${locale}/shop/product/${id}`
   }
 
@@ -112,7 +139,7 @@ export default function ProductCard({
               ? 'bg-green-900/40 text-green-400 border border-green-800' 
               : 'bg-green-50 text-green-700 border border-green-100'
           }`}>
-            New
+            {t('shop.product.newBadge')}
           </span>
         )}
         
@@ -120,10 +147,10 @@ export default function ProductCard({
           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
             theme === 'dark' 
               ? 'bg-brand-red-900/40 text-brand-red-400 border border-brand-red-800' 
-              : 'bg-brand-red-50 text-brand-red-700 border border-brand-red-100'
+              : 'bg-brand-blue-50 text-brand-blue-700 border border-brand-blue-100'
           }`}>
             <Tag size={12} className="mr-1" />
-            {discountPercentage}% Off
+            {t('shop.product.offBadge', { percentage: discountPercentage })}
           </span>
         )}
         
@@ -133,32 +160,20 @@ export default function ProductCard({
               ? 'bg-amber-900/40 text-amber-400 border border-amber-800' 
               : 'bg-amber-50 text-amber-700 border border-amber-100'
           }`}>
-            Featured
+            {t('shop.product.featuredBadge')}
           </span>
         )}
       </div>
       
       {/* Product image */}
       <div className="relative aspect-square overflow-hidden">
-        {imageUrl ? (
-          <Image 
-            src={imageUrl} 
-            alt={name}
-            width={300}
-            height={300}
-            className={`w-full h-full object-contain transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
-          />
-        ) : (
-          <div className={`w-full h-full flex items-center justify-center ${
-            theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'
-          }`}>
-            <span className={`text-sm ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              {category}
-            </span>
-          </div>
-        )}
+        <Image 
+          src={(imageUrl || defaultImageUrl).trim()} 
+          alt={name}
+          width={300}
+          height={300}
+          className={`w-full h-full object-contain transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
+        />
         
         {/* Category badge */}
         <div className="absolute bottom-3 left-3">
@@ -203,20 +218,25 @@ export default function ProductCard({
                 ? 'bg-brand-red-600 hover:bg-brand-red-700 text-white disabled:bg-gray-700'
                 : 'bg-brand-blue-600 hover:bg-brand-blue-700 text-white disabled:bg-gray-300'
             } disabled:cursor-not-allowed`}
-            aria-label="Add to cart"
+            aria-label={t('shop.product.addToCart')}
           >
             <ShoppingCart size={18} />
           </button>
           
           <button
+            onClick={handleWishlistToggle}
             className={`p-3 rounded-full transition-colors ${
-              theme === 'dark'
-                ? 'bg-white/10 hover:bg-white/20 text-white'
-                : 'bg-white hover:bg-gray-100 text-gray-800'
+              isProductInWishlist
+                ? theme === 'dark'
+                  ? 'bg-brand-red-600 text-white hover:bg-brand-red-700'
+                  : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
+                : theme === 'dark'
+                  ? 'bg-white/10 hover:bg-white/20 text-white'
+                  : 'bg-white hover:bg-gray-100 text-gray-800'
             } backdrop-blur-sm`}
-            aria-label="Add to wishlist"
+            aria-label={isProductInWishlist ? t('shop.product.removeFromWishlist') : t('shop.product.addToWishlist')}
           >
-            <Heart size={18} />
+            <Heart size={18} fill={isProductInWishlist ? 'currentColor' : 'none'} />
           </button>
         </div>
       </div>
@@ -243,6 +263,7 @@ export default function ProductCard({
           </div>
         )}
         
+        <div className="p-4">
         {/* Title */}
         <h3 className={`font-medium mb-1 line-clamp-2 group-hover:${
           theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
@@ -339,19 +360,8 @@ export default function ProductCard({
               </span>
             )}
           </div>
-          
-          <button
-            onClick={handleAddToCart}
-            disabled={stock <= 0}
-            className={`p-2 rounded-full transition-colors ${
-              theme === 'dark'
-                ? 'bg-brand-red-600 hover:bg-brand-red-700 text-white disabled:bg-gray-700'
-                : 'bg-brand-blue-600 hover:bg-brand-blue-700 text-white disabled:bg-gray-300'
-            } disabled:cursor-not-allowed`}
-          >
-            <PlusCircle size={18} />
-          </button>
         </div>
+      </div>
       </div>
     </Link>
   )

@@ -41,7 +41,6 @@ type Product = ConfigurationProduct | ComponentProduct | PeripheralProduct;
  */
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    // First check if it's a PC configuration
     const configuration = await prisma.configuration.findUnique({
       where: {
         id,
@@ -276,8 +275,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 export async function getAllProducts(): Promise<Product[]> {
   try {
     const products: Product[] = [];
-
-    // Get PC configurations
+    
     const configurations = await prisma.configuration.findMany({
       where: {
         isTemplate: true, 
@@ -381,8 +379,7 @@ export async function getAllProducts(): Promise<Product[]> {
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
   try {
     const products: Product[] = [];
-
-    // First, find the category
+  
     const category = await prisma.componentCategory.findUnique({
       where: {
         slug: categorySlug,

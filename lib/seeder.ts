@@ -292,10 +292,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'CPU-INT-14900K',
       categoryId: 'cpu',
-      specifications: {
+      specifications: JSON.stringify({
         generation: '14th Gen',
         releaseDate: '2023'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Intel' },
         { name: 'series', value: 'Core i9' },
@@ -317,10 +317,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'CPU-INT-14700K',
       categoryId: 'cpu',
-      specifications: {
+      specifications: JSON.stringify({
         generation: '14th Gen',
         releaseDate: '2023'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Intel' },
         { name: 'series', value: 'Core i7' },
@@ -342,10 +342,10 @@ async function seedComponents() {
       stock: 25,
       sku: 'CPU-INT-14600K',
       categoryId: 'cpu',
-      specifications: {
+      specifications: JSON.stringify({
         generation: '14th Gen',
         releaseDate: '2023'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Intel' },
         { name: 'series', value: 'Core i5' },
@@ -367,10 +367,10 @@ async function seedComponents() {
       stock: 12,
       sku: 'CPU-AMD-7950X',
       categoryId: 'cpu',
-      specifications: {
+      specifications: JSON.stringify({
         generation: 'Zen 4',
         releaseDate: '2022'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'AMD' },
         { name: 'series', value: 'Ryzen 9' },
@@ -392,10 +392,10 @@ async function seedComponents() {
       stock: 18,
       sku: 'CPU-AMD-7800X3D',
       categoryId: 'cpu',
-      specifications: {
+      specifications: JSON.stringify({
         generation: 'Zen 4',
         releaseDate: '2023'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'AMD' },
         { name: 'series', value: 'Ryzen 7' },
@@ -417,10 +417,10 @@ async function seedComponents() {
       stock: 28,
       sku: 'CPU-AMD-7600X',
       categoryId: 'cpu',
-      specifications: {
+      specifications: JSON.stringify({
         generation: 'Zen 4',
         releaseDate: '2022'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'AMD' },
         { name: 'series', value: 'Ryzen 5' },
@@ -442,10 +442,10 @@ async function seedComponents() {
       stock: 35,
       sku: 'CPU-INT-14100F',
       categoryId: 'cpu',
-      specifications: {
+      specifications: JSON.stringify({
         generation: '14th Gen',
         releaseDate: '2023'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Intel' },
         { name: 'series', value: 'Core i3' },
@@ -471,10 +471,10 @@ async function seedComponents() {
       stock: 8,
       sku: 'MB-ASUS-Z790-HERO',
       categoryId: 'motherboard',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         generation: 'Z790'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'ASUS' },
         { name: 'chipset', value: 'Intel Z790' },
@@ -493,10 +493,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'MB-MSI-Z790-TOMAHAWK',
       categoryId: 'motherboard',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         generation: 'Z790'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'MSI' },
         { name: 'chipset', value: 'Intel Z790' },
@@ -515,10 +515,10 @@ async function seedComponents() {
       stock: 6,
       sku: 'MB-ASUS-X670E-HERO',
       categoryId: 'motherboard',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         generation: 'X670E'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'ASUS' },
         { name: 'chipset', value: 'AMD X670E' },
@@ -537,10 +537,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'MB-ASROCK-B650-PG',
       categoryId: 'motherboard',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         generation: 'B650'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'ASRock' },
         { name: 'chipset', value: 'AMD B650' },
@@ -563,10 +563,10 @@ async function seedComponents() {
       stock: 5,
       sku: 'GPU-NVIDIA-RTX4090-FE',
       categoryId: 'gpu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black/Silver',
         generation: 'Ada Lovelace'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'NVIDIA' },
         { name: 'chipset', value: 'GeForce RTX 4090' },
@@ -586,10 +586,10 @@ async function seedComponents() {
       stock: 8,
       sku: 'GPU-ASUS-RTX4080-STRIX',
       categoryId: 'gpu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         generation: 'Ada Lovelace'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'ASUS' },
         { name: 'chipset', value: 'GeForce RTX 4080' },
@@ -609,10 +609,10 @@ async function seedComponents() {
       stock: 10,
       sku: 'GPU-AMD-RX7900XTX',
       categoryId: 'gpu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black/Red',
         generation: 'RDNA 3'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'AMD' },
         { name: 'chipset', value: 'Radeon RX 7900 XTX' },
@@ -632,10 +632,10 @@ async function seedComponents() {
       stock: 25,
       sku: 'GPU-MSI-RTX4060TI-GAMING',
       categoryId: 'gpu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black/Red',
         generation: 'Ada Lovelace'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'MSI' },
         { name: 'chipset', value: 'GeForce RTX 4060 Ti' },
@@ -655,10 +655,10 @@ async function seedComponents() {
       stock: 18,
       sku: 'GPU-NVIDIA-RTX4070TI-SUPER',
       categoryId: 'gpu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black/Silver',
         generation: 'Ada Lovelace'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'NVIDIA' },
         { name: 'chipset', value: 'GeForce RTX 4070 Ti Super' },
@@ -678,10 +678,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'GPU-SAPPHIRE-RX7800XT',
       categoryId: 'gpu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black/Blue',
         generation: 'RDNA 3'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Sapphire' },
         { name: 'chipset', value: 'Radeon RX 7800 XT' },
@@ -705,10 +705,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'RAM-CORSAIR-32GB-6000',
       categoryId: 'ram',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         heatsink: 'Aluminum'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Corsair' },
         { name: 'capacity', value: '32GB (2 x 16GB)' },
@@ -727,10 +727,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'RAM-GSKILL-32GB-6400',
       categoryId: 'ram',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         heatsink: 'Aluminum'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'G.Skill' },
         { name: 'capacity', value: '32GB (2 x 16GB)' },
@@ -749,10 +749,10 @@ async function seedComponents() {
       stock: 30,
       sku: 'RAM-KINGSTON-16GB-5200',
       categoryId: 'ram',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         heatsink: 'Low-profile'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Kingston' },
         { name: 'capacity', value: '16GB (2 x 8GB)' },
@@ -771,10 +771,10 @@ async function seedComponents() {
       stock: 18,
       sku: 'RAM-TEAMGROUP-32GB-6000',
       categoryId: 'ram',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'White',
         heatsink: 'Aluminum'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'TeamGroup' },
         { name: 'capacity', value: '32GB (2 x 16GB)' },
@@ -793,10 +793,10 @@ async function seedComponents() {
       stock: 10,
       sku: 'RAM-CRUCIAL-64GB-5600',
       categoryId: 'ram',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         heatsink: 'Aluminum'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Crucial' },
         { name: 'capacity', value: '64GB (2 x 32GB)' },
@@ -819,9 +819,9 @@ async function seedComponents() {
       stock: 25,
       sku: 'SSD-SAMSUNG-980PRO-2TB',
       categoryId: 'storage',
-      specifications: {
+      specifications: JSON.stringify({
         formFactor: 'M.2 2280'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Samsung' },
         { name: 'type', value: 'NVMe SSD' },
@@ -841,9 +841,9 @@ async function seedComponents() {
       stock: 30,
       sku: 'SSD-WD-SN850X-1TB',
       categoryId: 'storage',
-      specifications: {
+      specifications: JSON.stringify({
         formFactor: 'M.2 2280'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Western Digital' },
         { name: 'type', value: 'NVMe SSD' },
@@ -863,9 +863,9 @@ async function seedComponents() {
       stock: 15,
       sku: 'SSD-CRUCIAL-P3-4TB',
       categoryId: 'storage',
-      specifications: {
+      specifications: JSON.stringify({
         formFactor: 'M.2 2280'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Crucial' },
         { name: 'type', value: 'NVMe SSD' },
@@ -884,9 +884,9 @@ async function seedComponents() {
       stock: 22,
       sku: 'SSD-SEAGATE-FIRECUDA-2TB',
       categoryId: 'storage',
-      specifications: {
+      specifications: JSON.stringify({
         formFactor: 'M.2 2280'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Seagate' },
         { name: 'type', value: 'NVMe SSD' },
@@ -906,9 +906,9 @@ async function seedComponents() {
       stock: 40,
       sku: 'SSD-SAMSUNG-870EVO-1TB',
       categoryId: 'storage',
-      specifications: {
+      specifications: JSON.stringify({
         formFactor: '2.5-inch'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Samsung' },
         { name: 'type', value: 'SATA SSD' },
@@ -928,9 +928,9 @@ async function seedComponents() {
       stock: 25,
       sku: 'HDD-WD-BLUE-4TB',
       categoryId: 'storage',
-      specifications: {
+      specifications: JSON.stringify({
         formFactor: '3.5-inch'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Western Digital' },
         { name: 'type', value: 'HDD' },
@@ -953,10 +953,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'PSU-CORSAIR-RM850X',
       categoryId: 'psu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         cabling: 'Fully Modular'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Corsair' },
         { name: 'wattage', value: '850W' },
@@ -973,10 +973,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'PSU-EVGA-1000GT',
       categoryId: 'psu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         cabling: 'Fully Modular'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'EVGA' },
         { name: 'wattage', value: '1000W' },
@@ -993,10 +993,10 @@ async function seedComponents() {
       stock: 25,
       sku: 'PSU-SEASONIC-GX750',
       categoryId: 'psu',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         cabling: 'Fully Modular'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Seasonic' },
         { name: 'wattage', value: '750W' },
@@ -1017,10 +1017,10 @@ async function seedComponents() {
       stock: 18,
       sku: 'CASE-CORSAIR-5000D',
       categoryId: 'case',
-      specifications: {
+      specifications: JSON.stringify({
         sides: 'Tempered Glass',
         included: '2x 120mm Fans'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Corsair' },
         { name: 'type', value: 'Mid Tower' },
@@ -1038,10 +1038,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'CASE-FRACTAL-MESHIFY2C',
       categoryId: 'case',
-      specifications: {
+      specifications: JSON.stringify({
         sides: 'Tempered Glass',
         included: '3x 140mm Fans'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Fractal Design' },
         { name: 'type', value: 'Mid Tower' },
@@ -1059,10 +1059,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'CASE-LIANLI-O11EVO',
       categoryId: 'case',
-      specifications: {
+      specifications: JSON.stringify({
         sides: 'Tempered Glass',
         included: 'None'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Lian Li' },
         { name: 'type', value: 'Mid Tower' },
@@ -1084,10 +1084,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'COOL-NZXT-KRAKENX63',
       categoryId: 'cooling',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         rgb: 'Yes'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'NZXT' },
         { name: 'type', value: 'Liquid Cooler (AIO)' },
@@ -1105,10 +1105,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'COOL-NOCTUA-NHD15',
       categoryId: 'cooling',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Brown/Beige',
         rgb: 'No'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Noctua' },
         { name: 'type', value: 'Air Cooler' },
@@ -1125,10 +1125,10 @@ async function seedComponents() {
       stock: 12,
       sku: 'COOL-CORSAIR-H150I',
       categoryId: 'cooling',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         rgb: 'Yes'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Corsair' },
         { name: 'type', value: 'Liquid Cooler (AIO)' },
@@ -1150,10 +1150,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'KB-CORSAIR-K100',
       categoryId: 'keyboards',
-      specifications: {
+      specifications: JSON.stringify({
         keycaps: 'PBT Double-shot',
         mediaControls: 'Yes'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Corsair' },
         { name: 'switchType', value: 'Cherry MX Speed' },
@@ -1170,10 +1170,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'KB-LOGITECH-G915TKL',
       categoryId: 'keyboards',
-      specifications: {
+      specifications: JSON.stringify({
         keycaps: 'ABS',
         mediaControls: 'Yes'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Logitech' },
         { name: 'switchType', value: 'GL Tactile' },
@@ -1190,10 +1190,10 @@ async function seedComponents() {
       stock: 12,
       sku: 'KB-DUCKY-ONE3TKL',
       categoryId: 'keyboards',
-      specifications: {
+      specifications: JSON.stringify({
         keycaps: 'PBT Double-shot',
         mediaControls: 'No'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Ducky' },
         { name: 'switchType', value: 'Cherry MX Brown' },
@@ -1210,10 +1210,10 @@ async function seedComponents() {
       stock: 8,
       sku: 'KB-KEYCHRON-Q3',
       categoryId: 'keyboards',
-      specifications: {
+      specifications: JSON.stringify({
         keycaps: 'PBT Double-shot',
         mediaControls: 'Yes'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Keychron' },
         { name: 'switchType', value: 'Gateron G Pro Red' },
@@ -1234,10 +1234,10 @@ async function seedComponents() {
       stock: 25,
       sku: 'MOUSE-LOGITECH-GPROX',
       categoryId: 'mice',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         weight: '63g'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Logitech' },
         { name: 'sensor', value: 'HERO 25K' },
@@ -1254,10 +1254,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'MOUSE-RAZER-VIPERULT',
       categoryId: 'mice',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         weight: '74g'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Razer' },
         { name: 'sensor', value: 'Focus+ Optical' },
@@ -1273,10 +1273,10 @@ async function seedComponents() {
       stock: 22,
       sku: 'MOUSE-GLORIOUS-MODELO',
       categoryId: 'mice',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'White',
         weight: '69g'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Glorious' },
         { name: 'sensor', value: 'BAMF 19K' },
@@ -1293,10 +1293,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'MOUSE-STEELSERIES-AEROX5',
       categoryId: 'mice',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         weight: '74g'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'SteelSeries' },
         { name: 'sensor', value: 'TrueMove Air' },
@@ -1317,10 +1317,10 @@ async function seedComponents() {
       stock: 10,
       sku: 'MON-LG-27GP950',
       categoryId: 'monitors',
-      specifications: {
+      specifications: JSON.stringify({
         hdr: 'HDR600',
         inputs: 'HDMI 2.1, DisplayPort 1.4'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'LG' },
         { name: 'size', value: '27"' },
@@ -1338,10 +1338,10 @@ async function seedComponents() {
       stock: 12,
       sku: 'MON-SAMSUNG-G732',
       categoryId: 'monitors',
-      specifications: {
+      specifications: JSON.stringify({
         hdr: 'HDR600',
         inputs: 'HDMI 2.0, DisplayPort 1.4'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Samsung' },
         { name: 'size', value: '32"' },
@@ -1358,10 +1358,10 @@ async function seedComponents() {
       stock: 5,
       sku: 'MON-ALIENWARE-AW3423DW',
       categoryId: 'monitors',
-      specifications: {
+      specifications: JSON.stringify({
         hdr: 'DisplayHDR True Black 400',
         inputs: 'HDMI 2.0, DisplayPort 1.4'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Alienware' },
         { name: 'size', value: '34"' },
@@ -1379,10 +1379,10 @@ async function seedComponents() {
       stock: 18,
       sku: 'MON-MSI-MAG274QRF',
       categoryId: 'monitors',
-      specifications: {
+      specifications: JSON.stringify({
         hdr: 'HDR400',
         inputs: 'HDMI 2.0, DisplayPort 1.4, USB-C'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'MSI' },
         { name: 'size', value: '27"' },
@@ -1404,10 +1404,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'HEAD-STEELSERIES-ARCTIS7P',
       categoryId: 'headphones',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'White',
         batteryLife: '30 hours'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'SteelSeries' },
         { name: 'type', value: 'Over-ear Wireless' },
@@ -1425,10 +1425,10 @@ async function seedComponents() {
       stock: 25,
       sku: 'HEAD-HYPERX-CLOUD3',
       categoryId: 'headphones',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Red/Black',
         batteryLife: 'N/A (Wired)'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'HyperX' },
         { name: 'type', value: 'Over-ear Wired' },
@@ -1450,10 +1450,10 @@ async function seedComponents() {
       stock: 15,
       sku: 'SPK-LOGITECH-G560',
       categoryId: 'speakers',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         totalPower: '240W Peak'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Logitech' },
         { name: 'type', value: '2.1 System' },
@@ -1471,10 +1471,10 @@ async function seedComponents() {
       stock: 8,
       sku: 'SPK-AUDIOENGINE-A2PLUS',
       categoryId: 'speakers',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'White',
         totalPower: '60W Peak'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Audioengine' },
         { name: 'type', value: '2.0 System' },
@@ -1496,10 +1496,10 @@ async function seedComponents() {
       stock: 12,
       sku: 'PAD-XBOX-ELITE2',
       categoryId: 'gamepads',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'Black',
         batteryLife: 'Up to 40 hours'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Microsoft' },
         { name: 'platform', value: 'Xbox/PC' },
@@ -1516,10 +1516,10 @@ async function seedComponents() {
       stock: 20,
       sku: 'PAD-SONY-DUALSENSE',
       categoryId: 'gamepads',
-      specifications: {
+      specifications: JSON.stringify({
         color: 'White',
         batteryLife: 'Up to 15 hours'
-      },
+      }),
       specValues: [
         { name: 'brand', value: 'Sony' },
         { name: 'platform', value: 'PlayStation 5/PC' },

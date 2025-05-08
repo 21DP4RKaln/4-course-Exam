@@ -216,7 +216,6 @@ export async function createConfiguration(
   }
 ): Promise<UserConfiguration | null> {
   try {
-    // Calculate total price
     const componentIds = data.components.map(c => c.id);
     const components = await prisma.component.findMany({
       where: {

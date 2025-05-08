@@ -5,16 +5,19 @@ import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useCart } from '@/app/contexts/CartContext'
+import { FilterGroup } from './AdvancedFilter'
+import Image from 'next/image'
+import Link from 'next/link'
 
-// Import components
 import CategoryList from './CategoryList'
 import ComponentSelectionGrid from './ComponentSelectionGrid'
 import SelectedComponentsList from './SelectedComponentsList'
 import QuickFilters from './QuickFilters'
 import CompatibilityChecker from './CompatibilityChecker'
+import AdvancedFilter from './AdvancedFilter'
 
-// Import types from interface file
 import { Component, Category } from './interfaces'
+import { Filter, Search, X, ChevronDown, Check } from 'lucide-react'
 
 export default function ConfiguratorPage() {
   const t = useTranslations()
@@ -24,30 +27,22 @@ export default function ConfiguratorPage() {
   const { addItem } = useCart()
   const locale = pathname.split('/')[1]
   
-  // Component selection state
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [selectedComponents, setSelectedComponents] = useState<Record<string, Component | undefined>>({})
   const [configName, setConfigName] = useState('')
   const [loading, setLoading] = useState(false)
-  
-  // Component data state
   const [componentCategories, setComponentCategories] = useState<Category[]>([])
   const [currentComponents, setCurrentComponents] = useState<Component[]>([])
   const [filteredComponents, setFilteredComponents] = useState<Component[]>([])
   const [isLoadingComponents, setIsLoadingComponents] = useState(false)
-
-  // Filter state
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilters, setActiveFilters] = useState<string[]>([])
   const [quickCpuFilter, setQuickCpuFilter] = useState<string | null>(null)
-  
-  // Power consumption state
   const [totalPowerConsumption, setTotalPowerConsumption] = useState(0)
-  
-  // Compatibility state
   const [compatibilityIssues, setCompatibilityIssues] = useState<string[]>([])
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
-  // Fetch component categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -83,7 +78,6 @@ export default function ConfiguratorPage() {
     fetchCategories()
   }, [])
 
-  // Fetch components when active category changes
   useEffect(() => {
     if (!activeCategory) return
     
@@ -106,18 +100,15 @@ export default function ConfiguratorPage() {
 
     setSearchQuery('')
     setActiveFilters([])
-    
-    // Apply quick CPU filter if we're on CPU category
+ 
     if (activeCategory === 'cpu' && quickCpuFilter) {
       setActiveFilters([quickCpuFilter])
     }
   }, [activeCategory, quickCpuFilter])
-
-  // Get recommended PSU wattage based on power consumption
+  
   const getRecommendedPsuWattage = useCallback(() => {
     if (totalPowerConsumption === 0) return 'N/A'
-    
-    // Round up to nearest standard PSU wattage
+
     if (totalPowerConsumption <= 300) return '450W'
     if (totalPowerConsumption <= 400) return '550W'
     if (totalPowerConsumption <= 500) return '650W'
@@ -126,7 +117,6 @@ export default function ConfiguratorPage() {
     return '1000W+'
   }, [totalPowerConsumption])
 
-  // Extract wattage from PSU name
   const extractWattage = useCallback((name: string): number => {
     const match = name.match(/(\d+)\s*w/i)
     if (match && match[1]) {
@@ -135,13 +125,11 @@ export default function ConfiguratorPage() {
     return 0
   }, [])
 
-  // Filter components based on search, filters, and compatibility
   useEffect(() => {
     if (currentComponents.length === 0) return
     
     let result = [...currentComponents]
  
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter(component => 
@@ -149,8 +137,7 @@ export default function ConfiguratorPage() {
         (component.description && component.description.toLowerCase().includes(query))
       )
     }
-
-    // Apply tag filters
+ 
     if (activeFilters.length > 0) {
       result = result.filter(component => {
         const componentNameLower = component.name.toLowerCase()
@@ -173,7 +160,6 @@ export default function ConfiguratorPage() {
               }
               
             case 'motherboard':
-              // Apply CPU compatibility filter for motherboards
               if (selectedComponents.cpu) {
                 const cpuName = selectedComponents.cpu.name.toLowerCase()
                 if ((cpuName.includes('intel') || cpuName.includes('core i')) && 
@@ -245,7 +231,6 @@ export default function ConfiguratorPage() {
               }
               
             case 'psu':
-              // Apply power consumption filter
               if (totalPowerConsumption > 0) {
                 const wattage = extractWattage(componentNameLower)
                 if (filter === 'recommended-wattage') {
@@ -268,8 +253,7 @@ export default function ConfiguratorPage() {
         })
       })
     }
-    
-    // Apply additional compatibility filters
+ 
     if (activeCategory === 'motherboard' && selectedComponents.cpu) {
       const cpuName = selectedComponents.cpu.name.toLowerCase()
       const isAmdCpu = cpuName.includes('ryzen') || cpuName.includes('amd')
@@ -290,8 +274,7 @@ export default function ConfiguratorPage() {
         })
       }
     }
-    
-    // Filter for PSU based on power consumption
+
     if (activeCategory === 'psu' && totalPowerConsumption > 0) {
       result = result.filter(psu => {
         const wattage = extractWattage(psu.name.toLowerCase())
@@ -301,24 +284,18 @@ export default function ConfiguratorPage() {
     
     setFilteredComponents(result)
   }, [currentComponents, searchQuery, activeFilters, activeCategory, extractWattage, totalPowerConsumption, selectedComponents.cpu])
-
-  // Calculate total price
+  
   const totalPrice = Object.values(selectedComponents).reduce(
     (sum, component) => sum + (component?.price || 0),
     0
   )
 
-  // Calculate power consumption based on selected components
   useEffect(() => {
-    // Initial approach: Extract power data from specifications
-    // Fallback to estimation based on component types
     let totalPower = 0;
-    
-    // Process each component for power consumption
+ 
     Object.entries(selectedComponents).forEach(([key, component]) => {
       if (!component) return;
-      
-      // Use specification if available
+     
       const specs = component.specifications || {};
       if (specs.tdp) {
         const tdpMatch = String(specs.tdp).match(/(\d+)/);
@@ -327,8 +304,7 @@ export default function ConfiguratorPage() {
           return;
         }
       }
-      
-      // Fallback to component-specific estimation
+   
       const componentName = component.name.toLowerCase();
       const categoryId = component.categoryId.toLowerCase();
       
@@ -350,7 +326,7 @@ export default function ConfiguratorPage() {
         } else if (componentName.includes('ryzen 3')) {
           totalPower += 45;
         } else {
-          totalPower += 75; // Default CPU power
+          totalPower += 75; 
         }
       } else if (categoryId === 'gpu') {
         if (componentName.includes('rtx 40')) {
@@ -366,7 +342,7 @@ export default function ConfiguratorPage() {
         } else if (componentName.includes('rx 6')) {
           totalPower += 230;
         } else {
-          totalPower += 150; // Default GPU power
+          totalPower += 150; 
         }
       } else if (categoryId === 'motherboard') {
         totalPower += 50;
@@ -382,18 +358,15 @@ export default function ConfiguratorPage() {
         }
       }
     });
-    
-    // Add 10% overhead for efficiency
+  
     totalPower = Math.ceil(totalPower * 1.1);
     
     setTotalPowerConsumption(totalPower);
   }, [selectedComponents]);
 
-  // Check compatibility whenever selected components change
   useEffect(() => {
     const issues: string[] = [];
-    
-    // CPU and Motherboard compatibility
+   
     if (selectedComponents.cpu && selectedComponents.motherboard) {
       const cpuName = selectedComponents.cpu.name.toLowerCase();
       const motherboardName = selectedComponents.motherboard.name.toLowerCase();
@@ -405,17 +378,16 @@ export default function ConfiguratorPage() {
           !motherboardName.includes('amd') && !motherboardName.includes('b550') && 
           !motherboardName.includes('x570') && !motherboardName.includes('b650') && 
           !motherboardName.includes('x670')) {
-        issues.push('CPU and motherboard may be incompatible. AMD CPUs require AMD compatible motherboards.');
+        issues.push(t('configurator.compatibility.warnings.cpuMotherboardIncompatible.amd'));
       }
       
       if (isIntelCpu && !motherboardName.includes('intel') && !motherboardName.includes('z690') && 
           !motherboardName.includes('z790') && !motherboardName.includes('b660') && 
           !motherboardName.includes('b760') && !motherboardName.includes('lga1700')) {
-        issues.push('CPU and motherboard may be incompatible. Intel CPUs require Intel compatible motherboards.');
+        issues.push(t('configurator.compatibility.warnings.cpuMotherboardIncompatible.intel'));
       }
     }
-    
-    // Case and Motherboard compatibility
+   
     if (selectedComponents.case && selectedComponents.motherboard) {
       const caseName = selectedComponents.case.name.toLowerCase();
       const motherboardName = selectedComponents.motherboard.name.toLowerCase();
@@ -428,34 +400,35 @@ export default function ConfiguratorPage() {
       const isMicroAtxCase = caseName.includes('micro-atx') || caseName.includes('matx');
       
       if (isAtxMotherboard && isMiniItxCase) {
-        issues.push('Case is too small for the selected motherboard. ATX motherboards need at least a mid-tower case.');
+        issues.push(t('configurator.compatibility.warnings.caseMotherboardIncompatible.tooSmall'));
       }
       
       if (isAtxMotherboard && isMicroAtxCase && !caseName.includes('atx support')) {
-        issues.push('Case may be too small for the ATX motherboard. Check if it supports ATX form factor.');
+        issues.push(t('configurator.compatibility.warnings.caseMotherboardIncompatible.mayBeSmall'));
       }
     }
-    
-    // PSU wattage check
+
     if (selectedComponents.psu && totalPowerConsumption > 0) {
       const psuName = selectedComponents.psu.name.toLowerCase();
       let psuWattage = 0;
-      
-      // Extract wattage from PSU name
+ 
       const wattageMatch = psuName.match(/(\d+)\s*w/i);
       if (wattageMatch && wattageMatch[1]) {
         psuWattage = parseInt(wattageMatch[1], 10);
       }
       
       if (psuWattage > 0 && psuWattage < totalPowerConsumption) {
-        issues.push(`PSU wattage (${psuWattage}W) may be insufficient for your system. Recommended: at least ${totalPowerConsumption}W.`);
+        const issueMessage = t('configurator.compatibility.warnings.psuInsufficient', { 
+          psuWattage: psuWattage, 
+          requiredWattage: totalPowerConsumption 
+        });
+        issues.push(issueMessage);
       }
     }
     
     setCompatibilityIssues(issues);
-  }, [selectedComponents, totalPowerConsumption]);
+  }, [selectedComponents, totalPowerConsumption, t]);
 
-  // Handle component selection
   const handleSelectComponent = useCallback((component: Component) => {
     setSelectedComponents(current => ({
       ...current,
@@ -463,7 +436,6 @@ export default function ConfiguratorPage() {
     }));
   }, [activeCategory]);
 
-  // Handle saving configuration
   const handleSaveConfiguration = useCallback(async () => {
     if (!isAuthenticated) {
       router.push(`/${locale}/auth/login`);
@@ -475,7 +447,6 @@ export default function ConfiguratorPage() {
 
     setLoading(true);
     try {
-      // Make API call to save configuration to database
       const response = await fetch('/api/configurations', {
         method: 'POST',
         headers: {
@@ -495,16 +466,15 @@ export default function ConfiguratorPage() {
       if (!response.ok) throw new Error('Failed to save configuration');
       
       const data = await response.json();
-      alert('Configuration saved as draft!');
+      alert(t('configurator.actions.saved'));
     } catch (error) {
       console.error('Error saving configuration:', error);
-      alert('Failed to save configuration. Please try again.');
+      alert(t('configurator.actions.errors.saveFailed'));
     } finally {
       setLoading(false);
     }
-  }, [configName, isAuthenticated, router, locale, selectedComponents]);
+  }, [configName, isAuthenticated, router, locale, selectedComponents, t]);
 
-  // Handle submitting configuration for review
   const handleSubmitConfiguration = useCallback(async () => {
     if (!isAuthenticated) {
       router.push(`/${locale}/auth/login`);
@@ -521,13 +491,13 @@ export default function ConfiguratorPage() {
     const missingComponents = requiredCategories.filter(cat => !selectedComponents[cat]);
 
     if (missingComponents.length > 0) {
-      alert(`Please select the following components: ${missingComponents.join(', ')}`);
+      const missingComponentsNames = missingComponents.map(cat => t(`components.${cat}`)).join(', ');
+      alert(t('configurator.actions.errors.missingComponents', { components: missingComponentsNames }));
       return;
     }
 
     setLoading(true);
     try {
-      // Make API call to submit configuration for review
       const response = await fetch('/api/configurations/submit', {
         method: 'POST',
         headers: {
@@ -547,36 +517,32 @@ export default function ConfiguratorPage() {
       if (!response.ok) throw new Error('Failed to submit configuration');
       
       const data = await response.json();
-      alert('Configuration submitted for review!');
+      alert(t('configurator.actions.submitted'));
     } catch (error) {
       console.error('Error submitting configuration:', error);
-      alert('Failed to submit configuration. Please try again.');
+      alert(t('configurator.actions.errors.submitFailed'));
     } finally {
       setLoading(false);
     }
-  }, [configName, isAuthenticated, router, locale, componentCategories, selectedComponents]);
+  }, [configName, isAuthenticated, router, locale, componentCategories, selectedComponents, t]);
 
-  // Handle filter changes
-  const handleFiltersChange = useCallback((filterType: string | null) => {
-    setQuickCpuFilter(filterType);
-
-    if (filterType) {
-      setActiveFilters([filterType]);
+  const handleFiltersChange = useCallback((filters: Record<string, any>) => {
+    const filterArray = Object.keys(filters);
+    setActiveFilters(filterArray);
+    if (filterArray.length === 1 && activeCategory === 'cpu') {
+      setQuickCpuFilter(filterArray[0]);
     } else {
-      setActiveFilters([]);
+      setQuickCpuFilter(null);
     }
-  }, []);
+  }, [activeCategory]);
 
-  // Handle search changes
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
   }, []);
   
-  // Handle CPU quick filter changes
   const handleQuickCpuFilterChange = useCallback((filterType: string | null) => {
     setQuickCpuFilter(filterType);
-    
-    // If we're on the CPU category, immediately apply the filter
+   
     if (activeCategory === 'cpu') {
       if (filterType) {
         setActiveFilters([filterType]);
@@ -584,23 +550,20 @@ export default function ConfiguratorPage() {
         setActiveFilters([]);
       }
     }
-    
-    // If no CPU category is active, set it to CPU
+   
     if (activeCategory !== 'cpu' && filterType) {
       setActiveCategory('cpu');
     }
   }, [activeCategory]);
   
-  // Add configuration to cart
   const addConfigToCart = useCallback(() => {
     const allComponents = Object.values(selectedComponents).filter(Boolean);
     
     if (allComponents.length === 0) {
-      alert('Please select at least one component before adding to cart');
+      alert(t('configurator.actions.errors.emptyConfiguration'));
       return;
     }
     
-    // Add entire configuration as a custom PC to cart
     addItem({
       id: `custom-config-${Date.now()}`,
       type: 'configuration',
@@ -609,78 +572,386 @@ export default function ConfiguratorPage() {
       imageUrl: ''
     });
     
-    alert('Configuration added to cart!');
-  }, [addItem, configName, selectedComponents, totalPrice]);
+    alert(t('configurator.actions.addedToCart'));
+  }, [addItem, configName, selectedComponents, totalPrice, t]);
+
+  const toggleFilterSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }))
+  }
+
+  const getFilterGroups = useCallback((): FilterGroup[] => {
+    switch (activeCategory) {
+      case 'cpu':
+        return [
+          {
+            title: t('configurator.filters.cpuBrand'),
+            type: 'radio' as const,
+            options: [
+              { id: 'intel', name: 'Intel' },
+              { id: 'amd', name: 'AMD' }
+            ]
+          },
+          {
+            title: t('configurator.filters.cpuSeries'),
+            type: 'checkbox' as const,
+            options: [
+              { id: 'intel-core-i9', name: 'Intel Core i9' },
+              { id: 'intel-core-i7', name: 'Intel Core i7' },
+              { id: 'intel-core-i5', name: 'Intel Core i5' },
+              { id: 'intel-core-i3', name: 'Intel Core i3' },
+              { id: 'amd-ryzen-9', name: 'AMD Ryzen 9' },
+              { id: 'amd-ryzen-7', name: 'AMD Ryzen 7' },
+              { id: 'amd-ryzen-5', name: 'AMD Ryzen 5' }
+            ]
+          }
+        ]
+      case 'gpu':
+        return [
+          {
+            title: t('configurator.filters.gpuBrand'),
+            type: 'radio' as const,
+            options: [
+              { id: 'nvidia', name: 'NVIDIA' },
+              { id: 'amd', name: 'AMD' }
+            ]
+          },
+          {
+            title: t('configurator.filters.gpuSeries'),
+            type: 'checkbox' as const,
+            options: [
+              { id: 'rtx-40', name: 'RTX 40 Series' },
+              { id: 'rtx-30', name: 'RTX 30 Series' },
+              { id: 'gtx-16', name: 'GTX 16 Series' },
+              { id: 'rx-7000', name: 'RX 7000 Series' },
+              { id: 'rx-6000', name: 'RX 6000 Series' }
+            ]
+          },
+          {
+            title: t('configurator.filters.vram'),
+            type: 'checkbox' as const,
+            options: [
+              { id: '16gb', name: '16GB' },
+              { id: '12gb', name: '12GB' },
+              { id: '8gb', name: '8GB' },
+              { id: '6gb', name: '6GB' }
+            ]
+          }
+        ]
+      case 'motherboard':
+        return [
+          {
+            title: t('configurator.filters.formFactor'),
+            type: 'radio' as const,
+            options: [
+              { id: 'atx', name: 'ATX' },
+              { id: 'micro-atx', name: 'Micro-ATX' },
+              { id: 'mini-itx', name: 'Mini-ITX' }
+            ]
+          },
+          {
+            title: t('configurator.filters.chipset'),
+            type: 'checkbox' as const,
+            options: [
+              { id: 'z790', name: 'Intel Z790' },
+              { id: 'z690', name: 'Intel Z690' },
+              { id: 'b760', name: 'Intel B760' },
+              { id: 'b660', name: 'Intel B660' },
+              { id: 'x670', name: 'AMD X670' },
+              { id: 'b650', name: 'AMD B650' },
+              { id: 'x570', name: 'AMD X570' },
+              { id: 'b550', name: 'AMD B550' }
+            ]
+          }
+        ]
+      case 'ram':
+        return [
+          {
+            title: t('configurator.filters.memoryType'),
+            type: 'radio' as const,
+            options: [
+              { id: 'ddr5', name: 'DDR5' },
+              { id: 'ddr4', name: 'DDR4' }
+            ]
+          },
+          {
+            title: t('configurator.filters.capacity'),
+            type: 'checkbox' as const,
+            options: [
+              { id: '128gb', name: '128GB' },
+              { id: '64gb', name: '64GB' },
+              { id: '32gb', name: '32GB' },
+              { id: '16gb', name: '16GB' }
+            ]
+          }
+        ]
+      case 'storage':
+        return [
+          {
+            title: t('configurator.filters.type'),
+            type: 'radio' as const,
+            options: [
+              { id: 'nvme', name: 'NVMe SSD' },
+              { id: 'sata-ssd', name: 'SATA SSD' },
+              { id: 'hdd', name: 'HDD' }
+            ]
+          },
+          {
+            title: t('configurator.filters.capacity'),
+            type: 'checkbox' as const,
+            options: [
+              { id: '4tb', name: '4TB+' },
+              { id: '2tb', name: '2TB' },
+              { id: '1tb', name: '1TB' },
+              { id: '500gb', name: '500GB' }
+            ]
+          }
+        ]
+      case 'case':
+        return [
+          {
+            title: t('configurator.filters.size'),
+            type: 'radio' as const,
+            options: [
+              { id: 'full-tower', name: 'Full Tower' },
+              { id: 'mid-tower', name: 'Mid Tower' },
+              { id: 'mini-tower', name: 'Mini Tower' }
+            ]
+          },
+          {
+            title: t('configurator.filters.features'),
+            type: 'checkbox' as const,
+            options: [
+              { id: 'tempered-glass', name: 'Tempered Glass' },
+              { id: 'rgb', name: 'RGB' },
+              { id: 'mesh', name: 'Mesh Front' }
+            ]
+          }
+        ]
+      case 'psu':
+        return [
+          {
+            title: t('configurator.filters.wattage'),
+            type: 'checkbox' as const,
+            options: [
+              { id: '1000w+', name: '1000W+' },
+              { id: '850w+', name: '850W+' },
+              { id: '750w+', name: '750W+' },
+              { id: '650w+', name: '650W+' }
+            ]
+          },
+          {
+            title: t('configurator.filters.certification'),
+            type: 'checkbox' as const,
+            options: [
+              { id: '80plus-titanium', name: '80+ Titanium' },
+              { id: '80plus-platinum', name: 'Platinum' },
+              { id: '80plus-gold', name: 'Gold' },
+              { id: '80plus-bronze', name: 'Bronze' }
+            ]
+          }
+        ]
+      case 'cooling':
+        return [
+          {
+            title: t('configurator.filters.type'),
+            type: 'radio' as const,
+            options: [
+              { id: 'air', name: 'Air Cooling' },
+              { id: 'aio', name: 'AIO Liquid' },
+              { id: 'custom', name: 'Custom Loop' }
+            ]
+          },
+          {
+            title: t('configurator.filters.features'),
+            type: 'checkbox' as const,
+            options: [
+              { id: 'rgb', name: 'RGB' },
+              { id: 'lcd', name: 'LCD Screen' }
+            ]
+          }
+        ]
+      case 'peripherals':
+        return [
+          {
+            title: t('configurator.filters.type'),
+            type: 'radio' as const,
+            options: [
+              { id: 'keyboard', name: 'Keyboard' },
+              { id: 'mouse', name: 'Mouse' },
+              { id: 'monitor', name: 'Monitor' },
+              { id: 'headset', name: 'Headset' }
+            ]
+          },
+          {
+            title: t('configurator.filters.features'),
+            type: 'checkbox' as const,
+            options: [
+              { id: 'wireless', name: 'Wireless' },
+              { id: 'rgb', name: 'RGB' },
+              { id: 'mechanical', name: 'Mechanical' }
+            ]
+          }
+        ]
+      default:
+        return []
+    }
+  }, [activeCategory, t])
 
   return (
-    <div className="flex flex-col space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-        {t('configurator.title')}
-      </h1>
-      
-      {/* CPU quick filter buttons */}
-      <QuickFilters 
-        activeFilter={quickCpuFilter} 
-        onFilterChange={handleQuickCpuFilterChange}
-        activeCategory={activeCategory} 
-      />
+    <div className="min-h-screen bg-gray-900">
+      {/* Galvene */}
+      <div className="bg-gray-800 border-b border-gray-700">
+        <div className="container mx-auto px-4 py-3">
+          <Link href={`/${locale}`}>
+            <Image
+              src="/images/logo-removebg.png"
+              alt="Logo"
+              width={150}
+              height={50}
+              className="h-10 w-auto"
+            />
+          </Link>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Category selection - Left column */}
-        <div className="lg:col-span-2">
-          <CategoryList 
-            categories={componentCategories}
-            activeCategory={activeCategory}
-            selectedComponents={selectedComponents}
-            onSetActiveCategory={setActiveCategory}
-          />
+      {/* Galvenais saturs */}
+      <div className="container mx-auto p-4 lg:p-6">
+        {/* Mobilā skatu pārslēgšana */}
+        <div className="lg:hidden mb-4">
+          <select 
+            value={activeCategory}
+            onChange={(e) => setActiveCategory(e.target.value)}
+            className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+          >
+            {[...componentCategories, { id: 'peripherals', name: 'Peripherals', slug: 'peripherals' }].map((category: Category) => (
+              <option key={category.id} value={category.id}>
+                {t(`components.${category.id}`)}
+                {selectedComponents[category.id] ? ' ✓' : ''}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Component selection - Middle column */}
-        <div className="lg:col-span-7 bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-              {t('configurator.selectComponent')}
-            </h2>
-            
-            {/* Display power consumption info */}
-            <CompatibilityChecker 
-              totalPowerConsumption={totalPowerConsumption}
-              compatibilityIssues={compatibilityIssues}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Kreisā puse - kategorijas un filtri */}
+          <div className="hidden lg:flex flex-col gap-6" style={{ width: '320px' }}>
+            {/* Kategoriju saraksts */}
+            <CategoryList 
+              categories={[
+                ...componentCategories,
+                { id: 'peripherals', name: 'Peripherals', slug: 'peripherals' }
+              ]}
+              activeCategory={activeCategory}
+              selectedComponents={selectedComponents}
+              onSetActiveCategory={setActiveCategory}
+            />
+
+            {/* Advanced filtri */}
+            <AdvancedFilter
+              onFilterChange={handleFiltersChange}
+              onSearchChange={handleSearchChange}
+              activeCategory={activeCategory}
+              filterGroups={getFilterGroups()}
             />
           </div>
-          
-          <div className="grid grid-cols-6 gap-4">
-            {/* Components grid - left side (col span 4) */}
-            <div className="col-span-4">
-              <ComponentSelectionGrid 
-                components={filteredComponents}
-                selectedComponent={selectedComponents[activeCategory]}
-                onSelectComponent={handleSelectComponent}
-                activeCategory={activeCategory}
-                isLoading={isLoadingComponents}
+
+          {/* Labā puse - komponentes un detaļas */}
+          <div className="flex-1">
+            {/* Quick filtri */}
+            <div className="mb-6">
+              <QuickFilters 
+                activeFilter={quickCpuFilter} 
+                onFilterChange={handleQuickCpuFilterChange}
+                activeCategory={activeCategory} 
               />
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Komponenšu saraksts */}
+              <div className="flex-1">
+                <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-white">
+                      {t('configurator.selectComponent')}
+                    </h2>
+                    
+                    <CompatibilityChecker 
+                      totalPowerConsumption={totalPowerConsumption}
+                      compatibilityIssues={compatibilityIssues}
+                    />
+                  </div>
+                  
+                  <ComponentSelectionGrid 
+                    components={filteredComponents}
+                    selectedComponent={selectedComponents[activeCategory]}
+                    onSelectComponent={handleSelectComponent}
+                    activeCategory={activeCategory}
+                    isLoading={isLoadingComponents}
+                  />
+                </div>
+              </div>
+
+              {/* Izvēlētās komponentes */}
+              <div className="lg:w-80">
+                <div className="sticky top-6">
+                  <SelectedComponentsList
+                    selectedComponents={selectedComponents}
+                    componentCategories={[
+                      ...componentCategories,
+                      { id: 'peripherals', name: 'Peripherals', slug: 'peripherals' }
+                    ]}
+                    configName={configName}
+                    setConfigName={setConfigName}
+                    totalPrice={totalPrice}
+                    compatibilityIssues={compatibilityIssues}
+                    loading={loading}
+                    onSetActiveCategory={setActiveCategory}
+                    onSaveConfiguration={handleSaveConfiguration}
+                    onSubmitConfiguration={handleSubmitConfiguration}
+                    onAddToCart={addConfigToCart}
+                    totalPowerConsumption={totalPowerConsumption}
+                    getRecommendedPsuWattage={getRecommendedPsuWattage}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Selected components & details - Right column */}
-        <div className="lg:col-span-3">
-          <SelectedComponentsList
-            selectedComponents={selectedComponents}
-            componentCategories={componentCategories}
-            configName={configName}
-            setConfigName={setConfigName}
-            totalPrice={totalPrice}
-            compatibilityIssues={compatibilityIssues}
-            loading={loading}
-            onSetActiveCategory={setActiveCategory}
-            onSaveConfiguration={handleSaveConfiguration}
-            onSubmitConfiguration={handleSubmitConfiguration}
-            onAddToCart={addConfigToCart}
-            totalPowerConsumption={totalPowerConsumption}
-            getRecommendedPsuWattage={getRecommendedPsuWattage}
-          />
+        {/* Mobilais filtru dialogs */}
+        <div className="lg:hidden">
+          <button
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="fixed bottom-4 right-4 bg-indigo-600 dark:bg-brand-red-600 text-white p-4 rounded-full shadow-lg"
+          >
+            <Filter size={24} />
+          </button>
+
+          {isFilterOpen && (
+            <div className="fixed inset-0 z-50 bg-gray-900/95 overflow-y-auto">
+              <div className="min-h-screen px-4 py-8">
+                <div className="mb-4 flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-white">Filtri</h2>
+                  <button 
+                    onClick={() => setIsFilterOpen(false)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+                
+                <AdvancedFilter
+                  onFilterChange={handleFiltersChange}
+                  onSearchChange={handleSearchChange}
+                  activeCategory={activeCategory}
+                  filterGroups={getFilterGroups()}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

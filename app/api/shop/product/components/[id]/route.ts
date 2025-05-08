@@ -27,11 +27,9 @@ export async function GET(
         { status: 404 }
       );
     }
-
-    // Build specs object
-    const specs: Record<string, string> = { ...(component.specifications as any || {}) };
     
-    // Add component specs from the specValues
+    const specs: Record<string, string> = { ...(component.specifications as any || {}) };
+  
     for (const specValue of component.specValues) {
       specs[specValue.specKey.name] = specValue.value;
     }

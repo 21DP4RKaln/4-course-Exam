@@ -104,8 +104,7 @@ export async function POST(request: NextRequest) {
       role: user.role,
       profileImageUrl: user.profileImageUrl
     })
- 
-    // Set cookie
+  
     response.cookies.set({
       name: 'authToken',
       value: token,

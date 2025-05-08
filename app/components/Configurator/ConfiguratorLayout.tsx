@@ -11,9 +11,11 @@ interface ConfiguratorLayoutProps {
  */
 const ConfiguratorLayout: React.FC<ConfiguratorLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <main className="container mx-auto px-4 py-8">
-        {children}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
+      <main className="px-6 py-8">
+        <div className="space-y-6">
+          {children}
+        </div>
       </main>
     </div>
   )

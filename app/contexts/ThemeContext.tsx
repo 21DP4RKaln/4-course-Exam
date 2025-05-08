@@ -11,7 +11,6 @@ interface ThemeContextType {
   setTheme: (theme: Theme) => void
 }
 
-// Create context with a default value
 const ThemeContext = createContext<ThemeContextType>({
   theme: 'system',
   resolvedTheme: 'light',

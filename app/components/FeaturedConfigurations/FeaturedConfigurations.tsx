@@ -32,7 +32,6 @@ export default function FeaturedConfigurations() {
     const fetchConfigurations = async () => {
       setLoading(true)
       try {
-        // Fetch popular configurations from the API
         const response = await fetch('/api/configurations/popular?limit=4')
         
         if (!response.ok) {
@@ -117,9 +116,9 @@ export default function FeaturedConfigurations() {
         </h2>
         <Link
           href={`/${locale}/shop/ready-made`}
-          className="flex items-center text-red-600 dark:text-red-400 hover:underline"
+          className="flex items-center text-brand-red-600 dark:text-brand-red-400 hover:underline"
         >
-          {t('button.view')} <ChevronRight size={16} className="ml-1" />
+          {t('buttons.view')} <ChevronRight size={16} className="ml-1" />
         </Link>
       </div>
 
@@ -140,15 +139,15 @@ export default function FeaturedConfigurations() {
                   />
                 ) : (
                   <span className="text-gray-500 dark:text-gray-400">
-                    PC Image
+                    {t('product.imageAlt')}
                   </span>
                 )}
                 
                 {/* Show popularity badge based on view count */}
                 {config.isPopular && (
-                  <div className="absolute top-2 left-2 flex items-center bg-gradient-to-r from-red-600 to-red-500 text-white text-xs px-3 py-1 rounded-full">
+                  <div className="absolute top-2 left-2 flex items-center bg-gradient-to-r from-brand-red-600 to-brand-red-500 text-white text-xs px-3 py-1 rounded-full">
                     <Flame size={14} className="mr-1" />
-                    Popular
+                    {t('nav.popular')}
                   </div>
                 )}
                 
@@ -156,7 +155,7 @@ export default function FeaturedConfigurations() {
                 {configurations.indexOf(config) === 0 && config.viewCount && config.viewCount > 0 && (
                   <div className="absolute top-2 right-2 flex items-center bg-gradient-to-r from-amber-500 to-yellow-400 text-white text-xs px-3 py-1 rounded-full">
                     <Trophy size={14} className="mr-1" />
-                    Top Pick
+                    {t('nav.topPick')}
                   </div>
                 )}
               </div>
@@ -164,7 +163,7 @@ export default function FeaturedConfigurations() {
             
             <div className="p-4">
               <Link href={`/${locale}/shop/product/${config.id}`}>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 hover:text-red-600 dark:hover:text-red-400">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 hover:text-brand-red-600 dark:hover:text-brand-red-400">
                   {config.name}
                 </h3>
               </Link>
@@ -175,7 +174,7 @@ export default function FeaturedConfigurations() {
                 <div>
                   {config.discountPrice ? (
                     <div className="flex items-center">
-                      <span className="text-xl font-bold text-red-600 dark:text-red-500">
+                      <span className="text-xl font-bold text-brand-red-600 dark:text-brand-red-500">
                         €{config.discountPrice}
                       </span>
                       <span className="ml-2 text-sm text-gray-500 line-through">
@@ -190,15 +189,15 @@ export default function FeaturedConfigurations() {
                 </div>
                 <div className="flex space-x-2">
                   <button 
-                    className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400"
-                    aria-label="Add to wishlist"
+                    className="p-2 text-gray-500 dark:text-gray-400 hover:text-brand-red-500 dark:hover:text-brand-red-400"
+                    aria-label={t('buttons.addToWishlist')}
                   >
                     <Heart size={20} />
                   </button>
                   <button 
-                    className="p-2 text-white bg-red-600 rounded-md hover:bg-red-700"
+                    className="p-2 text-white bg-brand-red-600 rounded-md hover:bg-brand-red-700"
                     onClick={() => handleAddToCart(config)}
-                    aria-label="Add to cart"
+                    aria-label={t('buttons.addToCart')}
                   >
                     <ShoppingCart size={20} />
                   </button>

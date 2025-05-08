@@ -8,44 +8,44 @@ datasource db {
 }
 
 model User {
-  id              String          @id @default(uuid())
-  email           String?         @unique
-  password        String
-  name            String?
-  role            Role            @default(USER)
-  isBlocked       Boolean         @default(false)
-  blockReason     String?         @db.Text
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  firstName       String?
-  lastName        String?
-  phone           String?         @unique
-  profileImageUrl String?
-  configurations  Configuration[]
-  orders          Order[]
-  repairs         Repair[]
+  id               String             @id @default(uuid())
+  email            String?            @unique
+  password         String
+  name             String?
+  role             Role               @default(USER)
+  isBlocked        Boolean            @default(false)
+  blockReason      String?            @db.Text
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  firstName        String?
+  lastName         String?
+  phone            String?            @unique
+  profileImageUrl  String?
+  auditLogs        AuditLog[]
+  configurations   Configuration[]
+  orders           Order[]
+  repairs          Repair[]
   repairSpecialist RepairSpecialist[]
-  reviews         Review[]
-  reviewHelpful   ReviewHelpful[]
+  reviews          Review[]
+  reviewHelpful    ReviewHelpful[]
+  wishlists        Wishlist[]
 
   @@map("user")
 }
 
-// Component categories (CPU, Motherboard, GPU, etc.)
 model ComponentCategory {
-  id                 String             @id @default(uuid())
-  name               String             @unique
-  description        String?            @db.Text
-  displayOrder       Int                @default(0)
-  slug               String             @unique
-  type               String             @default("component") 
-  components         Component[]
-  specificationKeys  SpecificationKey[]
+  id                String             @id @default(uuid())
+  name              String             @unique
+  description       String?            @db.Text
+  displayOrder      Int                @default(0)
+  slug              String             @unique
+  type              String             @default("component")
+  components        Component[]
+  specificationKeys SpecificationKey[]
 
   @@map("componentcategory")
 }
 
-// Computer components (specific CPU, Motherboard, etc. products)
 model Component {
   id             String            @id @default(uuid())
   name           String
@@ -54,69 +54,69 @@ model Component {
   stock          Int               @default(0)
   imageUrl       String?
   categoryId     String
-  specifications Json?
+  specifications String?           @db.LongText
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   sku            String?           @unique
-  viewCount      Int               @default(0) 
+  viewCount      Int               @default(0)
   category       ComponentCategory @relation(fields: [categoryId], references: [id])
-  configItems    ConfigItem[]
   specValues     ComponentSpec[]
+  configItems    ConfigItem[]
   repairParts    RepairPart[]
 
+  @@index([categoryId], map: "component_categoryId_fkey")
   @@map("component")
 }
 
-// Peripheral categories (Keyboards, Mice, Monitors, etc.)
 model PeripheralCategory {
-  id               String             @id @default(uuid())
-  name             String             @unique
-  description      String?            @db.Text
-  displayOrder     Int                @default(0)
-  slug             String             @unique
-  peripherals      Peripheral[]
+  id                String             @id @default(uuid())
+  name              String             @unique
+  description       String?            @db.Text
+  displayOrder      Int                @default(0)
+  slug              String             @unique
+  peripherals       Peripheral[]
   specificationKeys SpecificationKey[]
 
   @@map("peripheralcategory")
 }
 
-// Peripherals (specific keyboard, mouse, monitor products)
 model Peripheral {
-  id             String              @id @default(uuid())
+  id             String             @id @default(uuid())
   name           String
-  description    String?             @db.Text
+  description    String?            @db.Text
   price          Float
-  stock          Int                 @default(0)
+  stock          Int                @default(0)
   imageUrl       String?
   categoryId     String
-  specifications Json?
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  sku            String?             @unique
-  viewCount      Int                 @default(0)  
-  category       PeripheralCategory  @relation(fields: [categoryId], references: [id])
+  specifications String?            @db.LongText
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  sku            String?            @unique
+  viewCount      Int                @default(0)
+  category       PeripheralCategory @relation(fields: [categoryId], references: [id])
   specValues     PeripheralSpec[]
   repairs        Repair[]
 
+  @@index([categoryId], map: "peripheral_categoryId_fkey")
   @@map("peripheral")
 }
 
-// Specification keys shared across components and peripherals
 model SpecificationKey {
-  id                  String                @id @default(uuid())
-  name                String                @unique
-  displayName         String
-  componentCategoryId String?
+  id                   String              @id @default(uuid())
+  name                 String              @unique
+  displayName          String
+  componentCategoryId  String?
   peripheralCategoryId String?
-  componentCategory   ComponentCategory?    @relation(fields: [componentCategoryId], references: [id])
-  peripheralCategory  PeripheralCategory?   @relation(fields: [peripheralCategoryId], references: [id])
-  componentSpecValues ComponentSpec[]
+  componentSpecValues  ComponentSpec[]
   peripheralSpecValues PeripheralSpec[]
+  componentCategory    ComponentCategory?  @relation(fields: [componentCategoryId], references: [id])
+  peripheralCategory   PeripheralCategory? @relation(fields: [peripheralCategoryId], references: [id])
 
+  @@index([componentCategoryId], map: "specificationkey_componentCategoryId_fkey")
+  @@index([peripheralCategoryId], map: "specificationkey_peripheralCategoryId_fkey")
   @@map("specificationkey")
 }
 
-// Component specifications
 model ComponentSpec {
   id          String           @id @default(uuid())
   componentId String
@@ -126,10 +126,10 @@ model ComponentSpec {
   specKey     SpecificationKey @relation(fields: [specKeyId], references: [id])
 
   @@unique([componentId, specKeyId])
+  @@index([specKeyId], map: "componentspec_specKeyId_fkey")
   @@map("componentspec")
 }
 
-// Peripheral specifications
 model PeripheralSpec {
   id           String           @id @default(uuid())
   peripheralId String
@@ -139,10 +139,10 @@ model PeripheralSpec {
   specKey      SpecificationKey @relation(fields: [specKeyId], references: [id])
 
   @@unique([peripheralId, specKeyId])
+  @@index([specKeyId], map: "peripheralspec_specKeyId_fkey")
   @@map("peripheralspec")
 }
 
-// PC configuration components
 model ConfigItem {
   id              String        @id @default(uuid())
   configurationId String
@@ -151,81 +151,86 @@ model ConfigItem {
   component       Component     @relation(fields: [componentId], references: [id])
   configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
 
+  @@index([componentId], map: "configitem_componentId_fkey")
+  @@index([configurationId], map: "configitem_configurationId_fkey")
   @@map("configitem")
 }
 
-// PC configurations
 model Configuration {
-  id          String        @id @default(uuid())
+  id          String       @id @default(uuid())
   name        String
-  description String?       @db.Text
+  description String?      @db.Text
   userId      String?
   totalPrice  Float
-  status      ConfigStatus  @default(DRAFT)
-  isTemplate  Boolean       @default(false) 
-  isPublic    Boolean       @default(false) 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  category    String?       
+  status      ConfigStatus @default(DRAFT)
+  isTemplate  Boolean      @default(false)
+  isPublic    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  category    String?
   imageUrl    String?
-  viewCount   Int           @default(0)  
+  viewCount   Int          @default(0)
   components  ConfigItem[]
-  user        User?         @relation(fields: [userId], references: [id])
+  user        User?        @relation(fields: [userId], references: [id])
   orders      Order[]
   repairs     Repair[]
 
+  @@index([userId], map: "configuration_userId_fkey")
   @@map("configuration")
 }
 
-// Repair service
 model Repair {
-  id                String            @id @default(uuid())
-  title             String
-  description       String?           @db.Text
-  status            RepairStatus      @default(PENDING)
-  priority          RepairPriority    @default(NORMAL)
-  userId            String
-  peripheralId      String?
-  configurationId   String?
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  estimatedCost     Float?
-  finalCost         Float?
-  completionDate    DateTime?
-  diagnosticNotes   String?           @db.Text
-  user              User              @relation(fields: [userId], references: [id])
-  peripheral        Peripheral?       @relation(fields: [peripheralId], references: [id])
-  configuration     Configuration?    @relation(fields: [configurationId], references: [id])
-  specialists       RepairSpecialist[]
-  parts             RepairPart[]
+  id              String             @id @default(uuid())
+  title           String
+  description     String?            @db.Text
+  status          RepairStatus       @default(PENDING)
+  priority        RepairPriority     @default(NORMAL)
+  userId          String
+  peripheralId    String?
+  configurationId String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  estimatedCost   Float?
+  finalCost       Float?
+  completionDate  DateTime?
+  diagnosticNotes String?            @db.Text
+  configuration   Configuration?     @relation(fields: [configurationId], references: [id])
+  peripheral      Peripheral?        @relation(fields: [peripheralId], references: [id])
+  user            User               @relation(fields: [userId], references: [id])
+  parts           RepairPart[]
+  specialists     RepairSpecialist[]
 
+  @@index([configurationId], map: "repair_configurationId_fkey")
+  @@index([peripheralId], map: "repair_peripheralId_fkey")
+  @@index([userId], map: "repair_userId_fkey")
   @@map("repair")
 }
 
-// Repair specialists assignment
 model RepairSpecialist {
-  id          String    @id @default(uuid())
-  repairId    String
+  id           String   @id @default(uuid())
+  repairId     String
   specialistId String
-  assignedAt  DateTime  @default(now())
-  notes       String?   @db.Text
-  repair      Repair    @relation(fields: [repairId], references: [id], onDelete: Cascade)
-  specialist  User      @relation(fields: [specialistId], references: [id])
+  assignedAt   DateTime @default(now())
+  notes        String?  @db.Text
+  repair       Repair   @relation(fields: [repairId], references: [id], onDelete: Cascade)
+  specialist   User     @relation(fields: [specialistId], references: [id])
 
   @@unique([repairId, specialistId])
+  @@index([specialistId], map: "repairspecialist_specialistId_fkey")
   @@map("repairspecialist")
 }
 
-// Parts used in repairs
 model RepairPart {
   id          String    @id @default(uuid())
   repairId    String
   componentId String
   quantity    Int       @default(1)
   price       Float
-  repair      Repair    @relation(fields: [repairId], references: [id], onDelete: Cascade)
   component   Component @relation(fields: [componentId], references: [id])
+  repair      Repair    @relation(fields: [repairId], references: [id], onDelete: Cascade)
 
+  @@index([componentId], map: "repairpart_componentId_fkey")
+  @@index([repairId], map: "repairpart_repairId_fkey")
   @@map("repairpart")
 }
 
@@ -241,41 +246,153 @@ model Order {
   updatedAt       DateTime       @updatedAt
   configuration   Configuration? @relation(fields: [configurationId], references: [id])
   user            User           @relation(fields: [userId], references: [id])
+  orderItems      OrderItem[]
 
+  @@index([configurationId], map: "order_configurationId_fkey")
+  @@index([userId], map: "order_userId_fkey")
   @@map("order")
 }
 
-// Review system model definitions
 model Review {
-  id              String         @id @default(uuid())
-  userId          String
-  productId       String
-  productType     ProductType
-  rating          Int            @db.Int     // 1-5 stars
-  comment         String?        @db.Text
-  purchaseDate    DateTime?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  user            User           @relation(fields: [userId], references: [id])
-  helpful         ReviewHelpful[]
+  id           String          @id @default(uuid())
+  userId       String
+  productId    String
+  productType  ProductType
+  rating       Int
+  comment      String?         @db.Text
+  purchaseDate DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  user         User            @relation(fields: [userId], references: [id])
+  helpful      ReviewHelpful[]
 
   @@unique([userId, productId, productType])
   @@index([productId, productType])
   @@map("review")
 }
 
-// Track helpful/unhelpful review votes
 model ReviewHelpful {
-  id              String         @id @default(uuid())
-  reviewId        String  
-  userId          String
-  isHelpful       Boolean        @default(true)
-  createdAt       DateTime       @default(now())
-  review          Review         @relation(fields: [reviewId], references: [id], onDelete: Cascade)
-  user            User           @relation(fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  reviewId  String
+  userId    String
+  isHelpful Boolean  @default(true)
+  createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([reviewId, userId])
+  @@index([userId], map: "review_helpful_userId_fkey")
   @@map("review_helpful")
+}
+
+model Wishlist {
+  id          String   @id @default(uuid())
+  userId      String
+  productId   String
+  productType String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, productId, productType])
+  @@map("wishlist")
+}
+
+model OrderItem {
+  id          String      @id @default(uuid())
+  orderId     String
+  productId   String
+  productType ProductType
+  quantity    Int         @default(1)
+  price       Float
+  name        String
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId], map: "order_item_orderId_fkey")
+  @@map("order_item")
+}
+
+model PromoCode {
+  id                 String              @id @default(uuid())
+  code               String              @unique
+  description        String?
+  discountPercentage Int
+  maxDiscountAmount  Float?
+  minOrderValue      Float?
+  isActive           Boolean             @default(true)
+  usageCount         Int                 @default(0)
+  maxUsage           Int                 @default(1000)
+  scope              PromoScope          @default(ALL)
+  expiresAt          DateTime
+  createdAt          DateTime            @default(now())
+  marketingCampaigns MarketingCampaign[]
+  products           PromoProduct[]
+
+  @@map("promo_code")
+}
+
+model PromoProduct {
+  id          String    @id @default(uuid())
+  promoCodeId String
+  productId   String
+  productType String
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+
+  @@unique([promoCodeId, productId, productType])
+  @@map("promo_product")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  action     String
+  entityType String
+  entityId   String   @default("")
+  details    String   @db.Text
+  ipAddress  String?  @default("")
+  userAgent  String?  @db.Text
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_log")
+}
+
+model MarketingCampaign {
+  id             String           @id @default(uuid())
+  name           String
+  description    String?          @db.Text
+  startDate      DateTime
+  endDate        DateTime
+  type           String
+  targetAudience String
+  status         String
+  content        String?          @db.Text
+  bannerImageUrl String?
+  promoCodeId    String?
+  metadata       String?          @db.LongText
+  createdById    String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  metrics        CampaignMetrics?
+  promoCode      PromoCode?       @relation(fields: [promoCodeId], references: [id])
+
+  @@index([promoCodeId], map: "marketing_campaign_promoCodeId_fkey")
+  @@map("marketing_campaign")
+}
+
+model CampaignMetrics {
+  id          String            @id @default(uuid())
+  campaignId  String            @unique
+  impressions Int               @default(0)
+  clicks      Int               @default(0)
+  conversions Int               @default(0)
+  lastUpdated DateTime
+  campaign    MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("campaign_metrics")
 }
 
 enum OrderStatus {
@@ -318,4 +435,9 @@ enum ProductType {
   CONFIGURATION
   COMPONENT
   PERIPHERAL
+}
+
+enum PromoScope {
+  ALL
+  SPECIFIC_PRODUCTS
 }

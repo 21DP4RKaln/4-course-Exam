@@ -1,11 +1,9 @@
-// app/api/reviews/helpful/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
 import { createUnauthorizedResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
 import { prisma } from '@/lib/prismaService'
 import { z } from 'zod'
 
-// Schema for helpful vote
 const helpfulVoteSchema = z.object({
   reviewId: z.string().uuid(),
   isHelpful: z.boolean()
@@ -13,7 +11,6 @@ const helpfulVoteSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify user is authenticated
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -25,19 +22,16 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = payload.userId
-
-    // Parse request body
-    const body = await request.json()
     
-    // Validate input data
+    const body = await request.json()
+   
     const validationResult = helpfulVoteSchema.safeParse(body)
     if (!validationResult.success) {
       return createBadRequestResponse('Invalid data', validationResult.error.flatten())
     }
 
     const { reviewId, isHelpful } = validationResult.data
-
-    // Check if review exists
+    
     const review = await prisma.review.findUnique({
       where: { id: reviewId }
     })
@@ -45,13 +39,11 @@ export async function POST(request: NextRequest) {
     if (!review) {
       return createBadRequestResponse('Review not found')
     }
-
-    // Prevent users from voting on their own reviews
+   
     if (review.userId === userId) {
       return createBadRequestResponse('You cannot vote on your own reviews')
     }
 
-    // Check if user already voted
     const existingVote = await prisma.reviewHelpful.findUnique({
       where: {
         reviewId_userId: {
@@ -62,7 +54,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingVote) {
-      // If the vote is the same, remove it (toggle off)
       if (existingVote.isHelpful === isHelpful) {
         await prisma.reviewHelpful.delete({
           where: { id: existingVote.id }
@@ -70,7 +61,6 @@ export async function POST(request: NextRequest) {
         
         return NextResponse.json({ removed: true })
       } 
-      // Otherwise, update the vote
       else {
         const updatedVote = await prisma.reviewHelpful.update({
           where: { id: existingVote.id },
@@ -80,7 +70,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(updatedVote)
       }
     } else {
-      // Create new vote
       const newVote = await prisma.reviewHelpful.create({
         data: {
           reviewId,

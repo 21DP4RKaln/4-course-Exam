@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { 
   Filter, 
   ChevronDown, 
@@ -25,15 +26,13 @@ interface AdvancedFilterProps {
   onFilterChange: (filters: Record<string, string[]>) => void
   onSearchChange: (query: string) => void
   onSortChange: (sort: string) => void
-  
-  // These are left for backward compatibility, will be converted to filterGroups
+
   categories?: FilterOption[]
   cpuOptions?: FilterOption[]
   gpuOptions?: FilterOption[]
   ramOptions?: FilterOption[]
   storageOptions?: FilterOption[]
-  
-  // New more flexible approach
+
   filterGroups?: FilterGroup[]
 }
 
@@ -50,70 +49,66 @@ export default function AdvancedFilter({
 }: AdvancedFilterProps) {
   const pathname = usePathname()
   const locale = pathname.split('/')[1]
+  const t = useTranslations()
   
   const [searchQuery, setSearchQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({})
   const [sortOption, setSortOption] = useState('price-asc')
-  
-  // Initialize filter groups if not provided
+
   const [internalFilterGroups, setInternalFilterGroups] = useState<FilterGroup[]>([])
   
   useEffect(() => {
-    // Initialize from props or create from legacy props
     if (filterGroups && filterGroups.length > 0) {
       setInternalFilterGroups(filterGroups)
     } else {
-      // Create filter groups from legacy props
       const groups: FilterGroup[] = []
       
       if (categories.length > 0) {
         groups.push({
-          title: "Category",
+          title: t('shop.filters.category'),
           options: categories
         })
       }
       
       if (cpuOptions.length > 0) {
         groups.push({
-          title: "Processor",
+          title: t('shop.filters.processor'),
           options: cpuOptions
         })
       }
       
       if (gpuOptions.length > 0) {
         groups.push({
-          title: "Graphics Card",
+          title: t('shop.filters.graphicsCard'),
           options: gpuOptions
         })
       }
       
       if (ramOptions.length > 0) {
         groups.push({
-          title: "Memory",
+          title: t('shop.filters.memory'),
           options: ramOptions
         })
       }
       
       if (storageOptions.length > 0) {
         groups.push({
-          title: "Storage",
+          title: t('shop.filters.storage'),
           options: storageOptions
         })
       }
       
       setInternalFilterGroups(groups)
     }
-    
-    // Initialize expanded sections
+
     const initialExpandedSections: Record<string, boolean> = {}
-    
-    // First 3 sections expanded by default
+
     const groupsToExpand = filterGroups || [
-      { title: "Category" },
-      { title: "Processor" },
-      { title: "Graphics Card" }
+      { title: t('shop.filters.category') },
+      { title: t('shop.filters.processor') },
+      { title: t('shop.filters.graphicsCard') }
     ]
     
     groupsToExpand.slice(0, 3).forEach((group, index) => {
@@ -121,30 +116,27 @@ export default function AdvancedFilter({
     })
     
     setExpandedSections(initialExpandedSections)
-    
-    // Initialize selected filters object with all possible filter types
+
     const initialSelectedFilters: Record<string, string[]> = {}
     if (filterGroups) {
       filterGroups.forEach(group => {
         initialSelectedFilters[group.title] = []
       })
     } else {
-      initialSelectedFilters['Category'] = []
-      initialSelectedFilters['Processor'] = []
-      initialSelectedFilters['Graphics Card'] = []
-      initialSelectedFilters['Memory'] = []
-      initialSelectedFilters['Storage'] = []
+      initialSelectedFilters[t('shop.filters.category')] = []
+      initialSelectedFilters[t('shop.filters.processor')] = []
+      initialSelectedFilters[t('shop.filters.graphicsCard')] = []
+      initialSelectedFilters[t('shop.filters.memory')] = []
+      initialSelectedFilters[t('shop.filters.storage')] = []
     }
     
     setSelectedFilters(initialSelectedFilters)
-  }, [filterGroups, categories, cpuOptions, gpuOptions, ramOptions, storageOptions])
-  
-  // Apply filters when they change
+  }, [filterGroups, categories, cpuOptions, gpuOptions, ramOptions, storageOptions, t])
+
   useEffect(() => {
     onFilterChange(selectedFilters)
   }, [selectedFilters, onFilterChange])
-  
-  // Forward search changes after debounce
+
   useEffect(() => {
     const timer = setTimeout(() => {
       onSearchChange(searchQuery)
@@ -179,7 +171,6 @@ export default function AdvancedFilter({
   }
   
   const resetFilters = () => {
-    // Reset all selected filters to empty arrays
     const resetSelectedFilters: Record<string, string[]> = {}
     internalFilterGroups.forEach(group => {
       resetSelectedFilters[group.title] = []
@@ -206,7 +197,7 @@ export default function AdvancedFilter({
           className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
         >
           <Filter size={18} className="mr-2" />
-          {isOpen ? 'Hide Filters' : 'Show Filters'}
+          {isOpen ? t('shop.filters.hideFilters') : t('shop.filters.showFilters')}
           <ChevronDown size={18} className={`ml-2 transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
       </div>
@@ -221,7 +212,7 @@ export default function AdvancedFilter({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search products..."
+            placeholder={t('shop.filters.searchPlaceholder')}
             className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
           />
           {searchQuery && (
@@ -243,11 +234,11 @@ export default function AdvancedFilter({
             }}
             className="block px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="name-asc">Name: A to Z</option>
-            <option value="name-desc">Name: Z to A</option>
-            <option value="rating-desc">Highest Rated</option>
+            <option value="price-asc">{t('shop.filters.sortOptions.priceAsc')}</option>
+            <option value="price-desc">{t('shop.filters.sortOptions.priceDesc')}</option>
+            <option value="name-asc">{t('shop.filters.sortOptions.nameAsc')}</option>
+            <option value="name-desc">{t('shop.filters.sortOptions.nameDesc')}</option>
+            <option value="rating-desc">{t('shop.filters.sortOptions.ratingDesc')}</option>
           </select>
         </div>
       </div>
@@ -263,7 +254,7 @@ export default function AdvancedFilter({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search products..."
+              placeholder={t('shop.filters.searchPlaceholder')}
               className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             {searchQuery && (
@@ -284,11 +275,11 @@ export default function AdvancedFilter({
             }}
             className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="name-asc">Name: A to Z</option>
-            <option value="name-desc">Name: Z to A</option>
-            <option value="rating-desc">Highest Rated</option>
+            <option value="price-asc">{t('shop.filters.sortOptions.priceAsc')}</option>
+            <option value="price-desc">{t('shop.filters.sortOptions.priceDesc')}</option>
+            <option value="name-asc">{t('shop.filters.sortOptions.nameAsc')}</option>
+            <option value="name-desc">{t('shop.filters.sortOptions.nameDesc')}</option>
+            <option value="rating-desc">{t('shop.filters.sortOptions.ratingDesc')}</option>
           </select>
         </div>
       )}
@@ -299,15 +290,15 @@ export default function AdvancedFilter({
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
               <Filter size={18} className="mr-2" />
-              Filters
+              {t('buttons.filter')}
             </h3>
             
             {hasActiveFilters() && (
               <button
-                onClick={resetFilters}
-                className="text-sm text-red-600 dark:text-red-400 hover:underline"
+              onClick={resetFilters}
+              className="text-sm text-brand-blue-600 dark:text-brand-red-400 hover:underline"
               >
-                Reset all
+                {t('shop.filters.resetAll')}
               </button>
             )}
           </div>
@@ -339,9 +330,9 @@ export default function AdvancedFilter({
                     {group.options.map(option => (
                       <div key={option.id} className="flex items-center">
                         <label className="flex items-center cursor-pointer">
-                          <div className={`w-4 h-4 mr-2 border rounded flex items-center justify-center ${
+                        <div className={`w-4 h-4 mr-2 border rounded flex items-center justify-center ${
                             (selectedFilters[group.title] || []).includes(option.id)
-                              ? 'bg-red-600 border-red-600 text-white'
+                              ? 'bg-brand-blue-600 dark:bg-brand-red-600 border-brand-blue-600 dark:border-brand-red-600 text-white'
                               : 'border-gray-300 dark:border-gray-600'
                           }`}>
                             {(selectedFilters[group.title] || []).includes(option.id) && (
@@ -367,9 +358,9 @@ export default function AdvancedFilter({
           <div className="mt-6 lg:hidden">
             <button
               onClick={() => setIsOpen(false)}
-              className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700"
+              className="w-full py-2 px-4 bg-brand-blue-600 dark:bg-brand-red-600 text-white rounded-md hover:bg-brand-blue-700 dark:hover:bg-brand-red-700"
             >
-              Apply Filters
+              {t('shop.filters.applyFilters')}
             </button>
           </div>
         </div>

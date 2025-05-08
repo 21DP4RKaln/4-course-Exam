@@ -1,7 +1,10 @@
 'use client'
 
 import React from 'react'
-import { Cpu, Monitor, HardDrive, Zap, Server } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
+import { Cpu, Monitor, Server, HardDrive, Zap, Fan, Layers } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
 
 interface QuickFiltersProps {
   activeFilter: string | null;
@@ -14,6 +17,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({
   onFilterChange,
   activeCategory
 }) => {
+  const t = useTranslations()
+  const locale = useLocale()
+  
   // CPU filters
   const cpuFilters = [
     { id: 'intel-core-i9', name: 'Intel Core i9', category: 'cpu' },
@@ -66,9 +72,24 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({
     { id: '1000w+', name: '1000W+', category: 'psu' },
   ];
 
-  // Get filters based on active category
+  // Case filters
+  const caseFilters = [
+    { id: 'full-tower', name: 'Full Tower', category: 'case' },
+    { id: 'mid-tower', name: 'Mid Tower', category: 'case' },
+    { id: 'mini-tower', name: 'Mini Tower', category: 'case' },
+    { id: 'tempered-glass', name: 'Tempered Glass', category: 'case' },
+    { id: 'mesh', name: 'Mesh Front', category: 'case' },
+  ];
+
+  // Cooling filters
+  const coolingFilters = [
+    { id: 'air', name: 'Air Cooling', category: 'cooling' },
+    { id: 'aio', name: 'AIO Liquid', category: 'cooling' },
+    { id: 'custom', name: 'Custom Loop', category: 'cooling' },
+    { id: 'rgb', name: 'RGB', category: 'cooling' },
+  ];
+  
   const getFiltersByCategoryAndActiveCategory = () => {
-    // If an active category is set, show only filters for that category
     if (activeCategory) {
       switch (activeCategory) {
         case 'cpu':
@@ -83,23 +104,24 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({
           return storageFilters;
         case 'psu':
           return psuFilters;
+        case 'case':
+          return caseFilters;
+        case 'cooling':
+          return coolingFilters;
         default:
           return [];
       }
     } 
-    
-    // If no active category, show CPU filters by default (legacy behavior)
+   
     return cpuFilters;
   };
 
   const filtersToShow = getFiltersByCategoryAndActiveCategory();
-  
-  // If no filters for the current category, don't render anything
+
   if (filtersToShow.length === 0) {
     return null;
   }
-
-  // Get appropriate icon based on category
+  
   const getCategoryIcon = () => {
     switch (activeCategory) {
       case 'cpu':
@@ -114,54 +136,65 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({
         return <HardDrive size={18} className="mr-2" />;
       case 'psu':
         return <Zap size={18} className="mr-2" />;
+      case 'case':
+        return <Layers size={18} className="mr-2" />;
+      case 'cooling':
+        return <Fan size={18} className="mr-2" />;
       default:
         return null;
     }
   };
 
-  // Group name based on category
   const getGroupTitle = () => {
     switch (activeCategory) {
       case 'cpu':
-        return "CPU Types";
+        return t('configurator.quickFilters.cpuTypes');
       case 'gpu':
-        return "Graphics Card Series";
+        return t('configurator.quickFilters.graphicsCardSeries');
       case 'motherboard':
-        return "Motherboard Types";
+        return t('configurator.quickFilters.motherboardTypes');
       case 'memory':
-        return "Memory Types";
+        return t('configurator.quickFilters.memoryTypes');
       case 'storage':
-        return "Storage Types";
+        return t('configurator.quickFilters.storageTypes');
       case 'psu':
-        return "Power Supply Wattage";
+        return t('configurator.quickFilters.powerSupplyWattage');
+      case 'case':
+        return t('configurator.quickFilters.caseTypes');
+      case 'cooling':
+        return t('configurator.quickFilters.coolingTypes');
       default:
-        return "Quick Filters";
+        return t('configurator.quickFilters.quickFilters');
     }
   };
 
-  return (
-    <div className="mb-4">
-      <div className="flex items-center mb-2">
-        {getCategoryIcon()}
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{getGroupTitle()}</span>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {filtersToShow.map(filter => (
-          <button 
-            key={filter.id}
-            onClick={() => onFilterChange(activeFilter === filter.id ? null : filter.id)}
-            className={`px-3 py-1.5 rounded-full text-sm ${
-              activeFilter === filter.id ? 
-              'bg-gray-700 text-white dark:bg-gray-600' : 
-              'bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700'
-            }`}
-          >
-            {filter.name}
-          </button>
-        ))}
+  return filtersToShow.length === 0 ? null : (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
+      <div className="flex flex-col">
+        <div className="flex items-center mb-2">
+          {getCategoryIcon()}
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-2">
+            {getGroupTitle()}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {filtersToShow.map(filter => (
+            <button 
+              key={filter.id}
+              onClick={() => onFilterChange(activeFilter === filter.id ? null : filter.id)}
+              className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                activeFilter === filter.id
+                  ? 'bg-indigo-600 dark:bg-brand-red-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              {filter.name}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default QuickFilters

@@ -1,274 +1,273 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prismaService'
 import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
-import { 
-  createUnauthorizedResponse, 
-  createForbiddenResponse, 
-  createNotFoundResponse,
-  createServerErrorResponse,
-  createBadRequestResponse 
-} from '@/lib/apiErrors'
-import { writeFile, mkdir, unlink } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
-import { randomUUID } from 'crypto'
+import { createUnauthorizedResponse, createForbiddenResponse, createNotFoundResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
+import { z } from 'zod'
+import * as bcrypt from 'bcryptjs'
 
+// Schema for updating a user
+const updateUserSchema = z.object({
+  email: z.string().email('Invalid email address').optional(),
+  firstName: z.string().min(1, 'First name is required').optional(),
+  lastName: z.string().min(1, 'Last name is required').optional(),
+  phone: z.string().optional(),
+  role: z.enum(['USER', 'ADMIN', 'SPECIALIST']).optional(),
+  password: z.string().min(8, 'Password must be at least 8 characters').optional(),
+  isBlocked: z.boolean().optional(),
+  blockReason: z.string().optional(),
+})
+
+/**
+ * GET - Get a specific user by ID
+ */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Record<string, string> }
+  { params }: { params: { id: string } }
 ) {
   try {
+    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
     }
 
     const payload = await verifyJWT(token)
-    if (!payload || payload.role !== 'ADMIN') {
-      return createForbiddenResponse('Admin access required')
+    if (!payload) {
+      return createUnauthorizedResponse('Invalid token')
+    }
+
+    // Authorization check - only ADMIN can access this endpoint
+    if (payload.role !== 'ADMIN') {
+      return createForbiddenResponse('Admin privileges required')
     }
 
     const userId = params.id
-  
+
+    // Fetch the user
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        orders: true,
-        _count: {
-          select: {
-            orders: true,
-            configurations: true
-          }
-        }
-      }
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        role: true,
+        profileImageUrl: true,
+        isBlocked: true,
+        blockReason: true,
+        createdAt: true,
+        updatedAt: true,
+        // Never return password hash
+      },
     })
 
     if (!user) {
       return createNotFoundResponse('User not found')
     }
 
-    const formattedUser = {
-      id: user.id,
-      name: user.name || 'Anonymous',
-      firstName: user.firstName || '',
-      lastName: user.lastName || '',
-      email: user.email || '',
-      phone: user.phone || '',
-      role: user.role,
-      profileImageUrl: user.profileImageUrl,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-      orderCount: user._count.orders,
-      configCount: user._count.configurations,
-      orders: user.orders.map(order => ({
-        id: order.id,
-        status: order.status,
-        totalAmount: order.totalAmount,
-        createdAt: order.createdAt.toISOString()
-      }))
-    }
+    // Get additional user data
+    const [
+      ordersCount,
+      configurationsCount,
+      repairsCount,
+      latestLogin
+    ] = await Promise.all([
+      prisma.order.count({ where: { userId } }),
+      prisma.configuration.count({ where: { userId } }),
+      prisma.repair.count({ where: { userId } }),
+      // Could be replaced with actual login tracking if available
+      null
+    ])
 
-    return NextResponse.json(formattedUser)
+    return NextResponse.json({
+      ...user,
+      statistics: {
+        ordersCount,
+        configurationsCount,
+        repairsCount,
+        latestLogin,
+      },
+    })
   } catch (error) {
-    console.error('Error fetching user:', error)
+    console.error(`Error fetching user ${params.id}:`, error)
     return createServerErrorResponse('Failed to fetch user details')
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Record<string, string> }
-) {
-  try {
-    const token = getJWTFromRequest(request)
-    if (!token) {
-      return createUnauthorizedResponse('Authentication required')
-    }
-
-    const payload = await verifyJWT(token)
-    if (!payload || payload.role !== 'ADMIN') {
-      return createForbiddenResponse('Admin access required')
-    }
-
-    const userId = params.id
-  
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { role: true, profileImageUrl: true }
-    })
-
-    if (!user) {
-      return createNotFoundResponse('User not found')
-    }
-
-    if (user.role === 'ADMIN' && userId !== payload.userId) {
-      return createForbiddenResponse('Cannot delete other admin accounts')
-    }
-
-    // Delete profile image if exists
-    if (user.profileImageUrl) {
-      try {
-        const imagePath = join(process.cwd(), 'public', user.profileImageUrl)
-        if (existsSync(imagePath)) {
-          await unlink(imagePath)
-        }
-      } catch (error) {
-        console.error('Error deleting profile image:', error)
-      }
-    }
-
-    await prisma.user.delete({
-      where: { id: userId }
-    })
-
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Error deleting user:', error)
-    return createServerErrorResponse('Failed to delete user')
-  }
-}
-
+/**
+ * PUT - Update a specific user
+ */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Record<string, string> }
+  { params }: { params: { id: string } }
 ) {
   try {
+    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
     }
 
     const payload = await verifyJWT(token)
-    if (!payload || payload.role !== 'ADMIN') {
-      return createForbiddenResponse('Admin access required')
+    if (!payload) {
+      return createUnauthorizedResponse('Invalid token')
+    }
+
+    // Authorization check - only ADMIN can access this endpoint
+    if (payload.role !== 'ADMIN') {
+      return createForbiddenResponse('Admin privileges required')
     }
 
     const userId = params.id
 
-    // Parse form data for profile image upload
-    const formData = await request.formData()
-    
-    const firstName = formData.get('firstName') as string
-    const lastName = formData.get('lastName') as string
-    const email = formData.get('email') as string
-    const phone = formData.get('phone') as string
-    const role = formData.get('role') as 'USER' | 'ADMIN' | 'SPECIALIST'
-    const profileImage = formData.get('profileImage') as File | null
-    const deleteImage = formData.get('deleteImage') === 'true'
-
-    if (!role) {
-      return createBadRequestResponse('Role is required')
-    }
-    
-    if (!email && !phone) {
-      return createBadRequestResponse('Either email or phone is required')
-    }
-
+    // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     if (!existingUser) {
       return createNotFoundResponse('User not found')
     }
+
+    // Parse and validate request body
+    const body = await request.json()
+    const validationResult = updateUserSchema.safeParse(body)
     
-    // Check if email is already in use by another user
+    if (!validationResult.success) {
+      return createBadRequestResponse('Invalid user data', { errors: validationResult.error.flatten() })
+    }
+
+    const { email, firstName, lastName, phone, role, password, isBlocked, blockReason } = validationResult.data
+
+    // Check for email uniqueness if changing email
     if (email && email !== existingUser.email) {
       const emailExists = await prisma.user.findUnique({
-        where: { email }
+        where: { email },
       })
-      
+
       if (emailExists) {
-        return createBadRequestResponse('Email is already in use')
+        return createBadRequestResponse('Email already in use')
       }
     }
-    
-    // Check if phone is already in use by another user
+
+    // Check for phone uniqueness if changing phone
     if (phone && phone !== existingUser.phone) {
       const phoneExists = await prisma.user.findFirst({
-        where: { phone }
+        where: { phone },
       })
-      
+
       if (phoneExists) {
-        return createBadRequestResponse('Phone number is already in use')
+        return createBadRequestResponse('Phone number already in use')
       }
     }
 
     // Prepare update data
-    const updateData: any = {
-      firstName: firstName || null,
-      lastName: lastName || null,
-      email: email || null,
-      phone: phone || null,
-      role
-    }
+    const updateData: any = {}
 
-    // Calculate name from first and last name
-    const newFirstName = firstName || existingUser.firstName || '';
-    const newLastName = lastName || existingUser.lastName || '';
-    updateData.name = [newFirstName, newLastName].filter(Boolean).join(' ') || null;
+    if (email !== undefined) updateData.email = email
+    if (firstName !== undefined) updateData.firstName = firstName
+    if (lastName !== undefined) updateData.lastName = lastName
+    if (phone !== undefined) updateData.phone = phone
+    if (role !== undefined) updateData.role = role
+    if (isBlocked !== undefined) updateData.isBlocked = isBlocked
+    if (blockReason !== undefined) updateData.blockReason = blockReason
 
-    // Handle profile image - delete existing if requested
-    if (deleteImage && existingUser.profileImageUrl) {
-      try {
-        const imagePath = join(process.cwd(), 'public', existingUser.profileImageUrl)
-        if (existsSync(imagePath)) {
-          await unlink(imagePath)
-        }
-        updateData.profileImageUrl = null
-      } catch (error) {
-        console.error('Error deleting profile image:', error)
-      }
-    }
-
-    // Handle profile image - upload new if provided
-    if (profileImage) {
-      const bytes = await profileImage.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-
-      const filename = `${randomUUID()}-${profileImage.name}`
-      const uploadDir = join(process.cwd(), 'public', 'uploads', 'profiles')
+    // Update name if first name or last name was updated
+    if (firstName !== undefined || lastName !== undefined) {
+      const newFirstName = firstName !== undefined ? firstName : existingUser.firstName || ''
+      const newLastName = lastName !== undefined ? lastName : existingUser.lastName || ''
       
-      if (!existsSync(uploadDir)) {
-        await mkdir(uploadDir, { recursive: true })
-      }
-
-      const imagePath = join(uploadDir, filename)
-      await writeFile(imagePath, buffer)
-
-      // Delete old image if exists and different from new one
-      if (existingUser.profileImageUrl) {
-        try {
-          const oldImagePath = join(process.cwd(), 'public', existingUser.profileImageUrl)
-          if (existsSync(oldImagePath)) {
-            await unlink(oldImagePath)
-          }
-        } catch (error) {
-          console.error('Error deleting old profile image:', error)
-        }
-      }
-
-      updateData.profileImageUrl = `/uploads/profiles/${filename}`
+      updateData.name = `${newFirstName} ${newLastName}`.trim()
     }
 
+    // Hash new password if provided
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10)
+    }
+
+    // Prevent self-demotion (admin can't demote themselves)
+    if (userId === payload.userId && role && role !== 'ADMIN') {
+      return createBadRequestResponse('You cannot change your own admin role')
+    }
+
+    // Update the user
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: updateData
+      data: updateData,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        role: true,
+        profileImageUrl: true,
+        isBlocked: true,
+        blockReason: true,
+        createdAt: true,
+        updatedAt: true,
+        // Never return password hash
+      },
     })
 
-    return NextResponse.json({
-      id: updatedUser.id,
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      phone: updatedUser.phone,
-      role: updatedUser.role,
-      profileImageUrl: updatedUser.profileImageUrl
-    })
-  }
-  catch (error) {
-    console.error('Error updating user:', error)
+    return NextResponse.json(updatedUser)
+  } catch (error) {
+    console.error(`Error updating user ${params.id}:`, error)
     return createServerErrorResponse('Failed to update user')
+  }
+}
+
+/**
+ * DELETE - Delete a user
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Authentication check
+    const token = getJWTFromRequest(request)
+    if (!token) {
+      return createUnauthorizedResponse('Authentication required')
+    }
+
+    const payload = await verifyJWT(token)
+    if (!payload) {
+      return createUnauthorizedResponse('Invalid token')
+    }
+
+    // Authorization check - only ADMIN can access this endpoint
+    if (payload.role !== 'ADMIN') {
+      return createForbiddenResponse('Admin privileges required')
+    }
+
+    const userId = params.id
+
+    // Prevent self-deletion (admin can't delete themselves)
+    if (userId === payload.userId) {
+      return createBadRequestResponse('You cannot delete your own account')
+    }
+
+    // Check if user exists
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    })
+
+    if (!existingUser) {
+      return createNotFoundResponse('User not found')
+    }
+
+    // Delete the user
+    await prisma.user.delete({
+      where: { id: userId },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error(`Error deleting user ${params.id}:`, error)
+    return createServerErrorResponse('Failed to delete user')
   }
 }

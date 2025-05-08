@@ -1,152 +1,137 @@
 import { prisma } from '@/lib/prismaService'
 
-export interface PendingConfiguration {
-    id: string;
-    name: string;
-    userId: string;
-    userName: string;
-    email: string;
-    status: string;
-    totalPrice: number;
-    createdAt: string;
-    components: {
-      id: string;
-      category: string;
-      name: string;
-      price: number;
-    }[];
-  }
-  
-  /**
-   * Get all pending configurations requiring specialist review
-   */
-  export async function getPendingConfigurations(): Promise<PendingConfiguration[]> {
-    try {
-      const configurations = await prisma.configuration.findMany({
+export interface SpecialistTask {
+  id: string;
+  type: 'REPAIR' | 'CONFIGURATION_REVIEW';
+  title: string;
+  priority: string;
+  status: string;
+  assignedAt: Date;
+  dueDate?: Date;
+}
+
+/**
+ * Get tasks assigned to specialist
+ */
+export async function getSpecialistTasks(specialistId: string): Promise<SpecialistTask[]> {
+  try {
+    const [repairs, configurations] = await prisma.$transaction([
+      // Get assigned repairs
+      prisma.repair.findMany({
+        where: {
+          specialists: {
+            some: {
+              specialistId: specialistId
+            }
+          },
+          status: {
+            in: ['PENDING', 'DIAGNOSING', 'IN_PROGRESS']
+          }
+        },
+        orderBy: [
+          { priority: 'desc' },
+          { createdAt: 'asc' }
+        ]
+      }),
+      // Get configurations pending review
+      prisma.configuration.findMany({
         where: {
           status: 'SUBMITTED',
           isTemplate: false
         },
-        include: {
-          user: true,
-          components: {
-            include: {
-              component: {
-                include: {
-                  category: true
-                }
-              }
-            }
-          }
-        },
-        orderBy: {
-          createdAt: 'desc'
-        }
-      });
-  
-      return configurations.map(config => ({
+        orderBy: { createdAt: 'asc' }
+      })
+    ]);
+
+    const tasks: SpecialistTask[] = [
+      ...repairs.map(repair => ({
+        id: repair.id,
+        type: 'REPAIR' as const,
+        title: repair.title,
+        priority: repair.priority,
+        status: repair.status,
+        assignedAt: repair.createdAt,
+        dueDate: repair.updatedAt
+      })),
+      ...configurations.map(config => ({
         id: config.id,
-        name: config.name,
-        userId: config.userId || '',
-        userName: config.user?.name || 'Anonymous',
-        email: config.user?.email || '',
+        type: 'CONFIGURATION_REVIEW' as const,
+        title: config.name,
+        priority: 'NORMAL',
         status: config.status,
-        totalPrice: config.totalPrice,
-        createdAt: config.createdAt.toISOString(),
-        components: config.components.map(item => ({
-          id: item.component.id,
-          category: item.component.category.name,
-          name: item.component.name,
-          price: item.component.price
-        }))
-      }));
-    } catch (error) {
-      console.error('Error fetching pending configurations:', error);
-      return [];
-    }
+        assignedAt: config.createdAt
+      }))
+    ];
+
+    return tasks;
+  } catch (error) {
+    console.error('Error fetching specialist tasks:', error);
+    throw error;
   }
-  
-  /**
-   * Review a configuration (approve or reject)
-   */
-  export async function reviewConfiguration(
-    configId: string, 
-    action: 'APPROVED' | 'REJECTED', 
-    comment?: string
-  ): Promise<boolean> {
-    try {
-      const existingConfiguration = await prisma.configuration.findUnique({
+}
+
+/**
+ * Get specialist performance metrics
+ */
+export async function getSpecialistMetrics(specialistId: string, dateRange?: { start: Date; end: Date }) {
+  try {
+    const whereClause = dateRange ? {
+      AND: [
+        { createdAt: { gte: dateRange.start } },
+        { createdAt: { lte: dateRange.end } }
+      ]
+    } : {};
+
+    const metrics = await prisma.$transaction([
+      // Repairs completed
+      prisma.repair.count({
         where: {
-          id: configId
-        }
-      });
-
-      if (!existingConfiguration) {
-        throw new Error(`Configuration with ID ${configId} not found`);
-      }
-
-      const updatedDescription = comment 
-        ? (existingConfiguration.description || '') + `\n\nReview comment: ${comment}` 
-        : existingConfiguration.description;
-
-      const configuration = await prisma.configuration.update({
-        where: {
-          id: configId
-        },
-        data: {
-          status: action,
-          description: updatedDescription
-        }
-      });
-  
-      return !!configuration;
-    } catch (error) {
-      console.error(`Error reviewing configuration ${configId}:`, error);
-      return false;
-    }
-  }
-  
-
-  
-  export interface OrderDetails {
-    userId: string;
-    configurationId?: string;
-    totalAmount: number;
-    shippingAddress: string;
-    paymentMethod: string;
-    items?: { id: string; type: string; quantity: number; price: number; name: string }[];
-  }
-  
-  /**
-   * Creates a new order
-   */
-  export async function createOrder(orderDetails: OrderDetails): Promise<string | null> {
-    try {
-      const order = await prisma.order.create({
-        data: {
-          userId: orderDetails.userId,
-          configurationId: orderDetails.configurationId,
-          totalAmount: orderDetails.totalAmount,
-          shippingAddress: orderDetails.shippingAddress,
-          paymentMethod: orderDetails.paymentMethod,
-          status: 'PENDING'
-        }
-      });
-
-      if (orderDetails.configurationId) {
-        await prisma.configuration.update({
-          where: {
-            id: orderDetails.configurationId
+          specialists: {
+            some: { specialistId }
           },
-          data: {
-            status: 'APPROVED' 
-          }
-        });
-      }
-  
-      return order.id;
-    } catch (error) {
-      console.error('Error creating order:', error);
-      return null;
-    }
+          status: 'COMPLETED',
+          ...whereClause
+        }
+      }),
+      // Average repair time
+      prisma.repair.findMany({
+        where: {
+          specialists: {
+            some: { specialistId }
+          },
+          status: 'COMPLETED',
+          completionDate: { not: null },
+          ...whereClause
+        },
+        select: {
+          createdAt: true,
+          completionDate: true
+        }
+      }),
+      // Configurations reviewed
+      prisma.configuration.count({
+        where: {
+          status: { in: ['APPROVED', 'REJECTED'] },
+          updatedAt: whereClause.AND ? { gte: dateRange!.start, lte: dateRange!.end } : undefined
+        }
+      })
+    ]);
+
+    // Calculate average repair time
+    const avgRepairTime = metrics[1].length > 0
+      ? metrics[1].reduce((acc, repair) => {
+          const duration = repair.completionDate!.getTime() - repair.createdAt.getTime();
+          return acc + duration;
+        }, 0) / metrics[1].length / (1000 * 60 * 60 * 24) // Convert to days
+      : 0;
+
+    return {
+      repairsCompleted: metrics[0],
+      averageRepairTime: Math.round(avgRepairTime * 10) / 10, // Round to 1 decimal
+      configurationsReviewed: metrics[2]
+    };
+  } catch (error) {
+    console.error('Error fetching specialist metrics:', error);
+    throw error;
   }
+}

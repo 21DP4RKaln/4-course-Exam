@@ -19,19 +19,16 @@ export async function PUT(request: NextRequest) {
     if (!payload) {
       return createUnauthorizedResponse('Invalid token')
     }
-
-    // Parse form data
+   
     const formData = await request.formData()
     
-    // Extract form fields
     const email = formData.get('email') as string | null
     const phone = formData.get('phone') as string | null
     const firstName = formData.get('firstName') as string | null
     const lastName = formData.get('lastName') as string | null
     const password = formData.get('password') as string | null
     const profileImage = formData.get('profileImage') as File | null
-    
-    // Basic validation
+   
     if (email === '' && phone === '') {
       return createBadRequestResponse('Either email or phone is required')
     }
@@ -42,7 +39,6 @@ export async function PUT(request: NextRequest) {
         return createBadRequestResponse('Invalid email address')
       }
       
-      // Check if email is taken by another user
       const existingUserByEmail = await prisma.user.findUnique({
         where: { email },
       })
@@ -53,7 +49,6 @@ export async function PUT(request: NextRequest) {
     }
     
     if (phone) {
-      // Check if phone is taken by another user
       const existingUserByPhone = await prisma.user.findFirst({
         where: { phone },
       })
@@ -62,8 +57,7 @@ export async function PUT(request: NextRequest) {
         return createBadRequestResponse('Phone number is already in use by another account')
       }
     }
-
-    // Get current user data
+    
     const currentUser = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { firstName: true, lastName: true, email: true, phone: true }
@@ -72,17 +66,14 @@ export async function PUT(request: NextRequest) {
     if (!currentUser) {
       return createUnauthorizedResponse('User not found')
     }
-
-    // Build update data object
-    const updateData: any = {}
     
-    // Only update fields that were provided
+    const updateData: any = {}
+   
     if (email !== null) updateData.email = email || null
     if (phone !== null) updateData.phone = phone || null
     if (firstName !== null) updateData.firstName = firstName || null
     if (lastName !== null) updateData.lastName = lastName || null
-    
-    // Calculate name from first and last name if either was provided
+   
     if (firstName !== null || lastName !== null) {
       const newFirstName = firstName !== null ? firstName : currentUser.firstName || ''
       const newLastName = lastName !== null ? lastName : currentUser.lastName || ''
@@ -93,39 +84,32 @@ export async function PUT(request: NextRequest) {
         updateData.name = null
       }
     }
-    
-    // Hash password if provided
+   
     if (password) {
       if (password.length < 8) {
         return createBadRequestResponse('Password must be at least 8 characters')
       }
       updateData.password = await bcrypt.hash(password, 10)
     }
-    
-    // Process profile image if exists
+   
     if (profileImage) {
       const bytes = await profileImage.arrayBuffer()
       const buffer = Buffer.from(bytes)
       
-      // Create unique filename
       const filename = `${randomUUID()}-${profileImage.name}`
       const uploadDir = join(process.cwd(), 'public', 'uploads', 'profiles')
-      
-      // Ensure directory exists
+    
       if (!existsSync(uploadDir)) {
         await mkdir(uploadDir, { recursive: true })
       }
       
       const imagePath = join(uploadDir, filename)
       
-      // Save the file
       await writeFile(imagePath, buffer)
-      
-      // Set the URL to be saved in the database
+     
       updateData.profileImageUrl = `/uploads/profiles/${filename}`
     }
     
-    // Update user
     const updatedUser = await prisma.user.update({
       where: { id: payload.userId },
       data: updateData,

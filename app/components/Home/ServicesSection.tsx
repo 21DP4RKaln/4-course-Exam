@@ -93,16 +93,6 @@ export default function ServicesSection() {
                 {service.description}
               </p>
               
-              {/* Learn more link */}
-              <div className={`flex items-center text-sm font-medium ${
-                theme === 'dark' 
-                  ? 'text-brand-red-400 group-hover:text-brand-red-300' 
-                  : 'text-brand-blue-600 group-hover:text-brand-blue-500'
-              }`}>
-                <span>Learn more</span>
-                <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-              </div>
-              
               {/* Background decoration */}
               <div className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full opacity-10 blur-3xl transition-all duration-500 group-hover:opacity-20 group-hover:scale-125">
                 <div className={`w-full h-full rounded-full ${
@@ -119,14 +109,14 @@ export default function ServicesSection() {
         } shadow-medium`}>
           <div className="relative flex flex-col md:flex-row">
             {/* Left side - image */}
-            <div className="md:w-1/2 min-h-[300px] relative">
-              <Image
-                src={theme === 'dark' ? "/dark-pc.png" : "/light-pc.png"}
-                alt="PC Build"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
+              <div className="md:w-1/2 min-h-[200px] relative">
+                <Image
+                  src= "/images/PC.png"
+                  alt="PC Build"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               <div className={`absolute inset-0 ${
                 theme === 'dark' 
                   ? 'bg-gradient-to-r from-black via-transparent to-transparent' 
@@ -139,12 +129,12 @@ export default function ServicesSection() {
               <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>
-                Ready to build your dream PC?
+                {t('nav.readyToBuild')}
               </h3>
               <p className={`mb-8 ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>
-                Whether you want to configure your own custom PC or choose from our ready-made selections, we're here to deliver exceptional quality and performance.
+                {t('nav.customPcDesc')}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link 
@@ -155,7 +145,7 @@ export default function ServicesSection() {
                       : 'bg-brand-blue-600 hover:bg-brand-blue-700 shadow hover:shadow-xl hover:shadow-brand-blue-600/20'
                   }`}
                 >
-                  Start Building
+                  {t('nav.startBuilding')}
                   <ArrowRight size={16} className="ml-2" />
                 </Link>
                 <Link 
@@ -166,7 +156,7 @@ export default function ServicesSection() {
                       : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200'
                   }`}
                 >
-                  View Ready-Made PCs
+                  {t('nav.readyMade')}
                 </Link>
               </div>
             </div>

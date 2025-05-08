@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useTheme } from '@/app/contexts/ThemeContext'
@@ -17,9 +18,16 @@ import {
   Wrench,
   Info,
   ChevronRight,
-  ShoppingCart
+  ShoppingCart,
+  Globe
 } from 'lucide-react'
-import LanguageSwitcher from './LanguageSwitcher'
+import { locales } from '@/app/i18n/config'
+
+const languageNames: Record<string, string> = {
+  en: 'English',
+  lv: 'Latviski',
+  ru: 'Русский',
+}
 
 interface MobileMenuProps {
   isOpen: boolean
@@ -30,10 +38,22 @@ interface MobileMenuProps {
 export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMenuProps) {
   const t = useTranslations()
   const pathname = usePathname()
+  const router = useRouter()
   const { theme, toggleTheme } = useTheme()
   const { user, isAuthenticated, logout } = useAuth()
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
 
   const locale = pathname.split('/')[1]
+
+  const changeLocale = (newLocale: string) => {
+    const pathSegments = pathname.split('/')
+    pathSegments[1] = newLocale
+    const newPath = pathSegments.join('/')
+   
+    router.push(newPath)
+    router.refresh() 
+    onClose()
+  }
 
   if (!isOpen) return null
 
@@ -45,7 +65,13 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           <div className="text-lg font-semibold">IvaPro</div>
           
           <div className="flex items-center space-x-4">
-            <LanguageSwitcher />
+            {/* Language Toggle */}
+            <button 
+              onClick={() => setLanguageMenuOpen(!languageMenuOpen)}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 relative"
+            >
+              <Globe size={20} className="text-gray-600 dark:text-gray-400" />
+            </button>
             
             <button 
               onClick={toggleTheme}
@@ -56,6 +82,35 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             </button>
           </div>
         </div>
+
+        {/* Language Dropdown */}
+        {languageMenuOpen && (
+          <div className="mb-6 bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
+            <h3 className="mb-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+              {t('common.language')}
+            </h3>
+            <div className="space-y-2">
+              {locales.map((localeOption) => (
+                <button
+                  key={localeOption}
+                  onClick={() => changeLocale(localeOption)}
+                  className={`flex items-center w-full p-3 rounded-xl ${
+                    localeOption === locale
+                      ? theme === 'dark'
+                        ? 'bg-brand-red-900/20 text-brand-red-400 border border-brand-red-800/30'
+                        : 'bg-brand-blue-50 text-brand-blue-600 border border-brand-blue-200'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300'
+                  }`}
+                >
+                  <span>{languageNames[localeOption]}</span>
+                  {localeOption === locale && (
+                    <ChevronRight size={16} className="ml-auto text-gray-400" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <nav className="space-y-6">
           <Link 
@@ -97,7 +152,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             onClick={onClose}
           >
             <Cpu size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
-            <span className="font-medium">Components</span>
+            <span className="font-medium">{t('nav.components')}</span>
           </Link>
           
           <Link 
@@ -106,7 +161,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             onClick={onClose}
           >
             <Keyboard size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
-            <span className="font-medium">Peripherals</span>
+            <span className="font-medium">{t('nav.peripherals')}</span>
           </Link>
           
           <Link 
@@ -115,7 +170,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             onClick={onClose}
           >
             <Wrench size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
-            <span className="font-medium">Repairs</span>
+            <span className="font-medium">{t('nav.repairs')}</span>
           </Link>
           
           <Link 
@@ -124,7 +179,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             onClick={onClose}
           >
             <Info size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
-            <span className="font-medium">About</span>
+            <span className="font-medium">{t('nav.about')}</span>
           </Link>
           
           <Link 
@@ -133,7 +188,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             onClick={onClose}
           >
             <ShoppingCart size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
-            <span className="font-medium">Cart</span>
+            <span className="font-medium">{t('nav.cart')}</span>
           </Link>
 
           {/* Authentication links */}
@@ -203,7 +258,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
                 : 'text-gray-500 hover:text-gray-900'
             }`}
           >
-            Close Menu
+            {t('nav.close')}
           </button>
         </div>
       </div>

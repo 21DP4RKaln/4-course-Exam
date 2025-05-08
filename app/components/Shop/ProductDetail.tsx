@@ -3,9 +3,15 @@
 import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useCart } from '@/app/contexts/CartContext'
+import { useWishlist } from '@/app/contexts/WishlistContext'
+import { useAuth } from '@/app/contexts/AuthContext'
 import SpecificationsTable from './SpecificationsTable';
+import ReviewSystem from '../ReviewSystem/ReviewSystem'
 import { useProductView } from '@/app/hooks/useProductView'
+import Loading from '@/app/components/ui/Loading'
+import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
 import { 
   ArrowLeft, 
   ShoppingCart,
@@ -14,10 +20,11 @@ import {
   Truck,
   Shield,
   Clock,
-  ChevronDown,
   AlertTriangle,
-  Star,
-  Check
+  Check,
+  Copy,
+  CheckCircle,
+  Tag
 } from 'lucide-react'
 
 interface ProductDetailProps {
@@ -47,8 +54,11 @@ interface Product {
 export default function ProductDetail({ params, type }: ProductDetailProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const t = useTranslations()
   const { addItem } = useCart()
   const locale = pathname.split('/')[1]
+  const { isAuthenticated } = useAuth()
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
   
   const [product, setProduct] = useState<Product | null>(null)
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
@@ -56,9 +66,13 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
   const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('description')
-  const [isSpecsOpen, setIsSpecsOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const defaultImageUrl = '/images/Default-image.png'
 
   useProductView(params.id, type)
+
+  const isProductInWishlist = product ? isInWishlist(product.id, type.toUpperCase()) : false
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -68,45 +82,37 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
         
         if (params && params.id) {
           productId = params.id;
-          console.log("Found ID in params:", productId);
         } else if (params && params.slug) {
           productId = params.slug;
-          console.log("Using slug as ID:", productId);
         } else {
           const currentUrl = window.location.pathname;
           const urlParts = currentUrl.split('/');
-          
           productId = urlParts[urlParts.length - 1];
-          console.log("Extracted ID from URL:", productId);
         }
         
         if (!productId) {
-          console.error("Product ID not found in params:", params);
-          setError("Product ID is missing");
+          setError(t('errors.productIdMissing'));
           setLoading(false);
           return;
         }
 
         const apiUrl = `/api/shop/product/${productId}`;
-        
-        console.log("Fetching product with URL:", apiUrl);
         const response = await fetch(apiUrl);
         
         if (!response.ok) {
-          throw new Error(`Failed to load product: ${response.status}`);
+          throw new Error(`${t('errors.errorsfailedToLoad')}: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log("Product data received:", data);
   
         if (!data || typeof data !== 'object' || !data.name) {
-          throw new Error('Invalid product data received');
+          throw new Error(t('errors.invalidProductData'));
         }
         
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load product details');
+        setError(error instanceof Error ? error.message : t('errors.failedToLoad'));
         setProduct(null);
       } finally {
         setLoading(false);
@@ -114,7 +120,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
     };
     
     fetchProduct();
-  }, [params]);
+  }, [params, t]);
   
   const handleAddToCart = () => {
     if (!product) return
@@ -132,34 +138,66 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
     handleAddToCart()
     router.push(`/${locale}/cart`)
   }
-  
-  // Handle loading state
+
+  const handleWishlistToggle = async () => {
+    if (!product) return
+
+    if (!isAuthenticated) {
+      router.push(`/${locale}/auth/login`)
+      return
+    }
+
+    if (isProductInWishlist) {
+      await removeFromWishlist(product.id, type.toUpperCase())
+    } else {
+      await addToWishlist(product.id, type.toUpperCase())
+    }
+  }
+
+  const handleShare = async () => {
+    try {
+      const url = window.location.href
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy:', error)
+    }
+  }
+
+  const getDiscountPercentage = () => {
+    if (!product || !product.discountPrice || !product.price) return null
+    const discount = Math.round(((product.price - product.discountPrice) / product.price) * 100)
+    return discount > 0 ? discount : null
+  }
+
+  const discountPercentage = getDiscountPercentage()
+
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto flex justify-center items-center py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <Loading size="medium" />
       </div>
     )
   }
-  
-  // Handle error state
+
   if (error || !product) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
           <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {error || 'Product Not Found'}
+            {error || t('errors.notFound')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8">
-            The product you're looking for doesn't exist or has been removed.
+            {t('errors.productNotExist')}
           </p>
           <Link 
             href={`/${locale}/${type}s`}
             className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
           >
             <ArrowLeft size={18} className="mr-2" />
-            Back to {type === 'component' ? 'Components' : 'Peripherals'}
+            {t('categoryPage.backTo', {type: type === 'component' ? t('components.name') : t('components.peripherals')})}
           </Link>
         </div>
       </div>
@@ -174,32 +212,34 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
           className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
         >
           <ArrowLeft size={18} className="mr-2" />
-          Back to {type === 'component' ? 'Components' : 'Peripherals'}
+          {t('categoryPage.backTo', {type: type === 'component' ? t('components.components') : t('components.peripherals')})}
         </Link>
       </div>
       
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           {/* Product image */}
-          <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-            {product.imageUrl ? (
-              <img 
-                src={product.imageUrl} 
-                alt={product.name} 
-                className="h-full w-full object-contain"
-              />
-            ) : (
-              <span className="text-gray-500 dark:text-gray-400 text-lg">
-                {product.category || (type === 'component' ? 'Component' : 'Peripheral')}
-              </span>
+          <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center relative">
+            {discountPercentage && (
+              <div className="absolute top-3 left-3 z-10">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border border-red-200 dark:border-red-800">
+                  <Tag size={12} className="mr-1" />
+                  {t('shop.product.offBadge', { percentage: discountPercentage })}
+                </span>
+              </div>
             )}
+            <img 
+              src={(product?.imageUrl || defaultImageUrl).trim()} 
+              alt={product?.name} 
+              className="h-full w-full object-contain"
+            />
           </div>
           
           {/* Product details */}
           <div className="flex flex-col">
             <div className="mb-4">
               <span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-md mb-2">
-                {product.category || (type === 'component' ? 'Component' : 'Peripheral')}
+                {product.category || (type === 'component' ? t('components.components') : t('components.peripherals'))}
               </span>
               
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
@@ -212,7 +252,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
             </div>
             
             <div className="mb-6">
-            <div className="flex items-baseline mb-2">
+              <div className="flex items-baseline mb-2">
                 {product && product.price !== undefined && (
                   product.discountPrice ? (
                     <>
@@ -223,7 +263,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                         €{product.price.toFixed(2)}
                       </span>
                       <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 text-xs font-medium rounded-md">
-                        Save €{(product.price - (product.discountPrice || 0)).toFixed(2)}
+                        {t('product.saveAmount')} €{(product.price - (product.discountPrice || 0)).toFixed(2)}
                       </span>
                     </>
                   ) : (
@@ -235,58 +275,30 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
               </div>
               
               <div className={`inline-flex items-center px-2 py-1 rounded text-sm ${
-                product.stock <= 3 
-                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' 
-                  : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                product.stock <= 0
+                  ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                  : product.stock <= 3 
+                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' 
+                    : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
               }`}>
                 {product.stock > 0 
-                  ? (product.stock <= 3 ? `Only ${product.stock} left in stock` : 'In Stock') 
-                  : 'Out of Stock'}
+                  ? (product.stock <= 3 
+                    ? t('product.onlyFewLeft') 
+                    : t('product.inStock')) 
+                  : t('product.outOfStock')}
               </div>
             </div>
-            
-            {/* Quick overview of specs */}
-            {product.specifications && Object.keys(product.specifications).length > 0 && (
-              <div className="mb-6">
-                <button
-                  onClick={() => setIsSpecsOpen(!isSpecsOpen)}
-                  className="flex items-center justify-between w-full px-4 py-3 bg-gray-100 dark:bg-gray-900 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
-                  <span className="font-medium text-gray-800 dark:text-gray-200">
-                    Specifications
-                  </span>
-                  <ChevronDown 
-                    size={20} 
-                    className={`text-gray-500 transform transition-transform ${isSpecsOpen ? 'rotate-180' : ''}`} 
-                  />
-                </button>
-                
-                {isSpecsOpen && (
-                  <div className="mt-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg space-y-3">
-                    {Object.entries(product.specifications).slice(0, 6).map(([key, value]) => (
-                      <div key={key} className="flex items-center">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2 capitalize">
-                          {key}:
-                        </span>
-                        <span className="text-sm text-gray-700 dark:text-gray-300">
-                          {value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
             
             {/* Quantity selector and buttons */}
             <div className="flex flex-col space-y-4 mt-auto">
               <div className="flex items-center">
-                <span className="mr-4 text-gray-700 dark:text-gray-300">Quantity:</span>
+                <span className="mr-4 text-gray-700 dark:text-gray-300">{t('product.quantity')}:</span>
                 <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
                   <button 
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                     disabled={quantity <= 1}
+                    aria-label={t('product.decreaseQuantity')}
                   >
                     -
                   </button>
@@ -297,6 +309,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                     onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                     className="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                     disabled={quantity >= product.stock}
+                    aria-label={t('product.increaseQuantity')}
                   >
                     +
                   </button>
@@ -310,7 +323,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                   className="flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   <ShoppingCart size={18} className="mr-2" />
-                  Add to Cart
+                  {t('buttons.addToCart')}
                 </button>
                 
                 <button
@@ -318,19 +331,40 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                   disabled={product.stock === 0}
                   className="flex items-center justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Buy Now
+                  {t('product.buyNow')}
                 </button>
               </div>
               
               <div className="flex space-x-4">
-                <button className="flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400">
-                  <Heart size={18} className="mr-1" />
-                  <span className="text-sm">Add to Wishlist</span>
+                <button 
+                  className={`flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 ${
+                    isProductInWishlist ? 'text-red-600 dark:text-red-400' : ''
+                  }`}
+                  onClick={handleWishlistToggle}
+                >
+                  <Heart size={18} className="mr-1" fill={isProductInWishlist ? 'currentColor' : 'none'} />
+                  <span className="text-sm">
+                    {isProductInWishlist 
+                      ? t('shop.product.removeFromWishlist')
+                      : t('buttons.addToWishlist')}
+                  </span>
                 </button>
                 
-                <button className="flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400">
-                  <Share2 size={18} className="mr-1" />
-                  <span className="text-sm">Share</span>
+                <button 
+                  onClick={handleShare}
+                  className="flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                >
+                  {copied ? (
+                    <>
+                      <CheckCircle size={18} className="mr-1" />
+                      <span className="text-sm">{t('product.copied')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Share2 size={18} className="mr-1" />
+                      <span className="text-sm">{t('product.share')}</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -339,15 +373,15 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
             <div className="mt-8 space-y-3 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-center">
                 <Truck size={16} className="mr-2" />
-                <span>Free shipping on orders over €100</span>
+                <span>{t('product.freeShipping')}</span>
               </div>
               <div className="flex items-center">
                 <Shield size={16} className="mr-2" />
-                <span>2 years warranty included</span>
+                <span>{t('product.warrantyIncluded')}</span>
               </div>
               <div className="flex items-center">
                 <Clock size={16} className="mr-2" />
-                <span>Estimated delivery: 1-3 business days</span>
+                <span>{t('product.estimatedDelivery')}</span>
               </div>
             </div>
           </div>
@@ -364,7 +398,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
               }`}
               onClick={() => setActiveTab('description')}
             >
-              Description
+              {t('product.tabs.description')}
             </button>
             <button
               className={`py-4 px-6 text-sm font-medium border-b-2 ${
@@ -374,7 +408,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
               }`}
               onClick={() => setActiveTab('specifications')}
             >
-              Specifications
+              {t('product.tabs.specifications')}
             </button>
             <button
               className={`py-4 px-6 text-sm font-medium border-b-2 ${
@@ -384,7 +418,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
               }`}
               onClick={() => setActiveTab('reviews')}
             >
-              Reviews
+              {t('product.tabs.reviews')}
             </button>
           </div>
           
@@ -405,134 +439,21 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                   />
                 ) : (
                   <p className="text-center text-gray-500 dark:text-gray-400">
-                    No specifications available for this product.
+                    {t('product.noSpecifications')}
                   </p>
                 )}
               </div>
             )}
             
-            {/* Reviews section */}                   
             {activeTab === 'reviews' && (
-              <div className="max-w-3xl mx-auto">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Customer Reviews
-                    </h3>
-                    <div className="flex items-center mt-1">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i}
-                            size={18} 
-                            className={i < Math.floor(product.ratings?.average || 0) 
-                              ? "text-yellow-400 fill-yellow-400" 
-                              : "text-gray-300 dark:text-gray-600"
-                            }
-                          />
-                        ))}
-                      </div>
-                      <span className="ml-2 text-gray-600 dark:text-gray-400">
-                        {product.ratings?.average.toFixed(1) || '0.0'} out of 5 ({product.ratings?.count || 0} reviews)
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                    Write a Review
-                  </button>
-                </div>
-                
-                <div className="text-center py-8">
-                  <p className="text-gray-500 dark:text-gray-400">
-                    No reviews yet. Be the first to review this product!
-                  </p>
-                </div>
-              </div>
+              <ReviewSystem 
+                productId={product.id} 
+                productType={type.toUpperCase() as 'COMPONENT' | 'PERIPHERAL'}
+              />
             )}
           </div>
         </div>
       </div>
-      
-      {/* Related products */}
-      {relatedProducts.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            Related Products
-          </h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((relProduct) => (
-              <div 
-                key={relProduct.id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                {/* Product image */}
-                <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                  {relProduct.imageUrl ? (
-                    <img 
-                      src={relProduct.imageUrl} 
-                      alt={relProduct.name}
-                      className="h-full w-full object-contain" 
-                    />
-                  ) : (
-                    <span className="text-gray-500 dark:text-gray-400">
-                      {relProduct.category || (type === 'component' ? 'Component' : 'Peripheral')}
-                    </span>
-                  )}
-                </div>
-                
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                    <Link 
-                      href={`/${locale}/${type}s/${relProduct.id}`}
-                      className="hover:text-red-600 dark:hover:text-red-400"
-                    >
-                      {relProduct.name}
-                    </Link>
-                  </h3>
-                  
-                  <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
-                    {relProduct.description}
-                  </p>
-                  
-                  <div className="flex items-end justify-between">
-                    <div>
-                      {relProduct.discountPrice ? (
-                        <div>
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">
-                            €{relProduct.discountPrice.toFixed(2)}
-                          </span>
-                          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
-                            €{relProduct.price.toFixed(2)}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">
-                          €{relProduct.price.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <button
-                      onClick={() => addItem({
-                        id: relProduct.id,
-                        type: type,
-                        name: relProduct.name,
-                        price: relProduct.discountPrice || relProduct.price,
-                        imageUrl: relProduct.imageUrl || ''
-                      })}
-                      className="p-2 text-white bg-red-600 rounded-md hover:bg-red-700"
-                    >
-                      <ShoppingCart size={20} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

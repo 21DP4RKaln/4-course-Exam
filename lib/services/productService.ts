@@ -26,7 +26,6 @@ export interface ProductWithRelated extends Product {
  * Helper to determine PC category based on component specs
  */
 function getConfigCategory(specs: Record<string, string>): string {
-  // Improved category detection logic
   if (specs.gpu && (specs.gpu.toLowerCase().includes('rtx') || specs.gpu.toLowerCase().includes('geforce'))) {
     return 'gaming';
   } else if (specs.cpu && (specs.cpu.toLowerCase().includes('ryzen 9') || specs.cpu.toLowerCase().includes('i9'))) {
@@ -43,7 +42,6 @@ function getConfigCategory(specs: Record<string, string>): string {
  */
 export async function getProductById(id: string): Promise<ProductWithRelated | null> {
   try {
-    // First check if it's a PC configuration
     const configuration = await prisma.configuration.findUnique({
       where: {
         id,
@@ -72,8 +70,7 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
       const discountPrice = configuration.isPublic ? Math.round(configuration.totalPrice * 0.9 * 100) / 100 : null;
   
       const category = getConfigCategory(specs);
-  
-      // Get related configurations
+    
       const relatedConfigurations = await prisma.configuration.findMany({
         where: {
           isTemplate: true,
@@ -136,7 +133,6 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
       };
     }
 
-    // If not a PC configuration, check if it's a component
     const component = await prisma.component.findUnique({
       where: {
         id,
@@ -152,15 +148,12 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
     });
 
     if (component) {
-      // Build specs object
       const specs: Record<string, string> = { ...(component.specifications as any || {}) };
-      
-      // Add component specs from the specValues
+ 
       for (const specValue of component.specValues) {
         specs[specValue.specKey.name] = specValue.value;
       }
 
-      // Find related components (in same category)
       const relatedComponents = await prisma.component.findMany({
         where: {
           categoryId: component.categoryId,
@@ -191,7 +184,7 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
           description: relComp.description || '',
           specs: relSpecs,
           price: relComp.price,
-          discountPrice: null, // Could calculate discount if needed
+          discountPrice: null, 
           imageUrl: relComp.imageUrl,
           stock: relComp.stock,
           ratings: {
@@ -208,7 +201,7 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
         description: component.description || '',
         specs,
         price: component.price,
-        discountPrice: null, // Could calculate discount if needed
+        discountPrice: null, 
         imageUrl: component.imageUrl,
         stock: component.stock,
         ratings: {
@@ -232,8 +225,7 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
 export async function getAllProducts(): Promise<Product[]> {
   try {
     const products: Product[] = [];
-
-    // Get PC configurations
+    
     const configurations = await prisma.configuration.findMany({
       where: {
         isTemplate: true, 
@@ -251,7 +243,6 @@ export async function getAllProducts(): Promise<Product[]> {
       },
     });
 
-    // Convert configurations to products
     for (const config of configurations) {
       const specs: Record<string, string> = {};
       config.components.forEach((configItem) => {
@@ -277,8 +268,7 @@ export async function getAllProducts(): Promise<Product[]> {
         },
       });
     }
-
-    // Get components
+ 
     const components = await prisma.component.findMany({
       include: {
         category: true,
@@ -293,14 +283,12 @@ export async function getAllProducts(): Promise<Product[]> {
           gt: 0
         }
       },
-      take: 20 // Limit to avoid overloading
+      take: 20 
     });
 
-    // Convert components to products
     for (const component of components) {
       const specs: Record<string, string> = { ...(component.specifications as any || {}) };
-      
-      // Add component specs from the specValues
+    
       for (const specValue of component.specValues) {
         specs[specValue.specKey.name] = specValue.value;
       }
@@ -312,7 +300,7 @@ export async function getAllProducts(): Promise<Product[]> {
         description: component.description || '',
         specs,
         price: component.price,
-        discountPrice: null, // Could calculate discount if needed
+        discountPrice: null, 
         imageUrl: component.imageUrl,
         stock: component.stock,
         ratings: {
@@ -337,7 +325,6 @@ export async function getProductsByCategory(category: string): Promise<Product[]
     const products: Product[] = [];
 
     if (category === 'pc' || category === 'gaming' || category === 'workstation' || category === 'office' || category === 'budget') {
-      // Get PC configurations in the specified category
       const configurations = await prisma.configuration.findMany({
         where: {
           isTemplate: true,
@@ -354,8 +341,7 @@ export async function getProductsByCategory(category: string): Promise<Product[]
           },
         },
       });
-
-      // Convert configurations to products and filter by category
+    
       for (const config of configurations) {
         const specs: Record<string, string> = {};
         config.components.forEach((configItem) => {
@@ -364,8 +350,7 @@ export async function getProductsByCategory(category: string): Promise<Product[]
         });
         
         const configCategory = getConfigCategory(specs);
-        
-        // Only include if it matches the requested category
+
         if (category === 'pc' || configCategory.toLowerCase() === category.toLowerCase()) {
           const discountPrice = config.isPublic ? Math.round(config.totalPrice * 0.9 * 100) / 100 : null;
       
@@ -387,11 +372,9 @@ export async function getProductsByCategory(category: string): Promise<Product[]
         }
       }
     } else {
-      // Get components in the specified category
       const components = await prisma.component.findMany({
         where: {
           category: {
-            // First try to match by slug, then by name
             OR: [
               { slug: category },
               { name: category }
@@ -411,11 +394,9 @@ export async function getProductsByCategory(category: string): Promise<Product[]
         }
       });
 
-      // Convert components to products
       for (const component of components) {
         const specs: Record<string, string> = { ...(component.specifications as any || {}) };
-        
-        // Add component specs from the specValues
+   
         for (const specValue of component.specValues) {
           specs[specValue.specKey.name] = specValue.value;
         }
@@ -427,7 +408,7 @@ export async function getProductsByCategory(category: string): Promise<Product[]
           description: component.description || '',
           specs,
           price: component.price,
-          discountPrice: null, // Could calculate discount if needed
+          discountPrice: null, 
           imageUrl: component.imageUrl,
           stock: component.stock,
           ratings: {
