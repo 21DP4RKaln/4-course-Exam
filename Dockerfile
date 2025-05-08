@@ -52,11 +52,17 @@ COPY --from=builder /app/prisma ./prisma
 # Set correct permissions
 RUN chown -R nextjs:nodejs /app
 
+# Create startup script with error handling
+RUN echo '#!/bin/bash\necho "Starting application..."\necho "Node version: $(node -v)"\necho "Checking for required environment variables..."\nif [ -z "$DATABASE_URL" ]; then\n  echo "ERROR: DATABASE_URL is not set!"\n  exit 1\nfi\nif [ -z "$JWT_SECRET" ]; then\n  echo "ERROR: JWT_SECRET is not set!"\n  exit 1\nfi\necho "Starting Next.js application..."\nnode server.js' > start.sh && \
+    chmod +x start.sh
+
 # Switch to non-root user
 USER nextjs
 
 EXPOSE 3000
 
 ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "server.js"]
+# Use the startup script instead of directly starting node
+CMD ["/app/start.sh"]
