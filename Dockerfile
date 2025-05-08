@@ -1,4 +1,4 @@
-FROM node:20-slim AS base
+FROM node:20.12.0-alpine AS base
 
 # Set a specific npm version to avoid compatibility issues
 RUN npm install -g npm@10.2.4
@@ -8,16 +8,17 @@ FROM base AS deps
 WORKDIR /app
 
 # Install OpenSSL and other dependencies required by Prisma
-RUN apt-get update -y && apt-get install -y openssl ca-certificates
+RUN apt-get update -y \
+    && apt-get install -y openssl ca-certificates
 
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./
 
 # Use a more robust approach for npm install with proper error handling
-RUN npm config set legacy-peer-deps true && \
-    npm install --no-audit --no-fund || \
-    (echo "Dependency installation failed, retrying with more verbose output" && \
-     npm install --no-audit --no-fund --verbose)
+RUN npm config set legacy-peer-deps true \
+    && npm install --no-audit --no-fund \
+    || (echo "Dependency installation failed, retrying with more verbose output" \
+    && npm install --no-audit --no-fund --verbose)
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -39,8 +40,7 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_ENV=production
 
 # Install production dependencies
 RUN apt-get update -y && apt-get install -y openssl ca-certificates
@@ -60,7 +60,7 @@ COPY --from=builder /app/prisma ./prisma
 RUN chown -R nextjs:nodejs /app
 
 # Create startup script with error handling
-RUN echo '#!/bin/bash\necho "Starting application..."\necho "Node version: $(node -v)"\necho "Node options: $NODE_OPTIONS"\necho "Checking for required environment variables..."\nif [ -z "$DATABASE_URL" ]; then\n  echo "ERROR: DATABASE_URL is not set!"\n  exit 1\nfi\nif [ -z "$JWT_SECRET" ]; then\n  echo "ERROR: JWT_SECRET is not set!"\n  exit 1\nfi\necho "Starting Next.js application..."\nnode server.js' > start.sh && \
+RUN echo '#!/bin/bash\necho "Starting application..."\necho "Node version: $(node -v)"\necho "Checking for required environment variables..."\nif [ -z "$DATABASE_URL" ]; then\n  echo "ERROR: DATABASE_URL is not set!"\n  exit 1\nfi\nif [ -z "$JWT_SECRET" ]; then\n  echo "ERROR: JWT_SECRET is not set!"\n  exit 1\nfi\necho "Starting Next.js application..."\nnode server.js' > start.sh && \
     chmod +x start.sh
 
 # Switch to non-root user
@@ -68,8 +68,8 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Use the startup script instead of directly starting node
 CMD ["/app/start.sh"]

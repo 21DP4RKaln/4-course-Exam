@@ -1,10 +1,21 @@
 # IvaPro PC Configurator
 
-A full-stack web application for creating custom PC configurations, managing ready-made PCs, and handling orders.
+A full-stack web application designed for creating custom PC configurations, managing pre-built computers, and processing orders.
+
+## Project Features
+
+- PC component customization and configuration
+- Purchase of pre-built computers
+- User authentication and profile management
+- Admin panel for product and order management
+- Specialist panel for repair and support management
+- Multilingual support (Latvian, English, Russian)
+- Dark and light mode
+- Responsive design for all devices
 
 ## Project Structure
 
-### Root Files
+### Main Files
 - `.gitignore` - Git ignore configuration
 - `README.md` - This project documentation
 - `next.config.mjs` - Next.js configuration
@@ -15,6 +26,8 @@ A full-stack web application for creating custom PC configurations, managing rea
 - `tailwind.config.js` - Tailwind CSS configuration
 - `middleware.ts` - Next.js middleware for routing
 - `next-intl.config.ts` - Internationalization configuration
+- `Dockerfile` - Docker container configuration
+- `docker-compose.yml` - Docker composition settings
 
 ### Core Directories
 - `/app` - Main application code (Next.js App Router)
@@ -22,7 +35,7 @@ A full-stack web application for creating custom PC configurations, managing rea
 - `/prisma` - Database schema and migrations
 - `/public` - Static assets
 
-### App Structure
+### Application Structure
 
 #### Core App Files
 - `app/layout.tsx` - Root layout
@@ -38,6 +51,7 @@ A full-stack web application for creating custom PC configurations, managing rea
 - `app/contexts/AuthContext.tsx` - Authentication context
 - `app/contexts/CartContext.tsx` - Shopping cart context
 - `app/contexts/ThemeContext.tsx` - Theme context (light/dark mode)
+- `app/contexts/WishlistContext.tsx` - Wishlist context
 
 #### Localized Pages and Routes
 - `app/[locale]/layout.tsx` - Main layout with header and footer
@@ -55,7 +69,7 @@ A full-stack web application for creating custom PC configurations, managing rea
 - `app/[locale]/configurator/page.tsx` - PC configurator tool
 
 **Shop:**
-- `app/[locale]/shop/ready-made/page.tsx` - Pre-configured PCs
+- `app/[locale]/shop/ready-made/page.tsx` - Pre-built PCs
 - `app/[locale]/shop/product/[id]/page.tsx` - Product details
 
 **Cart & Checkout:**
@@ -65,108 +79,43 @@ A full-stack web application for creating custom PC configurations, managing rea
 
 **Admin Panel:**
 - `app/[locale]/admin/page.tsx` - Admin dashboard
-- `app/[locale]/admin/components/create/page.tsx` - Create components
-- `app/[locale]/admin/components/edit/[id]/page.tsx` - Edit components
-- `app/[locale]/admin/components/view/[id]/page.tsx` - View components
-- `app/[locale]/admin/configurations/create/page.tsx` - Create configurations
-- `app/[locale]/admin/configurations/edit/[id]/page.tsx` - Edit configurations
-- `app/[locale]/admin/configurations/view/[id]/page.tsx` - View configurations
-- `app/[locale]/admin/orders/edit/[id]/page.tsx` - Edit orders
-- `app/[locale]/admin/orders/view/[id]/page.tsx` - View orders
-- `app/[locale]/admin/users/edit/[id]/page.tsx` - Edit users
-- `app/[locale]/admin/users/view/[id]/page.tsx` - View users
+- `app/[locale]/admin/components/` - Component management
+- `app/[locale]/admin/configurations/` - Configuration management
+- `app/[locale]/admin/orders/` - Order management
+- `app/[locale]/admin/users/` - User management
 
 **Specialist Panel:**
-- `app/[locale]/specialist/page.tsx` - Specialist dashboard
+- `app/[locale]/staff/page.tsx` - Specialist dashboard
+- `app/[locale]/staff/repairs/` - Repair management
 
-#### Component Structure
-- `app/components/Configurator/` - Configurator components
-  - `ComponentSelectionPanel.tsx`
-  - `SelectedComponents.tsx`
-  - `ConfigurationSummary.tsx`
-
-- `app/components/Dashboard/` - Dashboard components
-  - `ProfileTab.tsx` - User profile management
-
-- `app/components/Footer/` - Footer components
-  - `Footer.tsx`
-
-- `app/components/Header/` - Header components
-  - `Header.tsx`
-  - `LanguageSwitcher.tsx`
-  - `MobileMenu.tsx`
-
-- `app/components/Home/` - Home page components
-  - `HeroSection.tsx`
-  - `FeaturedConfigurations.tsx`
-  - `ServicesSection.tsx`
-
-- `app/components/ui/` - Shared UI components
-  - `tabs.tsx`
-
-#### API Routes
+### API Routes
 - `app/api/admin/` - Admin API routes
-  - `route.ts`
-  - `components/[id]/route.ts`
-  - `components/route.ts`
-  - `configurations/[id]/route.ts`
-  - `configurations/route.ts`
-  - `orders/[id]/route.ts`
-  - `orders/route.ts`
-  - `users/[id]/route.ts`
-  - `users/route.ts`
-
 - `app/api/auth/` - Authentication API routes
-  - `login/route.ts`
-  - `logout/route.ts`
-  - `me/route.ts`
-  - `register/route.ts`
-  - `update-profile/route.ts`
-
-- `app/api/components/route.ts` - Component data API
+- `app/api/checkout/` - Checkout API
+- `app/api/components/` - Component data API
+- `app/api/configurations/` - Configuration API
 - `app/api/dashboard/` - Dashboard data API
-  - `configurations/[id]/route.ts`
-  - `configurations/route.ts`
-  - `orders/[id]/route.ts`
-  - `orders/route.ts`
-- `app/api/shop/product/[id]/route.ts` - Shop product data API
+- `app/api/orders/` - Orders API
+- `app/api/profile/` - Profile API
+- `app/api/repairs/` - Repairs API
+- `app/api/reviews/` - Reviews API
+- `app/api/shop/` - Shop product API
+- `app/api/staff/` - Staff API
+- `app/api/wishlist/` - Wishlist API
 
-### Lib Directory
-- `lib/apiErrors.ts` - API error handling utilities
-- `lib/jwt.ts` - JWT authentication functions
-- `lib/messages/` - Internationalization message files
-  - `en.json` - English translations
-  - `lv.json` - Latvian translations
-  - `ru.json` - Russian translations
-- `lib/prismaService.ts` - Prisma client setup
-- `lib/seeder.ts` - Database seeding script
-- `lib/utils.ts` - General utility functions
-- `lib/utils/adminHelpers.tsx` - Admin panel utilities
+## Technical Specifications
 
-**Service Files:**
-- `lib/services/configuratorService.ts` - Configurator business logic
-- `lib/services/dashboardService.ts` - Dashboard data functions
-- `lib/services/shopService.ts` - Shop functionality
-- `lib/services/specialistService.ts` - Specialist panel functions
-
-### Database (Prisma)
-- `prisma/schema.prisma` - Database schema
-- `prisma/migrations/` - Database migrations
-
-### Public Directory
-- `public/uploads/profiles/` - User profile images
-- `public/file.svg`, `public/globe.svg`, etc. - Static SVG assets
-
-## Recent Updates
-
-- Added profile picture support
-- Split name field into first name and last name
-- Added phone number registration option
-- Implemented profile management in dashboard
-- Added the ability to update contact information
-- Added dual authentication with either email or phone
+- **Frontend:** Next.js 15.x (App Router), React 18
+- **Backend:** Next.js API routes
+- **Database:** MySQL 8.0 with Prisma ORM
+- **Styling:** Tailwind CSS
+- **Authentication:** JWT
+- **Internationalization:** next-intl
+- **Containers:** Docker
 
 ## Setup Instructions
+
+### Local Development
 
 1. Install dependencies:
 ```bash
@@ -188,7 +137,24 @@ npm run seed
 npm run dev
 ```
 
-## Deployment
+### Docker Setup
+
+1. Build and run containers:
+```bash
+docker-compose up -d
+```
+
+2. Access MySQL admin panel using phpMyAdmin:
+```
+http://localhost:8080
+```
+
+3. Access the application:
+```
+http://localhost:3000
+```
+
+### Production Environment
 
 Build the application for production:
 ```bash
@@ -205,3 +171,37 @@ npm start
 - Admin: admin@ivapro.com / admin123
 - Specialist: specialist@ivapro.com / admin123
 - User: user@ivapro.com / admin123
+
+## Environment Variables
+
+Create a `.env` file with the following variables:
+
+```
+# Database
+DATABASE_URL="mysql://root:password@localhost:3306/ivapro"
+
+# Authentication
+JWT_SECRET="your-secret-key-here"
+JWT_EXPIRES_IN="7d"
+
+# Stripe (for payments)
+STRIPE_SECRET_KEY="your-stripe-key"
+STRIPE_WEBHOOK_SECRET="your-stripe-webhook-key"
+
+# General settings
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+```
+
+## Recent Updates
+
+- Added profile picture support
+- Split name field into first name and last name
+- Added phone number registration option
+- Implemented profile management in dashboard
+- Added the ability to update contact information
+- Added dual authentication with either email or phone
+- Added Docker support for easy deployment
+
+## Licensing
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
