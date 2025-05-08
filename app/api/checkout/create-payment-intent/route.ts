@@ -3,18 +3,22 @@ import Stripe from 'stripe'
 import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
 import { createUnauthorizedResponse, createServerErrorResponse } from '@/lib/apiErrors'
 
-// Initialize Stripe with fallback handling for missing API key
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2023-10-16',
-});
+// Don't initialize Stripe during build time
+// Instead, initialize it lazily when the API route is actually called
+let stripe: Stripe | null = null;
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify Stripe is properly initialized
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('Missing Stripe Secret Key in environment variables');
-      return createServerErrorResponse('Payment service configuration error');
+    // Initialize Stripe only when this function is called at runtime
+    if (!stripe) {
+      const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
+      if (!stripeSecretKey) {
+        console.error('Missing Stripe Secret Key in environment variables');
+        return createServerErrorResponse('Payment service configuration error');
+      }
+      stripe = new Stripe(stripeSecretKey, {
+        apiVersion: '2023-10-16',
+      });
     }
 
     const token = getJWTFromRequest(request)
