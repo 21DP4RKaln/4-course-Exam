@@ -1,15 +1,11 @@
-FROM node:20-alpine AS base
-
-# Set environment variables for Prisma
-ENV PRISMA_QUERY_ENGINE_LIBRARY=/app/node_modules/.prisma/client/libquery_engine-linux-musl.so.node
-ENV PRISMA_SCHEMA_ENGINE_LIBRARY=/app/node_modules/.prisma/client/libquery_engine-linux-musl.so.node
+FROM node:20-slim AS base
 
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
 
-# Install necessary packages for Prisma and other dependencies - using available packages
-RUN apk add --no-cache libc6-compat openssl python3 make g++ curl
+# Install OpenSSL and other dependencies required by Prisma
+RUN apt-get update -y && apt-get install -y openssl ca-certificates
 
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./
@@ -21,8 +17,8 @@ RUN npm ci --legacy-peer-deps
 FROM base AS builder
 WORKDIR /app
 
-# Install necessary packages - using available packages
-RUN apk add --no-cache libc6-compat openssl python3 make g++
+# Install dependencies required for building
+RUN apt-get update -y && apt-get install -y openssl ca-certificates
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -38,14 +34,13 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
-ENV PRISMA_BINARIES_MIRROR=/app/node_modules/.prisma/client
 
-# Install necessary libraries for production - using available packages
-RUN apk add --no-cache libc6-compat openssl
+# Install production dependencies
+RUN apt-get update -y && apt-get install -y openssl ca-certificates
 
 # Create a non-root user and switch to it
-RUN addgroup --system --gid 1001 nodejs \
-    && adduser --system --uid 1001 nextjs
+RUN groupadd -g 1001 nodejs && \
+    useradd -m -u 1001 -g nodejs nextjs
 
 # Copy necessary files from builder
 COPY --from=builder /app/public ./public
