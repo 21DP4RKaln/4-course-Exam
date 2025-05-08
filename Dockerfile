@@ -8,8 +8,8 @@ ENV PRISMA_SCHEMA_ENGINE_LIBRARY=/app/node_modules/.prisma/client/libquery_engin
 FROM base AS deps
 WORKDIR /app
 
-# Install necessary packages for Prisma and other dependencies
-RUN apk add --no-cache libc6-compat openssl1.1-compat python3 make g++ curl
+# Install necessary packages for Prisma and other dependencies - using available packages
+RUN apk add --no-cache libc6-compat openssl python3 make g++ curl
 
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./
@@ -21,8 +21,8 @@ RUN npm ci --legacy-peer-deps
 FROM base AS builder
 WORKDIR /app
 
-# Install necessary packages
-RUN apk add --no-cache libc6-compat openssl1.1-compat python3 make g++
+# Install necessary packages - using available packages
+RUN apk add --no-cache libc6-compat openssl python3 make g++
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -40,8 +40,8 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV PRISMA_BINARIES_MIRROR=/app/node_modules/.prisma/client
 
-# Install necessary libraries for production
-RUN apk add --no-cache libc6-compat openssl1.1-compat
+# Install necessary libraries for production - using available packages
+RUN apk add --no-cache libc6-compat openssl
 
 # Create a non-root user and switch to it
 RUN addgroup --system --gid 1001 nodejs \
