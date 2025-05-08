@@ -1,4 +1,8 @@
 import fetch from 'node-fetch'
+import * as dotenv from 'dotenv'
+
+// Load environment variables from .env file
+dotenv.config()
 
 /**
  * Reset product view counts across all product types
