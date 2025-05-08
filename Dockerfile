@@ -4,6 +4,9 @@ FROM node:20-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
+# Install necessary libraries for Prisma
+RUN apk add --no-cache openssl1.1-compat
+
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./
 
@@ -16,6 +19,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Install necessary libraries for Prisma in the builder stage too
+RUN apk add --no-cache openssl1.1-compat
+
 # Generate Prisma client
 RUN npx prisma generate
 
@@ -27,6 +33,9 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
+
+# Install necessary libraries for Prisma in the production stage
+RUN apk add --no-cache openssl1.1-compat
 
 # Create a non-root user and switch to it
 RUN addgroup --system --gid 1001 nodejs \
