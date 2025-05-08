@@ -1,5 +1,8 @@
 FROM node:20-slim AS base
 
+# Set a specific npm version to avoid compatibility issues
+RUN npm install -g npm@10.2.4
+
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
@@ -10,8 +13,11 @@ RUN apt-get update -y && apt-get install -y openssl ca-certificates
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./
 
-# Use --legacy-peer-deps to ignore peer dependency conflicts
-RUN npm ci --legacy-peer-deps
+# Use a more robust approach for npm install with proper error handling
+RUN npm config set legacy-peer-deps true && \
+    npm install --no-audit --no-fund || \
+    (echo "Dependency installation failed, retrying with more verbose output" && \
+     npm install --no-audit --no-fund --verbose)
 
 # Rebuild the source code only when needed
 FROM base AS builder
