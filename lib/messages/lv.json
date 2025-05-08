@@ -1,0 +1,776 @@
+{
+  "common": {
+    "appName": "IvaPro",
+    "Text": "Augstas kvalitātes individuāli datoru komplekti un komponentes spēlētājiem, dizaineriem un profesionāļiem. Atrodamies Rīgā, Latvijā.",
+    "lightMode": "Gaišais režīms",
+    "darkMode": "Tumšais režīms",
+    "language": "Valoda",
+    "view": "Skatīt",
+    "edit": "Rediģēt",
+    "delete": "Dzēst",
+    "cancel": "Atcelt",
+    "confirm": "Apstiprināt",
+    "save": "Saglabāt",
+    "update": "Atjaunināt",
+    "updating": "Atjaunina...",
+    "search": "Meklēt",
+    "filter": "Filtrēt",
+    "sort": "Kārtot",
+    "uploadFile": "Augšupielādēt failu",
+    "orDragAndDrop": "vai ievelciet un nometiet",
+    "imageFormats": "PNG, JPG, GIF līdz 10MB",
+    "completing": "Apstrādā...",
+    "loading": "Ielāde...",
+    "loadingSection": "Ielādē sadaļu...",
+    "processingData": "Apstrādā datus...",
+    "fetchingData": "Iegūst datus...",
+    "back": "Atpakaļ",
+    "description": "Apraksts",
+    "noDescription": "Nav pieejams apraksts",
+    "createdDate": "Izveidošanas datums",
+    "welcome": "Laipni lūgti"
+  },
+  "nav": {
+    "home": "Sākums",
+    "options": "Ātrās Saites",
+    "products": "Produkti",
+    "services": "Pakalpojumi",
+    "workingHours": "Darba Laiks",
+    "configurator": "Datora Konstruktors",
+    "readyMade": "Gatavie Datori",
+    "components": "Komponentes",
+    "peripherals": "Perifērijas Ierīces",
+    "repairs": "Remonts",
+    "about": "Par Mums",
+    "login": "Ienākt",
+    "register": "Reģistrēties",
+    "logout": "Iziet",
+    "dashboard": "Profils",
+    "cart": "Grozs",
+    "close": "Aizvērt",
+    "Name": "Individuāli Datori Tavām Vajadzībām",
+    "Info": "Mēs veidojam augstas veiktspējas individuālus datorus spēlēm, satura veidošanai un profesionālai lietošanai ar rūpīgi atlasītām kvalitatīvām komponentēm.",
+    "shipping": "Bezmaksas piegāde Latvijā",
+    "warranty": "3 gadu garantija",
+    "support": "24/7 Tehniskais atbalsts",
+    "Popular": "Populārās Konfigurācijas",
+    "topPick": "Top Izvēle",
+    "popular": "Populārs",
+    "discount": "-{percent}%",
+    "Choose": "Kāpēc Izvēlēties Mūs",
+    "Answer": "Mēs esam apņēmušies veidot visaugstākās kvalitātes individuālos datorus ar pārbaudītām komponentēm un izcilu klientu apkalpošanu.",
+    "Building": "Eksperta Datoru Montāža",
+    "Validation": "Komponenšu Validācija",
+    "Quality": "Kvalitātes Garantija",
+    "Support": "Uzticams Atbalsts",
+    "Text1": "Mūsu tehniķi rūpīgi veido katru datoru ar uzmanību pret detaļām, lai nodrošinātu optimālu veiktspēju un uzticamību.",
+    "Text2": "Mēs testējam katru komponenti atsevišķi pirms montāžas, lai nodrošinātu maksimālu savietojamību un stabilitāti.",
+    "Text3": "Katra sistēma iziet rūpīgu testēšanu, ieskaitot stresa testus, temperatūras uzraudzību un veiktspējas pārbaudi.",
+    "Text4": "Mūsu tehniskā atbalsta komanda ir pieejama 24/7, lai palīdzētu ar jebkuriem jautājumiem vai problēmām.",
+    "readyToBuild": "Gatavs Veidot Savu Sapņu Datoru?",
+    "customPcDesc": "Neatkarīgi no tā, vai esat spēlētājs, satura veidotājs vai profesionālis, mēs palīdzēsim izveidot ideālo datoru jūsu specifiskajām vajadzībām un budžetam.",
+    "startBuilding": "Sākt Veidošanu"
+  },
+  "buttons": {
+    "viewAll": "Skatīt visus",
+    "addToCart": "Pievienot grozam",
+    "addToWishlist": "Pievienot vēlmju sarakstam",
+    "view": "Skatīt visus",
+    "selected": "Izvēlēts",
+    "select": "Izvēlēties",
+    "compare": "Salīdzināt",
+    "filter": "Filtrēt",
+    "backToHome": "Atpakaļ uz Sākumlapu",
+    "login": "Ienākt",
+    "back": "Atpakaļ"
+  },
+  "footer": {
+    "contact": "Sazinies ar Mums",
+    "copyright": "© 2025 IvaPro. Visas tiesības aizsargātas.",
+    "privacyPolicy": "Privātuma Politika",
+    "termsOfService": "Pakalpojuma Noteikumi"
+  },
+  "contact": {
+    "address": "Brīvības iela 123, Rīga, LV-1001, Latvija",
+    "phone": "+371 29 123 456",
+    "email": "info@ivapro.com",
+    "workingHours": "Pirmdiena - Piektdiena: 9:00 - 19:00",
+    "weekends": "Brīvdienas: 10:00 - 16:00"
+  },
+  "error": {
+    "loadingConfigs": "Neizdevās ielādēt konfigurācijas"
+  },
+  "errors": {
+    "404": "Lapa nav atrasta",
+    "404Message": "Meklētā lapa neeksistē.",
+    "500": "Servera Kļūda",
+    "500Message": "Mūsu pusē kaut kas nogāja greizi. Lūdzu, mēģiniet vēlāk.",
+    "goBack": "Atgriezties uz sākumlapu",
+    "offline": "Jūs esat bezsaistē",
+    "offlineMessage": "Lūdzu, pārbaudiet savu interneta savienojumu un mēģiniet vēlreiz.",
+    "productIdMissing":"Produkta ID trūkst",
+    "errorsfailedToLoad":"Neizdevās ielādēt datus",
+    "invalidProductData":"Nederīgi produkta dati",
+    "failedToLoad":"Neizdevās ielādēt",
+    "notFound":"Neatrasts",
+    "productNotExist":"Jūsu meklētais produkts neeksistē vai ir noņemts.",
+    "unauthorized": {
+      "title": "Piekļuve Liegta",
+      "message": "Jums nav atļaujas piekļūt šai lapai."
+    }
+  },
+  "product": {
+    "imageAlt": "Produkta attēls",
+    "viewDetails": "Skatīt Detaļas",
+    "saveAmount":"Saglabāt",
+    "onlyFewLeft":"{count: product.stock}, Tikai ${product.stock} atlikušas",
+    "inStock":"Pieejams",
+    "outOfStock":"Nav pieejams",
+    "quantity":"Daudzums",
+    "decreaseQuantity":"Samazināt daudzumu",
+    "increaseQuantity":"Palielināt daudzumu",
+    "buyNow":"Pirkt Tagad",
+    "copied":"Kopēts!",
+    "share":"Dalīties",
+    "freeShipping":"Bezmaksas piegāde pasūtījumiem Rīga",
+    "warrantyIncluded":"Garantija 2 gadi",
+    "estimatedDelivery":"Paredzamais piegādes laiks: 3-5 darba dienas",
+    "tabs": {
+      "description": "Apraksts",
+      "specifications": "Specifikācijas",
+      "reviews": "Atsauksmes"
+    },
+    "noSpecifications":"Nav pieejamas specifikācijas"
+  },
+  "dashboard": {
+    "profileInfo": "Profila Informācija",
+    "complete": "Papildiniet savu profilu",
+    "completeMessage": "Lai pilnībā izmantotu savu kontu, lūdzu, norādiet savu {field}",
+    "email": "e-pastu",
+    "phone": "tālruņa numuru",
+    "updateSuccess": "Jūsu profils ir veiksmīgi atjaunināts",
+    "wishlist": "Vēlmju Saraksts",
+    "emptyWishlist": "Jūsu vēlmju saraksts ir tukšs",
+    "emptyWishlistMessage": "Saglabājiet savus iecienītos produktus, lai sekotu līdzi tam, kas jūs interesē",
+    "profileSection": {
+      "firstName": "Vārds",
+      "firstNamePlaceholder": "Ievadiet savu vārdu",
+      "lastName": "Uzvārds",
+      "lastNamePlaceholder": "Ievadiet savu uzvārdu",
+      "emailAddress": "E-pasta Adrese",
+      "emailPlaceholder": "Ievadiet savu e-pasta adresi",
+      "phoneNumber": "Tālruņa Numurs",
+      "phonePlaceholder": "Ievadiet savu tālruņa numuru",
+      "changePassword": "Mainīt Paroli",
+      "newPassword": "Jaunā Parole",
+      "confirmPassword": "Apstipriniet Paroli",
+      "passwordPlaceholder": "Ievadiet savu paroli"
+    },
+    "validation": {
+      "emailOrPhone": "Lūdzu, norādiet vismaz e-pasta adresi vai tālruņa numuru",
+      "emailInvalid": "Lūdzu, ievadiet derīgu e-pasta adresi",
+      "phoneLength": "Tālruņa numuram jābūt vismaz 6 rakstzīmēm",
+      "passwordMismatch": "Paroles nesakrīt",
+      "passwordLength": "Parolei jābūt vismaz 8 rakstzīmēm",
+      "profileError": "Neizdevās atjaunināt profilu",
+      "pleaseProvide": "Lūdzu, norādiet vai nu e-pasta adresi, vai tālruņa numuru, lai saņemtu svarīgus atjauninājumus un pasūtījuma informāciju"
+    },
+    "profileImage": {
+      "altText": "Profila Fotogrāfija",
+      "changeText": "Klikšķiniet, lai mainītu profila attēlu"
+    },
+    "formActions": {
+      "cancel": "Atcelt",
+      "updateProfile": "Atjaunināt Profilu"
+    },
+    "quickActions": "Ātrās Saites",
+    "recentActivity": "Nesenā Aktivitāte",
+    "noRecentActivity": "Nav nesenās aktivitātes",
+    "actions": {
+      "createConfig": "Izveidot konfigurāciju",
+      "viewRepairs": "Skatīt remontus",
+      "pendingConfigs": "Gaidošās konfigurācijas",
+      "viewInventory": "Skatīt inventāru",
+      "viewUsers": "Skatīt lietotājus",
+      "financialReports": "Finanšu atskaites",
+      "analytics": "Analītika",
+      "viewOrders": "Skatīt pasūtījumus"
+    },
+    "title": "Panelis",
+    "myConfigurations": "Manas Konfigurācijas",
+    "myOrders": "Mani Pasūtījumi",
+    "profile": "Profils",
+    "noConfigurations": "Jums vēl nav nevienas konfigurācijas",
+    "noOrders": "Jums vēl nav neviena pasūtījuma"
+  },
+    "about": {
+      "subtitle": "Mēs esam Latvijas vadošais individuālo datoru ražotājs, kas specializējas augstas veiktspējas datoru izgatavošanā ar kvalitatīvām komponentēm.",
+      "ourStory": "Mūsu Stāsts",
+      "storyParagraph1": "IvaPro sāka 2018. gadā, kad tehnoloģiju entuziastu grupa nolēma apvienot savu aizraušanos ar datoriem ar profesionālu pieredzi.",
+      "storyParagraph2": "Tas, kas sākās kā maza darbnīca Rīgā, ir izaudzis par vienu no uzticamākajiem individuālo datoru uzņēmumiem Latvijā, apkalpojot spēlētājus, satura veidotājus un profesionāļus.",
+      "storyParagraph3": "Mūsu apņemšanās nodrošināt kvalitāti un klientu apmierinātību joprojām ir visa mūsu darba pamatā.",
+      "coreValues": "Mūsu Pamatvērtības",
+      "qualityTitle": "Kvalitāte",
+      "qualityText": "Mēs izmantojam tikai premium komponentes no uzticamiem ražotājiem, lai nodrošinātu uzticamību un veiktspēju.",
+      "expertiseTitle": "Ekspertīze",
+      "expertiseText": "Mūsu komanda sastāv no sertificētiem tehniķiem ar ilggadēju pieredzi datoru montāžā un problēmu novēršanā.",
+      "satisfactionTitle": "Klientu Apmierinātība",
+      "satisfactionText": "Mēs darām visu iespējamo, lai nodrošinātu, ka mūsu klienti ir apmierināti ar savām individuāli būvētajām sistēmām.",
+      "byTheNumbers": "IvaPro Skaitļos",
+      "statComputers": "Uzbūvētie Datori",
+      "statCustomers": "Apmierināti Klienti",
+      "statOrders": "Izpildītie Pasūtījumi",
+      "statExperience": "Gadu Pieredze",
+      "customerReviews": "Ko Saka Mūsu Klienti",
+      "NoReviews": "Šobrīd nav pieejamas atsauksmes",
+      "viewAllReviews": "Skatīt visas atsauksmes Google",
+      "journey": "Mūsu Ceļojums",
+      "visitStore": "Apmeklē Mūsu Veikalu",
+      "storeAddress": "Mūsu Atrašanās Vieta",
+      "openingHours": "Darba Laiks",
+      "phone": "Tālrunis",
+      "email": "E-pasts",
+      "ctaTitle": "Gatavs uzlabot savu datora pieredzi?",
+      "ctaText": "Neatkarīgi no tā, vai jums ir nepieciešams individuāls spēļu dators, darbstacija satura veidošanai vai tikai jūsu pašreizējās sistēmas uzlabojums, mēs esam šeit, lai palīdzētu.",
+      "startBuilding": "Sākt Veidošanu",
+      "browseReadyMade": "Skatīt Gatavos Datorus",
+      "team": [
+        {
+          "name": "Alekss Petrovs",
+          "position": "Dibinātājs un Vadošais Tehniķis",
+          "bio": "Datoru entuziasts ar vairāk nekā 10 gadu pieredzi individuālo datoru būvēšanā."
+        },
+        {
+          "name": "Laura Bērziņa",
+          "position": "Klientu Attiecību Vadītāja",
+          "bio": "Veltīta tam, lai katram klientam būtu izcila pieredze ar IvaPro."
+        },
+        {
+          "name": "Mārtiņš Ozols",
+          "position": "Tehniskā Atbalsta Speciālists",
+          "bio": "Eksperts problēmu novēršanā un optimālas datora veiktspējas uzturēšanā."
+        }
+      ],
+      "milestones": [
+        {
+          "year": "2025",
+          "title": "IvaPro Dibināšana",
+          "description": "Sākās kā maza darbnīca ar fokusu uz individuāliem spēļu datoriem."
+        },
+        {
+          "year": "2027",
+          "title": "1000. Datora Izveide",
+          "description": "Sasniedzām nozīmīgu atskaites punktu ar mūsu 1000. individuālā datora izveidi."
+        },
+        {
+          "year": "2030",
+          "title": "Jaunās Mājaslapas Palaišana",
+          "description": "Ieviešām jaunu tiešsaistes datoru konfiguratoru vienkāršākai individuālo datoru izveidei."
+        }
+      ]
+    },
+    "categoryPage": {
+      "backTo": "Atpakaļ uz {type}",
+      "filters": "Filtri",
+      "searchPlaceholder": "Meklēt produktus...",
+      "sortBy": "Kārtot pēc",
+      "item": "prece",
+      "items": "preces",
+      "noProductsFound": "Produkti nav atrasti",
+      "noCriteriaMatch": "Mēģiniet pielāgot filtrus vai meklēšanas nosacījumus",
+      "resetFilters": "Atiestatīt Filtrus",
+      "fetchError": "Kļūda ielādējot {type}",
+      "tryAgain": "Mēģināt Vēlreiz",
+      "sortOptions": {
+        "priceAsc": "Cena: No zemākās",
+        "priceDesc": "Cena: No augstākās",
+        "nameAsc": "Nosaukums: A līdz Z",
+        "nameDesc": "Nosaukums: Z līdz A",
+        "stockDesc": "Pieejamība"
+      },
+      "filterGroups": {
+        "manufacturer": "Ražotājs",
+        "general": "Vispārīgi",
+        "model": "Modelis",
+        "socket": "Ligzda",
+        "cores": "Kodoli",
+        "threads": "Pavedienti",
+        "frequency": "Frekvence",
+        "architecture": "Arhitektūra",
+        "memory": "Atmiņa",
+        "memoryType": "Atmiņas Tips",
+        "interface": "Interfeiss",
+        "sensor": "Sensors",
+        "dpi": "DPI",
+        "rgb": "RGB",
+        "connection": "Savienojums",
+        "wireless": "Bezvadu",
+        "switches": "Slēdži",
+        "polling": "Aptaujas Ātrums",
+        "capacity": "Ietilpība",
+        "speed": "Ātrums",
+        "cas": "CAS Latentums"
+      }
+    },
+    "configurator": {
+    "title": "Datora Konfigurācija",
+    "selectComponent": "Izvēlieties komponenti",
+    "componentGrid": {
+      "noComponents": "Netika atrasta neviena komponente"
+    },
+    "componentsList": {
+      "yourConfiguration": "Jūsu Konfigurācija",
+      "configurationName": "Konfigurācijas nosaukums",
+      "change": "Mainīt",
+      "totalPrice": "Kopējā cena",
+      "addToCart": "Pievienot grozam",
+      "saveAsDraft": "Saglabāt kā melnrakstu",
+      "submit": "Iesniegt",
+      "emptySlotPlaceholder": "Klikšķiniet, lai izvēlētos"
+    },
+    "compatibility": {
+      "allCompatible": "Visas komponentes ir savietojamas",
+      "compatibilityIssuesDetected": "Konstatētas savietojamības problēmas",
+      "compatibilityIssues": "Savietojamības problēmas",
+      "estimatedPower": "Aprēķinātais patēriņš",
+      "recommendedPsu": "Ieteicamais barošanas bloks",
+      "powerNote": "Aprēķinātais strāvas patēriņš:",
+      "warnings": {
+        "cpuMotherboardIncompatible": {
+          "amd": "AMD procesors nav savietojams ar šo mātesplati",
+          "intel": "Intel procesors nav savietojams ar šo mātesplati"
+        },
+        "caseMotherboardIncompatible": {
+          "tooSmall": "Atlasītais korpuss ir pārāk mazs ATX mātesplatēm",
+          "mayBeSmall": "Mātesplate var neatbalstīt Micro-ATX korpusu"
+        },
+        "psuInsufficient": "Barošanas bloks ({psuWattage}W) var būt nepietiekams ({requiredWattage}W)"
+      }
+    },
+    "search": "Meklēt komponentes",
+    "filters": {
+      "price": "Cena",
+      "manufacturer": "Ražotājs",
+      "cores": "Kodoli",
+      "threads": "Pavedieni",
+      "socket": "Ligzda",
+      "frequency": "Frekvence",
+      "maxRam": "Maksimālā RAM",
+      "ramFrequency": "RAM frekvence",
+      "techProcess": "Tehnoloģiskais process",
+      "vram": "Video RAM",
+      "cooling": "Dzesēšana",
+      "memorySlots": "Atmiņas sloti",
+      "cpuSupport": "Procesora atbalsts",
+      "memoryType": "Atmiņas tips",
+      "gpuSlots": "Videokartes sloti",
+      "sataPorts": "SATA porti",
+      "m2Slots": "M.2 sloti",
+      "features": "Funkcijas",
+      "format": "Formāts",
+      "capacity": "Ietilpība",
+      "nvme": "NVMe",
+      "tdp": "TDP",
+      "heatpipes": "Siltumcaurules",
+      "wattage": "Jauda",
+      "certification": "Sertifikācija",
+      "watercooling": "Ūdensdzese",
+      "services": "Pakalpojumi",
+      "cpuBrand": "Procesora zīmols",
+      "cpuSeries": "Procesora sērija",
+      "gpuBrand": "Videokartes zīmols",
+      "gpuSeries": "Videokartes sērija"
+    },
+    "specs": {
+      "cores": "Kodoli",
+      "threads": "Pavedieni",
+      "baseClock": "Bāzes takts",
+      "formFactor": "Formāts",
+      "socket": "Ligzda",
+      "memory": "Atmiņa",
+      "capacity": "Ietilpība",
+      "bandwidth": "Caurlaidspēja",
+      "vram": "Video RAM",
+      "wattage": "Jauda",
+      "efficiency": "Efektivitāte",
+      "coolingType": "Dzesēšanas tips",
+      "rgb": "RGB apgaismojums",
+      "speed": "Ātrums"
+    },
+    "quickFilters": {
+      "quickFilters": "Ātrie filtri",
+      "cpuTypes": "Procesora tipi",
+      "graphicsCardSeries": "Videokartes sērijas",
+      "motherboardTypes": "Mātesplates tipi",
+      "memoryTypes": "Atmiņas tipi",
+      "storageTypes": "Atmiņas ierīces",
+      "powerSupplyWattage": "Barošanas bloka jauda"
+    },
+    "actions": {
+      "saved": "Konfigurācija veiksmīgi saglabāta",
+      "submitted": "Konfigurācija veiksmīgi iesniegta",
+      "addedToCart": "Konfigurācija pievienota grozam",
+      "errors": {
+        "saveFailed": "Neizdevās saglabāt konfigurāciju",
+        "submitFailed": "Neizdevās iesniegt konfigurāciju",
+        "missingComponents": "Trūkst šādas obligātās komponentes: {components}",
+        "emptyConfiguration": "Konfigurācija ir tukša"
+      }
+    },
+    "categoryList": {
+      "selectCategory": "Komponenšu kategorijas"
+    }
+  },
+  "components": {
+    "name": "Komponentes",
+    "cpu": "Procesors",
+    "motherboard": "Mātesplate",
+    "gpu": "Videokarte",
+    "ram": "Operatīvā atmiņa",
+    "storage": "Datu glabātuve",
+    "case": "Korpuss",
+    "cooling": "Dzesēšana",
+    "psu": "Barošanas bloks",
+    "peripherals": "Perifērija"
+  },
+  "privacyPolicy": {
+  "title": "Privātuma Politika",
+  "lastUpdated": "Pēdējie Atjauninājumi",
+  "introduction": {
+    "title": "Ievads",
+    "content": "Šī Privātuma politika paskaidro, kā IvaPro ievāc, izmanto un aizsargā jūsu personisko informāciju, kad izmantojat mūsu pakalpojumus."
+  },
+  "dataCollection": {
+    "title": "Informācija, Ko Mēs Ievācam",
+    "content": "Mēs varam ievākt šādus informācijas veidus:",
+    "identityData": "Identitātes Dati",
+    "identityDataDesc": "Vārds, uzvārds, lietotājvārds un cita identificējoša informācija.",
+    "contactData": "Kontaktinformācija",
+    "contactDataDesc": "E-pasta adrese, tālruņa numurs, norēķinu un piegādes adrese.",
+    "technicalData": "Tehniskie Dati",
+    "technicalDataDesc": "IP adrese, pārlūkprogrammas veids, ierīces informācija, lietošanas dati."
+  },
+  "dataUsage": {
+    "title": "Kā Mēs Izmantojam Jūsu Informāciju",
+    "content": "Mēs izmantojam jūsu informāciju, lai nodrošinātu savus pakalpojumus, apstrādātu maksājumus, sazinātos ar jums un uzlabotu jūsu pieredzi."
+  },
+  "dataSecurity": {
+    "title": "Datu Drošība",
+    "content": "Mēs ieviešam atbilstošus drošības pasākumus, lai aizsargātu jūsu personisko informāciju no neatļautas piekļuves vai izpaušanas."
+  },
+  "dataRetention": {
+    "title": "Datu Saglabāšana",
+    "content": "Mēs saglabājam jūsu informāciju tikai tik ilgi, cik nepieciešams, lai izpildītu mērķus, kuriem tā tika ievākta."
+  },
+  "legalRights": {
+    "title": "Jūsu Likumīgās Tiesības",
+    "content": "Jums ir tiesības piekļūt, labot, dzēst, ierobežot apstrādi un pārnest savus personas datus."
+  },
+  "contact": {
+    "title": "Sazinieties ar Mums",
+    "email": "E-pasts",
+    "phone": "Tālrunis",
+    "address": "Adrese"
+  },
+  "changes": {
+    "title": "Izmaiņas Šajā Politikā",
+    "content": "Mēs varam atjaunināt šo Privātuma politiku laiku pa laikam. Jebkuras izmaiņas tiks publicētas šajā lapā."
+  }
+},
+"termsOfService": {
+  "title": "Pakalpojuma Noteikumi",
+  "lastUpdated": "Pēdējie Atjauninājumi",
+  "introduction": {
+    "title": "Ievads",
+    "content": "Šie Pakalpojuma noteikumi regulē jūsu IvaPro tīmekļa vietnes un pakalpojumu izmantošanu. Piekļūstot mūsu vietnei vai izmantojot mūsu pakalpojumus, jūs piekrītat šiem noteikumiem."
+  },
+  "registration": {
+    "title": "Konta Reģistrācija"
+  },
+  "pricingPayment": {
+    "priceChanges": "Mūsu produktu cenas var mainīties bez iepriekšēja brīdinājuma. Mēs paturam tiesības mainīt vai pārtraukt jebkuru produktu vai pakalpojumu bez brīdinājuma.",
+    "paymentRequired": "Maksājums ir nepieciešams pirkuma brīdī. Mēs pieņemam kredītkartes, bankas pārskaitījumus un citus maksājumu veidus, kas norādīti norēķinu laikā.",
+    "processing": "Jūsu maksājuma informācija tiek droši apstrādāta caur mūsu maksājumu apstrādātājiem. Mēs neglabājam pilnīgu kredītkartes informāciju savos serveros."
+  },
+  "shipping": {
+    "title": "Piegāde un Piegādes Laiki",
+    "estimates": "Piegādes laiki ir aptuveni un nevar tikt garantēti. Piegādes laiki var atšķirties atkarībā no jūsu atrašanās vietas un citiem faktoriem.",
+    "responsibility": "Mēs neesam atbildīgi par kavēšanos piegādē muitas apstrādes vai citu faktoru dēļ, kas ir ārpus mūsu kontroles.",
+    "accuracy": "Mēs cenšamies precīzi attēlot mūsu produktu krāsas un īpašības, bet nevaram garantēt, ka jūsu datora monitora attēlojums ir precīzs."
+  },
+  "warranty": {
+    "title": "Garantija un Atgriešana",
+    "manufacturer": "Komponentiem ir oriģinālā ražotāja garantija. Informācija par katru komponenti tiks sniegta iegādes brīdī.",
+    "customPc": "Individuāli būvētiem datoriem ir 2 gadu darba garantija no piegādes datuma.",
+    "returns": "Produktus var atgriezt 14 dienu laikā no saņemšanas, ja tie ir oriģinālajā stāvoklī un iepakojumā.",
+    "condition": "Atgrieztajiem priekšmetiem jābūt oriģinālajā stāvoklī un iepakojumā, ar visiem piederumiem un dokumentāciju."
+  },
+  "intellectual": {
+    "title": "Intelektuālais Īpašums",
+    "content": "Viss šīs vietnes saturs, ieskaitot tekstu, grafiku, logotipus, attēlus un programmatūru, ir IvaPro īpašums un to aizsargā autortiesības un citi intelektuālā īpašuma likumi."
+  },
+  "liability": {
+    "title": "Atbildības Ierobežojums",
+    "limitation": "IvaPro nav atbildīgs par jebkādiem tiešiem, netiešiem, nejaušiem, īpašiem vai izrietošiem zaudējumiem, kas radušies, izmantojot vai nespējot izmantot mūsu produktus vai pakalpojumus.",
+    "indirect": "Mēs neesam atbildīgi par jebkādiem bojājumiem jūsu datorsistēmai vai datu zudumiem, kas radušies, lejupielādējot vai izmantojot materiālus no mūsu vietnes."
+  },
+  "governing": {
+    "title": "Piemērojamie Likumi",
+    "content": "Šie noteikumi tiks pārvaldīti un interpretēti saskaņā ar Latvijas likumiem, neņemot vērā tās tiesību normu kolīziju noteikumus."
+  },
+  "changes": {
+    "title": "Izmaiņas Noteikumos",
+    "content": "Mēs paturam tiesības mainīt šos noteikumus jebkurā laikā. Izmaiņas stāsies spēkā nekavējoties pēc to publicēšanas šajā vietnē."
+  },
+  "contact": {
+    "title": "Kontaktinformācija",
+    "content": "Ja jums ir kādi jautājumi par šiem Noteikumiem, lūdzu, sazinieties ar mums",
+    "email": "E-pasts",
+    "phone": "Tālrunis",
+    "address": "Adrese"
+  }
+},
+"shop": {
+  "filters": {
+    "showFilters": "Rādīt Filtrus",
+    "hideFilters": "Slēpt Filtrus",
+    "searchPlaceholder": "Meklēt produktus...",
+    "sortOptions": {
+      "priceAsc": "Cena: No zemākās",
+      "priceDesc": "Cena: No augstākās",
+      "nameAsc": "Nosaukums: A līdz Z",
+      "nameDesc": "Nosaukums: Z līdz A",
+      "ratingDesc": "Vērtējums: No augstākā"
+    },
+    "category": "Kategorija",
+    "processor": "Procesors",
+    "graphicsCard": "Videokarte",
+    "memory": "Atmiņa",
+    "storage": "Datu glabātuve",
+    "resetAll": "Atiestatīt Visus",
+    "applyFilters": "Pielietot Filtrus",
+    "allCategories": "Visas Kategorijas",
+    "allStatus": "Visi Statusi",
+    "gaming": "Spēlēm",
+    "workstation": "Darbstacijas", 
+    "office": "Birojam",
+    "budget": "Budžeta",
+    "draft": "Melnraksts",
+    "approved": "Apstiprināts",
+    "published": "Publicēts"
+  },
+  "table": {
+    "name": "Nosaukums",
+    "category": "Kategorija",
+    "price": "Cena",
+    "status": "Statuss",
+    "visibility": "Redzamība",
+    "views": "Skatījumi",
+    "actions": "Darbības",
+    "public": "Publisks",
+    "private": "Privāts"
+  },
+  "product": {
+    "addToCart": "Pievienot grozam",
+    "addToWishlist": "Pievienot vēlmju sarakstam",
+    "removeFromWishlist": "Noņemt no vēlmju saraksta",
+    "newBadge": "Jauns",
+    "offBadge": "-{percentage}% Atlaide",
+    "featuredBadge": "Izcilts"
+  },
+  "actions": {
+    "publishToShop": "Publicēt veikalā",
+    "viewInShop": "Skatīt veikalā"
+  },
+  "components": "Komponentes",
+  "status": {
+    "published": "Publicēts",
+    "draft": "Melnraksts",
+    "approved": "Apstiprināts",
+    "pending": "Gaida"
+  },
+  "visibility": {
+    "public": "Publisks",
+    "private": "Privāts"
+  }
+},
+"reviewComponents": {
+  "customerReviews": "Klientu Atsauksmes",
+  "outOf5": "no 5",
+  "reviewCount": "{count} {count, plural, one {atsauksme} other {atsauksmes}}",
+  "writeReview": "Rakstīt Atsauksmi",
+  "writeReviewTitle": "Rakstiet Savu Atsauksmi",
+  "ratingLabel": "Jūsu Vērtējums",
+  "purchaseDateLabel": "Iegādes Datums (Neobligāti)",
+  "reviewTextLabel": "Jūsu Atsauksme",
+  "reviewPlaceholder": "Dalieties ar savu pieredzi par šo produktu...",
+  "cancel": "Atcelt",
+  "submitReview": "Iesniegt Atsauksmi",
+  "submitting": "Iesniedz...",
+  "submitSuccess": "Jūsu atsauksme ir veiksmīgi iesniegta!",
+  "yes": "Jā",
+  "no": "Nē",
+  "helpfulVote": "Vai šī atsauksme bija noderīga?",
+  "noReviewsText": "Vēl nav atsauksmju. Esiet pirmais, kas dalās ar savām domām!",
+  "loadMoreReviews": "Ielādēt Vairāk Atsauksmju",
+  "purchased": "Iegādāts:",
+  "hasReviewed": "Jūs esat novērtējis šo produktu"
+},
+"reviewErrors": {
+  "notAuthenticated": "Jums jābūt pieteiktam, lai iesniegtu atsauksmi",
+  "emptyComment": "Lūdzu, ievadiet savu atsauksmi",
+  "submitFailed": "Neizdevās iesniegt atsauksmi",
+  "voteFailed": "Neizdevās balsot par atsauksmi",
+  "requirePurchase": "Nepieciešams iegādāties, lai rakstītu atsauksmi"
+},
+"auth": {
+  "loginTitle": "Piesakieties, lai rakstītu atsauksmi",
+  "logout": "Iziet"
+},
+"admin": {
+  "dashboard": {
+    "title": "Administrācijas panelis",
+    "totalUsers": "Kopējais lietotāju skaits",
+    "newUsersThisMonth": "Jauni lietotāji šomēnes",
+    "totalOrders": "Kopējais pasūtījumu skaits",
+    "ordersThisMonth": "Pasūtījumi šomēnes",
+    "totalRevenue": "Kopējie ieņēmumi",
+    "revenueThisMonth": "Ieņēmumi šomēnes",
+    "inventory": "Inventārs",
+    "lowStock": "Zems krājums",
+    "pendingRepairs": "Gaidošie remonti",
+    "requiresAttention": "Nepieciešama uzmanība",
+    "activeRepairs": "Aktīvie remonti",
+    "inProgress": "Procesā",
+    "pendingConfigurations": "Gaidošās konfigurācijas",
+    "awaitingReview": "Gaida pārskatīšanu",
+    "approvedConfigurations": "Apstiprinātās konfigurācijas",
+    "thisMonth": "Šomēnes"
+  },
+  "charts": {
+    "repairMetrics": "Remonta metrika",
+    "pending": "Gaidoši",
+    "inProgress": "Procesā",
+    "completed": "Pabeigts",
+    "cancelled": "Atcelts",
+    "revenue": "Ieņēmumi",
+    "expenses": "Izdevumi",
+    "profit": "Peļņa",
+    "orders": "Pasūtījumi",
+    "sales": "Pārdošana",
+    "configurations": "Konfigurācijas",
+    "components": "Komponentes",
+    "peripherals": "Perifērijas ierīces",
+    "total": "Kopā",
+    "stockLevels": "Krājumu līmeņi",
+    "category": "Kategorija",
+    "stockCount": "Krājumu skaits",
+    "totalValue": "Kopējā vērtība",
+    "userGrowth": "Lietotāju pieaugums",
+    "newUsers": "Jauni lietotāji",
+    "totalUsers": "Kopējais lietotāju skaits",
+    "pendingReview": "Gaida pārskatīšanu",
+    "approved": "Apstiprināts",
+    "rejected": "Noraidīts",
+    "configurationDetail": "Konfigurācijas detaļas",
+    "overview": "Pārskats",
+    "history":"Vēsture",
+    "status":"Statuss",
+    "totalPrice":"Kopējā cena",
+    "description":"Apraksts",
+    "createdBy":"Izveidojis",
+    "createdOn":"Izveidots",
+    "visibility":"Redzamība",
+    "template":"Šablons",
+    "public":"Publisks",
+    "componentSummary":"Komponentu kopsavilkums",
+    "historyText":"Konfigurācijas vēsture tiks ieviesta šeit",
+    "close":"Aizvērt"
+  }
+},
+"specialist": {
+  "dashboard": {
+    "pendingRepairs": "Gaidošie remonti",
+    "requiresAttention": "Nepieciešama uzmanība",
+    "activeRepairs": "Aktīvie remonti",
+    "inProgress": "Procesā",
+    "pendingConfigurations": "Gaidošās konfigurācijas",
+    "awaitingReview": "Gaida pārskatīšanu",
+    "approvedConfigurations": "Apstiprinātās konfigurācijas",
+    "thisMonth": "Šomēnes"
+  }
+},
+"staff": {
+  "dashboard": "Panelis",
+  "repairs": "Remonti",
+  "configurations": "Konfigurācijas",
+  "components": "Komponentes",
+  "peripherals": "Perifērijas ierīces",
+  "readyPCs": "Gatavie datori",
+  "users": "Lietotāji",
+  "orders": "Pasūtījumi",
+  "financial": "Finanses",
+  "marketing": "Mārketings",
+  "analytics": "Analītika",
+  "settings": "Iestatījumi",
+  "documentation": "Dokumentācija",
+  "support": "Atbalsts",
+  "version": "Versija",
+  "quickActions": "Ātrās darbības"
+},
+"repairs": {
+  "title": "Remontu pārvaldība",
+  "id": "ID",
+  "customer": "Klients",
+  "status": {
+    "pending": "Gaida",
+    "diagnosing": "Diagnostika",
+    "waiting_for_parts": "Gaida detaļas",
+    "in_progress": "Procesā",
+    "completed": "Pabeigts",
+    "cancelled": "Atcelts"
+  },
+  "priority": {
+    "urgent": "Steidzams",
+    "high": "Augsts",
+    "normal": "Normāls",
+    "low": "Zems"
+  },
+  "created": "Izveidots",
+  "updated": "Atjaunināts",
+  "cost": "Izmaksas",
+  "actions": "Darbības",
+  "updateStatus": "Atjaunināt statusu",
+  "markInProgress": "Atzīmēt kā procesā",
+  "markCompleted": "Atzīmēt kā pabeigtu",
+  "cancel": "Atcelt",
+  "complete": "Pabeigt",
+  "completeRepair": "Pabeigt remontu",
+  "finalCost": "Galīgās izmaksas",
+  "completionNotes": "Pabeigšanas piezīmes",
+  "completionNotesPlaceholder": "Ievadiet detalizētu informāciju par paveikto remontu...",
+  "attachImage": "Pievienot attēlu",
+  "completing": "Notiek pabeigšana...",
+  "noRepairs": "Nav atrasts neviens remonts",
+  "searchPlaceholder": "Meklēt remontus...",
+  "allStatuses": "Visi statusi",
+  "notFound": "Remonts nav atrasts",
+  "customerInfo": "Klienta informācija",
+  "repairInfo": "Remonta informācija",
+  "description": "Apraksts",
+  "diagnosticNotes": "Diagnostikas piezīmes",
+  "device": "Ierīce",
+  "specialists": "Speciālisti",
+  "partsUsed": "Izmantotās detaļas",
+  "part": "Detaļa",
+  "quantity": "Daudzums",
+  "price": "Cena",
+  "total": "Kopā",
+  "currentStatus": "Pašreizējais statuss",
+  "newStatus": "Jauns statuss",
+  "notes": "Piezīmes",
+  "notesPlaceholder": "Ievadiet piezīmes par statusu maiņu...",
+  "confirmDelete": "Vai tiešām vēlaties dzēst šo remontu?",
+  "noProduct": "Nav produkta"
+}
+}

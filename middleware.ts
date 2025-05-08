@@ -1,177 +1,104 @@
-import { NextRequest, NextResponse } from 'next/server';
-import createIntlMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './app/i18n';
-import { verifyJwtToken } from './lib/jwt';
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { locales, defaultLocale } from './app/i18n/config'
+import { verifyJWT } from './lib/jwt'
 
-const routeConfig = {
-  public: [
-    '/login', 
-    '/register', 
-    '/',
-    '/about',
-    '/models',
-    '/peripherals',
-    '/help',
-    '/ready-configs',
-    '/configurator'
-  ],
-  protected: [
-    '/dashboard',
-    '/profile',
-    '/cart',
-    '/checkout',
-    '/configurator'
-  ],
-  specialist: [
-    '/specialist-dashboard',
-    '/approve-configs',
-    '/service-orders',
-    '/specialist/ready-configs'
-  ],
-  admin: [
-    '/admin-dashboard',
-    '/manage-users',
-    '/manage-components',
-    '/manage-ready-configs',
-    '/admin/pending-configs'
-  ],
-  excludedPatterns: [
-    '/api/',
-    '/_next/',
-    '/static/',
-    '/images/',
-    '/flags/',
-    '/favicon.ico'
-  ]
-};
+const PUBLIC_PATHS = [
+  /^\/_next\//,
+  /\/api\//,
+  /\/favicon\.ico$/,
+  /\.(jpg|jpeg|png|gif|svg|css|js)$/,
+  /^\/(en|lv|ru)\/auth/,
+  /^\/(en|lv|ru)\/unauthorized/,
+]
 
-const intlMiddleware = createIntlMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: 'always',
-});
+const ADMIN_PATHS = /^\/(en|lv|ru)\/admin/
+const SPECIALIST_PATHS = /^\/(en|lv|ru)\/specialist/
+const HOME_PATH = /^\/(en|lv|ru)$/
 
-/**
- * Pārbauda vai ceļš atbilst kādam no norādītajiem paterniem
- */
-function pathMatchesPatterns(pathname: string, patterns: string[]): boolean {
-  return patterns.some(pattern => 
-    pathname.startsWith(pattern) || 
-    pathname.includes('.')
-  );
-}
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-/**
- * Iegūst ceļu bez lokalizācijas prefiksa
- */
-function getPathWithoutLocale(pathname: string): string {
-  const segments = pathname.split('/');
-  if (segments.length > 1 && locales.includes(segments[1] as any)) {
-    return '/' + segments.slice(2).join('/');
-  }
-  return pathname;
-}
-
-/**
- * Iegūst lokalizāciju no ceļa
- */
-function getLocaleFromPath(pathname: string): string {
-  const segments = pathname.split('/');
-  if (segments.length > 1 && locales.includes(segments[1] as any)) {
-    return segments[1];
-  }
-  return defaultLocale;
-}
-
-/**
- * Pārbauda vai ceļam ir nepieciešamas konkrētas tiesības
- */
-function checkPathPermissions(pathWithoutLocale: string, userId: string, userRole: string): { allowed: boolean, redirectPath?: string } {
-  if (routeConfig.public.some(path => 
-    pathWithoutLocale === path || 
-    pathWithoutLocale === '/' ||
-    (path !== '/' && pathWithoutLocale.startsWith(path))
-  )) {
-    return { allowed: true };
+  // Skip middleware for public paths
+  if (PUBLIC_PATHS.some(pattern => pattern.test(pathname))) {
+    return NextResponse.next()
   }
 
-  if (!userId) {
-    return { allowed: false };
+  // Handle locale routing
+  const pathnameHasLocale = locales.some(
+    locale => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
+  )
+
+  if (!pathnameHasLocale) {
+    return NextResponse.redirect(
+      new URL(
+        `/${defaultLocale}${pathname === '/' ? '' : pathname}`,
+        request.url
+      )
+    )
   }
 
-  if (routeConfig.protected.some(path => pathWithoutLocale.startsWith(path))) {
-    return { allowed: true };
-  }
+  // Get locale from path
+  const locale = pathname.split('/')[1]
 
-  if (routeConfig.specialist.some(path => pathWithoutLocale.startsWith(path))) {
-    if (['SPECIALIST', 'ADMIN'].includes(userRole)) {
-      return { allowed: true };
-    } else {
-      return { allowed: false, redirectPath: '/dashboard' };
+  // Handle authentication for protected routes
+  if (ADMIN_PATHS.test(pathname) || SPECIALIST_PATHS.test(pathname)) {
+    const token = request.cookies.get('authToken')?.value
+    
+    if (!token) {
+      console.log('No token found, redirecting to auth')
+      const redirectUrl = new URL(`/${locale}/auth/login`, request.url)
+      redirectUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(redirectUrl)
     }
-  }
 
-  if (routeConfig.admin.some(path => pathWithoutLocale.startsWith(path))) {
-    if (userRole === 'ADMIN') {
-      return { allowed: true };
-    } else {
-      return { allowed: false, redirectPath: '/dashboard' };
-    }
-  }
-
-  return { allowed: !!userId };
-}
-
-/**
- * Galvenā middleware funkcija
- */
-export default async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  if (pathMatchesPatterns(pathname, routeConfig.excludedPatterns)) {
-    return NextResponse.next();
-  }
-
-  const locale = getLocaleFromPath(pathname);
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-next-intl-locale', locale);
-  requestHeaders.set('x-next-intl-timezone', 'Europe/Riga');
-
-  const pathWithoutLocale = getPathWithoutLocale(pathname);
-
-  const response = intlMiddleware(request);
-
-  const token = request.cookies.get('token')?.value;
-  let userId = null;
-  let userRole = null;
-  
-  if (token) {
     try {
-      const payload = await verifyJwtToken(token);
-      if (payload) {
-        userId = payload.userId;
-        userRole = payload.role;
+      const payload = await verifyJWT(token)
+      if (!payload) {
+        throw new Error('Invalid token')
       }
+
+      // Handle admin routes
+      if (ADMIN_PATHS.test(pathname)) {
+        if (payload.role !== 'ADMIN') {
+          return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url))
+        }
+      }
+
+      // Handle specialist routes
+      if (SPECIALIST_PATHS.test(pathname)) {
+        if (!['ADMIN', 'SPECIALIST'].includes(payload.role)) {
+          return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url))
+        }
+      }
+
+      // Add user info to request headers
+      const requestHeaders = new Headers(request.headers)
+      requestHeaders.set('x-user-id', payload.userId)
+      requestHeaders.set('x-user-role', payload.role)
+
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      })
     } catch (error) {
-      console.error('Token verification failed:', error);
+      console.error('Authentication error:', error)
+      const response = NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
+      response.cookies.set({
+        name: 'authToken',
+        value: '',
+        httpOnly: true,
+        path: '/',
+        expires: new Date(0)
+      })
+      return response
     }
   }
 
-  const { allowed, redirectPath } = checkPathPermissions(pathWithoutLocale, userId, userRole);
-  
-  if (!allowed) {
-    if (!userId) {
-      const loginUrl = new URL(`/${locale}/login`, request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    } else {
-      return NextResponse.redirect(new URL(`/${locale}${redirectPath || '/dashboard'}`, request.url));
-    }
-  }
-  
-  return response;
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
-};
+  matcher: ['/((?!api|_next|.*\\..*).*)']
+}

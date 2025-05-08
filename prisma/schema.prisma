@@ -7,125 +7,437 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  CLIENT
-  SPECIALIST
-  ADMIN
+model User {
+  id               String             @id @default(uuid())
+  email            String?            @unique
+  password         String
+  name             String?
+  role             Role               @default(USER)
+  isBlocked        Boolean            @default(false)
+  blockReason      String?            @db.Text
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  firstName        String?
+  lastName         String?
+  phone            String?            @unique
+  profileImageUrl  String?
+  auditLogs        AuditLog[]
+  configurations   Configuration[]
+  orders           Order[]
+  repairs          Repair[]
+  repairSpecialist RepairSpecialist[]
+  reviews          Review[]
+  reviewHelpful    ReviewHelpful[]
+  wishlists        Wishlist[]
+
+  @@map("user")
 }
 
-model User {
+model ComponentCategory {
   id                String             @id @default(uuid())
-  name              String             @db.VarChar(30)
-  surname           String             @db.VarChar(30)
-  email             String             @unique @db.VarChar(50)
-  phoneNumber       String?            @unique @db.VarChar(20)
-  password          String             @db.VarChar(255)
-  role              UserRole           @default(CLIENT)  
-  blocked           Boolean            @default(false)   
-  profilePicture    String?            @db.Text        
-  registrationDate  DateTime           @default(now())
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  configurations    Configuration[]    @relation("CreatedBy")
-  serviceOrders     ServiceOrder[]
-  approvedConfigs   Configuration[]    @relation("ApprovedBy")
-  statusChanges     StatusChange[]
-  statusUpdates     StatusUpdate[]
+  name              String             @unique
+  description       String?            @db.Text
+  displayOrder      Int                @default(0)
+  slug              String             @unique
+  type              String             @default("component")
+  components        Component[]
+  specificationKeys SpecificationKey[]
+
+  @@map("componentcategory")
 }
 
 model Component {
-  id                   String               @id @default(uuid())
-  name                 String               @db.VarChar(50)
-  manufacturer         String               @db.VarChar(30)
-  category             String               @db.VarChar(30)
-  price                Decimal              @db.Decimal(10, 2)
-  productCode          String?              @db.VarChar(50)
-  specifications       String               @db.Text
-  availabilityStatus   String               @default("pieejams")
-  configurations       Configuration[]      @relation("ComponentToConfiguration")
-  serviceComponents    ServiceComponent[]
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt
-  addedById            String?              // Admin who added this component
+  id             String            @id @default(uuid())
+  name           String
+  description    String?           @db.Text
+  price          Float
+  stock          Int               @default(0)
+  imageUrl       String?
+  categoryId     String
+  specifications String?           @db.LongText
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  sku            String?           @unique
+  viewCount      Int               @default(0)
+  category       ComponentCategory @relation(fields: [categoryId], references: [id])
+  specValues     ComponentSpec[]
+  configItems    ConfigItem[]
+  repairParts    RepairPart[]
+
+  @@index([categoryId], map: "component_categoryId_fkey")
+  @@map("component")
+}
+
+model PeripheralCategory {
+  id                String             @id @default(uuid())
+  name              String             @unique
+  description       String?            @db.Text
+  displayOrder      Int                @default(0)
+  slug              String             @unique
+  peripherals       Peripheral[]
+  specificationKeys SpecificationKey[]
+
+  @@map("peripheralcategory")
+}
+
+model Peripheral {
+  id             String             @id @default(uuid())
+  name           String
+  description    String?            @db.Text
+  price          Float
+  stock          Int                @default(0)
+  imageUrl       String?
+  categoryId     String
+  specifications String?            @db.LongText
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  sku            String?            @unique
+  viewCount      Int                @default(0)
+  category       PeripheralCategory @relation(fields: [categoryId], references: [id])
+  specValues     PeripheralSpec[]
+  repairs        Repair[]
+
+  @@index([categoryId], map: "peripheral_categoryId_fkey")
+  @@map("peripheral")
+}
+
+model SpecificationKey {
+  id                   String              @id @default(uuid())
+  name                 String              @unique
+  displayName          String
+  componentCategoryId  String?
+  peripheralCategoryId String?
+  componentSpecValues  ComponentSpec[]
+  peripheralSpecValues PeripheralSpec[]
+  componentCategory    ComponentCategory?  @relation(fields: [componentCategoryId], references: [id])
+  peripheralCategory   PeripheralCategory? @relation(fields: [peripheralCategoryId], references: [id])
+
+  @@index([componentCategoryId], map: "specificationkey_componentCategoryId_fkey")
+  @@index([peripheralCategoryId], map: "specificationkey_peripheralCategoryId_fkey")
+  @@map("specificationkey")
+}
+
+model ComponentSpec {
+  id          String           @id @default(uuid())
+  componentId String
+  specKeyId   String
+  value       String           @db.Text
+  component   Component        @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  specKey     SpecificationKey @relation(fields: [specKeyId], references: [id])
+
+  @@unique([componentId, specKeyId])
+  @@index([specKeyId], map: "componentspec_specKeyId_fkey")
+  @@map("componentspec")
+}
+
+model PeripheralSpec {
+  id           String           @id @default(uuid())
+  peripheralId String
+  specKeyId    String
+  value        String           @db.Text
+  peripheral   Peripheral       @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+  specKey      SpecificationKey @relation(fields: [specKeyId], references: [id])
+
+  @@unique([peripheralId, specKeyId])
+  @@index([specKeyId], map: "peripheralspec_specKeyId_fkey")
+  @@map("peripheralspec")
+}
+
+model ConfigItem {
+  id              String        @id @default(uuid())
+  configurationId String
+  componentId     String
+  quantity        Int           @default(1)
+  component       Component     @relation(fields: [componentId], references: [id])
+  configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+
+  @@index([componentId], map: "configitem_componentId_fkey")
+  @@index([configurationId], map: "configitem_configurationId_fkey")
+  @@map("configitem")
 }
 
 model Configuration {
-  id               String       @id @default(uuid())
-  name             String       @db.VarChar(50)
-  userId           String
-  user             User         @relation("CreatedBy", fields: [userId], references: [id])
-  components       Component[]  @relation("ComponentToConfiguration")
-  totalPrice       Decimal      @db.Decimal(10, 2)
-  status           String       @default("saglabāts")
-  isPublic         Boolean      @default(false)
-  approvedById     String?
-  approvedBy       User?        @relation("ApprovedBy", fields: [approvedById], references: [id])
-  approvedAt       DateTime?
-  order            Order?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  id          String       @id @default(uuid())
+  name        String
+  description String?      @db.Text
+  userId      String?
+  totalPrice  Float
+  status      ConfigStatus @default(DRAFT)
+  isTemplate  Boolean      @default(false)
+  isPublic    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  category    String?
+  imageUrl    String?
+  viewCount   Int          @default(0)
+  components  ConfigItem[]
+  user        User?        @relation(fields: [userId], references: [id])
+  orders      Order[]
+  repairs     Repair[]
+
+  @@index([userId], map: "configuration_userId_fkey")
+  @@map("configuration")
+}
+
+model Repair {
+  id              String             @id @default(uuid())
+  title           String
+  description     String?            @db.Text
+  status          RepairStatus       @default(PENDING)
+  priority        RepairPriority     @default(NORMAL)
+  userId          String
+  peripheralId    String?
+  configurationId String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  estimatedCost   Float?
+  finalCost       Float?
+  completionDate  DateTime?
+  diagnosticNotes String?            @db.Text
+  configuration   Configuration?     @relation(fields: [configurationId], references: [id])
+  peripheral      Peripheral?        @relation(fields: [peripheralId], references: [id])
+  user            User               @relation(fields: [userId], references: [id])
+  parts           RepairPart[]
+  specialists     RepairSpecialist[]
+
+  @@index([configurationId], map: "repair_configurationId_fkey")
+  @@index([peripheralId], map: "repair_peripheralId_fkey")
+  @@index([userId], map: "repair_userId_fkey")
+  @@map("repair")
+}
+
+model RepairSpecialist {
+  id           String   @id @default(uuid())
+  repairId     String
+  specialistId String
+  assignedAt   DateTime @default(now())
+  notes        String?  @db.Text
+  repair       Repair   @relation(fields: [repairId], references: [id], onDelete: Cascade)
+  specialist   User     @relation(fields: [specialistId], references: [id])
+
+  @@unique([repairId, specialistId])
+  @@index([specialistId], map: "repairspecialist_specialistId_fkey")
+  @@map("repairspecialist")
+}
+
+model RepairPart {
+  id          String    @id @default(uuid())
+  repairId    String
+  componentId String
+  quantity    Int       @default(1)
+  price       Float
+  component   Component @relation(fields: [componentId], references: [id])
+  repair      Repair    @relation(fields: [repairId], references: [id], onDelete: Cascade)
+
+  @@index([componentId], map: "repairpart_componentId_fkey")
+  @@index([repairId], map: "repairpart_repairId_fkey")
+  @@map("repairpart")
 }
 
 model Order {
-  id               String         @id @default(uuid())
-  orderNumber      String         @unique @db.VarChar(15)
-  configurationId  String         @unique
-  configuration    Configuration  @relation(fields: [configurationId], references: [id])
-  orderDate        DateTime       @default(now())
-  totalAmount      Decimal        @db.Decimal(10, 2)
-  status           String         @default("jauns")
-  statusChanges    StatusChange[]
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  id              String         @id @default(uuid())
+  userId          String
+  configurationId String?
+  status          OrderStatus    @default(PENDING)
+  totalAmount     Float
+  shippingAddress String?        @db.Text
+  paymentMethod   String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  configuration   Configuration? @relation(fields: [configurationId], references: [id])
+  user            User           @relation(fields: [userId], references: [id])
+  orderItems      OrderItem[]
+
+  @@index([configurationId], map: "order_configurationId_fkey")
+  @@index([userId], map: "order_userId_fkey")
+  @@map("order")
 }
 
-model StatusChange {
-  id           String   @id @default(uuid())
-  orderId      String
-  order        Order    @relation(fields: [orderId], references: [id])
-  oldStatus    String
-  newStatus    String
-  changedById  String
-  changedBy    User     @relation(fields: [changedById], references: [id])
-  createdAt    DateTime @default(now())
+model Review {
+  id           String          @id @default(uuid())
+  userId       String
+  productId    String
+  productType  ProductType
+  rating       Int
+  comment      String?         @db.Text
+  purchaseDate DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  user         User            @relation(fields: [userId], references: [id])
+  helpful      ReviewHelpful[]
+
+  @@unique([userId, productId, productType])
+  @@index([productId, productType])
+  @@map("review")
 }
 
-model ServiceOrder {
-  id                 String               @id @default(uuid())
-  userId             String
-  user               User                 @relation(fields: [userId], references: [id])
-  problemDescription String               @db.Text
-  deviceType         String               @db.VarChar(50)
-  cost               Decimal              @db.Decimal(10, 2)
-  status             String               @default("jauns")
-  deliveryDate       DateTime?
-  completionDate     DateTime?
-  serviceComponents  ServiceComponent[]
-  statusUpdates      StatusUpdate[]
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+model ReviewHelpful {
+  id        String   @id @default(uuid())
+  reviewId  String
+  userId    String
+  isHelpful Boolean  @default(true)
+  createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([reviewId, userId])
+  @@index([userId], map: "review_helpful_userId_fkey")
+  @@map("review_helpful")
 }
 
-model StatusUpdate {
-  id              String        @id @default(uuid())
-  serviceOrderId  String
-  serviceOrder    ServiceOrder  @relation(fields: [serviceOrderId], references: [id])
-  oldStatus       String
-  newStatus       String
-  updatedById     String
-  updatedBy       User          @relation(fields: [updatedById], references: [id])
-  createdAt       DateTime      @default(now())
+model Wishlist {
+  id          String   @id @default(uuid())
+  userId      String
+  productId   String
+  productType String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, productId, productType])
+  @@map("wishlist")
 }
 
-model ServiceComponent {
-  id                 String            @id @default(uuid())
-  serviceOrderId     String
-  serviceOrder       ServiceOrder      @relation(fields: [serviceOrderId], references: [id])
-  componentId        String
-  component          Component         @relation(fields: [componentId], references: [id])
-  damageType         String            @db.VarChar(100)
-  requiredWork       String            @db.Text
-  workAmount         Int               // Minutes
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
+model OrderItem {
+  id          String      @id @default(uuid())
+  orderId     String
+  productId   String
+  productType ProductType
+  quantity    Int         @default(1)
+  price       Float
+  name        String
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId], map: "order_item_orderId_fkey")
+  @@map("order_item")
+}
+
+model PromoCode {
+  id                 String              @id @default(uuid())
+  code               String              @unique
+  description        String?
+  discountPercentage Int
+  maxDiscountAmount  Float?
+  minOrderValue      Float?
+  isActive           Boolean             @default(true)
+  usageCount         Int                 @default(0)
+  maxUsage           Int                 @default(1000)
+  scope              PromoScope          @default(ALL)
+  expiresAt          DateTime
+  createdAt          DateTime            @default(now())
+  marketingCampaigns MarketingCampaign[]
+  products           PromoProduct[]
+
+  @@map("promo_code")
+}
+
+model PromoProduct {
+  id          String    @id @default(uuid())
+  promoCodeId String
+  productId   String
+  productType String
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+
+  @@unique([promoCodeId, productId, productType])
+  @@map("promo_product")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  action     String
+  entityType String
+  entityId   String   @default("")
+  details    String   @db.Text
+  ipAddress  String?  @default("")
+  userAgent  String?  @db.Text
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_log")
+}
+
+model MarketingCampaign {
+  id             String           @id @default(uuid())
+  name           String
+  description    String?          @db.Text
+  startDate      DateTime
+  endDate        DateTime
+  type           String
+  targetAudience String
+  status         String
+  content        String?          @db.Text
+  bannerImageUrl String?
+  promoCodeId    String?
+  metadata       String?          @db.LongText
+  createdById    String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  metrics        CampaignMetrics?
+  promoCode      PromoCode?       @relation(fields: [promoCodeId], references: [id])
+
+  @@index([promoCodeId], map: "marketing_campaign_promoCodeId_fkey")
+  @@map("marketing_campaign")
+}
+
+model CampaignMetrics {
+  id          String            @id @default(uuid())
+  campaignId  String            @unique
+  impressions Int               @default(0)
+  clicks      Int               @default(0)
+  conversions Int               @default(0)
+  lastUpdated DateTime
+  campaign    MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("campaign_metrics")
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum Role {
+  USER
+  ADMIN
+  SPECIALIST
+}
+
+enum ConfigStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum RepairStatus {
+  PENDING
+  DIAGNOSING
+  WAITING_FOR_PARTS
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum RepairPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ProductType {
+  CONFIGURATION
+  COMPONENT
+  PERIPHERAL
+}
+
+enum PromoScope {
+  ALL
+  SPECIFIC_PRODUCTS
 }

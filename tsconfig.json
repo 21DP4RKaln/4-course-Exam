@@ -28,8 +28,7 @@
       "@styles/*": ["./styles/*"],
       "@utils/*": ["./utils/*"]
     },
-    "baseUrl": "."
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next-intl.config.js", "app/api/reviews/check-purchase"],
   "exclude": ["node_modules"]
 }

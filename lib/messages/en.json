@@ -1,0 +1,780 @@
+{
+  "common": {
+    "appName": "IvaPro",
+    "Text": "Top-quality custom PC builds and components for gamers, designers, and professionals. Located in Riga, Latvia.",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "language": "Language",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "update": "Update",
+    "updating": "Updating...",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "uploadFile": "Upload file",
+    "orDragAndDrop": "or drag and drop",
+    "imageFormats": "PNG, JPG, GIF up to 10MB",
+    "completing": "Completing...",
+    "loading": "Loading...",
+    "loadingSection": "Loading section...",
+    "processingData": "Processing data...",
+    "fetchingData": "Fetching data...",
+    "back": "Back",
+    "description": "Description",
+    "noDescription": "No description available",
+    "createdDate": "Created Date",
+    "welcome": "Welcome"
+  },
+  "nav": {
+    "home": "Home",
+    "options": "Quick Links",
+    "products": "Products",
+    "services": "Services",
+    "workingHours": "Working Hours",
+    "configurator": "PC Builder",
+    "readyMade": "Ready PCs",
+    "components": "Components",
+    "peripherals": "Peripherals",
+    "repairs": "Repairs",
+    "about": "About Us",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "cart": "Cart",
+    "close": "Close",
+    "Name": "Custom PCs Built For Your Needs",
+    "Info": "We build top-performance custom PCs for gaming, content creation, and professional use with carefully selected quality components.",
+    "shipping": "Free shipping in Latvia",
+    "warranty": "3-year warranty",
+    "support": "24/7 Technical support",
+    "Popular": "Popular Configurations",
+    "topPick": "Top Pick",
+    "popular": "Popular",
+    "discount": "-{percent}%",
+    "Choose": "Why Choose Us",
+    "Answer": "We're dedicated to building the highest quality custom PCs with tested components and exceptional customer service.",
+    "Building": "Expert PC Building",
+    "Validation": "Component Validation",
+    "Quality": "Quality Assurance",
+    "Support": "Dedicated Support",
+    "Text1": "Our technicians hand-build every PC with attention to detail for optimal performance and reliability.",
+    "Text2": "We test each component individually before assembly to ensure maximum compatibility and stability.",
+    "Text3": "Every system undergoes rigorous testing including stress tests, temperature monitoring, and benchmarking.",
+    "Text4": "Our technical support team is available 24/7 to help with any questions or issues you might have.",
+    "readyToBuild": "Ready to Build Your Dream PC?",
+    "customPcDesc": "Whether you're a gamer, content creator, or professional, we'll help you design the perfect PC for your specific needs and budget.",
+    "startBuilding": "Start Building"
+  },
+  "buttons": {
+    "viewAll": "View all",
+    "addToCart": "Add to cart",
+    "addToWishlist": "Add to wishlist",
+    "view": "View all",
+    "selected": "Selected",
+    "select": "Select",
+    "compare": "Compare",
+    "reset": "Reset",
+    "filter": "Filter",
+    "backToHome": "Back to Home",
+    "login": "Login",
+    "back": "Back"
+  },
+  "footer": {
+    "contact": "Contact Us",
+    "copyright": "© 2025 IvaPro. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
+  "contact": {
+    "address": "Brīvības iela 123, Riga, LV-1001, Latvia",
+    "phone": "+371 29 123 456",
+    "email": "info@ivapro.com",
+    "workingHours": "Monday - Friday: 9:00 - 19:00",
+    "weekends": "Weekends: 10:00 - 16:00"
+  },
+  "error": {
+    "loadingConfigs": "Unable to load configurations"
+  },
+  "errors": {
+    "404": "Page not found",
+    "404Message": "The page you are looking for does not exist.",
+    "500": "Server Error",
+    "500Message": "Something went wrong on our end. Please try again later.",
+    "goBack": "Go back to home",
+    "offline": "You are offline",
+    "offlineMessage": "Please check your internet connection and try again.",
+    "productIdMissing": "Product ID is missing",
+    "errorsfailedToLoad": "Failed to load product",
+    "invalidProductData": "Invalid product data received",
+    "failedToLoad": "Failed to load product details",
+    "notFound": "Product Not Found",
+    "productNotExist": "The product you're looking for doesn't exist or has been removed.",
+    "unauthorized": {
+      "title": "Access Denied",
+      "message": "You do not have permission to access this page."
+    }
+  },
+  "product": {
+    "imageAlt": "Product image",
+    "viewDetails": "View Details",
+    "saveAmount": "Save",
+    "onlyFewLeft": "{count: product.stock}, Only ${product.stock} left in stock",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "quantity": "Quantity",
+    "decreaseQuantity": "Decrease quantity",
+    "increaseQuantity": "Increase quantity",
+    "buyNow": "Buy Now",
+    "copied": "Copied!",
+    "share": "Share",
+    "freeShipping": "Free shipping on orders over €100",
+    "warrantyIncluded": "2 years warranty included",
+    "estimatedDelivery": "Estimated delivery: 1-3 business days",
+    "tabs": {
+      "description": "Description",
+      "specifications": "Specifications",
+      "reviews": "Reviews"
+    },
+    "noSpecifications": "No specifications available for this product."
+  },
+  "dashboard": {
+    "profileInfo": "Profile Information",
+    "complete": "Complete your profile",
+    "completeMessage": "To fully use your account, please provide your {field}",
+    "email": "email",
+    "phone": "phone number",
+    "updateSuccess": "Your profile has been successfully updated",
+    "wishlist": "Wishlist",
+    "emptyWishlist": "Your wishlist is empty",
+    "emptyWishlistMessage": "Save your favorite products to keep track of what you're interested in",
+    "profileSection": {
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "emailAddress": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
+      "changePassword": "Change Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "passwordPlaceholder": "Enter your password"
+    },
+    "validation": {
+      "emailOrPhone": "Please provide at least an email address or phone number",
+      "emailInvalid": "Please enter a valid email address",
+      "phoneLength": "Phone number must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match",
+      "passwordLength": "Password must be at least 8 characters",
+      "profileError": "Failed to update profile",
+      "pleaseProvide": "Please provide either an email address or phone number to receive important updates and order information"
+    },
+    "profileImage": {
+      "altText": "Profile Photo",
+      "changeText": "Click to change profile picture"
+    },
+    "formActions": {
+      "cancel": "Cancel",
+      "updateProfile": "Update Profile"
+    },
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity",
+    "actions": {
+      "createConfig": "Create Configuration",
+      "viewRepairs": "View Repairs",
+      "pendingConfigs": "Pending Configurations",
+      "viewInventory": "View Inventory",
+      "viewUsers": "View Users",
+      "financialReports": "Financial Reports",
+      "analytics": "Analytics",
+      "viewOrders": "View Orders"
+    },
+    "title": "Dashboard",
+    "myConfigurations": "My Configurations",
+    "myOrders": "My Orders",
+    "profile": "Profile",
+    "noConfigurations": "You don't have any configurations yet",
+    "noOrders": "You don't have any orders yet"
+  },
+  "about": {
+    "subtitle": "We are Latvia's premier custom PC builder, dedicated to crafting high-performance computers with quality components.",
+    "ourStory": "Our Story",
+    "storyParagraph1": "IvaPro began in 2018 when a group of tech enthusiasts decided to combine their passion for computers with professional expertise.",
+    "storyParagraph2": "What started as a small workshop in Riga has grown into one of Latvia's most trusted custom PC businesses, serving gamers, content creators, and professionals.",
+    "storyParagraph3": "Our dedication to quality and customer satisfaction remains at the core of everything we do.",
+    "coreValues": "Our Core Values",
+    "qualityTitle": "Quality",
+    "qualityText": "We use only premium components from trusted manufacturers to ensure reliability and performance.",
+    "expertiseTitle": "Expertise",
+    "expertiseText": "Our team consists of certified technicians with years of experience in PC building and troubleshooting.",
+    "satisfactionTitle": "Customer Satisfaction",
+    "satisfactionText": "We go above and beyond to ensure our customers are happy with their custom-built systems.",
+    "byTheNumbers": "IvaPro By The Numbers",
+    "statComputers": "Computers Built",
+    "statCustomers": "Happy Customers",
+    "statOrders": "Completed Orders",
+    "statExperience": "Years Experience",
+    "customerReviews": "What Our Customers Say",
+    "NoReviews": "No reviews available at the moment",
+    "viewAllReviews": "View all reviews on Google",
+    "journey": "Our Journey",
+    "visitStore": "Visit Our Store",
+    "storeAddress": "Our Location",
+    "openingHours": "Opening Hours",
+    "phone": "Phone",
+    "email": "Email",
+    "ctaTitle": "Ready to upgrade your computing experience?",
+    "ctaText": "Whether you need a custom gaming PC, a workstation for content creation, or just an upgrade to your current system, we're here to help.",
+    "startBuilding": "Start Building",
+    "browseReadyMade": "Browse Ready-Made PCs",
+    "team": [
+      {
+        "name": "Alex Petrov",
+        "position": "Founder & Lead Technician",
+        "bio": "Computer enthusiast with over 10 years of experience building custom PCs."
+      },
+      {
+        "name": "Laura Berzina",
+        "position": "Customer Relations Manager",
+        "bio": "Dedicated to ensuring every customer has an exceptional experience with IvaPro."
+      },
+      {
+        "name": "Martins Ozols",
+        "position": "Technical Support Specialist",
+        "bio": "Expert in troubleshooting and maintaining optimal PC performance."
+      }
+    ],
+    "milestones": [
+      {
+        "year": "2025",
+        "title": "IvaPro Founded",
+        "description": "Started as a small workshop with a focus on custom gaming PCs."
+      },
+      {
+        "year": "2027",
+        "title": "1,000th PC Built",
+        "description": "Reached a major milestone with our 1,000th custom computer build."
+      },
+      {
+        "year": "2030",
+        "title": "New Website Launch",
+        "description": "Introduced our new online PC configurator for easier custom builds."
+      }
+    ]
+  },
+  "categoryPage": {
+    "backTo": "Back to {type}",
+    "filters": "Filters",
+    "searchPlaceholder": "Search products...",
+    "sortBy": "Sort by",
+    "item": "item",
+    "items": "items",
+    "noProductsFound": "No products found",
+    "noCriteriaMatch": "Try adjusting your filters or search terms",
+    "resetFilters": "Reset Filters",
+    "fetchError": "Error loading {type}",
+    "tryAgain": "Try Again",
+    "sortOptions": {
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "nameAsc": "Name: A to Z",
+      "nameDesc": "Name: Z to A",
+      "stockDesc": "Availability"
+    },
+    "filterGroups": {
+      "manufacturer": "Manufacturer",
+      "general": "General",
+      "model": "Model",
+      "socket": "Socket",
+      "cores": "Cores",
+      "threads": "Threads",
+      "frequency": "Frequency",
+      "architecture": "Architecture",
+      "memory": "Memory",
+      "memoryType": "Memory Type",
+      "interface": "Interface",
+      "sensor": "Sensor",
+      "dpi": "DPI",
+      "rgb": "RGB",
+      "connection": "Connection",
+      "wireless": "Wireless",
+      "switches": "Switches",
+      "polling": "Polling Rate",
+      "capacity": "Capacity",
+      "speed": "Speed",
+      "cas": "CAS Latency"
+    }
+  },
+  "configurator": {
+    "title": "PC Configuration",
+    "selectComponent": "Select Component",
+    "componentGrid": {
+      "noComponents": "No components found"
+    },
+    "componentsList": {
+      "yourConfiguration": "Your Configuration",
+      "configurationName": "Configuration name",
+      "change": "Change",
+      "totalPrice": "Total price",
+      "addToCart": "Add to cart",
+      "saveAsDraft": "Save as draft",
+      "submit": "Submit",
+      "emptySlotPlaceholder": "Click to select"
+    },
+    "compatibility": {
+      "allCompatible": "All components are compatible",
+      "compatibilityIssuesDetected": "Compatibility issues detected",
+      "compatibilityIssues": "Compatibility Issues",
+      "estimatedPower": "Estimated power",
+      "recommendedPsu": "Recommended PSU",
+      "powerNote": "Estimated power consumption:",
+      "warnings": {
+        "cpuMotherboardIncompatible": {
+          "amd": "AMD processor is not compatible with this motherboard",
+          "intel": "Intel processor is not compatible with this motherboard"
+        },
+        "caseMotherboardIncompatible": {
+          "tooSmall": "Selected case is too small for ATX motherboards",
+          "mayBeSmall": "Motherboard may not support Micro-ATX case"
+        },
+        "psuInsufficient": "Power supply ({psuWattage}W) may be insufficient ({requiredWattage}W)"
+      }
+    },
+    "search": "Search components",
+    "filters": {
+      "price": "Price",
+      "manufacturer": "Manufacturer",
+      "cores": "Cores",
+      "threads": "Threads",
+      "socket": "Socket",
+      "frequency": "Frequency",
+      "maxRam": "Max RAM",
+      "ramFrequency": "RAM Frequency",
+      "techProcess": "Tech Process",
+      "vram": "VRAM",
+      "cooling": "Cooling",
+      "memorySlots": "Memory Slots",
+      "cpuSupport": "CPU Support",
+      "memoryType": "Memory Type",
+      "gpuSlots": "GPU Slots",
+      "sataPorts": "SATA Ports",
+      "m2Slots": "M.2 Slots",
+      "features": "Features",
+      "format": "Format",
+      "capacity": "Capacity",
+      "nvme": "NVMe",
+      "tdp": "TDP",
+      "heatpipes": "Heatpipes",
+      "wattage": "Wattage",
+      "certification": "Certification",
+      "watercooling": "Water Cooling",
+      "services": "Services",
+      "cpuBrand": "CPU Brand",
+      "cpuSeries": "CPU Series",
+      "gpuBrand": "GPU Brand",
+      "gpuSeries": "GPU Series"
+    },
+    "specs": {
+      "cores": "Cores",
+      "threads": "Threads",
+      "baseClock": "Base Clock",
+      "formFactor": "Form Factor",
+      "socket": "Socket",
+      "memory": "Memory",
+      "capacity": "Capacity",
+      "bandwidth": "Bandwidth",
+      "vram": "VRAM",
+      "wattage": "Wattage",
+      "efficiency": "Efficiency",
+      "coolingType": "Cooling Type",
+      "rgb": "RGB Lighting",
+      "speed": "Speed"
+    },
+    "quickFilters": {
+      "quickFilters": "Quick Filters",
+      "cpuTypes": "CPU Types",
+      "graphicsCardSeries": "Graphics Card Series",
+      "motherboardTypes": "Motherboard Types",
+      "memoryTypes": "Memory Types",
+      "storageTypes": "Storage Types",
+      "powerSupplyWattage": "Power Supply Wattage"
+    },
+    "actions": {
+      "saved": "Configuration successfully saved",
+      "submitted": "Configuration successfully submitted",
+      "addedToCart": "Configuration added to cart",
+      "errors": {
+        "saveFailed": "Failed to save configuration",
+        "submitFailed": "Failed to submit configuration",
+        "missingComponents": "Missing required components: {components}",
+        "emptyConfiguration": "Configuration is empty"
+      }
+    },
+    "categoryList": {
+      "selectCategory": "Component Categories"
+    }
+  },
+  "components": {
+    "name": "Components",
+    "cpu": "Processor",
+    "motherboard": "Motherboard",
+    "gpu": "Graphics Card",
+    "ram": "Memory",
+    "storage": "Storage",
+    "case": "Case",
+    "cooling": "Cooling",
+    "psu": "Power Supply",
+    "peripherals": "Peripherals"
+  },
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last Updated",
+    "introduction": {
+      "title": "Introduction",
+      "content": "This Privacy Policy explains how IvaPro collects, uses, and protects your personal information when you use our services."
+    },
+    "dataCollection": {
+      "title": "Information We Collect",
+      "content": "We may collect the following types of information:",
+      "identityData": "Identity Data",
+      "identityDataDesc": "First name, last name, username, and other identifying information.",
+      "contactData": "Contact Data",
+      "contactDataDesc": "Email address, telephone number, billing and delivery address.",
+      "technicalData": "Technical Data",
+      "technicalDataDesc": "IP address, browser type, device information, usage data."
+    },
+    "dataUsage": {
+      "title": "How We Use Your Information",
+      "content": "We use your information to provide our services, process payments, communicate with you, and improve your experience."
+    },
+    "dataSecurity": {
+      "title": "Data Security",
+      "content": "We implement appropriate security measures to protect your personal information from unauthorized access or disclosure."
+    },
+    "dataRetention": {
+      "title": "Data Retention",
+      "content": "We retain your information only for as long as necessary to fulfill the purposes for which it was collected."
+    },
+    "legalRights": {
+      "title": "Your Legal Rights",
+      "content": "You have the right to access, correct, delete, restrict processing, and port your personal data."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "changes": {
+      "title": "Changes to This Policy",
+      "content": "We may update this Privacy Policy from time to time. Any changes will be posted on this page."
+    }
+  },
+  "termsOfService": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last Updated",
+    "introduction": {
+      "title": "Introduction",
+      "content": "These Terms of Service govern your use of the IvaPro website and services. By accessing our site or using our services, you agree to these terms."
+    },
+    "registration": {
+      "title": "Account Registration"
+    },
+    "pricingPayment": {
+      "priceChanges": "Prices for our products are subject to change without notice. We reserve the right to modify or discontinue any product or service without notice.",
+      "paymentRequired": "Payment is required at the time of purchase. We accept credit cards, bank transfers, and other payment methods as specified at checkout.",
+      "processing": "Your payment information is processed securely through our payment processors. We do not store complete credit card information on our servers."
+    },
+    "shipping": {
+      "title": "Shipping and Delivery",
+      "estimates": "Shipping times are estimates and cannot be guaranteed. Delivery times may vary depending on your location and other factors.",
+      "responsibility": "We are not responsible for delays in delivery due to customs processing or other factors outside our control.",
+      "accuracy": "We make every effort to accurately display the colors and features of our products, but cannot guarantee that your computer monitor's display is accurate."
+    },
+    "warranty": {
+      "title": "Warranty and Returns",
+      "manufacturer": "Components carry the original manufacturer's warranty. Details specific to each component will be provided upon purchase.",
+      "customPc": "Custom built PCs include a labor warranty of 2 years from the date of delivery.",
+      "returns": "Products can be returned within 14 days of receipt if they are in original condition and packaging.",
+      "condition": "Returned items must be in their original condition and packaging, with all accessories and documentation included."
+    },
+    "intellectual": {
+      "title": "Intellectual Property",
+      "content": "All content on this website, including text, graphics, logos, images, and software, is the property of IvaPro and is protected by copyright and other intellectual property laws."
+    },
+    "liability": {
+      "title": "Limitation of Liability",
+      "limitation": "IvaPro shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our products or services.",
+      "indirect": "We are not responsible for any damage to your computer system or loss of data resulting from the download or use of materials from our website."
+    },
+    "governing": {
+      "title": "Governing Law",
+      "content": "These terms shall be governed by and construed in accordance with the laws of Latvia, without regard to its conflict of law provisions."
+    },
+    "changes": {
+      "title": "Changes to Terms",
+      "content": "We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting on this website."
+    },
+    "contact": {
+      "title": "Contact Information",
+      "content": "If you have any questions about these Terms, please contact us",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address"
+    }
+  },
+  "shop": {
+    "filters": {
+      "showFilters": "Show Filters",
+      "hideFilters": "Hide Filters",
+      "searchPlaceholder": "Search products...",
+      "sortOptions": {
+        "priceAsc": "Price: Low to High",
+        "priceDesc": "Price: High to Low",
+        "nameAsc": "Name: A to Z",
+        "nameDesc": "Name: Z to A",
+        "ratingDesc": "Rating: High to Low"
+      },
+      "category": "Category",
+      "processor": "Processor",
+      "graphicsCard": "Graphics Card",
+      "memory": "Memory",
+      "storage": "Storage",
+      "resetAll": "Reset All",
+      "applyFilters": "Apply Filters",
+      "allCategories": "All Categories",
+      "allStatus": "All Status",
+      "gaming": "Gaming",
+      "workstation": "Workstation",
+      "office": "Office",
+      "budget": "Budget",
+      "draft": "Draft",
+      "approved": "Approved",
+      "published": "Published"
+    },
+    "table": {
+      "name": "Name",
+      "category": "Category",
+      "price": "Price",
+      "status": "Status",
+      "visibility": "Visibility",
+      "views": "Views",
+      "actions": "Actions",
+      "public": "Public",
+      "private": "Private",
+      "component": "Component",
+      "quantity": "Quantity",
+      "total": "Total"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft",
+      "approved": "Approved",
+      "pending": "Pending"
+    },
+    "visibility": {
+      "public": "Public",
+      "private": "Private"
+    },
+    "actions": {
+      "publishToShop": "Publish to Shop",
+      "viewInShop": "View in Shop"
+    },
+    "components": "Components",
+    "product": {
+      "addToCart": "Add to Cart",
+      "addToWishlist": "Add to Wishlist",
+      "removeFromWishlist": "Remove from Wishlist",
+      "newBadge": "New",
+      "offBadge": "-{percentage}% Off",
+      "featuredBadge": "Featured"
+    }
+  },
+  "reviewComponents": {
+    "customerReviews": "Customer Reviews",
+    "outOf5": "out of 5",
+    "reviewCount": "{count} {count, plural, one {review} other {reviews}}",
+    "writeReview": "Write a Review",
+    "writeReviewTitle": "Write Your Review",
+    "ratingLabel": "Your Rating",
+    "purchaseDateLabel": "Purchase Date (Optional)",
+    "reviewTextLabel": "Your Review",
+    "reviewPlaceholder": "Share your experience with this product...",
+    "cancel": "Cancel",
+    "submitReview": "Submit Review",
+    "submitting": "Submitting...",
+    "submitSuccess": "Your review has been submitted successfully!",
+    "yes": "Yes",
+    "no": "No",
+    "helpfulVote": "Was this review helpful?",
+    "noReviewsText": "No reviews yet. Be the first to share your thoughts!",
+    "loadMoreReviews": "Load More Reviews",
+    "purchased": "Purchased:",
+    "hasReviewed": "You've reviewed this product"
+  },
+  "reviewErrors": {
+    "notAuthenticated": "You must be logged in to submit a review",
+    "emptyComment": "Please enter your review",
+    "submitFailed": "Failed to submit review",
+    "voteFailed": "Failed to vote on review",
+    "requirePurchase": "Purchase required to review"
+  },
+  "auth": {
+    "loginTitle": "Log in to write a review",
+    "logout": "Logout"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "totalUsers": "Total Users",
+      "newUsersThisMonth": "New Users This Month",
+      "totalOrders": "Total Orders",
+      "ordersThisMonth": "Orders This Month",
+      "totalRevenue": "Total Revenue",
+      "revenueThisMonth": "Revenue This Month",
+      "inventory": "Inventory",
+      "lowStock": "Low Stock",
+      "pendingRepairs": "Pending Repairs",
+      "requiresAttention": "Requires Attention",
+      "activeRepairs": "Active Repairs",
+      "inProgress": "In Progress",
+      "pendingConfigurations": "Pending Configurations",
+      "awaitingReview": "Awaiting Review",
+      "approvedConfigurations": "Approved Configurations",
+      "thisMonth": "This Month"
+    },
+    "charts": {
+      "repairMetrics": "Repair Metrics",
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "revenue": "Revenue",
+      "expenses": "Expenses",
+      "profit": "Profit",
+      "orders": "Orders",
+      "sales": "Sales",
+      "configurations": "Configurations",
+      "components": "Components",
+      "peripherals": "Peripherals",
+      "total": "Total",
+      "stockLevels": "Stock Levels",
+      "category": "Category",
+      "stockCount": "Stock Count",
+      "totalValue": "Total Value",
+      "userGrowth": "User Growth",
+      "newUsers": "New Users",
+      "totalUsers": "Total Users",
+      "pendingReview": "Pending Review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "configurationDetail": "Configuration Details",
+      "overview": "Overview",
+      "history": "History",
+      "status": "Status",
+      "totalPrice": "Total Price",
+      "description": "Description",
+      "createdBy": "Created By",
+      "createdOn": "Created On",
+      "visibility": "Visibility",
+      "template": "Template",
+      "public": "Public",
+      "componentSummary": "Component Summary",
+      "historyText": "Configuration history will be implemented here",
+      "close": "Close"
+    }
+  },
+  "specialist": {
+    "dashboard": {
+      "pendingRepairs": "Pending Repairs",
+      "requiresAttention": "Requires Attention",
+      "activeRepairs": "Active Repairs",
+      "inProgress": "In Progress",
+      "pendingConfigurations": "Pending Configurations",
+      "awaitingReview": "Awaiting Review",
+      "approvedConfigurations": "Approved Configurations",
+      "thisMonth": "This Month"
+    }
+  },
+  "staff": {
+    "dashboard": "Dashboard",
+    "repairs": "Repairs",
+    "configurations": "Configurations",
+    "components": "Components",
+    "peripherals": "Peripherals",
+    "readyPCs": "Ready PCs",
+    "users": "Users",
+    "orders": "Orders",
+    "financial": "Financial",
+    "marketing": "Marketing",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "documentation": "Documentation",
+    "support": "Support",
+    "version": "Version",
+    "quickActions": "Quick Actions"
+  },
+  "repairs": {
+    "title": "Repair Management",
+    "id": "ID",
+    "customer": "Customer",
+    "status": {
+      "pending": "Pending",
+      "diagnosing": "Diagnosing",
+      "waiting_for_parts": "Waiting for Parts",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "urgent": "Urgent",
+      "high": "High",
+      "normal": "Normal",
+      "low": "Low"
+    },
+    "created": "Created",
+    "updated": "Updated",
+    "cost": "Cost",
+    "actions": "Actions",
+    "updateStatus": "Update Status",
+    "markInProgress": "Mark In Progress",
+    "markCompleted": "Mark Completed",
+    "cancel": "Cancel",
+    "complete": "Complete",
+    "completeRepair": "Complete Repair",
+    "finalCost": "Final Cost",
+    "completionNotes": "Completion Notes",
+    "completionNotesPlaceholder": "Enter details about the completed repair...",
+    "attachImage": "Attach Image",
+    "completing": "Completing...",
+    "noRepairs": "No repairs found",
+    "searchPlaceholder": "Search repairs...",
+    "allStatuses": "All Statuses",
+    "notFound": "Repair not found",
+    "customerInfo": "Customer Information",
+    "repairInfo": "Repair Information",
+    "description": "Description",
+    "diagnosticNotes": "Diagnostic Notes",
+    "device": "Device",
+    "specialists": "Specialists",
+    "partsUsed": "Parts Used",
+    "part": "Part",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "currentStatus": "Current Status",
+    "newStatus": "New Status",
+    "notes": "Notes",
+    "notesPlaceholder": "Enter notes about the status change...",
+    "confirmDelete": "Are you sure you want to delete this repair?",
+    "noProduct": "No product"
+  }
+}

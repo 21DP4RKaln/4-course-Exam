@@ -1,0 +1,340 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #111827;
+    --card: #ffffff;
+    --card-foreground: #111827;
+    --border: #e5e7eb;
+    --input: #e5e7eb;
+    --ring: #e5e7eb;
+    --primary: #0066CC;
+    --primary-foreground: #ffffff;
+    --secondary: #f3f4f6;
+    --secondary-foreground: #111827;
+    --accent: #f9fafb;
+    --accent-foreground: #111827;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+  }
+
+  .dark {
+    --background: #0a0a0a;
+    --foreground: #f9fafb;
+    --card: #1c1c1e;
+    --card-foreground: #f9fafb;
+    --border: #2d2d2d;
+    --input: #2d2d2d;
+    --ring: #2d2d2d;
+    --primary: #dc2626;
+    --primary-foreground: #ffffff;
+    --secondary: #202020;
+    --secondary-foreground: #f9fafb;
+    --accent: #1c1c1e;
+    --accent-foreground: #f9fafb;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+    --muted: #2d2d2d;
+    --muted-foreground: #9ca3af;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+  body {
+    @apply bg-white dark:bg-dark-background text-gray-900 dark:text-white font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+  }
+  
+  h1 {
+    @apply text-4xl lg:text-5xl;
+  }
+  
+  h2 {
+    @apply text-3xl lg:text-4xl;
+  }
+  
+  h3 {
+    @apply text-2xl lg:text-3xl;
+  }
+}
+
+@layer components {
+  /* Modern form styles */
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5;
+  }
+
+  .form-input {
+    @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-dark-card border border-gray-300 dark:border-gray-700 
+    text-gray-900 dark:text-white shadow-inner-soft focus:ring-2 focus:ring-primary focus:border-transparent 
+    placeholder:text-gray-400 dark:placeholder:text-gray-500 transition-all duration-200;
+  }
+
+  .form-error {
+    @apply mt-1.5 text-sm text-red-600 dark:text-red-400;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-xl text-sm font-medium transition-colors 
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none 
+    disabled:opacity-50 h-10 px-4 py-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary hover:opacity-80 shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary text-gray-900 dark:text-white hover:bg-secondary hover:opacity-80;
+  }
+
+  .btn-destructive {
+    @apply btn bg-destructive text-white hover:bg-destructive hover:opacity-80;
+  }
+
+  .btn-outline {
+    @apply btn border border-input bg-white dark:bg-dark-background hover:bg-accent hover:text-gray-900 dark:hover:text-white;
+  }
+
+  .btn-ghost {
+    @apply btn hover:bg-accent hover:text-gray-900 dark:hover:text-white;
+  }
+
+  .btn-link {
+    @apply btn underline-offset-4 hover:underline text-primary;
+  }
+
+  /* Card styles */
+  .card {
+    @apply rounded-xl border bg-white dark:bg-dark-card text-gray-900 dark:text-white shadow-soft overflow-hidden;
+  }
+
+  .card-header {
+    @apply flex flex-col space-y-1.5 p-6;
+  }
+
+  .card-title {
+    @apply text-xl font-semibold leading-none tracking-tight;
+  }
+
+  .card-description {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+  }
+
+  .card-content {
+    @apply p-6 pt-0;
+  }
+
+  .card-footer {
+    @apply flex items-center p-6 pt-0;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors 
+    focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .badge-default {
+    @apply badge bg-primary text-white hover:bg-primary hover:opacity-80;
+  }
+
+  .badge-secondary {
+    @apply badge bg-secondary text-gray-900 dark:text-white hover:bg-secondary hover:opacity-80;
+  }
+
+  .badge-outline {
+    @apply badge bg-transparent text-gray-900 dark:text-white hover:bg-muted;
+  }
+
+  .badge-destructive {
+    @apply badge bg-destructive text-white hover:bg-destructive hover:opacity-80;
+  }
+
+  /* Table styles */
+  .table {
+    @apply w-full caption-bottom text-sm;
+  }
+
+  .table-header {
+    @apply [&_tr]:border-b;
+  }
+
+  .table-head {
+    @apply border-b px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 [&:has([role=checkbox])]:pr-0;
+  }
+
+  .table-cell {
+    @apply p-4 align-middle [&:has([role=checkbox])]:pr-0;
+  }
+
+  .table-footer {
+    @apply border-t bg-gray-100 dark:bg-gray-800 font-medium [&>tr]:last:border-b-0;
+  }
+
+  .table-row {
+    @apply border-b transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 data-[state=selected]:bg-gray-100 dark:data-[state=selected]:bg-gray-800;
+  }
+
+  /* Navbar styles */
+  .navbar {
+    @apply fixed top-0 left-0 right-0 z-50 flex h-16 items-center border-b border-gray-200 dark:border-gray-700 
+    bg-white/80 dark:bg-dark-background/80 backdrop-blur-sm transition-all;
+  }
+
+  /* Mobile menu styles */
+  .mobile-menu {
+    @apply fixed inset-0 z-50 flex flex-col bg-white dark:bg-dark-background p-6 pt-20 shadow-xl animation-in data-[state=closed]:animation-out;
+  }
+
+  /* Hero section styles */
+  .hero-section {
+    @apply relative flex flex-col items-center justify-center py-32 overflow-hidden;
+  }
+
+  .hero-bg-dark {
+    @apply bg-dark-background bg-[url('/dark-pc.png')] bg-center bg-cover bg-no-repeat;
+  }
+
+  .hero-bg-light {
+    @apply bg-white bg-[url('/light-pc.png')] bg-center bg-cover bg-no-repeat;
+  }
+
+  .hero-overlay {
+    @apply absolute inset-0 bg-gradient-to-r from-black/50 to-brand-red-600/30 dark:from-black/70 dark:to-brand-red-600/50;
+  }
+
+  .hero-content {
+    @apply relative z-10 container mx-auto flex flex-col items-start gap-6 md:gap-8;
+  }
+
+  .hero-title {
+    @apply text-4xl sm:text-5xl md:text-6xl font-bold text-white max-w-3xl;
+  }
+
+  .hero-subtitle {
+    @apply text-xl sm:text-2xl text-white/90 max-w-xl;
+  }
+
+  /* Product specific styles */
+  .product-card {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm 
+    hover:shadow-md dark:hover:shadow-lg transition-all duration-200;
+  }
+
+  .product-image-container {
+    @apply relative bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden;
+    padding-bottom: 100%; /* This creates a 1:1 aspect ratio */
+  }
+
+  .product-image-container > * {
+    @apply absolute inset-0 w-full h-full object-cover;
+  }
+
+  .product-badge {
+    @apply absolute top-2 left-2 sm:top-4 sm:left-4 bg-red-600 text-white text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 
+    rounded-lg font-medium;
+  }
+
+  .product-specs-table {
+    @apply w-full border-collapse bg-white dark:bg-gray-800 rounded-lg overflow-hidden;
+  }
+
+  .product-specs-row {
+    @apply border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors;
+  }
+
+  .product-specs-label {
+    @apply px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 w-1/3;
+  }
+
+  .product-specs-value {
+    @apply px-4 py-3 text-sm text-gray-900 dark:text-white;
+  }
+
+  .product-quantity-btn {
+    @apply px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+    disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  }
+
+  .product-tab {
+    @apply py-4 px-6 text-sm font-medium border-b-2 transition-colors hover:text-gray-900 dark:hover:text-white;
+  }
+
+  .product-tab-active {
+    @apply border-red-600 text-red-600 dark:border-red-400 dark:text-red-400;
+  }
+
+  .product-tab-inactive {
+    @apply border-transparent text-gray-600 dark:text-gray-400;
+  }
+
+  .product-info-icon {
+    @apply inline-flex items-center text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  .product-stock-badge {
+    @apply inline-flex items-center px-2 py-1 rounded text-sm font-medium;
+  }
+
+  .product-stock-in {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+  }
+
+  .product-stock-low {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300;
+  }
+
+  .product-stock-out {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300;
+  }
+
+  .product-price-display {
+    @apply text-3xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .product-price-original {
+    @apply ml-2 text-lg text-gray-500 dark:text-gray-400 line-through;
+  }
+
+  .product-discount-badge {
+    @apply ml-2 px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 
+    text-xs font-medium rounded-md;
+  }
+
+  .wishlist-button {
+    @apply flex items-center justify-center py-3 px-4 border rounded-md shadow-sm transition-colors 
+    disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .wishlist-button-active {
+    @apply border-red-500 text-red-500 bg-red-50 dark:border-red-400 dark:text-red-400 dark:bg-red-900/10;
+  }
+
+  .wishlist-button-inactive {
+    @apply border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 
+    bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700;
+  }
+
+  .action-button {
+    @apply flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 
+    transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .product-description {
+    @apply prose dark:prose-invert max-w-none whitespace-pre-line text-gray-700 dark:text-gray-300;
+  }
+}

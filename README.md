@@ -1,183 +1,207 @@
 # IvaPro PC Configurator
 
-A modern web application for configuring and purchasing custom PCs, built with Next.js, Prisma, and React.
-
-## Features
-
-- 🖥️ Custom PC configuration interface
-- 🏪 Ready-made PC catalog
-- 🛒 Shopping cart functionality
-- 👤 User authentication and authorization
-- 🌐 Multi-language support (English, Latvian, Russian)
-- 🎨 Responsive design with dark mode
-- 👨‍💼 Admin and specialist dashboards
-- 🔄 Configuration approval workflow
-
-## Technologies
-
-- **Frontend**: Next.js 15, React 19, TailwindCSS
-- **Backend**: Next.js API Routes, Prisma ORM
-- **Database**: MySQL
-- **Authentication**: JWT with HTTP-only cookies
-- **i18n**: next-intl for internationalization
-- **Hosting**: Vercel (recommended)
+A full-stack web application for creating custom PC configurations, managing ready-made PCs, and handling orders.
 
 ## Project Structure
 
-```
-IvaPro-PC-Configurator/
-├── app/                  # Main Next.js application
-│   ├── [locale]/         # Localized routes
-│   │   ├── (auth)/       # Authentication routes (login, register)
-│   │   ├── (shop)/       # Shop routes (configurator, ready configs)
-│   │   └── ...           # Other localized routes
-│   ├── api/              # API endpoints
-│   │   ├── auth/         # Authentication APIs
-│   │   ├── admin/        # Admin APIs
-│   │   └── ...           # Other API endpoints
-│   ├── components/       # Reusable components
-│   │   ├── Admin/        # Admin components
-│   │   ├── Cart/         # Cart components
-│   │   ├── Configurator/ # Configurator components
-│   │   ├── Header/       # Header components
-│   │   ├── ui/           # UI components
-│   │   └── ...           # Other components
-│   └── contexts/         # React contexts
-├── lib/                  # Utility libraries
-│   ├── prismaService.ts  # Prisma client service
-│   ├── jwt.ts            # JWT utilities
-│   └── apiErrors.ts      # API error handling
-├── prisma/               # Prisma schema and migrations
-│   ├── schema.prisma     # Database schema
-│   └── migrations/       # Database migrations
-├── messages/             # i18n translation files
-│   ├── en.json           # English translations
-│   ├── lv.json           # Latvian translations
-│   └── ru.json           # Russian translations
-└── public/               # Static assets
- 
+### Root Files
+- `.gitignore` - Git ignore configuration
+- `README.md` - This project documentation
+- `next.config.mjs` - Next.js configuration
+- `package.json` - Project dependencies and scripts
+- `tsconfig.json` - TypeScript configuration
+- `postcss.config.js` - PostCSS configuration
+- `eslint.config.mjs` - ESLint configuration
+- `tailwind.config.js` - Tailwind CSS configuration
+- `middleware.ts` - Next.js middleware for routing
+- `next-intl.config.ts` - Internationalization configuration
 
-```
+### Core Directories
+- `/app` - Main application code (Next.js App Router)
+- `/lib` - Utility functions, services, and shared code
+- `/prisma` - Database schema and migrations
+- `/public` - Static assets
 
-## Getting Started
+### App Structure
 
-### Prerequisites
+#### Core App Files
+- `app/layout.tsx` - Root layout
+- `app/page.tsx` - Root page (redirects to localized home)
+- `app/globals.css` - Global CSS
 
-- Node.js 18+ and npm
-- MySQL database
+#### Localization Setup
+- `app/i18n/config.ts` - i18n configuration 
+- `app/i18n/messages.ts` - Message loading utilities
+- `app/i18n/providers.tsx` - i18n provider components
 
-### Installation
+#### Context Providers
+- `app/contexts/AuthContext.tsx` - Authentication context
+- `app/contexts/CartContext.tsx` - Shopping cart context
+- `app/contexts/ThemeContext.tsx` - Theme context (light/dark mode)
 
-1. Clone the repository:
+#### Localized Pages and Routes
+- `app/[locale]/layout.tsx` - Main layout with header and footer
+- `app/[locale]/page.tsx` - Home page
 
-```bash
-git clone https://github.com/yourusername/ivapro-pc-configurator.git
-cd ivapro
-```
+**Authentication Pages:**
+- `app/[locale]/auth/login/page.tsx` - Login page
+- `app/[locale]/auth/register/page.tsx` - Registration page
+- `app/[locale]/auth/forgot-password/page.tsx` - Password recovery
 
-2. Install dependencies:
+**User Dashboard:**
+- `app/[locale]/dashboard/page.tsx` - User dashboard
 
+**Configurator:**
+- `app/[locale]/configurator/page.tsx` - PC configurator tool
+
+**Shop:**
+- `app/[locale]/shop/ready-made/page.tsx` - Pre-configured PCs
+- `app/[locale]/shop/product/[id]/page.tsx` - Product details
+
+**Cart & Checkout:**
+- `app/[locale]/cart/page.tsx` - Shopping cart
+- `app/[locale]/checkout/page.tsx` - Checkout process
+- `app/[locale]/orders/[id]/page.tsx` - Order details
+
+**Admin Panel:**
+- `app/[locale]/admin/page.tsx` - Admin dashboard
+- `app/[locale]/admin/components/create/page.tsx` - Create components
+- `app/[locale]/admin/components/edit/[id]/page.tsx` - Edit components
+- `app/[locale]/admin/components/view/[id]/page.tsx` - View components
+- `app/[locale]/admin/configurations/create/page.tsx` - Create configurations
+- `app/[locale]/admin/configurations/edit/[id]/page.tsx` - Edit configurations
+- `app/[locale]/admin/configurations/view/[id]/page.tsx` - View configurations
+- `app/[locale]/admin/orders/edit/[id]/page.tsx` - Edit orders
+- `app/[locale]/admin/orders/view/[id]/page.tsx` - View orders
+- `app/[locale]/admin/users/edit/[id]/page.tsx` - Edit users
+- `app/[locale]/admin/users/view/[id]/page.tsx` - View users
+
+**Specialist Panel:**
+- `app/[locale]/specialist/page.tsx` - Specialist dashboard
+
+#### Component Structure
+- `app/components/Configurator/` - Configurator components
+  - `ComponentSelectionPanel.tsx`
+  - `SelectedComponents.tsx`
+  - `ConfigurationSummary.tsx`
+
+- `app/components/Dashboard/` - Dashboard components
+  - `ProfileTab.tsx` - User profile management
+
+- `app/components/Footer/` - Footer components
+  - `Footer.tsx`
+
+- `app/components/Header/` - Header components
+  - `Header.tsx`
+  - `LanguageSwitcher.tsx`
+  - `MobileMenu.tsx`
+
+- `app/components/Home/` - Home page components
+  - `HeroSection.tsx`
+  - `FeaturedConfigurations.tsx`
+  - `ServicesSection.tsx`
+
+- `app/components/ui/` - Shared UI components
+  - `tabs.tsx`
+
+#### API Routes
+- `app/api/admin/` - Admin API routes
+  - `route.ts`
+  - `components/[id]/route.ts`
+  - `components/route.ts`
+  - `configurations/[id]/route.ts`
+  - `configurations/route.ts`
+  - `orders/[id]/route.ts`
+  - `orders/route.ts`
+  - `users/[id]/route.ts`
+  - `users/route.ts`
+
+- `app/api/auth/` - Authentication API routes
+  - `login/route.ts`
+  - `logout/route.ts`
+  - `me/route.ts`
+  - `register/route.ts`
+  - `update-profile/route.ts`
+
+- `app/api/components/route.ts` - Component data API
+- `app/api/dashboard/` - Dashboard data API
+  - `configurations/[id]/route.ts`
+  - `configurations/route.ts`
+  - `orders/[id]/route.ts`
+  - `orders/route.ts`
+- `app/api/shop/product/[id]/route.ts` - Shop product data API
+
+### Lib Directory
+- `lib/apiErrors.ts` - API error handling utilities
+- `lib/jwt.ts` - JWT authentication functions
+- `lib/messages/` - Internationalization message files
+  - `en.json` - English translations
+  - `lv.json` - Latvian translations
+  - `ru.json` - Russian translations
+- `lib/prismaService.ts` - Prisma client setup
+- `lib/seeder.ts` - Database seeding script
+- `lib/utils.ts` - General utility functions
+- `lib/utils/adminHelpers.tsx` - Admin panel utilities
+
+**Service Files:**
+- `lib/services/configuratorService.ts` - Configurator business logic
+- `lib/services/dashboardService.ts` - Dashboard data functions
+- `lib/services/shopService.ts` - Shop functionality
+- `lib/services/specialistService.ts` - Specialist panel functions
+
+### Database (Prisma)
+- `prisma/schema.prisma` - Database schema
+- `prisma/migrations/` - Database migrations
+
+### Public Directory
+- `public/uploads/profiles/` - User profile images
+- `public/file.svg`, `public/globe.svg`, etc. - Static SVG assets
+
+## Recent Updates
+
+- Added profile picture support
+- Split name field into first name and last name
+- Added phone number registration option
+- Implemented profile management in dashboard
+- Added the ability to update contact information
+- Added dual authentication with either email or phone
+
+## Setup Instructions
+
+1. Install dependencies:
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-3. Set up environment variables:
-
-Create a `.env` file in the project root with the following variables:
-
-```
-# Database
-DATABASE_URL="mysql://username:password@localhost:3306/ivapro"
-
-# Auth
-JWT_SECRET="your-secret-key"
-
-# App configuration
-NEXT_PUBLIC_DEFAULT_LOCALE="en"
-NEXT_PUBLIC_DEFAULT_TIMEZONE="Europe/Riga"
-```
-
-4. Set up the database:
-
+2. Set up the database:
 ```bash
-# Create database schema
 npx prisma migrate dev
-
-# Seed the database with initial data (optional)
-npx prisma db seed
 ```
 
-5. Start the development server:
+3. Seed the database with initial data:
+```bash
+npm run seed
+```
 
+4. Run the development server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
-
-## Database Management
-
-To open Prisma Studio (database visualization tool):
-
-```bash
-npx prisma studio
-```
-
-Prisma Studio will start at [http://localhost:5555](http://localhost:5555).
-
-## Building for Production
-
-```bash
-npm run build
-# or
-yarn build
-# or
-pnpm build
-# or
-bun build
 ```
 
 ## Deployment
 
-The application is optimized for deployment on Vercel. Simply connect your GitHub repository to Vercel for automatic deployments.
+Build the application for production:
+```bash
+npm run build
+```
 
-### Environment Variables for Production
+Start the production server:
+```bash
+npm start
+```
 
-Make sure to set the following environment variables in your production environment:
+## Default Accounts
 
-- `DATABASE_URL`: Connection string to your MySQL database
-- `JWT_SECRET`: Secret key for JWT token generation
-- `NODE_ENV`: Set to "production"
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add some amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- [Next.js](https://nextjs.org/)
-- [Prisma](https://prisma.io/)
-- [TailwindCSS](https://tailwindcss.com/)
-- [next-intl](https://next-intl-docs.vercel.app/)
-- [Lucide Icons](https://lucide.dev/)
-- [Jose JWT](https://github.com/panva/jose)
+- Admin: admin@ivapro.com / admin123
+- Specialist: specialist@ivapro.com / admin123
+- User: user@ivapro.com / admin123

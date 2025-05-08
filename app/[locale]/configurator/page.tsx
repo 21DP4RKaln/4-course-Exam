@@ -1,7 +1,13 @@
-'use client';
+"use client"
 
-import Configurator from '../../components/Configurator/ConfiguratorComponents';
+import React from 'react'
+import ConfiguratorPage from '@/app/components/Configurator/ConfiguratorPage'
+import ConfiguratorLayout from '@/app/components/Configurator/ConfiguratorLayout'
 
-export default function ConfiguratorPage() {
-  return <Configurator />;
+export default function Page() {
+  return (
+    <ConfiguratorLayout>
+      <ConfiguratorPage />
+    </ConfiguratorLayout>
+  )
 }
