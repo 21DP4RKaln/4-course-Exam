@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -9,12 +7,30 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DATABASE_URL=mysql://root:password@db:3306/ivapro
       - NODE_ENV=production
+      - JWT_SECRET=7w4U4zcoBQgN9OEcAJDF8gNNc5B7h7du
+      - DEBUG=nextjs:*
     volumes:
       - uploaded-images:/app/public/uploads
+    networks:
+      - app-network
+      
+  seeder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    profiles: ["seeder"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=mysql://root:password@db:3306/ivapro
+      - NODE_ENV=production
+    command: sh -c "cd /app && npx tsx lib/seeder.ts"
     networks:
       - app-network
 
@@ -31,21 +47,11 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - app-network
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    restart: always
-    ports:
-      - "8080:80"
-    environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
-      - PMA_USER=root
-      - PMA_PASSWORD=password
-    depends_on:
-      - db
-    networks:
-      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app-network:

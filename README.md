@@ -154,6 +154,28 @@ http://localhost:8080
 http://localhost:3000
 ```
 
+### Database Seeding with Docker
+
+Seed the database using Docker container:
+
+```bash
+# For Windows using PowerShell
+.\run-seeder-debian-windows.ps1
+
+# For Windows using CMD
+run-seeder-debian-windows.bat
+
+# For Linux/Unix systems
+./run-seeder.sh
+```
+
+This will build and run a Docker container that uses TSX to execute the TypeScript seeder script (`lib/seeder.ts`) directly, populating the database with test data including:
+- Default user accounts
+- Component categories
+- Specification keys
+- Sample components
+- Pre-built PC configurations
+
 ### Production Environment
 
 Build the application for production:
