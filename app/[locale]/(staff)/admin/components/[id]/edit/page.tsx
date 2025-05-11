@@ -12,6 +12,8 @@ const componentSchema = z.object({
   description: z.string().optional(),
   categoryId: z.string().min(1, 'Category is required'),
   price: z.number().min(0, 'Price must be positive'),
+  discountPrice: z.number().min(0, 'Discount price must be positive').nullable().optional(),
+  discountExpiresAt: z.string().nullable().optional(),
   stock: z.number().int().min(0, 'Stock must be non-negative'),
   sku: z.string().min(1, 'SKU is required'),
   imageUrl: z.string().url().optional().or(z.literal('')),
@@ -24,6 +26,10 @@ export default function EditComponentPage({ params }: { params: { id: string } }
   const pathname = usePathname()
   const locale = pathname.split('/')[1]
   
+  console.log("Component Edit Page params:", params);
+  console.log("Locale from pathname:", locale);
+  console.log("Full pathname:", pathname);
+
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
   const [loading, setLoading] = useState(false)
   const [fetchingComponent, setFetchingComponent] = useState(true)
@@ -37,30 +43,47 @@ export default function EditComponentPage({ params }: { params: { id: string } }
     resolver: zodResolver(componentSchema),
   })
 
+  // Check for valid ID
   useEffect(() => {
-    fetchComponent()
-    fetchCategories()
-  }, [params.id])
+    if (!params.id || params.id === "undefined") {
+      console.error("Invalid component ID:", params.id);
+      router.push(`/${locale}/admin/components`);
+      return;
+    }
+  }, [params.id, locale, router]);
+
+  useEffect(() => {
+    fetchComponent();
+    fetchCategories();
+  }, [params.id]);
 
   const fetchComponent = async () => {
     try {
-      const response = await fetch(`/api/admin/components/${params.id}`)
+      console.log("Fetching component with ID:", params.id);
+      const response = await fetch(`/api/admin/components/${params.id}`);
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
+        console.log("Fetched component data:", data);
         reset({
           name: data.name,
           description: data.description || '',
           categoryId: data.categoryId,
           price: data.price,
+          discountPrice: data.discountPrice || null,
+          discountExpiresAt: data.discountExpiresAt ? new Date(data.discountExpiresAt).toISOString().split('T')[0] : null,
           stock: data.stock,
           sku: data.sku,
           imageUrl: data.imageUrl || '',
-        })
+        });
+      } else {
+        console.error("Failed to fetch component, status:", response.status);
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
       }
     } catch (error) {
-      console.error('Error fetching component:', error)
+      console.error('Error fetching component:', error);
     } finally {
-      setFetchingComponent(false)
+      setFetchingComponent(false);
     }
   }
 
@@ -150,8 +173,118 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 <p className="mt-1 text-sm text-red-600">{errors.sku.message}</p>
               )}
             </div>
-
-            {/* ... other form fields ... */}
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Price (€)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                {...register('price', { valueAsNumber: true })}
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              />
+              {errors.price && (
+                <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Discount Price (€)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                {...register('discountPrice', { valueAsNumber: true })}
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              />
+              {errors.discountPrice && (
+                <p className="mt-1 text-sm text-red-600">{errors.discountPrice.message}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Leave empty for no discount
+              </p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Discount Valid Until
+              </label>
+              <input
+                type="date"
+                {...register('discountExpiresAt')}
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              />
+              {errors.discountExpiresAt && (
+                <p className="mt-1 text-sm text-red-600">{errors.discountExpiresAt.message}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Leave empty for no expiration
+              </p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Stock
+              </label>
+              <input
+                type="number"
+                {...register('stock', { valueAsNumber: true })}
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              />
+              {errors.stock && (
+                <p className="mt-1 text-sm text-red-600">{errors.stock.message}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Category
+              </label>
+              <select
+                {...register('categoryId')}
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              >
+                <option value="">Select a category</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              {errors.categoryId && (
+                <p className="mt-1 text-sm text-red-600">{errors.categoryId.message}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Image URL
+              </label>
+              <input
+                type="text"
+                {...register('imageUrl')}
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              />
+              {errors.imageUrl && (
+                <p className="mt-1 text-sm text-red-600">{errors.imageUrl.message}</p>
+              )}
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Description
+              </label>
+              <textarea
+                rows={4}
+                {...register('description')}
+                className="w-full px-3 py-2 border rounded-lg resize-none dark:bg-gray-700 dark:border-gray-600"
+              ></textarea>
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end space-x-4">

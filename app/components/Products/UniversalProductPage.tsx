@@ -59,9 +59,19 @@ interface PeripheralProduct extends ProductCommonProps {
 
 type Product = ConfigurationProduct | ComponentProduct | PeripheralProduct;
 
-export default function UniversalProductPage() {
+interface UniversalProductPageProps {
+  productId?: string;
+}
+
+export default function UniversalProductPage({ productId: propProductId }: UniversalProductPageProps) {
   const params = useParams()
-  const productId = params.id as string
+  const routeProductId = params.id as string
+  const productId = propProductId || routeProductId
+  
+  console.log("UniversalProductPage - params:", params);
+  console.log("UniversalProductPage - routeProductId:", routeProductId);
+  console.log("UniversalProductPage - propProductId:", propProductId);
+  console.log("UniversalProductPage - final productId:", productId);
     
   const router = useRouter()
   const t = useTranslations('product')

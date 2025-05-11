@@ -16,7 +16,7 @@ interface FilterOption {
   name: string
 }
 
-export interface FilterGroup {
+interface FilterGroup {
   title: string
   type: 'range' | 'checkbox' | 'radio'
   options?: FilterOption[]

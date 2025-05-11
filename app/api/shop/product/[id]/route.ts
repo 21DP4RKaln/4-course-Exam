@@ -4,10 +4,18 @@ import { createNotFoundResponse, createServerErrorResponse } from '@/lib/apiErro
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
+    const { params } = context;
     const id = params.id;
+    
+    // Check for undefined or empty ID
+    if (!id || id === 'undefined') {
+      console.error("Invalid product ID:", id);
+      return createNotFoundResponse('Invalid product ID');
+    }
+    
     console.log("Fetching product with ID:", id);
    
     const product = await getProductById(id);
@@ -20,11 +28,10 @@ export async function GET(
     incrementProductView(id, product.type).catch(err => {
       console.error(`Error incrementing view count for ${product.type} ${id}:`, err);
     });
-    
-    console.log(`Found ${product.type}:`, product.name);
+      console.log(`Found ${product.type}:`, product.name);
     return NextResponse.json(product);
   } catch (error) {
-    console.error(`Error fetching product with ID ${params.id}:`, error);
+    console.error(`Error fetching product with ID ${context.params.id}:`, error);
     return createServerErrorResponse('Failed to fetch product details');
   }
 }

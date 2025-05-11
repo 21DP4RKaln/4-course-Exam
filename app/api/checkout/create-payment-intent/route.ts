@@ -3,24 +3,12 @@ import Stripe from 'stripe'
 import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
 import { createUnauthorizedResponse, createServerErrorResponse } from '@/lib/apiErrors'
 
-// Don't initialize Stripe during build time
-// Instead, initialize it lazily when the API route is actually called
-let stripe: Stripe | null = null;
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-04-30.basil',
+})
 
 export async function POST(request: NextRequest) {
   try {
-    // Initialize Stripe only when this function is called at runtime
-    if (!stripe) {
-      const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
-      if (!stripeSecretKey) {
-        console.error('Missing Stripe Secret Key in environment variables');
-        return createServerErrorResponse('Payment service configuration error');
-      }
-      stripe = new Stripe(stripeSecretKey, {
-        apiVersion: '2025-04-30.basil',
-      });
-    }
-
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')

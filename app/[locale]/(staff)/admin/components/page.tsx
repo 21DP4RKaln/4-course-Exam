@@ -14,6 +14,8 @@ interface Component {
   name: string
   category: { name: string }
   price: number
+  discountPrice: number | null
+  discountExpiresAt: string | null
   stock: number
   sku: string
   createdAt: string
@@ -33,12 +35,12 @@ export default function ComponentsPage() {
   useEffect(() => {
     fetchComponents()
   }, [])
-
   const fetchComponents = async () => {
     try {
       const response = await fetch('/api/admin/components')
       if (response.ok) {
         const data = await response.json()
+        console.log("Fetched components:", data);
         setComponents(data)
       }
     } catch (error) {
@@ -63,7 +65,6 @@ export default function ComponentsPage() {
       console.error('Error deleting component:', error)
     }
   }
-
   const columns: Column<Component>[] = [
     { 
       key: 'name',
@@ -79,6 +80,16 @@ export default function ComponentsPage() {
       label: 'Price',
       render: (value: number) => `€${value.toFixed(2)}`
     },
+    {
+      key: 'discountPrice',
+      label: 'Discount Price',
+      render: (value: number | null, row: Component) => {
+        if (!value) return '-';
+        const isExpired = row.discountExpiresAt && new Date(row.discountExpiresAt) < new Date();
+        if (isExpired) return '-';
+        return `€${value.toFixed(2)}`;
+      }
+    },
     { 
       key: 'stock',
       label: 'Stock'
@@ -87,16 +98,24 @@ export default function ComponentsPage() {
       key: 'sku',
       label: 'SKU'
     },
-    {
-      key: 'id',
+    {      key: 'id',
       label: 'Actions',
-      render: (item: Component) => (
-        <ActionButtons
-          onView={() => router.push(`/${locale}/admin/components/${item.id}`)}
-          onEdit={() => router.push(`/${locale}/admin/components/${item.id}/edit`)}
-          onDelete={() => handleDelete(item.id)}
-        />
-      ),
+      render: (item: Component) => {
+        console.log("Item in action buttons:", item);
+        return (
+          <ActionButtons
+            onView={() => {
+              console.log(`Navigating to view: /${locale}/admin/components/${item.id}`);
+              router.push(`/${locale}/admin/components/${item.id}`);
+            }}
+            onEdit={() => {
+              console.log(`Navigating to edit: /${locale}/admin/components/${item.id}/edit`);
+              router.push(`/${locale}/admin/components/${item.id}/edit`);
+            }}
+            onDelete={() => handleDelete(item.id)}
+          />
+        );
+      },
     },
   ]
 

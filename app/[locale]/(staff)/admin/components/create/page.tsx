@@ -13,6 +13,8 @@ const componentSchema = z.object({
   description: z.string().optional(),
   categoryId: z.string().min(1, 'Category is required'),
   price: z.number().min(0, 'Price must be positive'),
+  discountPrice: z.number().min(0, 'Discount price must be positive').nullable().optional(),
+  discountExpiresAt: z.string().nullable().optional(),
   stock: z.number().int().min(0, 'Stock must be non-negative'),
   sku: z.string().min(1, 'SKU is required'),
   imageUrl: z.string().url().optional().or(z.literal('')),
@@ -136,6 +138,41 @@ export default function CreateComponentPage() {
               {errors.price && (
                 <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
               )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Discount Price (€)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                {...register('discountPrice', { valueAsNumber: true })}
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              />
+              {errors.discountPrice && (
+                <p className="mt-1 text-sm text-red-600">{errors.discountPrice.message}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Leave empty for no discount
+              </p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Discount Valid Until
+              </label>
+              <input
+                type="date"
+                {...register('discountExpiresAt')}
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              />
+              {errors.discountExpiresAt && (
+                <p className="mt-1 text-sm text-red-600">{errors.discountExpiresAt.message}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Leave empty for no expiration
+              </p>
             </div>
 
             <div>

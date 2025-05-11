@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -52,6 +51,8 @@ model Component {
   name           String
   description    String?           @db.Text
   price          Float
+  discountPrice  Float?
+  discountExpiresAt DateTime?
   stock          Int               @default(0)
   imageUrl       String?
   categoryId     String
@@ -86,6 +87,8 @@ model Peripheral {
   name           String
   description    String?            @db.Text
   price          Float
+  discountPrice  Float?
+  discountExpiresAt DateTime?
   stock          Int                @default(0)
   imageUrl       String?
   categoryId     String
@@ -158,23 +161,25 @@ model ConfigItem {
 }
 
 model Configuration {
-  id          String       @id @default(uuid())
-  name        String
-  description String?      @db.Text
-  userId      String?
-  totalPrice  Float
-  status      ConfigStatus @default(DRAFT)
-  isTemplate  Boolean      @default(false)
-  isPublic    Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  category    String?
-  imageUrl    String?
-  viewCount   Int          @default(0)
-  components  ConfigItem[]
-  user        User?        @relation(fields: [userId], references: [id])
-  orders      Order[]
-  repairs     Repair[]
+  id               String       @id @default(uuid())
+  name             String
+  description      String?      @db.Text
+  userId           String?
+  totalPrice       Float
+  discountPrice    Float?
+  discountExpiresAt DateTime?
+  status           ConfigStatus @default(DRAFT)
+  isTemplate       Boolean      @default(false)
+  isPublic         Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  category         String?
+  imageUrl         String?
+  viewCount        Int          @default(0)
+  components       ConfigItem[]
+  user             User?        @relation(fields: [userId], references: [id])
+  orders           Order[]
+  repairs          Repair[]
 
   @@index([userId], map: "configuration_userId_fkey")
   @@map("configuration")

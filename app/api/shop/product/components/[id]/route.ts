@@ -3,9 +3,10 @@ import { prisma } from '@/lib/prismaService';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
+    const { params } = context;
     const id = params.id;
     const component = await prisma.component.findUnique({
       where: {
@@ -32,6 +33,15 @@ export async function GET(
   
     for (const specValue of component.specValues) {
       specs[specValue.specKey.name] = specValue.value;
+    }    // Calculate if discount is valid
+    let discountPrice = null;
+    if (component.discountPrice && component.discountExpiresAt) {
+      const now = new Date();
+      if (now < component.discountExpiresAt) {
+        discountPrice = component.discountPrice;
+      }
+    } else if (component.discountPrice) {
+      discountPrice = component.discountPrice;
     }
 
     return NextResponse.json({
@@ -42,16 +52,16 @@ export async function GET(
       description: component.description || '',
       specifications: specs,
       price: component.price,
-      discountPrice: null,
+      discountPrice: discountPrice,
+      discountExpiresAt: component.discountExpiresAt,
       imageUrl: component.imageUrl,
       stock: component.stock,
       ratings: {
         average: 4.3,
         count: 18,
       }
-    });
-  } catch (error) {
-    console.error(`Error fetching component with ID ${params.id}:`, error);
+    });  } catch (error) {
+    console.error(`Error fetching component with ID ${context.params.id}:`, error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

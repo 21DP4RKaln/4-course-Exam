@@ -25,10 +25,17 @@ export default function ViewComponentPage({ params }: { params: { id: string } }
   
   const [component, setComponent] = useState<Component | null>(null)
   const [loading, setLoading] = useState(true)
-
+  
   useEffect(() => {
+    // Check if we have a valid ID
+    if (!params.id || params.id === "undefined") {
+      console.error("Invalid component ID:", params.id);
+      router.push(`/${locale}/admin/components`);
+      return;
+    }
+    
     fetchComponent()
-  }, [params.id])
+  }, [params.id, locale, router])
 
   const fetchComponent = async () => {
     try {

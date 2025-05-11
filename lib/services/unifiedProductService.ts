@@ -45,10 +45,29 @@ export interface PaginatedProducts {
 }
 
 /**
- * Calculate discount price based on product price and public status
+ * Get discount price if available and not expired
  */
-export function calculateDiscountPrice(price: number, isPublic: boolean): number | null {
-  return isPublic ? Math.round(price * 0.9 * 100) / 100 : null;
+export function getDiscountPrice(price: number, discountPrice: number | null, discountExpiresAt: Date | null): number | null {
+  if (!discountPrice) return null;
+  if (discountExpiresAt && new Date() > discountExpiresAt) return null;
+  return discountPrice;
+}
+
+/**
+ * Calculate discount price for configurations
+ */
+export function calculateDiscountPrice(
+  price: number, 
+  discountData: boolean | number | null,
+  discountExpiresAt?: Date | null
+): number | null {
+  if (typeof discountData === 'boolean') {
+    // Handle legacy isPublic parameter - assume 10% discount if public
+    return discountData ? price * 0.9 : null;
+  } else {
+    // Handle direct discount price
+    return getDiscountPrice(price, discountData, discountExpiresAt || null);
+  }
 }
 
 /**
@@ -98,8 +117,7 @@ export function extractComponentSpecifications(component: any): Record<string, s
  * regardless of whether it's a configuration, component, or peripheral
  */
 export async function getProductById(id: string): Promise<Product | null> {
-  try {
-    // Try to find as a configuration first
+  try {    // Try to find as a configuration first
     const configuration = await prisma.configuration.findUnique({
       where: {
         id,
@@ -126,14 +144,18 @@ export async function getProductById(id: string): Promise<Product | null> {
         price: item.component.price,
         quantity: item.quantity,
       }));
-      
-      const specs: Record<string, string> = {};
+        const specs: Record<string, string> = {};
       configuration.components.forEach(configItem => {
         const categoryName = configItem.component.category.name.toLowerCase();
         specs[categoryName] = configItem.component.name;
       });
-      
-      const discountPrice = calculateDiscountPrice(configuration.totalPrice, configuration.isPublic);
+        // Since configuration properties might be missing in some queries
+      const discountPrice = 'discountPrice' in configuration && 'discountExpiresAt' in configuration ? 
+        getDiscountPrice(
+          configuration.totalPrice as number, 
+          configuration.discountPrice as number, 
+          configuration.discountExpiresAt as Date | null
+        ) : null;
 
       return {
         id: configuration.id,
@@ -170,9 +192,8 @@ export async function getProductById(id: string): Promise<Product | null> {
       const specifications = extractComponentSpecifications(component);
       const isPeripheral = component.category.type === 'peripheral';
 
-      return {
-        id: component.id,
-        type: isPeripheral ? 'peripheral' : 'component',
+      return {        id: component.id,
+        type: isPeripheral ? 'peripheral' as const : 'component' as const,
         name: component.name,
         category: component.category.name,
         description: component.description || '',
@@ -268,11 +289,9 @@ export async function getRelatedProducts(
             },
           },
         },
-        take: limit,
-      });
-      
-      return relatedConfigs.map(config => {
-        const components = config.components.map(item => ({
+        take: limit,      });
+        return relatedConfigs.map((config: any) => {
+        const components = config.components.map((item: any) => ({
           id: item.component.id,
           name: item.component.name,
           category: item.component.category.name,
@@ -281,12 +300,13 @@ export async function getRelatedProducts(
         }));
         
         const specs: Record<string, string> = {};
-        config.components.forEach(configItem => {
+        config.components.forEach((configItem: any) => {
           const categoryName = configItem.component.category.name.toLowerCase();
           specs[categoryName] = configItem.component.name;
         });
-        
-        const discountPrice = calculateDiscountPrice(config.totalPrice, config.isPublic);
+          const discountPrice = 'discountPrice' in config && 'discountExpiresAt' in config ?
+          getDiscountPrice(config.totalPrice as number, config.discountPrice as number, config.discountExpiresAt as Date | null) :
+          ((config as any).isPublic ? config.totalPrice as number * 0.9 : null);
         
         return {
           id: config.id,
@@ -333,11 +353,9 @@ export async function getRelatedProducts(
       
       return relatedComponents.map(component => {
         const specifications = extractComponentSpecifications(component);
-        const isPeripheral = component.category.type === 'peripheral';
-        
-        return {
+        const isPeripheral = component.category.type === 'peripheral';        return {
           id: component.id,
-          type: isPeripheral ? 'peripheral' : 'component',
+          type: (isPeripheral ? 'peripheral' : 'component') as 'peripheral' | 'component',
           name: component.name,
           category: component.category.name,
           description: component.description || '',
@@ -423,25 +441,24 @@ export async function getAllProducts(options: {
       if (type === 'configuration') {
         total = configCount;
       }
-      
-      products = [
+        products = [
         ...products,
-        ...configurations.map(config => {
-          const components = config.components.map(item => ({
+        ...configurations.map((config: any) => {          const components = config.components.map((item: any) => ({
             id: item.component.id,
             name: item.component.name,
             category: item.component.category.name,
             price: item.component.price,
             quantity: item.quantity,
           }));
-          
-          const specs: Record<string, string> = {};
-          config.components.forEach(configItem => {
+            const specs: Record<string, string> = {};
+          config.components.forEach((configItem: any) => {
             const categoryName = configItem.component.category.name.toLowerCase();
             specs[categoryName] = configItem.component.name;
           });
           
-          const discountPrice = calculateDiscountPrice(config.totalPrice, config.isPublic);
+          const discountPrice = 'discountPrice' in config && 'discountExpiresAt' in config ?
+            getDiscountPrice(config.totalPrice as number, config.discountPrice as number, config.discountExpiresAt as Date | null) :
+            ((config as any).isPublic ? config.totalPrice as number * 0.9 : null);
           
           return {
             id: config.id,
@@ -515,17 +532,16 @@ export async function getAllProducts(options: {
         total = componentCount;
       } else {
         total += componentCount;
-      }
-      
-      products = [
+      }      products = [
         ...products,
         ...components.map(component => {
           const specifications = extractComponentSpecifications(component);
           const isPeripheral = component.category.type === 'peripheral';
+          const productType = isPeripheral ? 'peripheral' as const : 'component' as const;
           
           return {
             id: component.id,
-            type: isPeripheral ? 'peripheral' : 'component',
+            type: productType,
             name: component.name,
             category: component.category.name,
             description: component.description || '',

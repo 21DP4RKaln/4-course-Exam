@@ -5,9 +5,6 @@ import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useCart } from '@/app/contexts/CartContext'
-import { FilterGroup } from './AdvancedFilter'
-import Image from 'next/image'
-import Link from 'next/link'
 
 import CategoryList from './CategoryList'
 import ComponentSelectionGrid from './ComponentSelectionGrid'
@@ -582,13 +579,12 @@ export default function ConfiguratorPage() {
     }))
   }
 
-  const getFilterGroups = useCallback((): FilterGroup[] => {
+  const getFilterGroups = useCallback(() => {
     switch (activeCategory) {
       case 'cpu':
         return [
           {
             title: t('configurator.filters.cpuBrand'),
-            type: 'radio' as const,
             options: [
               { id: 'intel', name: 'Intel' },
               { id: 'amd', name: 'AMD' }
@@ -596,7 +592,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.cpuSeries'),
-            type: 'checkbox' as const,
             options: [
               { id: 'intel-core-i9', name: 'Intel Core i9' },
               { id: 'intel-core-i7', name: 'Intel Core i7' },
@@ -612,7 +607,6 @@ export default function ConfiguratorPage() {
         return [
           {
             title: t('configurator.filters.gpuBrand'),
-            type: 'radio' as const,
             options: [
               { id: 'nvidia', name: 'NVIDIA' },
               { id: 'amd', name: 'AMD' }
@@ -620,7 +614,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.gpuSeries'),
-            type: 'checkbox' as const,
             options: [
               { id: 'rtx-40', name: 'RTX 40 Series' },
               { id: 'rtx-30', name: 'RTX 30 Series' },
@@ -631,7 +624,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.vram'),
-            type: 'checkbox' as const,
             options: [
               { id: '16gb', name: '16GB' },
               { id: '12gb', name: '12GB' },
@@ -644,7 +636,6 @@ export default function ConfiguratorPage() {
         return [
           {
             title: t('configurator.filters.formFactor'),
-            type: 'radio' as const,
             options: [
               { id: 'atx', name: 'ATX' },
               { id: 'micro-atx', name: 'Micro-ATX' },
@@ -653,7 +644,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.chipset'),
-            type: 'checkbox' as const,
             options: [
               { id: 'z790', name: 'Intel Z790' },
               { id: 'z690', name: 'Intel Z690' },
@@ -670,7 +660,6 @@ export default function ConfiguratorPage() {
         return [
           {
             title: t('configurator.filters.memoryType'),
-            type: 'radio' as const,
             options: [
               { id: 'ddr5', name: 'DDR5' },
               { id: 'ddr4', name: 'DDR4' }
@@ -678,7 +667,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.capacity'),
-            type: 'checkbox' as const,
             options: [
               { id: '128gb', name: '128GB' },
               { id: '64gb', name: '64GB' },
@@ -691,7 +679,6 @@ export default function ConfiguratorPage() {
         return [
           {
             title: t('configurator.filters.type'),
-            type: 'radio' as const,
             options: [
               { id: 'nvme', name: 'NVMe SSD' },
               { id: 'sata-ssd', name: 'SATA SSD' },
@@ -700,7 +687,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.capacity'),
-            type: 'checkbox' as const,
             options: [
               { id: '4tb', name: '4TB+' },
               { id: '2tb', name: '2TB' },
@@ -713,7 +699,6 @@ export default function ConfiguratorPage() {
         return [
           {
             title: t('configurator.filters.size'),
-            type: 'radio' as const,
             options: [
               { id: 'full-tower', name: 'Full Tower' },
               { id: 'mid-tower', name: 'Mid Tower' },
@@ -722,7 +707,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.features'),
-            type: 'checkbox' as const,
             options: [
               { id: 'tempered-glass', name: 'Tempered Glass' },
               { id: 'rgb', name: 'RGB' },
@@ -734,7 +718,6 @@ export default function ConfiguratorPage() {
         return [
           {
             title: t('configurator.filters.wattage'),
-            type: 'checkbox' as const,
             options: [
               { id: '1000w+', name: '1000W+' },
               { id: '850w+', name: '850W+' },
@@ -744,7 +727,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.certification'),
-            type: 'checkbox' as const,
             options: [
               { id: '80plus-titanium', name: '80+ Titanium' },
               { id: '80plus-platinum', name: 'Platinum' },
@@ -757,7 +739,6 @@ export default function ConfiguratorPage() {
         return [
           {
             title: t('configurator.filters.type'),
-            type: 'radio' as const,
             options: [
               { id: 'air', name: 'Air Cooling' },
               { id: 'aio', name: 'AIO Liquid' },
@@ -766,7 +747,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.features'),
-            type: 'checkbox' as const,
             options: [
               { id: 'rgb', name: 'RGB' },
               { id: 'lcd', name: 'LCD Screen' }
@@ -777,7 +757,6 @@ export default function ConfiguratorPage() {
         return [
           {
             title: t('configurator.filters.type'),
-            type: 'radio' as const,
             options: [
               { id: 'keyboard', name: 'Keyboard' },
               { id: 'mouse', name: 'Mouse' },
@@ -787,7 +766,6 @@ export default function ConfiguratorPage() {
           },
           {
             title: t('configurator.filters.features'),
-            type: 'checkbox' as const,
             options: [
               { id: 'wireless', name: 'Wireless' },
               { id: 'rgb', name: 'RGB' },
@@ -801,157 +779,88 @@ export default function ConfiguratorPage() {
   }, [activeCategory, t])
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Galvene */}
-      <div className="bg-gray-800 border-b border-gray-700">
-        <div className="container mx-auto px-4 py-3">
-          <Link href={`/${locale}`}>
-            <Image
-              src="/images/logo-removebg.png"
-              alt="Logo"
-              width={150}
-              height={50}
-              className="h-10 w-auto"
-            />
-          </Link>
-        </div>
-      </div>
+    <div className="flex flex-col space-y-4">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        {t('configurator.title')}
+      </h1>
+      
+      {/* CPU quick filter buttons */}
+      <QuickFilters 
+        activeFilter={quickCpuFilter} 
+        onFilterChange={handleQuickCpuFilterChange}
+        activeCategory={activeCategory} 
+      />
 
-      {/* Galvenais saturs */}
-      <div className="container mx-auto p-4 lg:p-6">
-        {/* Mobilā skatu pārslēgšana */}
-        <div className="lg:hidden mb-4">
-          <select 
-            value={activeCategory}
-            onChange={(e) => setActiveCategory(e.target.value)}
-            className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-          >
-            {[...componentCategories, { id: 'peripherals', name: 'Peripherals', slug: 'peripherals' }].map((category: Category) => (
-              <option key={category.id} value={category.id}>
-                {t(`components.${category.id}`)}
-                {selectedComponents[category.id] ? ' ✓' : ''}
-              </option>
-            ))}
-          </select>
+      <div className="grid grid-cols-12 gap-6">
+        {/* Category selection */}
+        <div className="col-span-3 lg:col-span-2">
+          <CategoryList 
+            categories={[
+              ...componentCategories,
+              { id: 'ram', name: 'Memory', slug: 'ram' },
+              { id: 'peripherals', name: 'Peripherals', slug: 'peripherals' }
+            ]}
+            activeCategory={activeCategory}
+            selectedComponents={selectedComponents}
+            onSetActiveCategory={setActiveCategory}
+          />
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Kreisā puse - kategorijas un filtri */}
-          <div className="hidden lg:flex flex-col gap-6" style={{ width: '320px' }}>
-            {/* Kategoriju saraksts */}
-            <CategoryList 
-              categories={[
-                ...componentCategories,
-                { id: 'peripherals', name: 'Peripherals', slug: 'peripherals' }
-              ]}
-              activeCategory={activeCategory}
-              selectedComponents={selectedComponents}
-              onSetActiveCategory={setActiveCategory}
-            />
+        {/* Advanced Filter */}
+        <div className="col-span-3 lg:col-span-2">
+          <AdvancedFilter
+            onFilterChange={handleFiltersChange}
+            onSearchChange={handleSearchChange}
+            filterGroups={getFilterGroups()}
+          />
+        </div>
 
-            {/* Advanced filtri */}
-            <AdvancedFilter
-              onFilterChange={handleFiltersChange}
-              onSearchChange={handleSearchChange}
-              activeCategory={activeCategory}
-              filterGroups={getFilterGroups()}
-            />
-          </div>
-
-          {/* Labā puse - komponentes un detaļas */}
-          <div className="flex-1">
-            {/* Quick filtri */}
-            <div className="mb-6">
-              <QuickFilters 
-                activeFilter={quickCpuFilter} 
-                onFilterChange={handleQuickCpuFilterChange}
-                activeCategory={activeCategory} 
+        {/* Component selection */}
+        <div className="col-span-6 lg:col-span-5">
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">
+                {t('configurator.selectComponent')}
+              </h2>
+              
+              <CompatibilityChecker 
+                totalPowerConsumption={totalPowerConsumption}
+                compatibilityIssues={compatibilityIssues}
               />
             </div>
-
-            <div className="flex flex-col lg:flex-row gap-6">
-              {/* Komponenšu saraksts */}
-              <div className="flex-1">
-                <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-white">
-                      {t('configurator.selectComponent')}
-                    </h2>
-                    
-                    <CompatibilityChecker 
-                      totalPowerConsumption={totalPowerConsumption}
-                      compatibilityIssues={compatibilityIssues}
-                    />
-                  </div>
-                  
-                  <ComponentSelectionGrid 
-                    components={filteredComponents}
-                    selectedComponent={selectedComponents[activeCategory]}
-                    onSelectComponent={handleSelectComponent}
-                    activeCategory={activeCategory}
-                    isLoading={isLoadingComponents}
-                  />
-                </div>
-              </div>
-
-              {/* Izvēlētās komponentes */}
-              <div className="lg:w-80">
-                <div className="sticky top-6">
-                  <SelectedComponentsList
-                    selectedComponents={selectedComponents}
-                    componentCategories={[
-                      ...componentCategories,
-                      { id: 'peripherals', name: 'Peripherals', slug: 'peripherals' }
-                    ]}
-                    configName={configName}
-                    setConfigName={setConfigName}
-                    totalPrice={totalPrice}
-                    compatibilityIssues={compatibilityIssues}
-                    loading={loading}
-                    onSetActiveCategory={setActiveCategory}
-                    onSaveConfiguration={handleSaveConfiguration}
-                    onSubmitConfiguration={handleSubmitConfiguration}
-                    onAddToCart={addConfigToCart}
-                    totalPowerConsumption={totalPowerConsumption}
-                    getRecommendedPsuWattage={getRecommendedPsuWattage}
-                  />
-                </div>
-              </div>
-            </div>
+            
+            {/* Components grid */}
+            <ComponentSelectionGrid 
+              components={filteredComponents}
+              selectedComponent={selectedComponents[activeCategory]}
+              onSelectComponent={handleSelectComponent}
+              activeCategory={activeCategory}
+              isLoading={isLoadingComponents}
+            />
           </div>
         </div>
 
-        {/* Mobilais filtru dialogs */}
-        <div className="lg:hidden">
-          <button
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="fixed bottom-4 right-4 bg-indigo-600 dark:bg-brand-red-600 text-white p-4 rounded-full shadow-lg"
-          >
-            <Filter size={24} />
-          </button>
-
-          {isFilterOpen && (
-            <div className="fixed inset-0 z-50 bg-gray-900/95 overflow-y-auto">
-              <div className="min-h-screen px-4 py-8">
-                <div className="mb-4 flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-white">Filtri</h2>
-                  <button 
-                    onClick={() => setIsFilterOpen(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-                
-                <AdvancedFilter
-                  onFilterChange={handleFiltersChange}
-                  onSearchChange={handleSearchChange}
-                  activeCategory={activeCategory}
-                  filterGroups={getFilterGroups()}
-                />
-              </div>
-            </div>
-          )}
+        {/* Selected components & details */}
+        <div className="col-span-12 lg:col-span-3">
+          <SelectedComponentsList
+            selectedComponents={selectedComponents}
+            componentCategories={[
+              ...componentCategories,
+              { id: 'ram', name: 'Memory', slug: 'ram' },
+              { id: 'peripherals', name: 'Peripherals', slug: 'peripherals' }
+            ]}
+            configName={configName}
+            setConfigName={setConfigName}
+            totalPrice={totalPrice}
+            compatibilityIssues={compatibilityIssues}
+            loading={loading}
+            onSetActiveCategory={setActiveCategory}
+            onSaveConfiguration={handleSaveConfiguration}
+            onSubmitConfiguration={handleSubmitConfiguration}
+            onAddToCart={addConfigToCart}
+            totalPowerConsumption={totalPowerConsumption}
+            getRecommendedPsuWattage={getRecommendedPsuWattage}
+          />
         </div>
       </div>
     </div>

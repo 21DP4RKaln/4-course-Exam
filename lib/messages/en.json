@@ -119,12 +119,12 @@
       "title": "Access Denied",
       "message": "You do not have permission to access this page."
     }
-  },
-  "product": {
+  },  "product": {
     "imageAlt": "Product image",
     "viewDetails": "View Details",
-    "saveAmount": "Save",
+    "saveAmount": "Save €{amount}",
     "onlyFewLeft": "{count: product.stock}, Only ${product.stock} left in stock",
+    "onlyLeft": "Only {count} left in stock",
     "inStock": "In Stock",
     "outOfStock": "Out of Stock",
     "quantity": "Quantity",
@@ -133,9 +133,22 @@
     "buyNow": "Buy Now",
     "copied": "Copied!",
     "share": "Share",
+    "saved": "Saved to Wishlist",
+    "addToWishlist": "Add to Wishlist",
+    "backToShop": "Back to Shop",
+    "productNotFound": "Product Not Found",
+    "productRemovedText": "The product you're looking for doesn't exist or has been removed.",
+    "freeShippingOver100": "Free shipping on orders over €100",
     "freeShipping": "Free shipping on orders over €100",
     "warrantyIncluded": "2 years warranty included",
+    "yearsWarranty": "{years} years warranty included",
     "estimatedDelivery": "Estimated delivery: 1-3 business days",
+    "deliveryTime": "Estimated delivery: 1-3 business days",
+    "pcConfiguration": "PC Configuration",
+    "components": "Components",
+    "description": "Description",
+    "specifications": "Specifications",
+    "reviews": "Reviews",
     "tabs": {
       "description": "Description",
       "specifications": "Specifications",
@@ -619,13 +632,34 @@
     "loadMoreReviews": "Load More Reviews",
     "purchased": "Purchased:",
     "hasReviewed": "You've reviewed this product"
-  },
-  "reviewErrors": {
+  },  "reviewErrors": {
     "notAuthenticated": "You must be logged in to submit a review",
     "emptyComment": "Please enter your review",
     "submitFailed": "Failed to submit review",
     "voteFailed": "Failed to vote on review",
     "requirePurchase": "Purchase required to review"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your Cart is Empty",
+    "emptyMessage": "Your shopping cart is empty. Add some items to continue shopping.",
+    "continueShoping": "Continue Shopping",
+    "removeItem": "Remove",
+    "clearCart": "Clear Cart",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "items": "items",
+    "shipping": "Shipping",
+    "free": "Free",
+    "tax": "Tax",
+    "total": "Total",
+    "checkout": "Proceed to Checkout",
+    "processing": "Processing...",
+    "weAccept": "We accept:",
+    "itemType": {
+      "component": "Component",
+      "configuration": "PC Configuration"
+    }
   },
   "auth": {
     "loginTitle": "Log in to write a review",

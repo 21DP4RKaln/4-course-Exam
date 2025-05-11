@@ -118,12 +118,12 @@
       "title": "Доступ Запрещен",
       "message": "У вас нет разрешения на доступ к этой странице."
     }
-  },
-  "product": {
+  },  "product": {
     "imageAlt": "Изображение продукта",
     "viewDetails": "Просмотр Деталей",
-    "saveAmount":"Сохранить",
+    "saveAmount":"Экономия €{amount}",
     "onlyFewLeft":"{count: product.stock}, В наличии ${product.stock} осталось на складе",
+    "onlyLeft":"Осталось только {count} на складе",
     "inStock":"В наличии",
     "outOfStock":"Нет в наличии",
     "quantity":"Количество",
@@ -132,9 +132,22 @@
     "buyNow":"Купить сейчас",
     "copied":"Скопировано!",
     "share":"Поделиться",
-    "freeShipping":"Бесплатная доставка для заказов в Риге",
+    "saved":"Добавлено в избранное",
+    "addToWishlist":"Добавить в избранное",
+    "backToShop":"Вернуться в магазин",
+    "productNotFound":"Товар не найден",
+    "productRemovedText":"Искомый товар не существует или был удален.",
+    "freeShippingOver100":"Бесплатная доставка для заказов свыше €100",
+    "freeShipping":"Бесплатная доставка для заказов свыше €100",
     "warrantyIncluded":"Гарантия 2 года включена",
+    "yearsWarranty":"Гарантия {years} года включена",
     "estimatedDelivery":"Предполагаемая доставка: 1-3 рабочих дня",
+    "deliveryTime":"Предполагаемая доставка: 1-3 рабочих дня",
+    "pcConfiguration":"Конфигурация ПК",
+    "components":"Комплектующие",
+    "description":"Описание",
+    "specifications":"Спецификации",
+    "reviews":"Отзывы",
     "tabs": {
       "description": "Описание",
       "specifications": "Спецификации",
@@ -625,6 +638,28 @@
   "submitFailed": "Не удалось отправить отзыв",
   "voteFailed": "Не удалось проголосовать за отзыв",
   "requirePurchase": "Для написания отзыва требуется покупка"
+},
+"cart": {
+  "title": "Ваша Корзина",
+  "empty": "Ваша Корзина Пуста",
+  "emptyMessage": "Ваша корзина пуста. Добавьте товары, чтобы продолжить покупки.",
+  "continueShoping": "Продолжить Покупки",
+  "removeItem": "Удалить",
+  "clearCart": "Очистить Корзину",
+  "orderSummary": "Детали Заказа",
+  "subtotal": "Промежуточный итог",
+  "items": "товаров",
+  "shipping": "Доставка",
+  "free": "Бесплатно",
+  "tax": "Налог",
+  "total": "Итого",
+  "checkout": "Перейти к Оформлению",
+  "processing": "Обработка...",
+  "weAccept": "Мы принимаем:",
+  "itemType": {
+    "component": "Компонент",
+    "configuration": "Конфигурация ПК"
+  }
 },
 "auth": {
   "loginTitle": "Войдите, чтобы написать отзыв",

@@ -33,9 +33,7 @@ export async function GET(request: NextRequest) {
           { name: { contains: search, mode: 'insensitive' } },
           { description: { contains: search, mode: 'insensitive' } }
         ]
-      }
-
-      const fetchedComponents = await prisma.component.findMany({
+      }      const fetchedComponents = await prisma.component.findMany({
         where: whereClause,
         include: {
           category: true,
@@ -47,6 +45,25 @@ export async function GET(request: NextRequest) {
         },
         orderBy: {
           price: 'asc'
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          price: true,
+          discountPrice: true,
+          discountExpiresAt: true,
+          stock: true,
+          imageUrl: true,
+          categoryId: true,
+          specifications: true,
+          sku: true,
+          category: true,
+          specValues: {
+            include: {
+              specKey: true
+            }
+          }
         }
       })
 
@@ -96,13 +113,16 @@ export async function GET(request: NextRequest) {
         const combinedSpecs = {
           ...existingSpecs,
           ...specifications
-        }
+        }        const discountPrice = comp.discountPrice && (!comp.discountExpiresAt || new Date(comp.discountExpiresAt) > new Date())
+          ? comp.discountPrice
+          : null;
 
         return {
           id: comp.id,
           name: comp.name,
           description: comp.description || '',
           price: comp.price,
+          discountPrice: discountPrice,
           stock: comp.stock,
           imageUrl: comp.imageUrl,
           categoryId: comp.categoryId,
@@ -214,14 +234,17 @@ async function getFeaturedProducts(type: string) {
       const specifications: Record<string, string> = {}
       product.specValues.forEach(spec => {
         specifications[spec.specKey.name] = spec.value
-      })
-
+      })      // Use stored discount price if available, otherwise disable
+      const discountPrice = product.discountPrice && (!product.discountExpiresAt || new Date(product.discountExpiresAt) > new Date()) 
+        ? product.discountPrice 
+        : null;
+        
       return {
         id: product.id,
         name: product.name,
         description: product.description || '',
         price: product.price,
-        discountPrice: product.price > 100 ? Math.round(product.price * 0.9 * 100) / 100 : null,
+        discountPrice: discountPrice,
         categoryId: product.categoryId,
         categoryName: product.category.name,
         imageUrl: product.imageUrl || '',

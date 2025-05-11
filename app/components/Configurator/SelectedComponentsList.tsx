@@ -58,9 +58,9 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
       
       {/* Selected components */}
       <div className="mb-4">
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 gap-3">
           {/* Selected components */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-row flex-wrap gap-3">
             {Object.entries(selectedComponents)
               .filter(([_, component]) => component !== undefined)
               .map(([categoryId, component]) => {
@@ -68,10 +68,10 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
                 return (
                   <div 
                     key={categoryId}
-                    className="flex-1 min-w-0 border border-gray-200 dark:border-gray-700 rounded-lg p-2"
+                    className="flex-1 min-w-[200px] max-w-[300px] border border-gray-200 dark:border-gray-700 rounded-lg p-3"
                   >
                     <div className="flex items-start">
-                      <div className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mr-2 flex-shrink-0">
+                      <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mr-3 flex-shrink-0">
                         {getCategoryIcon(categoryId)}
                       </div>
                       
@@ -82,15 +82,15 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
                           </h3>
                           <button 
                             onClick={() => onSetActiveCategory(categoryId)}
-                            className="ml-2 text-xs text-gray-500 hover:text-brand-blue-500 dark:text-gray-400 dark:hover:text-brand-red-500 flex-shrink-0 whitespace-nowrap"
+                            className="ml-2 text-xs text-gray-500 hover:text-brand-blue-500 dark:text-gray-400 dark:hover:text-brand-red-500 flex-shrink-0"
                           >
                             {t('configurator.componentsList.change')}
                           </button>
                         </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-0.5">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-1">
                           {component!.name}
                         </p>
-                        <div className="mt-1">
+                        <div className="mt-2">
                           <span className="font-medium text-gray-900 dark:text-white text-sm">
                             €{component!.price.toFixed(2)}
                           </span>
@@ -107,11 +107,11 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
               .map(category => (
                 <div 
                   key={category.id}
-                  className="flex-1 min-w-0 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-2 hover:border-brand-blue-500 dark:hover:border-brand-red-500 cursor-pointer"
+                  className="flex-1 min-w-[200px] max-w-[300px] border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-3 hover:border-brand-blue-500 dark:hover:border-brand-red-500 cursor-pointer"
                   onClick={() => onSetActiveCategory(category.id)}
                 >
                   <div className="flex items-start">
-                    <div className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mr-2 flex-shrink-0">
+                    <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mr-3 flex-shrink-0">
                       {getCategoryIcon(category.id)}
                     </div>
                     
@@ -119,7 +119,7 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
                       <h3 className="font-medium text-gray-900 dark:text-white text-sm truncate">
                         {t(`components.${category.id}`)}
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-500 italic mt-0.5">
+                      <p className="text-xs text-gray-500 dark:text-gray-500 italic mt-1">
                         {t('configurator.componentsList.emptySlotPlaceholder')}
                       </p>
                     </div>
