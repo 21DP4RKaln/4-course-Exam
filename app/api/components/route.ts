@@ -21,19 +21,20 @@ export async function GET(request: NextRequest) {
           slug: category
         }
       }
-      
-      if (type === 'peripherals') {
+        if (type === 'peripherals') {
         whereClause.category.type = 'peripheral'
       } else if (type === 'components') {
         whereClause.category.type = 'component'
       }
-
+      
       if (search) {
         whereClause.OR = [
           { name: { contains: search, mode: 'insensitive' } },
           { description: { contains: search, mode: 'insensitive' } }
         ]
-      }      const fetchedComponents = await prisma.component.findMany({
+      }
+      
+      const fetchedComponents = await prisma.component.findMany({
         where: whereClause,
         include: {
           category: true,
@@ -42,31 +43,11 @@ export async function GET(request: NextRequest) {
               specKey: true
             }
           }
-        },
-        orderBy: {
+        },        orderBy: {
           price: 'asc'
-        },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          price: true,
-          discountPrice: true,
-          discountExpiresAt: true,
-          stock: true,
-          imageUrl: true,
-          categoryId: true,
-          specifications: true,
-          sku: true,
-          category: true,
-          specValues: {
-            include: {
-              specKey: true
-            }
-          }
         }
-      })
-
+      });
+      
       const specKeys = await prisma.specificationKey.findMany({
         where: {
           OR: [
@@ -80,40 +61,40 @@ export async function GET(request: NextRequest) {
               component: {
                 category: {
                   slug: category
-                }
-              }
+                }              }
             },
-            select: {
-              value: true
+            include: {
+              specKey: true
             },
             distinct: ['value']
           }
         }
       })
 
-      availableSpecifications = specKeys.map(key => ({
-        id: key.id,
+      availableSpecifications = specKeys.map(key => ({        id: key.id,
         name: key.name,
         displayName: key.displayName,
         values: key.componentSpecValues.map(spec => spec.value)
-      })).filter(spec => spec.values.length > 0)
-   
+      })).filter(spec => spec.values.length > 0);
+      
       components = fetchedComponents.map(comp => {
-        const specifications: Record<string, string> = {}
+        const specifications: Record<string, string> = {};
+        
         comp.specValues.forEach(spec => {
           specifications[spec.specKey.name] = spec.value
-        })
-   
+        });
+        
         const existingSpecs = comp.specifications
           ? (typeof comp.specifications === 'string' 
               ? JSON.parse(comp.specifications) as Record<string, string>
               : comp.specifications as Record<string, string>)
-          : {}
-
+          : {};
         const combinedSpecs = {
           ...existingSpecs,
           ...specifications
-        }        const discountPrice = comp.discountPrice && (!comp.discountExpiresAt || new Date(comp.discountExpiresAt) > new Date())
+        };
+        
+        const discountPrice = comp.discountPrice && (!comp.discountExpiresAt || new Date(comp.discountExpiresAt) > new Date())
           ? comp.discountPrice
           : null;
 
@@ -132,11 +113,10 @@ export async function GET(request: NextRequest) {
         }
       })
 
-      if (specFilters.length > 0) {
-        components = components.filter(comp => {
+      if (specFilters.length > 0) {      components = components.filter(filteredComp => {
           return specFilters.every(filter => {
             const [key, value] = filter.split('=')
-            return comp.specifications[key] === value
+            return filteredComp.specifications[key] === value
           })
         })
       }
@@ -230,11 +210,10 @@ async function getFeaturedProducts(type: string) {
       take: 4
     })
 
-    return featuredProducts.map(product => {
-      const specifications: Record<string, string> = {}
+    return featuredProducts.map(product => {      const specifications: Record<string, string> = {}
       product.specValues.forEach(spec => {
         specifications[spec.specKey.name] = spec.value
-      })      // Use stored discount price if available, otherwise disable
+      });      // Use stored discount price if available, otherwise disable
       const discountPrice = product.discountPrice && (!product.discountExpiresAt || new Date(product.discountExpiresAt) > new Date()) 
         ? product.discountPrice 
         : null;

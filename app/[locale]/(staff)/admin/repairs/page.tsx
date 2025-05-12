@@ -32,7 +32,6 @@ export default function AdminRepairsPage() {
   }
 
   const handleAssignSpecialist = async (repairId: string) => {
-    // TODO: Open modal to assign specialist
     console.log('Assign specialist to repair:', repairId)
   }
 

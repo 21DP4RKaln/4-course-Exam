@@ -119,7 +119,8 @@
       "title": "Access Denied",
       "message": "You do not have permission to access this page."
     }
-  },  "product": {
+  },
+  "product": {
     "imageAlt": "Product image",
     "viewDetails": "View Details",
     "saveAmount": "Save €{amount}",
@@ -561,6 +562,11 @@
       "graphicsCard": "Graphics Card",
       "memory": "Memory",
       "storage": "Storage",
+      "motherboard": "Motherboard",
+      "powerSupply": "Power Supply",
+      "case": "Case",
+      "cooling": "Cooling",
+      "price": "Price",
       "resetAll": "Reset All",
       "applyFilters": "Apply Filters",
       "allCategories": "All Categories",
@@ -632,7 +638,8 @@
     "loadMoreReviews": "Load More Reviews",
     "purchased": "Purchased:",
     "hasReviewed": "You've reviewed this product"
-  },  "reviewErrors": {
+  },
+  "reviewErrors": {
     "notAuthenticated": "You must be logged in to submit a review",
     "emptyComment": "Please enter your review",
     "submitFailed": "Failed to submit review",

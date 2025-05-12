@@ -13,28 +13,53 @@ import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/ap
 interface PC {
   id: string;
   name: string;
-  category: string;
-  description: string;
+  category: string;  description: string;
   specs: Record<string, string>;
   price: number;
-  discountPrice: number | null;
   imageUrl: string | null;
   stock: number;
 }
 
+const specMapping: Record<string, string[]> = {
+  'cpu': ['cpu', 'processor', 'processors'],
+  'gpu': ['gpu', 'graphics', 'graphicscard', 'graphics card', 'video card'],
+  'ram': ['ram', 'memory', 'memories'],
+  'storage': ['storage', 'storage', 'drive', 'disk', 'ssd', 'hdd'],
+  'motherboard': ['motherboard', 'mb', 'mainboard', 'system board'],
+  'psu': ['psu', 'powersupply', 'power supply', 'power'],
+  'case': ['case', 'chassis', 'tower', 'enclosure'],
+  'cooling': ['cooling', 'cooler', 'fan', 'radiator']
+}
+
+function getValidKeysForSpec(specKey: string): string[] {
+  return specMapping[specKey.toLowerCase()] || [specKey.toLowerCase()]
+}
+
 function extractOptions(pcs: PC[], specKey: string) {
   const options = new Set<string>()
+  const validKeys = getValidKeysForSpec(specKey)
   
   pcs.forEach(pc => {
-    if (pc.specs && pc.specs[specKey]) {
-      options.add(pc.specs[specKey])
+    if (pc.specs) {
+      // Go through each spec and check if its key matches any of our valid keys
+      Object.entries(pc.specs).forEach(([key, value]) => {
+        if (validKeys.includes(key.toLowerCase()) && value) {
+          // Split in case the value contains multiple items (e.g., "2x 16GB RAM")
+          const parts = value.split(/[,;]/).map(part => part.trim())
+          parts.forEach(part => {
+            if (part) options.add(part)
+          })
+        }
+      })
     }
   })
   
-  return Array.from(options).map(value => ({
-    id: value,
-    name: value
-  }))
+  return Array.from(options)
+    .filter(value => value) // Remove empty values
+    .map(value => ({
+      id: value,
+      name: value
+    }))
 }
 
 export default function ReadyMadePCsPage() {
@@ -47,15 +72,20 @@ export default function ReadyMadePCsPage() {
   const [filteredPCs, setFilteredPCs] = useState<PC[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+    const [searchQuery, setSearchQuery] = useState('')
   
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({
+  const initialFilters = {
     category: [],
     cpu: [],
     gpu: [],
     ram: [],
-    storage: []
-  })
+    storage: [],
+    motherboard: [],
+    psu: [],
+    case: [],
+    cooling: []
+  }
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters)
   const [sortOption, setSortOption] = useState('price-asc')
 
   useEffect(() => {
@@ -86,17 +116,19 @@ export default function ReadyMadePCsPage() {
     pcs.forEach(pc => categories.add(pc.category))
     return Array.from(categories).map(cat => ({ id: cat, name: cat }))
   }, [pcs])
-  
   const cpuOptions = useMemo(() => extractOptions(pcs, 'cpu'), [pcs])
   const gpuOptions = useMemo(() => extractOptions(pcs, 'gpu'), [pcs])
   const ramOptions = useMemo(() => extractOptions(pcs, 'ram'), [pcs])
   const storageOptions = useMemo(() => extractOptions(pcs, 'storage'), [pcs])
+  const motherboardOptions = useMemo(() => extractOptions(pcs, 'motherboard'), [pcs])
+  const psuOptions = useMemo(() => extractOptions(pcs, 'psu'), [pcs])
+  const caseOptions = useMemo(() => extractOptions(pcs, 'case'), [pcs])
+  const coolingOptions = useMemo(() => extractOptions(pcs, 'cooling'), [pcs])
 
   useEffect(() => {
-    if (pcs.length === 0) return
-    
     let result = [...pcs]
-
+    
+    // Apply text search
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter(pc => 
@@ -108,26 +140,42 @@ export default function ReadyMadePCsPage() {
       )
     }
 
+    // Apply category filters
     if (activeFilters.category && activeFilters.category.length > 0) {
       result = result.filter(pc => activeFilters.category.includes(pc.category))
     }
 
-    ['cpu', 'gpu', 'ram', 'storage'].forEach(filterType => {
-      if (activeFilters[filterType] && activeFilters[filterType].length > 0) {
-        result = result.filter(pc => 
-          pc.specs && 
-          pc.specs[filterType] && 
-          activeFilters[filterType].includes(pc.specs[filterType])
-        )
+    // Apply component-specific filters
+    Object.entries(activeFilters).forEach(([filterType, selectedValues]) => {
+      if (filterType !== 'category' && selectedValues && selectedValues.length > 0) {
+        result = result.filter(pc => {
+          if (!pc.specs) return false
+          
+          const validKeys = getValidKeysForSpec(filterType)
+          let specValue = ''
+            // Check all specs that might match our filter type
+          for (const key of Object.keys(pc.specs)) {
+            // If this spec key matches any of our valid keys
+            if (validKeys.some(validKey => key.toLowerCase().includes(validKey))) {
+              specValue = pc.specs[key].toLowerCase()
+              // Don't break here - we might have multiple matching specs
+            }
+          }
+          
+          return selectedValues.some(filter => 
+            specValue.includes(filter.toLowerCase())
+          )
+        })
       }
     })
-
+    
+    // Apply sorting
     switch (sortOption) {
       case 'price-asc':
-        result.sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price))
+        result.sort((a, b) => a.price - b.price)
         break
       case 'price-desc':
-        result.sort((a, b) => (b.discountPrice || b.price) - (a.discountPrice || a.price))
+        result.sort((a, b) => b.price - a.price)
         break
       case 'name-asc':
         result.sort((a, b) => a.name.localeCompare(b.name))
@@ -164,7 +212,6 @@ export default function ReadyMadePCsPage() {
       </div>
     )
   }
-
   return (
     <div className="max-w-7xl mx-auto">
       {/* Back button and title */}
@@ -174,28 +221,32 @@ export default function ReadyMadePCsPage() {
           className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
         >
           <ArrowLeft size={18} className="mr-2" />
-          Back to Home
+          {t('buttons.backToHome')}
         </Link>
       </div>
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0">
-          {t('nav.readyMade')}
-        </h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            {t('nav.readyMade')}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            {t('shop.readyMade.description')}
+          </p>
+        </div>
         
         <Link
           href={`/${locale}/configurator`}
           className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center"
         >
           <Cpu size={18} className="mr-2" /> 
-          Make Your Own PC
+          {t('buttons.buildYourOwn')}
         </Link>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Filters - 1/4 width on large screens */}
-        <div className="lg:col-span-1">
-          <AdvancedFilter
+        <div className="lg:col-span-1">          <AdvancedFilter
             onFilterChange={setActiveFilters}
             onSearchChange={setSearchQuery}
             onSortChange={setSortOption}
@@ -204,6 +255,10 @@ export default function ReadyMadePCsPage() {
             gpuOptions={gpuOptions}
             ramOptions={ramOptions}
             storageOptions={storageOptions}
+            motherboardOptions={motherboardOptions}
+            psuOptions={psuOptions}
+            caseOptions={caseOptions}
+            coolingOptions={coolingOptions}
           />
         </div>
         
@@ -221,13 +276,11 @@ export default function ReadyMadePCsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredPCs.map((pc) => (
-                <ProductCard
+              {filteredPCs.map((pc) => (                <ProductCard
                   key={pc.id}
                   id={pc.id}
                   name={pc.name}
                   price={pc.price}
-                  discountPrice={pc.discountPrice}
                   imageUrl={pc.imageUrl}
                   category={pc.category}
                   type="configuration"
