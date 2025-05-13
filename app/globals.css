@@ -26,11 +26,11 @@
   .dark {
     --background: #0a0a0a;
     --foreground: #f9fafb;
-    --card: #1c1c1e;
+    --card: #101011;
     --card-foreground: #f9fafb;
-    --border: #2d2d2d;
-    --input: #2d2d2d;
-    --ring: #2d2d2d;
+    --border: #101010;
+    --input: #101010;
+    --ring: #101010;
     --primary: #dc2626;
     --primary-foreground: #ffffff;
     --secondary: #202020;
@@ -182,11 +182,11 @@
   }
 
   .table-footer {
-    @apply border-t bg-gray-100 dark:bg-gray-800 font-medium [&>tr]:last:border-b-0;
+    @apply border-t bg-gray-100 dark:bg-stone-950 font-medium [&>tr]:last:border-b-0;
   }
 
   .table-row {
-    @apply border-b transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 data-[state=selected]:bg-gray-100 dark:data-[state=selected]:bg-gray-800;
+    @apply border-b transition-colors hover:bg-gray-50 dark:hover:bg-stone-950 data-[state=selected]:bg-gray-100 dark:data-[state=selected]:bg-stone-950;
   }
 
   /* Navbar styles */
@@ -231,7 +231,7 @@
 
   /* Product specific styles */
   .product-card {
-    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm 
+    @apply bg-white dark:bg-stone-950 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm 
     hover:shadow-md dark:hover:shadow-lg transition-all duration-200;
   }
 
@@ -250,7 +250,7 @@
   }
 
   .product-specs-table {
-    @apply w-full border-collapse bg-white dark:bg-gray-800 rounded-lg overflow-hidden;
+    @apply w-full border-collapse bg-white dark:bg-stone-950 rounded-lg overflow-hidden;
   }
 
   .product-specs-row {
@@ -326,7 +326,7 @@
 
   .wishlist-button-inactive {
     @apply border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 
-    bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700;
+    bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-700;
   }
 
   .action-button {

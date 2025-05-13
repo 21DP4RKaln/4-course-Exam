@@ -179,7 +179,7 @@ export function ConfigActions({
         </button>
         
         {showDropdown && (
-          <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
+          <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-stone-950 ring-1 ring-black ring-opacity-5 z-10">
             <div className="py-1" role="menu">
               {visibleActions.map((action, index) => {
                 const Icon = action.icon

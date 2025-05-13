@@ -150,7 +150,7 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({
             className={`px-3 py-1.5 rounded-full text-sm transition-colors duration-200 ${
               activeFilter === filter.id ? 
               'bg-brand-blue-600 text-white dark:bg-brand-red-600 dark:text-white shadow-sm' : 
-              'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
+              'bg-gray-100 text-stone-950 dark:bg-stone-950 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
             }`}
           >
             {filter.name}

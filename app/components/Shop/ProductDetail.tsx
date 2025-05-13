@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { useCart } from '@/app/contexts/CartContext'
 import { useWishlist } from '@/app/contexts/WishlistContext'
 import { useAuth } from '@/app/contexts/AuthContext'
+import Button from '@/app/components/ui/animated-button'
 import SpecificationsTable from './SpecificationsTable';
 import ReviewSystem from '../ReviewSystem/ReviewSystem'
 import { useProductView } from '@/app/hooks/useProductView'
@@ -184,7 +185,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
   if (error || !product) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8">
           <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {error || t('errors.notFound')}
@@ -205,18 +206,16 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
   }
   
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <Link 
-          href={`/${locale}/${type}s`}
-          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          {t('categoryPage.backTo', {type: type === 'component' ? t('components.components') : t('components.peripherals')})}
-        </Link>
+    <div className="max-w-7xl mx-auto">      <div className="mb-6 flex justify-start">
+        <Button 
+          href={`/${locale}/${type}s/${product.category || ''}`}
+          title={t('categoryPage.backTo', {type: type === 'component' ? t('components.components') : t('components.peripherals')})}
+          direction="left"
+          className="inline-block text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+        />
       </div>
       
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           {/* Product image */}
           <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center relative">
@@ -237,8 +236,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
           
           {/* Product details */}
           <div className="flex flex-col">
-            <div className="mb-4">
-              <span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-md mb-2">
+            <div className="mb-4">              <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100/80 text-blue-800 dark:bg-red-900/30 dark:text-red-300 rounded-md mb-2">
                 {product.category || (type === 'component' ? t('components.components') : t('components.peripherals'))}
               </span>
               
@@ -261,8 +259,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                       </span>
                       <span className="ml-2 text-lg text-gray-500 dark:text-gray-400 line-through">
                         €{product.price.toFixed(2)}
-                      </span>
-                      <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 text-xs font-medium rounded-md">
+                      </span>                      <span className="ml-2 px-2 py-1 bg-blue-100/80 text-blue-800 dark:bg-red-900/30 dark:text-red-300 text-xs font-medium rounded-md">
                         {t('product.saveAmount')} €{(product.price - (product.discountPrice || 0)).toFixed(2)}
                       </span>
                     </>
@@ -272,20 +269,18 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                     </span>
                   )
                 )}
-              </div>
-              
-              <div className={`inline-flex items-center px-2 py-1 rounded text-sm ${
+              </div>          <div className={`inline-flex items-center px-2 py-1 rounded text-sm ${
                 product.stock <= 0
-                  ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                  ? 'bg-red-100/80 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                   : product.stock <= 3 
-                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' 
-                    : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                    ? 'bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' 
+                    : 'bg-green-100/80 text-green-800 dark:bg-green-900/30 dark:text-green-300'
               }`}>
                 {product.stock > 0 
                   ? (product.stock <= 3 
                     ? t('product.onlyFewLeft') 
-                    : t('product.inStock')) 
-                  : t('product.outOfStock')}
+                    : <span className="flex items-center"><div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>{t('product.inStock')}</span>) 
+                  : <span className="flex items-center"><div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>{t('product.outOfStock')}</span>}
               </div>
             </div>
             
@@ -319,8 +314,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                   onClick={handleAddToCart}
-                  disabled={product.stock === 0}
-                  className="flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={product.stock === 0}                  className="flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 dark:bg-red-500 hover:bg-blue-700 dark:hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-red-400 disabled:opacity-70 disabled:cursor-not-allowed transition-colors duration-200"
                 >
                   <ShoppingCart size={18} className="mr-2" />
                   {t('buttons.addToCart')}
@@ -328,8 +322,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                 
                 <button
                   onClick={handleBuyNow}
-                  disabled={product.stock === 0}
-                  className="flex items-center justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={product.stock === 0}                  className="flex items-center justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-red-400 disabled:opacity-70 disabled:cursor-not-allowed transition-colors duration-200"
                 >
                   {t('product.buyNow')}
                 </button>
@@ -390,30 +383,27 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
         {/* Tabs for more information */}
         <div className="border-t border-gray-200 dark:border-gray-700">
           <div className="flex border-b border-gray-200 dark:border-gray-700">
-            <button
-              className={`py-4 px-6 text-sm font-medium border-b-2 ${
+            <button              className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'description'
-                  ? 'border-red-600 text-red-600 dark:border-red-400 dark:text-red-400'
+                  ? 'border-blue-600 text-blue-600 dark:border-red-400 dark:text-red-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('description')}
             >
               {t('product.tabs.description')}
             </button>
-            <button
-              className={`py-4 px-6 text-sm font-medium border-b-2 ${
+            <button              className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'specifications'
-                  ? 'border-red-600 text-red-600 dark:border-red-400 dark:text-red-400'
+                  ? 'border-blue-600 text-blue-600 dark:border-red-400 dark:text-red-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('specifications')}
             >
               {t('product.tabs.specifications')}
             </button>
-            <button
-              className={`py-4 px-6 text-sm font-medium border-b-2 ${
+            <button              className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'reviews'
-                  ? 'border-red-600 text-red-600 dark:border-red-400 dark:text-red-400'
+                  ? 'border-blue-600 text-blue-600 dark:border-red-400 dark:text-red-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('reviews')}

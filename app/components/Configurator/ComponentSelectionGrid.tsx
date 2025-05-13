@@ -46,7 +46,7 @@ const ComponentSelectionGrid: React.FC<ComponentSelectionGridProps> = ({
           className={`flex h-32 border rounded-lg transition-all duration-200 ${
             selectedComponent?.id === component.id 
               ? 'border-brand-blue-500 dark:border-brand-red-500 bg-brand-blue-50 dark:bg-brand-red-900/20' 
-              : 'border-gray-200 dark:border-gray-700 hover:border-brand-blue-500 dark:hover:border-brand-red-500 bg-white dark:bg-gray-800'
+              : 'border-gray-200 dark:border-gray-700 hover:border-brand-blue-500 dark:hover:border-brand-red-500 bg-white dark:bg-stone-950'
           }`}
         >
           {/* Component Image */}

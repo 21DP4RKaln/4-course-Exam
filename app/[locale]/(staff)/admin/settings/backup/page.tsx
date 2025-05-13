@@ -149,7 +149,7 @@ export default function BackupSettingsPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+      <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold">Quick Actions</h2>
           <button
@@ -205,7 +205,7 @@ export default function BackupSettingsPage() {
       </div>
 
       {/* Backup List */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+      <div className="bg-white dark:bg-stone-950 shadow rounded-lg">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold">Recent Backups</h2>
         </div>
@@ -256,7 +256,7 @@ export default function BackupSettingsPage() {
 
       {/* Backup Settings */}
       <form onSubmit={handleSaveSettings} className="space-y-6">
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Backup Settings</h2>
           
           <div className="space-y-6">

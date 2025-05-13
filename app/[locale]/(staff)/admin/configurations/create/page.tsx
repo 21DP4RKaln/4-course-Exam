@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/app/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
+import AnimatedButton from '@/app/components/ui/animated-button'
 import { ConfigEditForm } from '@/app/components/Staff/Configurations/ConfigEditForm'
 
 export default function AdminCreateConfigurationPage() {
@@ -37,17 +36,16 @@ export default function AdminCreateConfigurationPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
+        <AnimatedButton
           onClick={() => router.back()}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
+          title="Back"
+          direction="left"
+          className="inline-block"
+        />
         <h1 className="text-2xl font-bold">Create Configuration</h1>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
         <ConfigEditForm onSave={handleSubmit} />
       </div>
     </div>

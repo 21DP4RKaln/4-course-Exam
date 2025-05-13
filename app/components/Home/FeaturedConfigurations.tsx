@@ -110,7 +110,7 @@ export default function FeaturedConfigurations() {
             <div className="h-10 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+                <div key={i} className="bg-gray-100 dark:bg-stone-950 rounded-lg p-4">
                   <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
                   <div className="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -159,7 +159,7 @@ export default function FeaturedConfigurations() {
                 href={`/${locale}/shop/product/${config.id}`}
                 className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${
                   theme === 'dark'
-                    ? 'bg-dark-card border border-gray-800 hover:border-brand-red-800'
+                    ? 'bg-dark-card border border-stone-950 hover:border-brand-red-800'
                     : 'bg-white border border-gray-100 hover:border-brand-blue-200'
                 } shadow-soft hover:shadow-medium`}
                 onMouseEnter={() => setHoveredItem(config.id)}
@@ -236,7 +236,7 @@ export default function FeaturedConfigurations() {
                             : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
                           : theme === 'dark'
                             ? 'bg-white/10 hover:bg-white/20 text-white'
-                            : 'bg-white hover:bg-gray-100 text-gray-800'
+                            : 'bg-white hover:bg-gray-100 text-stone-950'
                       } backdrop-blur-sm`}
                       aria-label={t('buttons.addToWishlist')}
                     >

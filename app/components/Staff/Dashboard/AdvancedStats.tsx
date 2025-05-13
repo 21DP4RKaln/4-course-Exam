@@ -53,7 +53,7 @@ export function AdvancedStats() {
         {/* Stats Cards Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+            <div key={i} className="h-32 bg-gray-100 dark:bg-stone-950 rounded-lg animate-pulse" />
           ))}
         </div>
       </div>

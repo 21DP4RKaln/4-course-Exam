@@ -238,7 +238,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
   }
   
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-200">
+    <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden transition-all duration-200">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -296,7 +296,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
 
         {/* Review Form */}
         {showReviewForm && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 mb-8 border border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center mb-4">
               <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{t('reviewComponents.writeReviewTitle')}</h4>
               <button 

@@ -33,7 +33,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
               className={`w-full flex items-center px-3 py-2 rounded ${
                 activeCategory === category.id
                   ? 'bg-brand-blue-500 dark:bg-brand-red-500 text-white'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-brand-blue-600 dark:hover:text-brand-red-500'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-stone-950 hover:text-brand-blue-600 dark:hover:text-brand-red-500'
               }`}
               onClick={() => onSetActiveCategory(category.id)}
             >

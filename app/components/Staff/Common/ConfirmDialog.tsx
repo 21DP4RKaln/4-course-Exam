@@ -58,7 +58,7 @@ export function ConfirmDialog({
         {/* Dialog */}
         <div 
           ref={dialogRef}
-          className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6"
+          className="relative bg-white dark:bg-stone-950 rounded-lg shadow-xl max-w-md w-full p-6"
         >
           {/* Close button */}
           <button

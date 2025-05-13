@@ -6,6 +6,7 @@ import { ChevronLeft } from 'lucide-react'
 import styled from 'styled-components'
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import AnimatedButton from '../ui/animated-button'
 
 export default function PrivacyPolicyPage() {
   const pathname = usePathname()
@@ -13,32 +14,28 @@ export default function PrivacyPolicyPage() {
   const t = useTranslations('privacyPolicy')
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4">
-      <div className="mb-8">
-        <Link 
-          href={`/${locale}`}
-        >
-          <StyledWrapper>
-            <button className="button">
-              <ChevronLeft size={18} className="mr-2" />
-            </button>
-          </StyledWrapper>
+    <div className="max-w-4xl mx-auto py-12 px-4">      <div className="mb-8">
+        <Link href={`/${locale}`}>
+          <AnimatedButton 
+            title={t('back')}
+            direction="left"
+          />
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 transition-colors duration-200">
+      <div className="bg-white dark:bg-stone-950 shadow-lg rounded-lg p-8 transition-colors duration-200">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{t('title')}</h1>
         <div className="prose prose-lg dark:prose-invert max-w-none">
           <p className="text-gray-600 dark:text-gray-300 text-lg">
             {t('lastUpdated')}: May 1, 2025
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('introduction.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('introduction.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('introduction.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('dataCollection.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('dataCollection.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-4">
             {t('dataCollection.content')}
           </p>
@@ -48,34 +45,34 @@ export default function PrivacyPolicyPage() {
             <li className="mb-2"><strong>{t('dataCollection.technicalData')}:</strong> {t('dataCollection.technicalDataDesc')}</li>
           </ul>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('dataUsage.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('dataUsage.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('dataUsage.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('dataSecurity.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('dataSecurity.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('dataSecurity.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('dataRetention.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('dataRetention.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('dataRetention.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('legalRights.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('legalRights.title')}</h2>
           <ul className="list-disc list-inside mb-6 text-gray-700 dark:text-gray-300">
             <li>{t('legalRights.content')}</li>
           </ul>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('contact.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('contact.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-2">
             {t('contact.email')}: privacy@ivapro.com<br />
             {t('contact.phone')}: +371 12345678<br />
             {t('contact.address')}: Riga, Latvia
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('changes.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('changes.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('changes.content')}
           </p>

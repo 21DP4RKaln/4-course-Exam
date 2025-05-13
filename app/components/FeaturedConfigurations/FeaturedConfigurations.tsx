@@ -73,7 +73,7 @@ export default function FeaturedConfigurations() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+            <div key={i} className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
               <div className="h-48 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
               <div className="p-4 space-y-3">
                 <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
@@ -96,7 +96,7 @@ export default function FeaturedConfigurations() {
   if (error && configurations.length === 0) {
     return (
       <section className="py-12">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {t('error.loadingConfigs')}
           </h2>
@@ -126,7 +126,7 @@ export default function FeaturedConfigurations() {
         {configurations.map((config) => (
           <div 
             key={config.id}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+            className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
             {/* Image or placeholder */}
             <Link href={`/${locale}/shop/product/${config.id}`}>

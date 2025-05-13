@@ -63,7 +63,7 @@ export default function GeneralSettingsPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Company Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -117,7 +117,7 @@ export default function GeneralSettingsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Regional Settings</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -184,7 +184,7 @@ export default function GeneralSettingsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">System Settings</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">

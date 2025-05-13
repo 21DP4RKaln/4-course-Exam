@@ -19,7 +19,7 @@ const ConfiguratorLayout: React.FC<ConfiguratorLayoutProps> = ({ children }) => 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
       {/* Logo Header */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-stone-950">
         <Link href={`/${locale}`} className="inline-block">
           <Image
             src="/images/logo-removebg.png"

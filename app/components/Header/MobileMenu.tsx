@@ -68,14 +68,14 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             {/* Language Toggle */}
             <button 
               onClick={() => setLanguageMenuOpen(!languageMenuOpen)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 relative"
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-stone-950 relative"
             >
               <Globe size={20} className="text-gray-600 dark:text-gray-400" />
             </button>
             
             <button 
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-stone-950"
               aria-label={theme === 'dark' ? t('common.lightMode') : t('common.darkMode')}
             >
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
@@ -99,7 +99,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
                       ? theme === 'dark'
                         ? 'bg-brand-red-900/20 text-brand-red-400 border border-brand-red-800/30'
                         : 'bg-brand-blue-50 text-brand-blue-600 border border-brand-blue-200'
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300'
+                      : 'hover:bg-gray-100 dark:hover:bg-stone-950 text-stone-950 dark:text-gray-300'
                   }`}
                 >
                   <span>{languageNames[localeOption]}</span>
@@ -123,7 +123,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           </Link>
 
           {/* PC Options Group */}
-          <div className="space-y-1 border-l-2 border-gray-100 dark:border-gray-800 pl-2">
+          <div className="space-y-1 border-l-2 border-gray-100 dark:border-stone-950 pl-2">
             <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 ml-3">PCs</div>
             
             <Link 
@@ -192,7 +192,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           </Link>
 
           {/* Authentication links */}
-          <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
+          <div className="pt-6 border-t border-gray-100 dark:border-stone-950">
             {isAuthenticated ? (
               <>
                 <Link 
@@ -225,7 +225,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
                   className={`flex items-center justify-center w-full p-3 rounded-xl text-center font-medium ${
                     theme === 'dark' 
                       ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20' 
-                      : 'bg-white text-gray-800 border border-gray-200 hover:bg-gray-50'
+                      : 'bg-white text-stone-950 border border-gray-200 hover:bg-gray-50'
                   }`}
                   onClick={onClose}
                 >

@@ -40,7 +40,7 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
   const t = useTranslations()
   
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-stone-950 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
       <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
         {t('configurator.componentsList.yourConfiguration')}
       </h2>
@@ -186,7 +186,7 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
             <button
               onClick={onSaveConfiguration}
               disabled={loading}
-              className="py-2 px-4 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 text-sm"
+              className="py-2 px-4 bg-white dark:bg-gray-700 text-stone-950 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 text-sm"
             >
               {t('configurator.componentsList.saveAsDraft')}
             </button>
@@ -194,7 +194,7 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
             <button
               onClick={onSubmitConfiguration}
               disabled={loading}
-              className="py-2 px-4 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 text-sm"
+              className="py-2 px-4 bg-white dark:bg-gray-700 text-stone-950 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 text-sm"
             >
               {t('configurator.componentsList.submit')}
             </button>

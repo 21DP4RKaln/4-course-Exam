@@ -129,7 +129,7 @@ export function RepairActions({ repair, onUpdate, userRole }: RepairActionsProps
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border dark:border-gray-700">
+        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-stone-950 rounded-md shadow-lg z-10 border dark:border-gray-700">
           {menuItems.map((item, index) => (
             <button
               key={index}

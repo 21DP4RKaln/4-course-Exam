@@ -9,11 +9,16 @@ import ProductCard from '@/app/components/Shop/ProductCard'
 import AdvancedFilter from '@/app/components/Shop/AdvancedFilter'
 import Loading from '@/app/components/ui/Loading'
 import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
+import { useTheme } from '@/app/contexts/ThemeContext'
+import styled from 'styled-components';
+import AnimatedButton from '@/app/components/ui/animated-button'
+import styles from './Advanced.module.css'
 
 interface PC {
   id: string;
   name: string;
-  category: string;  description: string;
+  category: string;
+  description: string;
   specs: Record<string, string>;
   price: number;
   imageUrl: string | null;
@@ -41,10 +46,8 @@ function extractOptions(pcs: PC[], specKey: string) {
   
   pcs.forEach(pc => {
     if (pc.specs) {
-      // Go through each spec and check if its key matches any of our valid keys
       Object.entries(pc.specs).forEach(([key, value]) => {
         if (validKeys.includes(key.toLowerCase()) && value) {
-          // Split in case the value contains multiple items (e.g., "2x 16GB RAM")
           const parts = value.split(/[,;]/).map(part => part.trim())
           parts.forEach(part => {
             if (part) options.add(part)
@@ -55,7 +58,7 @@ function extractOptions(pcs: PC[], specKey: string) {
   })
   
   return Array.from(options)
-    .filter(value => value) // Remove empty values
+    .filter(value => value)
     .map(value => ({
       id: value,
       name: value
@@ -67,12 +70,13 @@ export default function ReadyMadePCsPage() {
   const pathname = usePathname()
   const router = useRouter()
   const locale = pathname.split('/')[1]
+  const { theme } = useTheme()
   
   const [pcs, setPcs] = useState<PC[]>([])
   const [filteredPCs, setFilteredPCs] = useState<PC[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-    const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   
   const initialFilters = {
     category: [],
@@ -87,6 +91,27 @@ export default function ReadyMadePCsPage() {
   }
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters)
   const [sortOption, setSortOption] = useState('price-asc')
+
+  const maxPrice = useMemo(() => {
+    if (pcs.length === 0) return 5000
+    return Math.max(...pcs.map(pc => pc.price))
+  }, [pcs])
+
+  const minPrice = useMemo(() => {
+    if (pcs.length === 0) return 0
+    return Math.min(...pcs.map(pc => pc.price))
+  }, [pcs])
+
+  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ 
+    min: 0, 
+    max: 5000 
+  })
+
+  useEffect(() => {
+    if (pcs.length > 0) {
+      setPriceRange({ min: minPrice, max: maxPrice })
+    }
+  }, [pcs, minPrice, maxPrice])
 
   useEffect(() => {
     const fetchPCs = async () => {
@@ -140,6 +165,9 @@ export default function ReadyMadePCsPage() {
       )
     }
 
+    // Apply price filter
+    result = result.filter(pc => pc.price >= priceRange.min && pc.price <= priceRange.max)
+
     // Apply category filters
     if (activeFilters.category && activeFilters.category.length > 0) {
       result = result.filter(pc => activeFilters.category.includes(pc.category))
@@ -153,12 +181,10 @@ export default function ReadyMadePCsPage() {
           
           const validKeys = getValidKeysForSpec(filterType)
           let specValue = ''
-            // Check all specs that might match our filter type
+  
           for (const key of Object.keys(pc.specs)) {
-            // If this spec key matches any of our valid keys
             if (validKeys.some(validKey => key.toLowerCase().includes(validKey))) {
               specValue = pc.specs[key].toLowerCase()
-              // Don't break here - we might have multiple matching specs
             }
           }
           
@@ -168,6 +194,9 @@ export default function ReadyMadePCsPage() {
         })
       }
     })
+    
+    // Apply price range filter
+    result = result.filter(pc => pc.price >= priceRange.min && pc.price <= priceRange.max)
     
     // Apply sorting
     switch (sortOption) {
@@ -186,7 +215,7 @@ export default function ReadyMadePCsPage() {
     }
     
     setFilteredPCs(result)
-  }, [pcs, searchQuery, activeFilters, sortOption])
+  }, [pcs, searchQuery, activeFilters, sortOption, priceRange])
 
   if (loading) {
     return (
@@ -212,82 +241,93 @@ export default function ReadyMadePCsPage() {
       </div>
     )
   }
+
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Back button and title */}
-      <div className="mb-6">
-        <Link 
+      {/* Back button */}
+      <div className="mb-3 flex justify-start">
+        <AnimatedButton
           href={`/${locale}`}
-          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          {t('buttons.backToHome')}
-        </Link>
+          title={t('buttons.backToHome')}
+          direction="left"
+          className="text-gray-600 dark:text-gray-200"
+        />
       </div>
-      
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {t('nav.readyMade')}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {t('shop.readyMade.description')}
-          </p>
-        </div>
-        
-        <Link
-          href={`/${locale}/configurator`}
-          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center"
-        >
-          <Cpu size={18} className="mr-2" /> 
-          {t('buttons.buildYourOwn')}
-        </Link>
+
+      {/* Header Section */}
+      <div className="mb-8 flex justify-end">
+        <StyledWrapper>
+          <Link href={`/${locale}/configurator`} className="button">
+            <span className="fold" />
+            <div className="points_wrapper">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <i className="point" key={i} />
+              ))}
+            </div>
+            <span className="inner">
+              <Cpu className="icon" />
+              {t('buttons.buildYourOwn')}
+              <ArrowLeft className="icon transform rotate-180" />
+            </span>
+          </Link>
+        </StyledWrapper>
       </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Filters - 1/4 width on large screens */}
-        <div className="lg:col-span-1">          <AdvancedFilter
-            onFilterChange={setActiveFilters}
-            onSearchChange={setSearchQuery}
-            onSortChange={setSortOption}
-            categories={categoryOptions}
-            cpuOptions={cpuOptions}
-            gpuOptions={gpuOptions}
-            ramOptions={ramOptions}
-            storageOptions={storageOptions}
-            motherboardOptions={motherboardOptions}
-            psuOptions={psuOptions}
-            caseOptions={caseOptions}
-            coolingOptions={coolingOptions}
-          />
+
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Filters */}
+        <div className="w-full lg:w-80 shrink-0">
+          <div className="sticky top-4 -translate-x-40 transition-transform duration-200">
+            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md">
+              <AdvancedFilter
+                className={styles.select}
+                onFilterChange={setActiveFilters}
+                onSearchChange={setSearchQuery}
+                onSortChange={setSortOption}
+                onPriceRangeChange={(min, max) => setPriceRange({ min, max })}
+                maxPrice={maxPrice}
+                minPrice={minPrice}
+                categories={categoryOptions}
+                cpuOptions={cpuOptions}
+                gpuOptions={gpuOptions}
+                ramOptions={ramOptions}
+                storageOptions={storageOptions}
+                motherboardOptions={motherboardOptions}
+                psuOptions={psuOptions}
+                caseOptions={caseOptions}
+                coolingOptions={coolingOptions}
+              />
+            </div>
+          </div>
         </div>
-        
-        {/* Product grid - 3/4 width on large screens */}
-        <div className="lg:col-span-3">
+
+        {/* Product grid */}
+        <div className="flex-1 -translate-x-20 min-w-0">
           {filteredPCs.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-              <Info size={48} className="mx-auto text-gray-400 mb-4" />
+            <div className="bg-white/95 dark:bg-red-900/20 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-400/50 dark:border-red-900/30 shadow-lg">
+              <Info size={48} className="mx-auto text-blue-500 dark:text-red-400 mb-4" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                No Products Found
+                {t('shop.noProducts')}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                We couldn't find any PCs matching your current filters.
+                {t('shop.tryDifferentFilters')}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredPCs.map((pc) => (                <ProductCard
-                  key={pc.id}
-                  id={pc.id}
-                  name={pc.name}
-                  price={pc.price}
-                  imageUrl={pc.imageUrl}
-                  category={pc.category}
-                  type="configuration"
-                  stock={pc.stock}
-                  specs={pc.specs}
-                  showRating={false}
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+              {filteredPCs.map((pc) => (
+                <div key={pc.id} className="h-full flex">
+                  <ProductCard
+                    id={pc.id}
+                    name={pc.name}
+                    price={pc.price}
+                    imageUrl={pc.imageUrl}
+                    category={pc.category}
+                    type="configuration"
+                    stock={pc.stock}
+                    specs={pc.specs}
+                    showRating={false}
+                  />
+                </div>
               ))}
             </div>
           )}
@@ -295,21 +335,195 @@ export default function ReadyMadePCsPage() {
       </div>
       
       {/* CTA for custom PC */}
-      <div className="mt-12 bg-gradient-to-r from-gray-900 to-gray-800 dark:from-red-900/30 dark:to-gray-900 rounded-lg shadow-lg p-8 text-center">
-        <h2 className="text-2xl font-bold text-white mb-4">
-          Can't Find The Perfect PC?
-        </h2>
-        <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-          Build your own custom configuration with our PC Builder tool. Select from our wide range of components and create a PC that perfectly suits your needs.
-        </p>
-        <Link
-          href={`/${locale}/configurator`}
-          className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
-        >
-          <Cpu size={20} className="mr-2" />
-          Build Your Own PC
-        </Link>
+      <div className="mt-12 relative overflow-hidden rounded-2xl">
+        <div className={`absolute inset-0 
+          ${theme === 'dark' 
+            ? 'bg-gradient-to-r from-gray-900 via-gray-800 to-red-900/30' 
+            : 'bg-gradient-to-r from-gray-100 via-gray-50 to-blue-100/30'
+          }`}
+        />
       </div>
     </div>
   )
 }
+
+const StyledWrapper = styled.div`
+  .button {
+    --h-button: 48px;
+    --w-button: 102px;
+    --round: 0.75rem;
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    background: linear-gradient(121deg, #d40b11, #5e44c7, #179aeb);
+    border-radius: var(--round);
+    border: none;
+    outline: none;
+    padding: 12px 24px;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .button::before,
+  .button::after {
+    content: "";
+    position: absolute;
+    inset: var(--space);
+    transition: all 0.5s ease-in-out;
+    border-radius: calc(var(--round) - var(--space));
+    z-index: 0;
+  }
+  .button::before {
+    --space: 1px;
+    background: linear-gradient(
+      177.95deg,
+      rgba(255, 255, 255, 0.19) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+  .button::after {
+    --space: 2px;
+    background: transparent;
+      linear-gradient(0deg, #7a5af8, #7a5af8);
+  }
+  .button:active {
+    transform: scale(0.95);
+  }
+
+  .points_wrapper {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+  }
+
+  .points_wrapper .point {
+    bottom: -10px;
+    position: absolute;
+    animation: floating-points infinite ease-in-out;
+    pointer-events: none;
+    width: 2px;
+    height: 2px;
+    background-color: #fff;
+    border-radius: 9999px;
+  }
+  @keyframes floating-points {
+    0% {
+      transform: translateY(0);
+    }
+    85% {
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(-55px);
+      opacity: 0;
+    }
+  }
+  .points_wrapper .point:nth-child(1) {
+    left: 10%;
+    opacity: 1;
+    animation-duration: 2.35s;
+    animation-delay: 0.2s;
+  }
+  .points_wrapper .point:nth-child(2) {
+    left: 30%;
+    opacity: 0.7;
+    animation-duration: 2.5s;
+    animation-delay: 0.5s;
+  }
+  .points_wrapper .point:nth-child(3) {
+    left: 25%;
+    opacity: 8;
+    animation-duration: 2.2s;
+    animation-delay: 0.1s;
+  }
+  .points_wrapper .point:nth-child(4) {
+    left: 44%;
+    opacity: 0.6;
+    animation-duration: 2.05s;
+  }
+  .points_wrapper .point:nth-child(5) {
+    left: 50%;
+    opacity: 1;
+    animation-duration: 1.9s;
+  }
+  .points_wrapper .point:nth-child(6) {
+    left: 75%;
+    opacity: 0.5;
+    animation-duration: 1.5s;
+    animation-delay: 1.5s;
+  }
+  .points_wrapper .point:nth-child(7) {
+    left: 88%;
+    opacity: 0.9;
+    animation-duration: 2.2s;
+    animation-delay: 0.2s;
+  }
+  .points_wrapper .point:nth-child(8) {
+    left: 58%;
+    opacity: 0.8;
+    animation-duration: 2.25s;
+    animation-delay: 0.2s;
+  }
+  .points_wrapper .point:nth-child(9) {
+    left: 98%;
+    opacity: 0.6;
+    animation-duration: 2.6s;
+    animation-delay: 0.1s;
+  }
+  .points_wrapper .point:nth-child(10) {
+    left: 65%;
+    opacity: 1;
+    animation-duration: 2.5s;
+    animation-delay: 0.2s;
+  }
+  .inner {
+    z-index: 2;
+    gap: 8px;
+    position: relative;
+    width: 100%;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: color 0.2s ease-in-out;
+  }
+
+  .inner svg.icon {
+    width: 18px;
+    height: 18px;
+    transition: fill 0.1s linear;
+  }
+
+  .button:focus svg.icon {
+    fill: white;
+  }
+  .button:hover svg.icon {
+    fill: transparent;
+    animation:
+      dasharray 1s linear forwards,
+      filled forwards 0.95s;
+  }
+  @keyframes dasharray {
+    from {
+      stroke-dasharray: 0 0 0 0;
+    }
+    to {
+      stroke-dasharray: 68 68 0 0;
+    }
+  }
+  @keyframes filled {
+    to {
+      fill: white;
+    }
+  }
+`;

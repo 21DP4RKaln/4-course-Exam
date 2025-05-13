@@ -95,7 +95,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
       case 'CANCELLED':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        return 'bg-gray-100 text-stone-950 dark:bg-gray-700 dark:text-gray-200'
     }
   }
 
@@ -161,14 +161,14 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
         <div className="flex space-x-3">
           <button
             onClick={printInvoice}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <Printer className="w-4 h-4 mr-2" />
             Print
           </button>
           <button
             onClick={downloadInvoice}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <Download className="w-4 h-4 mr-2" />
             Download
@@ -187,7 +187,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
         {/* Main Order Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Order Items</h3>
             </div>
@@ -211,7 +211,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
                 {order.items.map((item) => (
                   <tr key={item.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -256,7 +256,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
           </div>
 
           {/* Shipping Address */}
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                 <MapPin className="w-5 h-5 mr-2" />
@@ -274,7 +274,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Customer Info */}
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                 <User className="w-5 h-5 mr-2" />
@@ -294,7 +294,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
           </div>
 
           {/* Payment Info */}
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                 <CreditCard className="w-5 h-5 mr-2" />
@@ -314,7 +314,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
           </div>
 
           {/* Order Timeline */}
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                 <Calendar className="w-5 h-5 mr-2" />
@@ -338,7 +338,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
           </div>
 
           {/* Status Update */}
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Update Status</h3>
             </div>

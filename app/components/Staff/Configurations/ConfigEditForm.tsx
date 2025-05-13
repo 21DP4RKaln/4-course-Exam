@@ -216,7 +216,7 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
       )}
 
       {/* Basic Info */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
         <h2 className="text-lg font-semibold mb-4 dark:text-white">Basic Information</h2>
         
         <div className="space-y-4">
@@ -248,7 +248,7 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
       </div>
 
       {/* Component Selection */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
         <h2 className="text-lg font-semibold mb-4 dark:text-white">Components</h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -63,7 +63,7 @@ export default function OrderConfirmationPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8 text-center">
+      <div className="bg-white dark:bg-stone-950 shadow-md rounded-lg p-8 text-center">
         <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
           <Check className="h-8 w-8 text-green-600 dark:text-green-300" />
         </div>

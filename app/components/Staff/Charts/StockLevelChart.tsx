@@ -43,7 +43,7 @@ export function StockLevelChart() {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-stone-950 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
           <p className="font-semibold">{payload[0].name}</p>
           <p>{t('admin.charts.stockCount')}: {payload[0].value}</p>
           <p>{t('admin.charts.totalValue')}: €{payload[0].payload.value.toLocaleString()}</p>

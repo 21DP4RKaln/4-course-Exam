@@ -342,7 +342,7 @@ export default function ProductsPage() {
               className={`px-4 py-2 rounded-md whitespace-nowrap flex items-center ${
                 filters.category === category.id
                   ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  : 'bg-gray-100 dark:bg-stone-950 text-stone-950 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
               onClick={() => setFilters({...filters, category: category.id})}
             >
@@ -397,7 +397,7 @@ export default function ProductsPage() {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Filter sidebar - desktop */}
         <div className="hidden md:block w-64 flex-shrink-0">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sticky top-24">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 sticky top-24">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                 <Filter size={18} className="mr-2" />
@@ -486,7 +486,7 @@ export default function ProductsPage() {
         <div className="md:hidden mb-4">
           <button
             onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
-            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-stone-950 text-gray-700 dark:text-gray-300"
           >
             <Filter size={18} className="mr-2" />
             Filters
@@ -496,7 +496,7 @@ export default function ProductsPage() {
         
         {/* Mobile filter panel */}
         {isMobileFilterOpen && (
-          <div className="md:hidden bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+          <div className="md:hidden bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Filters
@@ -573,7 +573,7 @@ export default function ProductsPage() {
         {/* Main product grid */}
         <div className="flex-1">
           {filteredProducts.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+            <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8 text-center">
               <Info size={48} className="mx-auto text-gray-400 mb-4" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 No Products Found
@@ -593,7 +593,7 @@ export default function ProductsPage() {
               {filteredProducts.map((product) => (
                 <div 
                   key={product.id}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                  className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                   onMouseEnter={() => setHoveredProduct(product.id)}
                   onMouseLeave={() => setHoveredProduct(null)}
                 >

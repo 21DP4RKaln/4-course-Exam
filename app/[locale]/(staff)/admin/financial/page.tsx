@@ -94,7 +94,7 @@ export default function AdminFinancialPage() {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value as 'week' | 'month' | 'year')}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950"
           >
             <option value="week">This Week</option>
             <option value="month">This Month</option>
@@ -102,7 +102,7 @@ export default function AdminFinancialPage() {
           </select>
           <button
             onClick={() => exportReport('csv')}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <Download className="w-4 h-4 mr-2" />
             Export CSV
@@ -119,7 +119,7 @@ export default function AdminFinancialPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</p>
@@ -133,7 +133,7 @@ export default function AdminFinancialPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Monthly Revenue</p>
@@ -151,7 +151,7 @@ export default function AdminFinancialPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders</p>
@@ -165,7 +165,7 @@ export default function AdminFinancialPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Average Order Value</p>
@@ -183,7 +183,7 @@ export default function AdminFinancialPage() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Selling Products */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">Top Selling Products</h3>
           </div>
@@ -228,7 +228,7 @@ export default function AdminFinancialPage() {
         </div>
 
         {/* Revenue by Category */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">Revenue by Category</h3>
           </div>
@@ -257,7 +257,7 @@ export default function AdminFinancialPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link
           href={`/${locale}/admin/financial/reports`}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
+          className="bg-white dark:bg-stone-950 rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-center">
             <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
@@ -270,7 +270,7 @@ export default function AdminFinancialPage() {
 
         <Link
           href={`/${locale}/admin/financial/invoices`}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
+          className="bg-white dark:bg-stone-950 rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-center">
             <FileText className="w-8 h-8 text-green-600 dark:text-green-400" />
@@ -283,7 +283,7 @@ export default function AdminFinancialPage() {
 
         <Link
           href={`/${locale}/admin/orders`}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
+          className="bg-white dark:bg-stone-950 rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-center">
             <Package className="w-8 h-8 text-purple-600 dark:text-purple-400" />

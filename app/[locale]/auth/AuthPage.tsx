@@ -9,8 +9,9 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import { useTheme } from '@/app/contexts/ThemeContext'
 import { 
   Eye, EyeOff, Mail, Lock, Phone, AlertTriangle, 
-  User, ArrowLeft, Loader,
+  User, Loader,
 } from 'lucide-react'
+import AnimatedButton from '@/app/components/ui/animated-button'
 import styled from 'styled-components'
 import Image from 'next/image'
 import Loading from '@/app/components/ui/Loading'
@@ -201,13 +202,12 @@ export default function AuthPage() {
         <BackgroundOverlay theme={theme} />
       </BackgroundImage>
 
-      <div className="absolute top-0 left-0 right-0 p-6 z-10">
-        <Link 
-          href={`/${locale}`}
-          className="inline-flex items-center text-gray-200 hover:text-white"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          {t('buttons.back')}
+      <div className="absolute top-0 left-0 right-0 p-6 z-10">        <Link href={`/${locale}`}>
+          <AnimatedButton 
+            title={t('buttons.back')}
+            direction="left"
+            className="text-gray-200" 
+          />
         </Link>
       </div>
 

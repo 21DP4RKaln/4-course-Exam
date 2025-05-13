@@ -49,7 +49,7 @@ export default function AdminRepairsPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">All Repairs</h1>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
@@ -63,7 +63,7 @@ export default function AdminRepairsPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
             {repairs.map((repair: any) => (
               <tr key={repair.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -90,7 +90,7 @@ export default function AdminRepairsPage() {
                     ${repair.priority === 'URGENT' ? 'bg-red-100 text-red-800' : ''}
                     ${repair.priority === 'HIGH' ? 'bg-orange-100 text-orange-800' : ''}
                     ${repair.priority === 'NORMAL' ? 'bg-blue-100 text-blue-800' : ''}
-                    ${repair.priority === 'LOW' ? 'bg-gray-100 text-gray-800' : ''}
+                    ${repair.priority === 'LOW' ? 'bg-gray-100 text-stone-950' : ''}
                   `}>
                     {repair.priority}
                   </span>

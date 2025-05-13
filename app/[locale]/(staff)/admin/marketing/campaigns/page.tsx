@@ -98,7 +98,7 @@ export default function CampaignsPage() {
 
   const getStatusBadge = (status: Campaign['status']) => {
     const badges = {
-      DRAFT: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-800 dark:text-gray-300', icon: Edit },
+      DRAFT: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-stone-950 dark:text-gray-300', icon: Edit },
       SCHEDULED: { bg: 'bg-blue-100 dark:bg-blue-900', text: 'text-blue-800 dark:text-blue-300', icon: Clock },
       ACTIVE: { bg: 'bg-green-100 dark:bg-green-900', text: 'text-green-800 dark:text-green-300', icon: CheckCircle },
       PAUSED: { bg: 'bg-yellow-100 dark:bg-yellow-900', text: 'text-yellow-800 dark:text-yellow-300', icon: Clock },
@@ -168,7 +168,7 @@ export default function CampaignsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -211,7 +211,7 @@ export default function CampaignsPage() {
       </div>
 
       {/* Campaigns list */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">
@@ -236,7 +236,7 @@ export default function CampaignsPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredCampaigns.map((campaign) => (
                 <tr key={campaign.id}>
                   <td className="px-6 py-4">

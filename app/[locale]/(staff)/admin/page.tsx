@@ -124,7 +124,7 @@ export default function AdminDashboard() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Pending Configurations</p>
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
             <Clock className="h-8 w-8 text-yellow-500" />
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Low Stock Items</p>
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
             <AlertCircle className="h-8 w-8 text-red-500" />
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Growth</p>
@@ -155,13 +155,13 @@ export default function AdminDashboard() {
 
       {/* Charts Placeholder */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Sales Overview</h2>
           <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded">
             <span className="text-gray-500 dark:text-gray-400">Sales Chart Coming Soon</span>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Repair Metrics</h2>
           <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded">
             <span className="text-gray-500 dark:text-gray-400">Repair Chart Coming Soon</span>
@@ -191,7 +191,7 @@ function StatsCard({ title, value, icon: Icon, trend, color }: StatsCardProps) {
   } as const;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>

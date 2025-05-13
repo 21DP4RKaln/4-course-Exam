@@ -108,7 +108,7 @@ export function RepairList() {
           ${value === 'URGENT' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
             value === 'HIGH' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
             value === 'NORMAL' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-            'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'}`}>
+            'bg-gray-100 text-stone-950 dark:bg-gray-900 dark:text-gray-200'}`}>
           {t(`repairs.priority.${value.toLowerCase()}`)}
         </span>
       )

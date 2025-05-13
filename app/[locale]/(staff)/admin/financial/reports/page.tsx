@@ -123,7 +123,7 @@ export default function AdminFinancialReportsPage() {
       </div>
 
       {/* Report Generator */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+      <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
         <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
           Generate New Report
         </h2>
@@ -181,7 +181,7 @@ export default function AdminFinancialReportsPage() {
       </div>
 
       {/* Reports List */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-medium text-gray-900 dark:text-white">
             Generated Reports
@@ -214,7 +214,7 @@ export default function AdminFinancialReportsPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
               {loading ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-4 text-center">

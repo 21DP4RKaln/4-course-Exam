@@ -28,6 +28,7 @@ import {
   BarChart,
   Image as ImageIcon
 } from 'lucide-react'
+import AnimatedButton from '@/app/components/ui/animated-button'
 
 const repairServices = [
   {
@@ -68,7 +69,6 @@ const repairServices = [
     name: 'Performance Optimization',
     icon: <Zap size={24} />,
     description: 'Speed up your computer by optimizing software and hardware settings.',
-    price: 25,
     timeEstimate: '1-3 days',
   },
   {
@@ -172,7 +172,7 @@ export default function RepairsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Repair Form */}
         <div className="order-2 md:order-1">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
               Request a Repair
             </h2>
@@ -204,7 +204,7 @@ export default function RepairsPage() {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         required
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
                       />
                     </div>
                   </div>
@@ -223,7 +223,7 @@ export default function RepairsPage() {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         required
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
                       />
                     </div>
                   </div>
@@ -242,7 +242,7 @@ export default function RepairsPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
                       />
                     </div>
                   </div>
@@ -261,7 +261,7 @@ export default function RepairsPage() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         required
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
                       />
                     </div>
                   </div>
@@ -319,7 +319,7 @@ export default function RepairsPage() {
                   onChange={(e) => setIssue(e.target.value)}
                   required
                   rows={4}
-                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
+                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
                   placeholder="Please provide as much detail as possible about the issue..."
                 />
               </div>
@@ -380,7 +380,7 @@ export default function RepairsPage() {
         {/* Service Details & Summary */}
         <div className="order-1 md:order-2 space-y-6">
           {selectedServiceDetails && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Service Details
               </h3>
@@ -416,7 +416,7 @@ export default function RepairsPage() {
           )}
           
           {/* Process steps */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Repair Process
             </h3>

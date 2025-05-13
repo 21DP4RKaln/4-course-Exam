@@ -548,7 +548,7 @@ export default function AdvancedFilter({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+    <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm p-4">
       {/* Search bar */}
       <div className="relative mb-4">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center">

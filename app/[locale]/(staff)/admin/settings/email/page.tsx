@@ -237,7 +237,7 @@ export default function EmailSettingsPage() {
 
       <form onSubmit={handleSaveSettings} className="space-y-6">
         {/* SMTP Configuration */}
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">SMTP Configuration</h2>
           
           {/* Provider Selection */}
@@ -381,7 +381,7 @@ export default function EmailSettingsPage() {
         </div>
 
         {/* Email Templates */}
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Email Templates</h2>
           <div className="space-y-4">
             {templates.map((template) => (
@@ -408,7 +408,7 @@ export default function EmailSettingsPage() {
         </div>
 
         {/* Test Email */}
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Test Email Configuration</h2>
           <div className="flex space-x-4">
             <input

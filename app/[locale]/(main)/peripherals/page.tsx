@@ -7,6 +7,7 @@ import Link from 'next/link'
 import Loading from '@/app/components/ui/Loading'
 import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
 import { AlertTriangle, ArrowLeft, Keyboard, Monitor, Headphones, Mouse, Gamepad, Printer, Speaker, Webcam } from 'lucide-react'
+import AnimatedButton from '@/app/components/ui/animated-button'
 
 interface Category {
   id: string;
@@ -95,26 +96,23 @@ export default function PeripheralsPage() {
       </div>
     )
   }
-
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <Link 
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="mb-6 flex justify-start">
+        <AnimatedButton
           href={`/${locale}`}
-          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          Back to Home
-        </Link>
+          title={t('common.backToHome')}
+          direction="left"
+          className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+        />
       </div>
       
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-        Computer Peripherals
+        {t('peripherals.title')}
       </h1>
       
       <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-        Enhance your computing experience with our premium peripherals.
-        Select a category to see available products.
+        {t('peripherals.description')}
       </p>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -122,7 +120,7 @@ export default function PeripheralsPage() {
           <Link
             key={category.id}
             href={`/${locale}/peripherals/${category.slug}`}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+            className="bg-white dark:bg-stone-950 border border-gray-200 dark:border-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
             <div className="p-6">
               <div className="mb-4">
@@ -135,34 +133,34 @@ export default function PeripheralsPage() {
                 {category.description || `Browse our selection of ${category.name.toLowerCase()}`}
               </p>
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                {category.componentCount} products available
+                {t('peripherals.productsAvailable', { count: category.componentCount })}
               </div>
             </div>
           </Link>
         ))}
       </div>
       
-      <div className="mt-12 bg-gradient-to-r from-gray-900 to-gray-800 dark:from-red-900/30 dark:to-gray-900 rounded-lg shadow-lg p-8 text-center">
+      <div className="mt-12 bg-gradient-to-r from-gray-900 to-stone-950 dark:from-red-900/30 dark:to-gray-900 rounded-lg border border-gray-700 dark:border-gray-800 shadow-lg p-8 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">
-          Building a New PC?
+          {t('peripherals.buildingNewPc')}
         </h2>
         <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-          Looking to build a new PC or upgrade your existing one? Check out our components section or use our PC configurator.
+          {t('peripherals.buildingDesc')}
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href={`/${locale}/components`}
-            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
+            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 border border-red-500"
           >
             <Keyboard size={18} className="inline-block mr-2" />
-            Browse Components
+            {t('peripherals.browseComponents')}
           </Link>
           <Link
             href={`/${locale}/configurator`}
-            className="px-6 py-3 bg-white text-gray-900 rounded-md hover:bg-gray-100"
+            className="px-6 py-3 bg-white text-gray-900 rounded-md hover:bg-gray-100 border border-gray-300"
           >
             <Monitor size={18} className="inline-block mr-2" />
-            Configure a PC
+            {t('peripherals.configurePc')}
           </Link>
         </div>
       </div>

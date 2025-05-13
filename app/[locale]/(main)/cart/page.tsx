@@ -6,7 +6,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/app/contexts/CartContext'
 import { useAuth } from '@/app/contexts/AuthContext'
-import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag, CreditCard } from 'lucide-react'
+import { Trash2, Plus, Minus, ShoppingBag, CreditCard } from 'lucide-react'
+import AnimatedButton from '@/app/components/ui/animated-button'
 
 export default function CartPage() {
   const t = useTranslations()
@@ -40,20 +41,18 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8">
           <ShoppingBag size={48} className="mx-auto text-gray-400 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {t('cart.empty')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8">
             Your shopping cart is empty. Add some items to continue shopping.
-          </p>
-          <Link 
-            href={`/${locale}/shop/ready-made`}
-            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
-          >
-            <ArrowLeft size={18} className="mr-2" />
-            {t('cart.continueShoping')}
+          </p>          <Link href={`/${locale}/`}>
+            <AnimatedButton 
+              title={t('cart.continueShoping')}
+              direction="left"
+            />
           </Link>
         </div>
       </div>
@@ -62,14 +61,11 @@ export default function CartPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-        {t('cart.title')}
-      </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {items.map((item) => (
                 <div key={item.id} className="p-6">
@@ -136,13 +132,12 @@ export default function CartPage() {
             </div>
             
             <div className="p-6 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">
-                <Link 
-                  href={`/${locale}/configurator`}
-                  className="text-red-600 dark:text-red-400 hover:underline flex items-center"
-                >
-                  <ArrowLeft size={18} className="mr-1" />
-                  {t('cart.continueShoping')}
+              <div className="flex items-center justify-between">                <Link href={`/${locale}/`}>
+                  <AnimatedButton 
+                    title={t('cart.continueShoping')}
+                    direction="left"
+                    className="text-red-600 dark:text-red-400" 
+                  />
                 </Link>
                 
                 <button 
@@ -159,7 +154,7 @@ export default function CartPage() {
         
         {/* Order Summary */}
         <div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sticky top-24">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 sticky top-24">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
               Order Summary
             </h2>

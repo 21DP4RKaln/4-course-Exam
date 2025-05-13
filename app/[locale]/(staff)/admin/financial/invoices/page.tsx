@@ -102,13 +102,13 @@ export default function AdminFinancialInvoicesPage() {
       case 'sent':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
       case 'draft':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+        return 'bg-gray-100 text-stone-950 dark:bg-gray-900 dark:text-gray-200'
       case 'overdue':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
       case 'cancelled':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+        return 'bg-gray-100 text-stone-950 dark:bg-gray-900 dark:text-gray-200'
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        return 'bg-gray-100 text-stone-950 dark:bg-gray-700 dark:text-gray-200'
     }
   }
 
@@ -183,7 +183,7 @@ export default function AdminFinancialInvoicesPage() {
       </div>
 
       {/* Invoices Table */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
@@ -207,7 +207,7 @@ export default function AdminFinancialInvoicesPage() {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
             {loading ? (
               <tr>
                 <td colSpan={6} className="px-6 py-4 text-center">

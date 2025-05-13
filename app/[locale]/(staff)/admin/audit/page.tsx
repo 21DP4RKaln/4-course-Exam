@@ -313,7 +313,7 @@ export default function AuditPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow">
+      <div className="bg-white dark:bg-stone-950 p-4 rounded-md shadow">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <label className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">
@@ -407,7 +407,7 @@ export default function AuditPage() {
       </div>
 
       {/* Logs table */}
-      <div className="bg-white dark:bg-gray-800 rounded-md shadow overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 rounded-md shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead className="bg-gray-50 dark:bg-gray-700">
@@ -457,7 +457,7 @@ export default function AuditPage() {
                           ${log.action === 'view' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : ''}
                           ${log.action === 'publish' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' : ''}
                           ${log.action === 'approve' ? 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200' : ''}
-                          ${'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}
+                          ${'bg-gray-100 text-stone-950 dark:bg-gray-700 dark:text-gray-200'}
                         `}>
                           {log.action.charAt(0).toUpperCase() + log.action.slice(1)}
                         </span>

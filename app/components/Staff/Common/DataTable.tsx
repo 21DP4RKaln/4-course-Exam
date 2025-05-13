@@ -67,7 +67,7 @@ export function DataTable<T extends { id: string }>({
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead className="bg-gray-50 dark:bg-gray-800">
+        <thead className="bg-gray-50 dark:bg-stone-950">
           <tr>
             {columns.map((column) => (
               <th
@@ -98,7 +98,7 @@ export function DataTable<T extends { id: string }>({
             <tr
               key={item.id}
               className={`${
-                onRowClick ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800' : ''
+                onRowClick ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-stone-950' : ''
               }`}
               onClick={() => onRowClick?.(item)}
             >

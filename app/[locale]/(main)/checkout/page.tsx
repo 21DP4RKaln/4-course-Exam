@@ -7,7 +7,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useCart } from '@/app/contexts/CartContext'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { 
-  ArrowLeft, 
   CreditCard, 
   Truck, 
   Check,
@@ -19,6 +18,7 @@ import {
   AlertCircle,
   Loader2
 } from 'lucide-react'
+import AnimatedButton from '@/app/components/ui/animated-button'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -230,7 +230,7 @@ function CheckoutForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Shipping Information */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
           <MapPin size={20} className="mr-2" />
           Shipping Address
@@ -369,7 +369,7 @@ function CheckoutForm() {
 
       {/* Shipping Methods */}
       {shippingRates.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
             <Truck size={20} className="mr-2" />
             Shipping Method
@@ -415,7 +415,7 @@ function CheckoutForm() {
       )}
 
       {/* Promo Code */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
           <Tag size={20} className="mr-2" />
           Promo Code
@@ -468,7 +468,7 @@ function CheckoutForm() {
       </div>
 
       {/* Payment Method */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
           <CreditCard size={20} className="mr-2" />
           Payment Method
@@ -581,7 +581,7 @@ function CheckoutForm() {
       </div>
 
       {/* Order Summary */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sticky top-24">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 sticky top-24">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
           Order Summary
         </h2>
@@ -670,13 +670,12 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-6">
-        <Link 
-          href={`/${locale}/cart`}
-          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          Back to Cart
+      <div className="mb-6">        <Link href={`/${locale}/cart`}>
+          <AnimatedButton 
+            title="Back to Cart"
+            direction="left"
+            className="text-gray-600 dark:text-gray-400" 
+          />
         </Link>
       </div>
       

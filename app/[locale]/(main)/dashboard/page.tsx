@@ -104,7 +104,7 @@ export default function DashboardPage() {
   const getStatusColor = (status: string) => {
     const statusColors = {
       // Configuration statuses
-      'DRAFT': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+      'DRAFT': 'bg-gray-100 text-stone-950 dark:bg-stone-950 dark:text-gray-300',
       'SUBMITTED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'APPROVED': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       'REJECTED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
@@ -115,7 +115,7 @@ export default function DashboardPage() {
       'CANCELLED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
     }
     
-    return statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'
+    return statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-stone-950'
   }
 
   const handleTabChange = (value: string) => {
@@ -145,7 +145,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 rounded-xl shadow-md overflow-hidden">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="w-full flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
             <TabsTrigger 
@@ -324,7 +324,7 @@ export default function DashboardPage() {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
                       {orders.map((order) => (
                         <tr 
                           key={order.id}

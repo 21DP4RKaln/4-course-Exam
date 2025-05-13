@@ -100,7 +100,7 @@ export default function MarketingOverviewPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Active Promo Codes</p>
@@ -114,7 +114,7 @@ export default function MarketingOverviewPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Discount Given</p>
@@ -128,7 +128,7 @@ export default function MarketingOverviewPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Active Users</p>
@@ -142,7 +142,7 @@ export default function MarketingOverviewPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Conversion Rate</p>
@@ -159,7 +159,7 @@ export default function MarketingOverviewPage() {
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
             Marketing Tools
           </h2>
@@ -188,7 +188,7 @@ export default function MarketingOverviewPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
             Recent Campaigns
           </h2>
@@ -221,7 +221,7 @@ export default function MarketingOverviewPage() {
       </div>
 
       {/* Promo Code Usage */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
             Top Promo Codes
@@ -241,7 +241,7 @@ export default function MarketingOverviewPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
                 {stats?.promoCodeUsage?.map((promo) => (
                   <tr key={promo.code}>
                     <td className="px-6 py-4 whitespace-nowrap">

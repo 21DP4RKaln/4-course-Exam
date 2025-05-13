@@ -6,6 +6,7 @@ import { ChevronLeft } from 'lucide-react'
 import styled from 'styled-components'
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import AnimatedButton from '../ui/animated-button'
 
 export default function TermsOfServicePage() {
   const pathname = usePathname()
@@ -13,20 +14,16 @@ export default function TermsOfServicePage() {
   const t = useTranslations('termsOfService')
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4">
-      <div className="mb-8">
-        <Link 
-          href={`/${locale}`}
-        >
-          <StyledWrapper>
-            <button className="button">
-              <ChevronLeft size={18} className="mr-2" />
-            </button>
-          </StyledWrapper>
+    <div className="max-w-4xl mx-auto py-12 px-4">      <div className="mb-8">
+        <Link href={`/${locale}`}>
+          <AnimatedButton 
+            title={t('back')}
+            direction="left"
+          />
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 transition-colors duration-200">
+      <div className="bg-white dark:bg-stone-950 shadow-lg rounded-lg p-8 transition-colors duration-200">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{t('title')}</h1>
         
         <div className="prose prose-lg dark:prose-invert max-w-none">
@@ -34,12 +31,12 @@ export default function TermsOfServicePage() {
             {t('lastUpdated')}: May 1, 2025
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('introduction.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('introduction.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('introduction.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('registration.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('registration.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-3">
             {t('pricingPayment.priceChanges')}
           </p>
@@ -50,7 +47,7 @@ export default function TermsOfServicePage() {
             {t('pricingPayment.processing')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('shipping.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('shipping.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-3">
             {t('shipping.estimates')}
           </p>
@@ -61,7 +58,7 @@ export default function TermsOfServicePage() {
             {t('shipping.accuracy')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('warranty.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('warranty.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-3">
             {t('warranty.manufacturer')}
           </p>
@@ -75,12 +72,12 @@ export default function TermsOfServicePage() {
             {t('warranty.condition')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('intellectual.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('intellectual.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('intellectual.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('liability.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('liability.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-3">
             {t('liability.limitation')}
           </p>
@@ -88,17 +85,17 @@ export default function TermsOfServicePage() {
             {t('liability.indirect')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('governing.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('governing.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('governing.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('changes.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('changes.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {t('changes.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4">{t('contact.title')}</h2>
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('contact.title')}</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-4">
             {t('contact.content')}:
           </p>

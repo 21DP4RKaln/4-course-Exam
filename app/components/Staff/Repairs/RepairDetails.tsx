@@ -110,7 +110,7 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-2xl font-bold">{repair.title}</h2>
@@ -173,7 +173,7 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
                   ${repair.priority === 'URGENT' ? 'bg-red-100 text-red-800' :
                     repair.priority === 'HIGH' ? 'bg-orange-100 text-orange-800' :
                     repair.priority === 'NORMAL' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'}`}>
+                    'bg-gray-100 text-stone-950'}`}>
                   {t(`repairs.priority.${repair.priority.toLowerCase()}`)}
                 </span>
               </div>

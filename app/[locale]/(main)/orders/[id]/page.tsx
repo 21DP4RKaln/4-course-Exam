@@ -77,7 +77,7 @@ export default function OrderDetailsPage() {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8">
           <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Order Not Found
@@ -143,7 +143,7 @@ export default function OrderDetailsPage() {
       case 'CANCELLED':
         return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+        return 'bg-gray-100 text-stone-950 dark:bg-gray-900/30 dark:text-gray-300'
     }
   }
   
@@ -159,7 +159,7 @@ export default function OrderDetailsPage() {
         </Link>
       </div>
       
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
         <div className="p-6">
           <h1 className="text-2xl font-bold">Order #{orderId}</h1>
           <p>Order details content here...</p>

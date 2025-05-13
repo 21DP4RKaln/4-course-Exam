@@ -194,7 +194,7 @@ export default function AboutUs() {
           {t('about.coreValues')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 text-center">
             <div className="w-16 h-16 bg-brand-blue-50 dark:bg-brand-red-900/30 rounded-full flex items-center justify-center text-brand-blue-600 dark:text-brand-red-500 mx-auto mb-4">
               <Trophy size={32} />
             </div>
@@ -206,7 +206,7 @@ export default function AboutUs() {
             </p>
           </div>
           
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 text-center">
             <div className="w-16 h-16 bg-brand-blue-50 dark:bg-brand-red-900/30 rounded-full flex items-center justify-center text-brand-blue-600 dark:text-brand-red-500 mx-auto mb-4">
               <Wrench size={32} />
             </div>
@@ -218,7 +218,7 @@ export default function AboutUs() {
             </p>
           </div>
           
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 text-center">
             <div className="w-16 h-16 bg-brand-blue-50 dark:bg-brand-red-900/30 rounded-full flex items-center justify-center text-brand-blue-600 dark:text-brand-red-500 mx-auto mb-4">
               <ThumbsUp size={32} />
             </div>
@@ -233,7 +233,7 @@ export default function AboutUs() {
       </div>
       
       {/* Stats */}
-      <div className="mb-16 bg-gray-50 dark:bg-gray-900 rounded-lg py-10">
+      <div className="mb-16 bg-gray-50 dark:bg-neutral-900 rounded-lg py-10">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
           {t('about.byTheNumbers')}
         </h2>
@@ -295,7 +295,7 @@ export default function AboutUs() {
         ) : googleReviewsData ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {googleReviewsData.reviews.map((review, index) => (
-              <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <div key={index} className="bg-white dark:bg-neutral-900 rounded-lg shadow-md p-6">
                 <div className="flex items-center mb-3">
                   {review.profileImage ? (
                     <img 
@@ -378,7 +378,7 @@ export default function AboutUs() {
                   </div>
                   
                   {/* Content */}
-                  <div className={`md:w-96 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md ${index % 2 === 0 ? 'md:mr-10' : 'md:ml-10'}`}>
+                  <div className={`md:w-96 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow-md ${index % 2 === 0 ? 'md:mr-10' : 'md:ml-10'}`}>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                       {milestone.title}
                     </h3>

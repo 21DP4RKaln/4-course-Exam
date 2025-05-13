@@ -12,7 +12,6 @@ import ReviewSystem from '../ReviewSystem/ReviewSystem'
 import Loading from '@/app/components/ui/Loading'
 import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
 import { 
-  ArrowLeft, 
   ShoppingCart,
   Heart,
   Share2,
@@ -23,6 +22,7 @@ import {
   CheckCircle,
   Copy
 } from 'lucide-react'
+import AnimatedButton from '@/app/components/ui/animated-button'
 
 interface ProductCommonProps {
   id: string;
@@ -259,14 +259,14 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
   const renderSpecificationsSection = () => {
     if (!product) return null;
     
-    if (product.type === 'configuration') {
+    if (product.type === 'configuration') { 
       const configProduct = product as ConfigurationProduct;
       return (
         <div className="max-w-3xl mx-auto">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('components')}</h3>
           <div className="space-y-4">
             {configProduct.components.map((component) => (
-              <div key={component.id} className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+              <div key={component.id} className="p-4 rounded-lg">
                 <div className="flex justify-between">
                   <div>
                     <span className="font-medium text-gray-900 dark:text-white">{component.name}</span>
@@ -326,20 +326,18 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
   if (error || !product) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
-        <div className="card p-8">
+        <div className="p-8">
           <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {error || t('productNotFound')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8">
             {t('productRemovedText')}
-          </p>
-          <Link 
-            href={getBackLink()}
-            className="btn btn-primary"
-          >
-            <ArrowLeft size={18} className="mr-2" />
-            {t('backToShop')}
+          </p>          <Link href={getBackLink()}>
+            <AnimatedButton 
+              title={t('backToShop')} 
+              direction="left" 
+            />
           </Link>
         </div>
       </div>
@@ -349,19 +347,18 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <Link 
-          href={getBackLink()}
-          className="action-button inline-flex"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          {t('backToShop')}
+        <Link href={getBackLink()}>
+          <AnimatedButton 
+            title={t('backToShop')} 
+            direction="left" 
+          />
         </Link>
       </div>
       
-      <div className="card">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+      <div className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Product image */}
-          <div className="product-image-container">
+          <div className="flex items-center justify-center">
             <img 
               src={(product?.imageUrl || defaultImageUrl).trim()} 
               alt={product?.name} 

@@ -90,7 +90,7 @@ export default function SettingsPage() {
             <Link
               key={section.href}
               href={section.href}
-              className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              className="block p-6 bg-white dark:bg-stone-950 rounded-lg shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-start space-x-4">
                 <div className={`p-3 rounded-lg ${getColorClasses(section.color)}`}>

@@ -28,9 +28,9 @@ export function StaffHeader() {
   }
 
   return (
-    <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
+    <header className="h-16 bg-white dark:bg-stone-950 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
       <div className="flex items-center">
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
+        <h1 className="text-xl font-semibold text-stone-950 dark:text-white">
           {getPageTitle()}
         </h1>
       </div>

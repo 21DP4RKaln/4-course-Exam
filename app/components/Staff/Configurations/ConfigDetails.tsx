@@ -59,7 +59,7 @@ export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-3">

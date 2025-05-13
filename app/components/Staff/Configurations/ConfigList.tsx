@@ -142,14 +142,14 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
             placeholder="Search configurations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-gray-700"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={filters.status}
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-            className="px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-gray-700"
           >
             <option value="">All Status</option>
             <option value="DRAFT">Draft</option>
@@ -160,7 +160,7 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
           <select
             value={filters.sortBy}
             onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
-            className="px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-gray-700"
           >
             <option value="createdAt">Date</option>
             <option value="totalPrice">Price</option>
@@ -171,7 +171,7 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
               ...prev, 
               sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc' 
             }))}
-            className="px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-gray-700"
           >
             {filters.sortOrder === 'asc' ? '↑' : '↓'}
           </button>
@@ -179,7 +179,7 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
       </div>
 
       {/* Configurations Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700">

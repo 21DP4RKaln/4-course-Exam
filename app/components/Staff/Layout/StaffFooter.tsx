@@ -8,7 +8,7 @@ export function StaffFooter() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="h-12 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
+    <footer className="h-12 bg-white dark:bg-stone-950 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
       <div className="text-sm text-gray-500 dark:text-gray-400">
         © {currentYear} IvaPro. {t('footer.allRightsReserved')}.
       </div>

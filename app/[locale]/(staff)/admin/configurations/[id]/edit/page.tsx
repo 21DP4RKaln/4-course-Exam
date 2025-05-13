@@ -90,7 +90,7 @@ export default function AdminEditConfigurationPage({ params }: PageProps) {
         <h1 className="text-2xl font-bold">Edit Configuration</h1>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
         {configuration && (
           <ConfigEditForm 
             configuration={configuration}

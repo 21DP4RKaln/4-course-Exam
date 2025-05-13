@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
 import { Button } from '@/app/components/ui/button'
 import { Badge } from '@/app/components/ui/badge'
-import { ArrowLeft, Edit, ShoppingCart, Eye, Trash2 } from 'lucide-react'
+import { Edit, ShoppingCart, Eye, Trash2 } from 'lucide-react'
+import AnimatedButton from '@/app/components/ui/animated-button'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -100,11 +101,12 @@ export default function ReadyMadePCDetailsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('common.back')}
-        </Button>
+      <div className="flex items-center gap-4">        <AnimatedButton 
+          onClick={() => router.back()}
+          title={t('common.back')}
+          direction="left"
+          className="text-gray-600 dark:text-gray-400" 
+        />
       </div>
 
       <div className="grid gap-6">

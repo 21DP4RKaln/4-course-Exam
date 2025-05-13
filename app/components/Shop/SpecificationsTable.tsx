@@ -117,7 +117,7 @@ export default function SpecificationsTable({
     <div className="space-y-6">
       {Object.entries(groupedSpecs).map(([groupName, specs]) => (
         <div key={groupName} className="specs-group">
-          <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          <h4 className="text-md font-semibold text-stone-950 dark:text-gray-200 mb-2">
             {groupName}
           </h4>
           <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
@@ -125,7 +125,7 @@ export default function SpecificationsTable({
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {Object.entries(specs).map(([key, value]) => (
                   <tr key={key}>
-                    <td className="py-3 px-4 text-sm font-medium text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-800 w-1/3">
+                    <td className="py-3 px-4 text-sm font-medium text-gray-900 dark:text-white bg-gray-50 dark:bg-stone-950 w-1/3">
                       {formatSpecKey(key)}
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-700 dark:text-gray-300">

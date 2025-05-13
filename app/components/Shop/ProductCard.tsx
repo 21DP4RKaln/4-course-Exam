@@ -9,7 +9,7 @@ import { useTheme } from '@/app/contexts/ThemeContext'
 import { useCart } from '@/app/contexts/CartContext'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useWishlist } from '@/app/contexts/WishlistContext'
-import { ShoppingCart, Star, ChevronDown, ChevronUp, Heart, Tag } from 'lucide-react'
+import { ShoppingCart, Star, ChevronDown, ChevronUp, Heart, Tag, Info } from 'lucide-react'
 
 interface ProductCardProps {
   id: string
@@ -119,15 +119,13 @@ export default function ProductCard({
   }
 
   const discountPercentage = getDiscountPercentage()
-
   return (
     <Link 
-      href={getProductLink()}
-      className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${
+      href={getProductLink()}      className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${
         theme === 'dark'
-          ? 'bg-dark-card border border-gray-800 hover:border-brand-red-800'
+          ? 'bg-dark-card border border-stone-950 hover:border-brand-red-800'
           : 'bg-white border border-gray-100 hover:border-brand-blue-200'
-      } shadow-soft hover:shadow-medium`}
+      } shadow-soft hover:shadow-medium flex flex-col h-[500px]`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -179,7 +177,7 @@ export default function ProductCard({
         <div className="absolute bottom-3 left-3">
           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
             theme === 'dark' 
-              ? 'bg-black/40 text-white border border-gray-800' 
+              ? 'bg-black/40 text-white border border-stone-950' 
               : 'bg-white/40 text-gray-900 border border-gray-200'
           }`}>
             {category}
@@ -232,16 +230,15 @@ export default function ProductCard({
                   : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
                 : theme === 'dark'
                   ? 'bg-white/10 hover:bg-white/20 text-white'
-                  : 'bg-white hover:bg-gray-100 text-gray-800'
+                  : 'bg-white hover:bg-gray-100 text-stone-950'
             } backdrop-blur-sm`}
             aria-label={isProductInWishlist ? t('shop.product.removeFromWishlist') : t('shop.product.addToWishlist')}
           >
             <Heart size={18} fill={isProductInWishlist ? 'currentColor' : 'none'} />
           </button>
         </div>
-      </div>
-      
-      <div className="p-4">
+      </div>      
+      <div className="p-4 flex flex-col flex-grow">
         {/* Rating display - only show if showRating is true */}
         {showRating && rating > 0 && (
           <div className="flex items-center mb-2">
@@ -263,87 +260,22 @@ export default function ProductCard({
           </div>
         )}
         
-        <div className="p-4">
-        {/* Title */}
-        <h3 className={`font-medium mb-1 line-clamp-2 group-hover:${
-          theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
-        } transition-colors ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
-        }`}>
-          {name}
-        </h3>
-        
-        {/* Specs button */}
-        {Object.keys(specs).length > 0 && (
-          <button
-            onClick={toggleSpecs}
-            className={`text-sm mb-2 flex items-center ${
-              theme === 'dark' ? 'text-brand-red-400 hover:text-brand-red-300' : 'text-brand-blue-600 hover:text-brand-blue-500'
-            }`}
-          >
-            {showSpecs ? (
-              <>Hide Specs <ChevronUp size={14} className="ml-1" /></>
-            ) : (
-              <>Specs <ChevronDown size={14} className="ml-1" /></>
-            )}
-          </button>
-        )}
-        
-        {/* Expandable specs section */}
-        {showSpecs && Object.keys(specs).length > 0 && (
-          <div className={`p-3 rounded-lg mb-3 text-xs space-y-1 ${
-            theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
+        {/* Product info section */}
+        <div className="flex flex-col h-full">
+          {/* Title */}
+          <h3 className={`font-semibold mb-2 text-lg line-clamp-2 group-hover:${
+            theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
+          } transition-colors ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
-            {/* Group important specs first */}
-            {['brand', 'manufacturer', 'model'].some(key => specs[key]) && (
-              <div className={`flex items-start ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                <span className="font-medium mr-1 capitalize">Brand:</span> 
-                <span className="truncate">{specs['brand'] || specs['manufacturer'] || specs['model']}</span>
-              </div>
-            )}
-            
-            {/* Show important specs based on product type */}
-            {type === 'component' && category?.toLowerCase().includes('cpu') && specs['cores'] && (
-              <div className={`flex items-start ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                <span className="font-medium mr-1 capitalize">Cores:</span> 
-                <span className="truncate">{specs['cores']}</span>
-              </div>
-            )}
-            
-            {type === 'peripheral' && category?.toLowerCase().includes('mice') && specs['sensor'] && (
-              <div className={`flex items-start ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                <span className="font-medium mr-1 capitalize">Sensor:</span> 
-                <span className="truncate">{specs['sensor']}</span>
-              </div>
-            )}
-            
-            {/* Show a few more important specs */}
-            {Object.entries(specs)
-              .filter(([key]) => !['brand', 'manufacturer', 'model'].includes(key))
-              .slice(0, 3)
-              .map(([key, value]) => (
-                <div key={key} className={`flex items-start ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  <span className="font-medium mr-1 capitalize">{key}:</span> 
-                  <span className="truncate">{value}</span>
-                </div>
-              ))}
-          </div>
-        )}
-        
-        {/* Price section */}
-        <div className="flex items-center justify-between mt-2">
-          <div>
+            {name}
+          </h3>
+          
+          {/* Price section */}
+          <div className="flex items-center mb-4 mt-auto">
             {discountPrice ? (
               <div className="flex items-center">
-                <span className={`font-bold ${
+                <span className={`font-bold text-xl ${
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 }`}>
                   €{discountPrice.toFixed(2)}
@@ -353,15 +285,64 @@ export default function ProductCard({
                 </span>
               </div>
             ) : (
-              <span className={`font-bold ${
+              <span className={`font-bold text-xl ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>
                 €{(price || 0).toFixed(2)}
               </span>
             )}
           </div>
+            {/* Specs button */}
+          {Object.keys(specs).length > 0 && (
+            <div className="mt-auto">
+              <button
+                onClick={toggleSpecs}
+                className={`w-full flex items-center justify-center py-2 px-4 rounded-lg transition-all ${
+                  theme === 'dark' 
+                    ? `${showSpecs ? 'bg-red-600 hover:bg-red-700' : 'bg-stone-950 hover:bg-gray-700'} text-white border ${showSpecs ? 'border-red-500' : 'border-gray-700'}` 
+                    : `${showSpecs ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-100 hover:bg-gray-200 text-stone-950'} border ${showSpecs ? 'border-blue-500' : 'border-gray-200'}`
+                }`}
+              >
+                <Info size={16} className="mr-2" />
+                {showSpecs ? 'Hide Specs' : 'View Specs'}
+                {showSpecs ? (
+                  <ChevronUp size={16} className="ml-2" />
+                ) : (
+                  <ChevronDown size={16} className="ml-2" />
+                )}
+              </button>
+            </div>
+          )}
         </div>
-      </div>
+          {/* Expandable specs section */}        {showSpecs && Object.keys(specs).length > 0 && (
+          <div className={`mt-3 p-4 rounded-lg mb-1 text-xs space-y-2 overflow-y-auto max-h-[200px] scrollbar-thin ${
+            theme === 'dark' ? 'bg-gray-900 border border-stone-950' : 'bg-gray-50 border border-gray-200'
+          }`}>
+            <div className="grid grid-cols-1 gap-y-2">
+              {/* Group important specs first */}
+              {['brand', 'manufacturer', 'model'].some(key => specs[key]) && (
+                <div className={`flex items-start ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  <span className="font-medium mr-1 min-w-20 capitalize">Brand:</span> 
+                  <span className="font-bold">{specs['brand'] || specs['manufacturer'] || specs['model']}</span>
+                </div>
+              )}
+              
+              {/* Show important specs based on product type */}
+              {Object.entries(specs)
+                .filter(([key]) => !['brand', 'manufacturer', 'model'].includes(key.toLowerCase()))
+                .map(([key, value]) => (
+                  <div key={key} className={`flex items-start ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    <span className="font-medium mr-1 min-w-20 capitalize">{key}:</span> 
+                    <span className="font-bold">{value}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </Link>
   )

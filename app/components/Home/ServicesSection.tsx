@@ -64,7 +64,7 @@ export default function ServicesSection() {
               key={service.id}
               className={`rounded-2xl p-6 transition-all duration-300 group relative overflow-hidden ${
                 theme === 'dark' 
-                  ? 'bg-dark-card border border-gray-800 hover:border-brand-red-800'
+                  ? 'bg-dark-card border border-stone-950 hover:border-brand-red-800'
                   : 'bg-white border border-gray-100 hover:border-brand-blue-200'
               } shadow-soft hover:shadow-medium`}
             >
@@ -105,7 +105,7 @@ export default function ServicesSection() {
         
         {/* CTA Section */}
         <div className={`mt-24 rounded-2xl overflow-hidden ${
-          theme === 'dark' ? 'bg-dark-card border border-gray-800' : 'bg-white border border-gray-100'
+          theme === 'dark' ? 'bg-dark-card border border-stone-950' : 'bg-white border border-gray-100'
         } shadow-medium`}>
           <div className="relative flex flex-col md:flex-row">
             {/* Left side - image */}

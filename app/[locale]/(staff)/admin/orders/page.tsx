@@ -101,7 +101,7 @@ export default function AdminOrdersPage() {
       case 'CANCELLED':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        return 'bg-gray-100 text-stone-950 dark:bg-gray-700 dark:text-gray-200'
     }
   }
 
@@ -166,7 +166,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-stone-950 shadow-md rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
@@ -193,7 +193,7 @@ export default function AdminOrdersPage() {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
             {loading ? (
               <tr>
                 <td colSpan={7} className="px-6 py-4 text-center">
@@ -279,7 +279,7 @@ export default function AdminOrdersPage() {
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 disabled:opacity-50"
+            className="px-3 py-1 rounded-md bg-white dark:bg-stone-950 border border-gray-300 dark:border-gray-600 disabled:opacity-50"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -289,7 +289,7 @@ export default function AdminOrdersPage() {
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 disabled:opacity-50"
+            className="px-3 py-1 rounded-md bg-white dark:bg-stone-950 border border-gray-300 dark:border-gray-600 disabled:opacity-50"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

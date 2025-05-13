@@ -120,7 +120,7 @@ export function StaffSidebar() {
     <aside 
       className={`${
         isCollapsed ? 'w-20' : 'w-64'
-      } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 flex flex-col`}
+      } bg-white dark:bg-stone-950 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 flex flex-col`}
     >
       {/* Logo Section */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700">
