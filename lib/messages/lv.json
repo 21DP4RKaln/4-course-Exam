@@ -28,7 +28,8 @@
     "description": "Apraksts",
     "noDescription": "Nav pieejams apraksts",
     "createdDate": "Izveidošanas datums",
-    "welcome": "Laipni lūgti"
+    "welcome": "Laipni lūgti",
+    "backToHome": "Atpakaļ uz Sākumu"
   },
   "nav": {
     "home": "Sākums",
@@ -72,17 +73,23 @@
     "startBuilding": "Sākt Veidošanu"
   },
   "buttons": {
-    "viewAll": "Skatīt visus",
-    "addToCart": "Pievienot grozam",
-    "addToWishlist": "Pievienot vēlmju sarakstam",
-    "view": "Skatīt visus",
+    "viewAll": "Skatīt Visus",
+    "addToCart": "Pievienot Grozam",
+    "addToWishlist": "Pievienot Vēlmju Sarakstam",
+    "filter": "Filtrēt",
+    "view": "Skatīt Visus",
     "selected": "Izvēlēts",
     "select": "Izvēlēties",
     "compare": "Salīdzināt",
-    "filter": "Filtrēt",
-    "backToHome": "Atpakaļ uz Sākumlapu",
-    "login": "Ienākt",
-    "back": "Atpakaļ"
+    "reset": "Atiestatīt",
+    "backToCart": "Atpakaļ uz Grozu",
+    "viewSpecs": "Skatīt Specifikācijas",
+    "hideSpecs": "Slēpt Specifikācijas",
+    "readMore": "Lasīt Vairāk",
+    "login": "Ielogoties",
+    "register": "Reģistrēties",
+    "back": "Atpakaļ",
+    "buildYourOwn": "Izveido Savu"
   },
   "footer": {
     "contact": "Sazinies ar Mums",
@@ -118,14 +125,12 @@
       "title": "Piekļuve Liegta",
       "message": "Jums nav atļaujas piekļūt šai lapai."
     }
-  },  "product": {
+  },
+  "product": {
     "imageAlt": "Produkta attēls",
     "viewDetails": "Skatīt Detaļas",
     "saveAmount":"Ietaupi €{amount}",
     "onlyFewLeft":"{count: product.stock}, Tikai ${product.stock} atlikušas",
-    "onlyLeft":"Tikai {count} atlikušas noliktavā",
-    "inStock":"Pieejams",
-    "outOfStock":"Nav pieejams",
     "quantity":"Daudzums",
     "decreaseQuantity":"Samazināt daudzumu",
     "increaseQuantity":"Palielināt daudzumu",
@@ -153,7 +158,9 @@
       "specifications": "Specifikācijas",
       "reviews": "Atsauksmes"
     },
-    "noSpecifications":"Nav pieejamas specifikācijas"
+    "outOfStock": "Nav noliktavā",
+    "inStock": "Ir noliktavā",
+    "onlyLeft": "Atlicis tikai {count}"
   },
   "dashboard": {
     "profileInfo": "Profila Informācija",
@@ -216,116 +223,116 @@
     "noConfigurations": "Jums vēl nav nevienas konfigurācijas",
     "noOrders": "Jums vēl nav neviena pasūtījuma"
   },
-    "about": {
-      "subtitle": "Mēs esam Latvijas vadošais individuālo datoru ražotājs, kas specializējas augstas veiktspējas datoru izgatavošanā ar kvalitatīvām komponentēm.",
-      "ourStory": "Mūsu Stāsts",
-      "storyParagraph1": "IvaPro sāka 2018. gadā, kad tehnoloģiju entuziastu grupa nolēma apvienot savu aizraušanos ar datoriem ar profesionālu pieredzi.",
-      "storyParagraph2": "Tas, kas sākās kā maza darbnīca Rīgā, ir izaudzis par vienu no uzticamākajiem individuālo datoru uzņēmumiem Latvijā, apkalpojot spēlētājus, satura veidotājus un profesionāļus.",
-      "storyParagraph3": "Mūsu apņemšanās nodrošināt kvalitāti un klientu apmierinātību joprojām ir visa mūsu darba pamatā.",
-      "coreValues": "Mūsu Pamatvērtības",
-      "qualityTitle": "Kvalitāte",
-      "qualityText": "Mēs izmantojam tikai premium komponentes no uzticamiem ražotājiem, lai nodrošinātu uzticamību un veiktspēju.",
-      "expertiseTitle": "Ekspertīze",
-      "expertiseText": "Mūsu komanda sastāv no sertificētiem tehniķiem ar ilggadēju pieredzi datoru montāžā un problēmu novēršanā.",
-      "satisfactionTitle": "Klientu Apmierinātība",
-      "satisfactionText": "Mēs darām visu iespējamo, lai nodrošinātu, ka mūsu klienti ir apmierināti ar savām individuāli būvētajām sistēmām.",
-      "byTheNumbers": "IvaPro Skaitļos",
-      "statComputers": "Uzbūvētie Datori",
-      "statCustomers": "Apmierināti Klienti",
-      "statOrders": "Izpildītie Pasūtījumi",
-      "statExperience": "Gadu Pieredze",
-      "customerReviews": "Ko Saka Mūsu Klienti",
-      "NoReviews": "Šobrīd nav pieejamas atsauksmes",
-      "viewAllReviews": "Skatīt visas atsauksmes Google",
-      "journey": "Mūsu Ceļojums",
-      "visitStore": "Apmeklē Mūsu Veikalu",
-      "storeAddress": "Mūsu Atrašanās Vieta",
-      "openingHours": "Darba Laiks",
-      "phone": "Tālrunis",
-      "email": "E-pasts",
-      "ctaTitle": "Gatavs uzlabot savu datora pieredzi?",
-      "ctaText": "Neatkarīgi no tā, vai jums ir nepieciešams individuāls spēļu dators, darbstacija satura veidošanai vai tikai jūsu pašreizējās sistēmas uzlabojums, mēs esam šeit, lai palīdzētu.",
-      "startBuilding": "Sākt Veidošanu",
-      "browseReadyMade": "Skatīt Gatavos Datorus",
-      "team": [
-        {
-          "name": "Alekss Petrovs",
-          "position": "Dibinātājs un Vadošais Tehniķis",
-          "bio": "Datoru entuziasts ar vairāk nekā 10 gadu pieredzi individuālo datoru būvēšanā."
-        },
-        {
-          "name": "Laura Bērziņa",
-          "position": "Klientu Attiecību Vadītāja",
-          "bio": "Veltīta tam, lai katram klientam būtu izcila pieredze ar IvaPro."
-        },
-        {
-          "name": "Mārtiņš Ozols",
-          "position": "Tehniskā Atbalsta Speciālists",
-          "bio": "Eksperts problēmu novēršanā un optimālas datora veiktspējas uzturēšanā."
-        }
-      ],
-      "milestones": [
-        {
-          "year": "2025",
-          "title": "IvaPro Dibināšana",
-          "description": "Sākās kā maza darbnīca ar fokusu uz individuāliem spēļu datoriem."
-        },
-        {
-          "year": "2027",
-          "title": "1000. Datora Izveide",
-          "description": "Sasniedzām nozīmīgu atskaites punktu ar mūsu 1000. individuālā datora izveidi."
-        },
-        {
-          "year": "2030",
-          "title": "Jaunās Mājaslapas Palaišana",
-          "description": "Ieviešām jaunu tiešsaistes datoru konfiguratoru vienkāršākai individuālo datoru izveidei."
-        }
-      ]
-    },
-    "categoryPage": {
-      "backTo": "Atpakaļ uz {type}",
-      "filters": "Filtri",
-      "searchPlaceholder": "Meklēt produktus...",
-      "sortBy": "Kārtot pēc",
-      "item": "prece",
-      "items": "preces",
-      "noProductsFound": "Produkti nav atrasti",
-      "noCriteriaMatch": "Mēģiniet pielāgot filtrus vai meklēšanas nosacījumus",
-      "resetFilters": "Atiestatīt Filtrus",
-      "fetchError": "Kļūda ielādējot {type}",
-      "tryAgain": "Mēģināt Vēlreiz",
-      "sortOptions": {
-        "priceAsc": "Cena: No zemākās",
-        "priceDesc": "Cena: No augstākās",
-        "nameAsc": "Nosaukums: A līdz Z",
-        "nameDesc": "Nosaukums: Z līdz A",
-        "stockDesc": "Pieejamība"
+  "about": {
+    "subtitle": "Mēs esam Latvijas vadošais individuālo datoru ražotājs, kas specializējas augstas veiktspējas datoru izgatavošanā ar kvalitatīvām komponentēm.",
+    "ourStory": "Mūsu Stāsts",
+    "storyParagraph1": "IvaPro sāka 2018. gadā, kad tehnoloģiju entuziastu grupa nolēma apvienot savu aizraušanos ar datoriem ar profesionālu pieredzi.",
+    "storyParagraph2": "Tas, kas sākās kā maza darbnīca Rīgā, ir izaudzis par vienu no uzticamākajiem individuālo datoru uzņēmumiem Latvijā, apkalpojot spēlētājus, satura veidotājus un profesionāļus.",
+    "storyParagraph3": "Mūsu apņemšanās nodrošināt kvalitāti un klientu apmierinātību joprojām ir visa mūsu darba pamatā.",
+    "coreValues": "Mūsu Pamatvērtības",
+    "qualityTitle": "Kvalitāte",
+    "qualityText": "Mēs izmantojam tikai premium komponentes no uzticamiem ražotājiem, lai nodrošinātu uzticamību un veiktspēju.",
+    "expertiseTitle": "Ekspertīze",
+    "expertiseText": "Mūsu komanda sastāv no sertificētiem tehniķiem ar ilggadēju pieredzi datoru montāžā un problēmu novēršanā.",
+    "satisfactionTitle": "Klientu Apmierinātība",
+    "satisfactionText": "Mēs darām visu iespējamo, lai nodrošinātu, ka mūsu klienti ir apmierināti ar savām individuāli būvētajām sistēmām.",
+    "byTheNumbers": "IvaPro Skaitļos",
+    "statComputers": "Uzbūvētie Datori",
+    "statCustomers": "Apmierināti Klienti",
+    "statOrders": "Izpildītie Pasūtījumi",
+    "statExperience": "Gadu Pieredze",
+    "customerReviews": "Ko Saka Mūsu Klienti",
+    "NoReviews": "Šobrīd nav pieejamas atsauksmes",
+    "viewAllReviews": "Skatīt visas atsauksmes Google",
+    "journey": "Mūsu Ceļojums",
+    "visitStore": "Apmeklē Mūsu Veikalu",
+    "storeAddress": "Mūsu Atrašanās Vieta",
+    "openingHours": "Darba Laiks",
+    "phone": "Tālrunis",
+    "email": "E-pasts",
+    "ctaTitle": "Gatavs uzlabot savu datora pieredzi?",
+    "ctaText": "Neatkarīgi no tā, vai jums ir nepieciešams individuāls spēļu dators, darbstacija satura veidošanai vai tikai jūsu pašreizējās sistēmas uzlabojums, mēs esam šeit, lai palīdzētu.",
+    "startBuilding": "Sākt Veidošanu",
+    "browseReadyMade": "Skatīt Gatavos Datorus",
+    "team": [
+      {
+        "name": "Alekss Petrovs",
+        "position": "Dibinātājs un Vadošais Tehniķis",
+        "bio": "Datoru entuziasts ar vairāk nekā 10 gadu pieredzi individuālo datoru būvēšanā."
       },
-      "filterGroups": {
-        "manufacturer": "Ražotājs",
-        "general": "Vispārīgi",
-        "model": "Modelis",
-        "socket": "Ligzda",
-        "cores": "Kodoli",
-        "threads": "Pavedienti",
-        "frequency": "Frekvence",
-        "architecture": "Arhitektūra",
-        "memory": "Atmiņa",
-        "memoryType": "Atmiņas Tips",
-        "interface": "Interfeiss",
-        "sensor": "Sensors",
-        "dpi": "DPI",
-        "rgb": "RGB",
-        "connection": "Savienojums",
-        "wireless": "Bezvadu",
-        "switches": "Slēdži",
-        "polling": "Aptaujas Ātrums",
-        "capacity": "Ietilpība",
-        "speed": "Ātrums",
-        "cas": "CAS Latentums"
+      {
+        "name": "Laura Bērziņa",
+        "position": "Klientu Attiecību Vadītāja",
+        "bio": "Veltīta tam, lai katram klientam būtu izcila pieredze ar IvaPro."
+      },
+      {
+        "name": "Mārtiņš Ozols",
+        "position": "Tehniskā Atbalsta Speciālists",
+        "bio": "Eksperts problēmu novēršanā un optimālas datora veiktspējas uzturēšanā."
       }
+    ],
+    "milestones": [
+      {
+        "year": "2025",
+        "title": "IvaPro Dibināšana",
+        "description": "Sākās kā maza darbnīca ar fokusu uz individuāliem spēļu datoriem."
+      },
+      {
+        "year": "2027",
+        "title": "1000. Datora Izveide",
+        "description": "Sasniedzām nozīmīgu atskaites punktu ar mūsu 1000. individuālā datora izveidi."
+      },
+      {
+        "year": "2030",
+        "title": "Jaunās Mājaslapas Palaišana",
+        "description": "Ieviešām jaunu tiešsaistes datoru konfiguratoru vienkāršākai individuālo datoru izveidei."
+      }
+    ]
+  },
+  "categoryPage": {
+    "backTo": "Atpakaļ uz {type}",
+    "filters": "Filtri",
+    "searchPlaceholder": "Meklēt produktus...",    "sortBy": "Kārtot pēc",
+    "item": "prece",
+    "items": "preces", 
+    "noProducts": "Produkti nav atrasti",
+    "tryDifferentFilters": "Mēģiniet mainīt filtrus vai meklēšanas kritērijus",
+    "noCriteriaMatch": "Mēģiniet pielāgot filtrus vai meklēšanas nosacījumus",
+    "resetFilters": "Atiestatīt Filtrus",
+    "fetchError": "Kļūda ielādējot {type}",
+    "tryAgain": "Mēģināt Vēlreiz",
+    "sortOptions": {
+      "priceAsc": "Cena: No zemākās",
+      "priceDesc": "Cena: No augstākās",
+      "nameAsc": "Nosaukums: A līdz Z",
+      "nameDesc": "Nosaukums: Z līdz A",
+      "stockDesc": "Pieejamība"
     },
-    "configurator": {
+    "filterGroups": {
+      "manufacturer": "Ražotājs",
+      "general": "Vispārīgi",
+      "model": "Modelis",
+      "socket": "Ligzda",
+      "cores": "Kodoli",
+      "threads": "Pavedienti",
+      "frequency": "Frekvence",
+      "architecture": "Arhitektūra",
+      "memory": "Atmiņa",
+      "memoryType": "Atmiņas Tips",
+      "interface": "Interfeiss",
+      "sensor": "Sensors",
+      "dpi": "DPI",
+      "rgb": "RGB",
+      "connection": "Savienojums",
+      "wireless": "Bezvadu",
+      "switches": "Slēdži",
+      "polling": "Aptaujas Ātrums",
+      "capacity": "Ietilpība",
+      "speed": "Ātrums",
+      "cas": "CAS Latentums"
+    }
+  },
+  "configurator": {
     "title": "Datora Konfigurācija",
     "selectComponent": "Izvēlieties komponenti",
     "componentGrid": {
@@ -444,135 +451,162 @@
     "case": "Korpuss",
     "cooling": "Dzesēšana",
     "psu": "Barošanas bloks",
-    "peripherals": "Perifērija"
+    "peripherals": "Perifērija",
+    "title": "Datora Komponentes",
+    "description": "Pārlūkojiet mūsu augstas kvalitātes datora komponentu klāstu savam individuālajam datora komplektam. Izvēlieties kategoriju, lai skatītu pieejamos produktus.",
+    "needCompletePc": "Vajadzīgs Gatavs Dators?",
+    "preConfiguredDesc": "Ja nevēlaties izvēlēties atsevišķas komponentes, apskatiet mūsu iepriekš konfigurētos datorus vai izmantojiet mūsu Datora Konstruktoru.",
+    "buildYourOwnPc": "Izveidot Savu Datoru",
+    "readyMadePcs": "Gatavie Datori",
+    "productsAvailable": "{count} pieejamie produkti"
+  },
+  "peripherals": {
+    "title": "Datora Perifērijas Ierīces",
+    "description": "Uzlabojiet savu datora lietošanas pieredzi ar mūsu augstākās kvalitātes perifērijas ierīcēm. Izvēlieties kategoriju, lai redzētu pieejamos produktus.",
+    "buildingNewPc": "Veidojat Jaunu Datoru?",
+    "buildingDesc": "Vēlaties uzbūvēt jaunu datoru vai uzlabot esošo? Apskatiet mūsu komponenšu sadaļu vai izmantojiet mūsu datora konfiguratoru.",
+    "browseComponents": "Skatīt Komponentes",
+    "configurePc": "Konfigurēt Datoru",
+    "productsAvailable": "{count} pieejamie produkti"
   },
   "privacyPolicy": {
-  "title": "Privātuma Politika",
-  "lastUpdated": "Pēdējie Atjauninājumi",
-  "introduction": {
-    "title": "Ievads",
-    "content": "Šī Privātuma politika paskaidro, kā IvaPro ievāc, izmanto un aizsargā jūsu personisko informāciju, kad izmantojat mūsu pakalpojumus."
-  },
-  "dataCollection": {
-    "title": "Informācija, Ko Mēs Ievācam",
-    "content": "Mēs varam ievākt šādus informācijas veidus:",
-    "identityData": "Identitātes Dati",
-    "identityDataDesc": "Vārds, uzvārds, lietotājvārds un cita identificējoša informācija.",
-    "contactData": "Kontaktinformācija",
-    "contactDataDesc": "E-pasta adrese, tālruņa numurs, norēķinu un piegādes adrese.",
-    "technicalData": "Tehniskie Dati",
-    "technicalDataDesc": "IP adrese, pārlūkprogrammas veids, ierīces informācija, lietošanas dati."
-  },
-  "dataUsage": {
-    "title": "Kā Mēs Izmantojam Jūsu Informāciju",
-    "content": "Mēs izmantojam jūsu informāciju, lai nodrošinātu savus pakalpojumus, apstrādātu maksājumus, sazinātos ar jums un uzlabotu jūsu pieredzi."
-  },
-  "dataSecurity": {
-    "title": "Datu Drošība",
-    "content": "Mēs ieviešam atbilstošus drošības pasākumus, lai aizsargātu jūsu personisko informāciju no neatļautas piekļuves vai izpaušanas."
-  },
-  "dataRetention": {
-    "title": "Datu Saglabāšana",
-    "content": "Mēs saglabājam jūsu informāciju tikai tik ilgi, cik nepieciešams, lai izpildītu mērķus, kuriem tā tika ievākta."
-  },
-  "legalRights": {
-    "title": "Jūsu Likumīgās Tiesības",
-    "content": "Jums ir tiesības piekļūt, labot, dzēst, ierobežot apstrādi un pārnest savus personas datus."
-  },
-  "contact": {
-    "title": "Sazinieties ar Mums",
-    "email": "E-pasts",
-    "phone": "Tālrunis",
-    "address": "Adrese"
-  },
-  "changes": {
-    "title": "Izmaiņas Šajā Politikā",
-    "content": "Mēs varam atjaunināt šo Privātuma politiku laiku pa laikam. Jebkuras izmaiņas tiks publicētas šajā lapā."
-  }
-},
-"termsOfService": {
-  "title": "Pakalpojuma Noteikumi",
-  "lastUpdated": "Pēdējie Atjauninājumi",
-  "introduction": {
-    "title": "Ievads",
-    "content": "Šie Pakalpojuma noteikumi regulē jūsu IvaPro tīmekļa vietnes un pakalpojumu izmantošanu. Piekļūstot mūsu vietnei vai izmantojot mūsu pakalpojumus, jūs piekrītat šiem noteikumiem."
-  },
-  "registration": {
-    "title": "Konta Reģistrācija"
-  },
-  "pricingPayment": {
-    "priceChanges": "Mūsu produktu cenas var mainīties bez iepriekšēja brīdinājuma. Mēs paturam tiesības mainīt vai pārtraukt jebkuru produktu vai pakalpojumu bez brīdinājuma.",
-    "paymentRequired": "Maksājums ir nepieciešams pirkuma brīdī. Mēs pieņemam kredītkartes, bankas pārskaitījumus un citus maksājumu veidus, kas norādīti norēķinu laikā.",
-    "processing": "Jūsu maksājuma informācija tiek droši apstrādāta caur mūsu maksājumu apstrādātājiem. Mēs neglabājam pilnīgu kredītkartes informāciju savos serveros."
-  },
-  "shipping": {
-    "title": "Piegāde un Piegādes Laiki",
-    "estimates": "Piegādes laiki ir aptuveni un nevar tikt garantēti. Piegādes laiki var atšķirties atkarībā no jūsu atrašanās vietas un citiem faktoriem.",
-    "responsibility": "Mēs neesam atbildīgi par kavēšanos piegādē muitas apstrādes vai citu faktoru dēļ, kas ir ārpus mūsu kontroles.",
-    "accuracy": "Mēs cenšamies precīzi attēlot mūsu produktu krāsas un īpašības, bet nevaram garantēt, ka jūsu datora monitora attēlojums ir precīzs."
-  },
-  "warranty": {
-    "title": "Garantija un Atgriešana",
-    "manufacturer": "Komponentiem ir oriģinālā ražotāja garantija. Informācija par katru komponenti tiks sniegta iegādes brīdī.",
-    "customPc": "Individuāli būvētiem datoriem ir 2 gadu darba garantija no piegādes datuma.",
-    "returns": "Produktus var atgriezt 14 dienu laikā no saņemšanas, ja tie ir oriģinālajā stāvoklī un iepakojumā.",
-    "condition": "Atgrieztajiem priekšmetiem jābūt oriģinālajā stāvoklī un iepakojumā, ar visiem piederumiem un dokumentāciju."
-  },
-  "intellectual": {
-    "title": "Intelektuālais Īpašums",
-    "content": "Viss šīs vietnes saturs, ieskaitot tekstu, grafiku, logotipus, attēlus un programmatūru, ir IvaPro īpašums un to aizsargā autortiesības un citi intelektuālā īpašuma likumi."
-  },
-  "liability": {
-    "title": "Atbildības Ierobežojums",
-    "limitation": "IvaPro nav atbildīgs par jebkādiem tiešiem, netiešiem, nejaušiem, īpašiem vai izrietošiem zaudējumiem, kas radušies, izmantojot vai nespējot izmantot mūsu produktus vai pakalpojumus.",
-    "indirect": "Mēs neesam atbildīgi par jebkādiem bojājumiem jūsu datorsistēmai vai datu zudumiem, kas radušies, lejupielādējot vai izmantojot materiālus no mūsu vietnes."
-  },
-  "governing": {
-    "title": "Piemērojamie Likumi",
-    "content": "Šie noteikumi tiks pārvaldīti un interpretēti saskaņā ar Latvijas likumiem, neņemot vērā tās tiesību normu kolīziju noteikumus."
-  },
-  "changes": {
-    "title": "Izmaiņas Noteikumos",
-    "content": "Mēs paturam tiesības mainīt šos noteikumus jebkurā laikā. Izmaiņas stāsies spēkā nekavējoties pēc to publicēšanas šajā vietnē."
-  },
-  "contact": {
-    "title": "Kontaktinformācija",
-    "content": "Ja jums ir kādi jautājumi par šiem Noteikumiem, lūdzu, sazinieties ar mums",
-    "email": "E-pasts",
-    "phone": "Tālrunis",
-    "address": "Adrese"
-  }
-},
-"shop": {
-  "filters": {
-    "category": "Kategorija",
-    "processor": "Procesors",
-    "graphicsCard": "Videokartes",
-    "memory": "Atmiņa",
-    "storage": "Atmiņas ierīces",
-    "motherboard": "Mātes plate",
-    "powerSupply": "Barošanas bloks",
-    "case": "Korpuss",
-    "cooling": "Dzesēšana",
-    "price": "Cena",
-    "searchPlaceholder": "Meklēt produktus...",
-    "showFilters": "Parādīt filtrus",
-    "hideFilters": "Paslēpt filtrus",
-    "resetAll": "Atiestatīt visu",
-    "applyFilters": "Pielietot filtrus",
-    "sortOptions": {
-      "priceAsc": "Cena: no zemākās",
-      "priceDesc": "Cena: no augstākās",
-      "nameAsc": "Nosaukums: A-Z",
-      "nameDesc": "Nosaukums: Z-A",
-      "ratingDesc": "Vērtējums: no augstākā"
+    "title": "Privātuma Politika",
+    "lastUpdated": "Pēdējie Atjauninājumi",
+    "introduction": {
+      "title": "Ievads",
+      "content": "Šī Privātuma politika paskaidro, kā IvaPro ievāc, izmanto un aizsargā jūsu personisko informāciju, kad izmantojat mūsu pakalpojumus."
     },
-    "allCategories": "Visas kategorijas",
+    "dataCollection": {
+      "title": "Informācija, Ko Mēs Ievācam",
+      "content": "Mēs varam ievākt šādus informācijas veidus:",
+      "identityData": "Identitātes Dati",
+      "identityDataDesc": "Vārds, uzvārds, lietotājvārds un cita identificējoša informācija.",
+      "contactData": "Kontaktinformācija",
+      "contactDataDesc": "E-pasta adrese, tālruņa numurs, norēķinu un piegādes adrese.",
+      "technicalData": "Tehniskie Dati",
+      "technicalDataDesc": "IP adrese, pārlūkprogrammas veids, ierīces informācija, lietošanas dati."
+    },
+    "dataUsage": {
+      "title": "Kā Mēs Izmantojam Jūsu Informāciju",
+      "content": "Mēs izmantojam jūsu informāciju, lai nodrošinātu savus pakalpojumus, apstrādātu maksājumus, sazinātos ar jums un uzlabotu jūsu pieredzi."
+    },
+    "dataSecurity": {
+      "title": "Datu Drošība",
+      "content": "Mēs ieviešam atbilstošus drošības pasākumus, lai aizsargātu jūsu personisko informāciju no neatļautas piekļuves vai izpaušanas."
+    },
+    "dataRetention": {
+      "title": "Datu Saglabāšana",
+      "content": "Mēs saglabājam jūsu informāciju tikai tik ilgi, cik nepieciešams, lai izpildītu mērķus, kuriem tā tika ievākta."
+    },
+    "legalRights": {
+      "title": "Jūsu Likumīgās Tiesības",
+      "content": "Jums ir tiesības piekļūt, labot, dzēst, ierobežot apstrādi un pārnest savus personas datus."
+    },
+    "contact": {
+      "title": "Sazinieties ar Mums",
+      "email": "E-pasts",
+      "phone": "Tālrunis",
+      "address": "Adrese"
+    },
+    "changes": {
+      "title": "Izmaiņas Šajā Politikā",
+      "content": "Mēs varam atjaunināt šo Privātuma politiku laiku pa laikam. Jebkuras izmaiņas tiks publicētas šajā lapā."
+    }
+  },
+  "termsOfService": {
+    "title": "Pakalpojuma Noteikumi",
+    "lastUpdated": "Pēdējie Atjauninājumi",
+    "introduction": {
+      "title": "Ievads",
+      "content": "Šie Pakalpojuma noteikumi regulē jūsu IvaPro tīmekļa vietnes un pakalpojumu izmantošanu. Piekļūstot mūsu vietnei vai izmantojot mūsu pakalpojumus, jūs piekrītat šiem noteikumiem."
+    },
+    "registration": {
+      "title": "Konta Reģistrācija"
+    },
+    "pricingPayment": {
+      "priceChanges": "Mūsu produktu cenas var mainīties bez iepriekšēja brīdinājuma. Mēs paturam tiesības mainīt vai pārtraukt jebkuru produktu vai pakalpojumu bez brīdinājuma.",
+      "paymentRequired": "Maksājums ir nepieciešams pirkuma brīdī. Mēs pieņemam kredītkartes, bankas pārskaitījumus un citus maksājumu veidus, kas norādīti norēķinu laikā.",
+      "processing": "Jūsu maksājuma informācija tiek droši apstrādāta caur mūsu maksājumu apstrādātājiem. Mēs neglabājam pilnīgu kredītkartes informāciju savos serveros."
+    },
+    "shipping": {
+      "title": "Piegāde un Piegādes Laiki",
+      "estimates": "Piegādes laiki ir aptuveni un nevar tikt garantēti. Piegādes laiki var atšķirties atkarībā no jūsu atrašanās vietas un citiem faktoriem.",
+      "responsibility": "Mēs neesam atbildīgi par kavēšanos piegādē muitas apstrādes vai citu faktoru dēļ, kas ir ārpus mūsu kontroles.",
+      "accuracy": "Mēs cenšamies precīzi attēlot mūsu produktu krāsas un īpašības, bet nevaram garantēt, ka jūsu datora monitora attēlojums ir precīzs."
+    },
+    "warranty": {
+      "title": "Garantija un Atgriešana",
+      "manufacturer": "Komponentiem ir oriģinālā ražotāja garantija. Informācija par katru komponenti tiks sniegta iegādes brīdī.",
+      "customPc": "Individuāli būvētiem datoriem ir 2 gadu darba garantija no piegādes datuma.",
+      "returns": "Produktus var atgriezt 14 dienu laikā no saņemšanas, ja tie ir oriģinālajā stāvoklī un iepakojumā.",
+      "condition": "Atgrieztajiem priekšmetiem jābūt oriģinālajā stāvoklī un iepakojumā, ar visiem piederumiem un dokumentāciju."
+    },
+    "intellectual": {
+      "title": "Intelektuālais Īpašums",
+      "content": "Viss šīs vietnes saturs, ieskaitot tekstu, grafiku, logotipus, attēlus un programmatūru, ir IvaPro īpašums un to aizsargā autortiesības un citi intelektuālā īpašuma likumi."
+    },
+    "liability": {
+      "title": "Atbildības Ierobežojums",
+      "limitation": "IvaPro nav atbildīgs par jebkādiem tiešiem, netiešiem, nejaušiem, īpašiem vai izrietošiem zaudējumiem, kas radušies, izmantojot vai nespējot izmantot mūsu produktus vai pakalpojumus.",
+      "indirect": "Mēs neesam atbildīgi par jebkādiem bojājumiem jūsu datorsistēmai vai datu zudumiem, kas radušies, lejupielādējot vai izmantojot materiālus no mūsu vietnes."
+    },
+    "governing": {
+      "title": "Piemērojamie Likumi",
+      "content": "Šie noteikumi tiks pārvaldīti un interpretēti saskaņā ar Latvijas likumiem, neņemot vērā tās tiesību normu kolīziju noteikumus."
+    },
+    "changes": {
+      "title": "Izmaiņas Noteikumos",
+      "content": "Mēs paturam tiesības mainīt šos noteikumus jebkurā laikā. Izmaiņas stāsies spēkā nekavējoties pēc to publicēšanas šajā vietnē."
+    },
+    "contact": {
+      "title": "Kontaktinformācija",
+      "content": "Ja jums ir kādi jautājumi par šiem Noteikumiem, lūdzu, sazinieties ar mums",
+      "email": "E-pasts",
+      "phone": "Tālrunis",
+      "address": "Adrese"
+    }
+  },
+  "shop": {
+    "filters": {
+      "category": "Kategorija",
+      "processor": "Procesors",
+      "graphicsCard": "Videokartes",
+      "memory": "Atmiņa",
+      "storage": "Atmiņas ierīces",
+      "motherboard": "Mātes plate",
+      "powerSupply": "Barošanas bloks",
+      "case": "Korpuss",
+      "cooling": "Dzesēšana",
+      "price": "Cena",
+      "searchPlaceholder": "Meklēt produktus...",
+      "showFilters": "Parādīt filtrus",
+      "hideFilters": "Paslēpt filtrus",
+      "resetAll": "Atiestatīt visu",
+      "applyFilters": "Pielietot filtrus",
+      "filter": "Filtrēt",
+      "sortOptions": {
+        "priceAsc": "Cena: no zemākās",
+        "priceDesc": "Cena: no augstākās",
+        "nameAsc": "Nosaukums: A-Z",
+        "nameDesc": "Nosaukums: Z-A",
+        "ratingDesc": "Vērtējums: no augstākā",      "stockDesc": "Pieejamība noliktavā"      }
+    },
+    "product": {
+      "addToCart": "Pievienot grozam",
+      "addToWishlist": "Pievienot vēlmju sarakstam",
+      "removeFromWishlist": "Noņemt no vēlmju saraksta"
+    },
+    "noProducts": "Produkti nav atrasti",
+    "tryDifferentFilters": "Mēģiniet mainīt filtrus vai meklēšanas kritērijus",    "allCategories": "Visas kategorijas",
     "allStatus": "Visi statusi",
     "gaming": "Spēļu",
-    "workstation": "Darba stacijas",
-    "office": "Biroja",
-    "budget": "Ekonomiskie",
+    "workstation": "Darba stacijas",    "office": "Biroja",
+    "budget": "Ekonomiskie",    "categories": {
+      "office": "Biroja",
+      "gaming": "Spēļu",
+      "workstation": "Darba stacija",
+      "budget": "Ekonomiskais"
+    },
     "draft": "Melnraksts",
     "approved": "Apstiprināts",
     "published": "Publicēts"
@@ -588,7 +622,7 @@
     "public": "Publisks",
     "private": "Privāts"
   },
-  "product": {
+  "productBadges": {
     "addToCart": "Pievienot grozam",
     "addToWishlist": "Pievienot vēlmju sarakstam",
     "removeFromWishlist": "Noņemt no vēlmju saraksta",
@@ -598,21 +632,18 @@
   },
   "actions": {
     "publishToShop": "Publicēt veikalā",
-    "viewInShop": "Skatīt veikalā"
-  },
-  "components": "Komponentes",
+    "viewInShop": "Skatīt veikalā"  },
+  "componentsSection": "Komponentes",
   "status": {
     "published": "Publicēts",
     "draft": "Melnraksts",
     "approved": "Apstiprināts",
-    "pending": "Gaida"
-  },
+    "pending": "Gaida"  },
   "visibility": {
     "public": "Publisks",
     "private": "Privāts"
-  }
-},
-"reviewComponents": {
+  },
+  "reviewComponents": {
   "customerReviews": "Klientu Atsauksmes",
   "outOf5": "no 5",
   "reviewCount": "{count} {count, plural, one {atsauksme} other {atsauksmes}}",
@@ -643,7 +674,11 @@
 },
 "auth": {
   "loginTitle": "Piesakieties, lai rakstītu atsauksmi",
-  "logout": "Iziet"
+  "logout": "Iziet",
+  "signInForBetterExperience": "Piesakieties labākai pieredzei",
+  "checkoutPrompt": "Piesakieties, lai saglabātu piegādes adresi un viegli sekotu līdzi pasūtījumiem",
+  "signIn": "Ienākt",
+  "register": "Reģistrēties"
 },
 "cart": {
   "title": "Jūsu Grozs",
@@ -741,10 +776,9 @@
   }
 },
 "staff": {
-  "dashboard": "Panelis",
-  "repairs": "Remonti",
+  "dashboard": "Panelis",  "repairs": "Remonti",
   "configurations": "Konfigurācijas",
-  "components": "Komponentes",
+  "staffComponents": "Komponentes",
   "peripherals": "Perifērijas ierīces",
   "readyPCs": "Gatavie datori",
   "users": "Lietotāji",
@@ -812,5 +846,38 @@
   "notesPlaceholder": "Ievadiet piezīmes par statusu maiņu...",
   "confirmDelete": "Vai tiešām vēlaties dzēst šo remontu?",
   "noProduct": "Nav produkta"
+},
+"checkout": {
+  "title": "Pasūtījuma noformēšana",
+  "email": "E-pasts",
+  "phone": "Tālrunis",
+  "address": "Adrese",
+  "city": "Pilsēta",
+  "postalCode": "Pasta indekss",
+  "country": "Valsts",
+  "saveAddressForNextTime": "Saglabāt adresi nākamajām reizēm",
+  "selectShippingMethod": "Lūdzu, izvēlieties piegādes metodi",
+  "selectPaymentMethod": "Lūdzu, izvēlieties maksājuma veidu",
+  "stripeNotLoaded": "Maksājumu sistēma nav pieejama",
+  "paymentError": "Radās kļūda maksājuma apstrādē",
+  "orderError": "Radās kļūda pasūtījuma izveidošanā",
+  "generalError": "Radās kļūda. Lūdzu, mēģiniet vēlreiz.",
+  "placeOrder": "Noformēt pasūtījumu",
+  "processing": "Apstrādā...",
+  "shippingMethods": {
+    "title": "Piegādes veids",
+    "standard": "Standarta piegāde",
+    "express": "Eksprespiegāde"
+  },
+  "paymentMethods": {
+    "title": "Maksājuma veids",
+    "card": "Kredītkarte",
+    "cash": "Skaidra nauda piegādes brīdī"
+  }
+},
+"validation": {
+  "required": "Šis lauks ir obligāts",
+  "invalidEmail": "Lūdzu, ievadiet derīgu e-pasta adresi",
+  "invalidPhone": "Lūdzu, ievadiet derīgu tālruņa numuru"
 }
 }

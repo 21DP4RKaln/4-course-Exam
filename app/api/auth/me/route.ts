@@ -22,8 +22,7 @@ export async function GET(request: NextRequest) {
     console.log('Fetching user data for:', payload.userId)
 
     const user = await prisma.user.findUnique({
-      where: { id: payload.userId },
-      select: {
+      where: { id: payload.userId },      select: {
         id: true,
         email: true,
         phone: true,
@@ -35,6 +34,10 @@ export async function GET(request: NextRequest) {
         isBlocked: true,
         createdAt: true,
         updatedAt: true,
+        shippingAddress: true,
+        shippingCity: true,
+        shippingPostalCode: true,
+        shippingCountry: true,
       },
     })
 

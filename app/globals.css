@@ -77,9 +77,32 @@
   }
 
   .form-input {
-    @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-dark-card border border-gray-300 dark:border-gray-700 
-    text-gray-900 dark:text-white shadow-inner-soft focus:ring-2 focus:ring-primary focus:border-transparent 
-    placeholder:text-gray-400 dark:placeholder:text-gray-500 transition-all duration-200;
+    @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
+    border border-gray-300 dark:border-gray-700 
+    text-gray-900 dark:text-white shadow-inner-soft 
+    focus:ring-2 focus:ring-primary focus:border-transparent 
+    placeholder:text-gray-400 dark:placeholder:text-gray-500 
+    transition-all duration-200;
+  }
+
+  .form-select {
+    @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
+    border border-gray-300 dark:border-gray-700 
+    text-gray-900 dark:text-white shadow-inner-soft 
+    cursor-pointer appearance-none
+    focus:ring-2 focus:ring-primary focus:border-transparent 
+    transition-all duration-200;
+  }
+
+  .form-select option {
+    @apply bg-white dark:bg-stone-950 text-gray-900 dark:text-white;
+  }
+
+  .form-checkbox {
+    @apply rounded border-gray-300 dark:border-gray-600 
+    text-primary dark:text-red-500 
+    focus:ring-2 focus:ring-primary 
+    bg-white dark:bg-stone-950 transition-colors;
   }
 
   .form-error {

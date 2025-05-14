@@ -29,6 +29,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react'
 import AnimatedButton from '@/app/components/ui/animated-button'
+import PhoneInput from '@/app/components/ui/PhoneInput'
 
 const repairServices = [
   {
@@ -252,16 +253,11 @@ export default function RepairsPage() {
                       Phone Number (Required)
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Phone size={18} className="text-gray-400" />
-                      </div>
-                      <input
-                        id="phone"
-                        type="tel"
+                      <PhoneInput
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={setPhone}
                         required
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
+                        placeholder="Enter phone number"
                       />
                     </div>
                   </div>

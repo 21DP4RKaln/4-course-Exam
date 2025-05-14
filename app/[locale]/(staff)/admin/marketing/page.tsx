@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useTheme } from '@/app/contexts/ThemeContext'
@@ -39,6 +39,8 @@ interface MarketingStats {
 export default function MarketingOverviewPage() {
   const t = useTranslations()
   const router = useRouter()
+  const params = useParams()
+  const locale = params.locale as string
   const { user } = useAuth()
   const { theme } = useTheme()
   const [loading, setLoading] = useState(true)
@@ -82,14 +84,14 @@ export default function MarketingOverviewPage() {
         </h1>
         <div className="flex gap-4">
           <Link 
-            href={`/${router.locale}/admin/marketing/promo-codes/create`}
+            href={`/${locale}/admin/marketing/promo-codes/create`}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
           >
             <Tag size={18} />
             Create Promo Code
           </Link>
           <Link 
-            href={`/${router.locale}/admin/marketing/campaigns`}
+            href={`/${locale}/admin/marketing/campaigns`}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2"
           >
             <Megaphone size={18} />
@@ -165,7 +167,7 @@ export default function MarketingOverviewPage() {
           </h2>
           <div className="space-y-3">
             <Link 
-              href={`/${router.locale}/admin/marketing/promo-codes`}
+              href={`/${locale}/admin/marketing/promo-codes`}
               className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
             >
               <div className="flex items-center gap-3">
@@ -176,7 +178,7 @@ export default function MarketingOverviewPage() {
             </Link>
 
             <Link 
-              href={`/${router.locale}/admin/marketing/campaigns`}
+              href={`/${locale}/admin/marketing/campaigns`}
               className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
             >
               <div className="flex items-center gap-3">

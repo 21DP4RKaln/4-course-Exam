@@ -4,10 +4,10 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useCart } from '@/app/contexts/CartContext'
 import { useAuth } from '@/app/contexts/AuthContext'
-import { Trash2, Plus, Minus, ShoppingBag, CreditCard } from 'lucide-react'
-import AnimatedButton from '@/app/components/ui/animated-button'
+import { Trash2, Plus, Minus, ShoppingBag, ChevronLeft } from 'lucide-react'
 
 export default function CartPage() {
   const t = useTranslations()
@@ -17,42 +17,126 @@ export default function CartPage() {
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
   const { isAuthenticated } = useAuth()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [promoCode, setPromoCode] = useState('')
+  const [promoDiscount, setPromoDiscount] = useState(0)
+  const [promoError, setPromoError] = useState('')
+  const [promoMessage, setPromoMessage] = useState('')
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity > 0) {
       updateQuantity(id, newQuantity)
     }
+  };
+
+  const validatePromoCode = async () => {
+    if (!promoCode.trim()) {
+      setPromoError('Please enter a promo code')
+      return
+    }
+    
+    console.log('Starting promo code validation...')
+    setPromoError('')
+    setPromoMessage('')
+    
+    const requestData = {
+      code: promoCode.trim(),
+      total: totalPrice
+    }
+    console.log('Sending request data:', requestData)
+    
+    try {
+      const response = await fetch('/api/promo/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      })
+      
+      // Log the full response for debugging
+      console.log('Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      })
+        // Try to get the response text first
+      const responseText = await response.text()
+      console.log('Raw response text:', responseText)
+
+      let data
+      try {
+        data = JSON.parse(responseText)
+        console.log('Parsed response data:', data)
+      } catch (e) {
+        console.error('Failed to parse response as JSON:', e)
+        setPromoError('Server returned invalid response')
+        setPromoDiscount(0)
+        return
+      }
+
+      if (!response.ok) {
+        const errorMessage = data?.error || 'Failed to validate promo code'
+        console.error('Promo code error:', errorMessage)
+        setPromoError(errorMessage)
+        setPromoDiscount(0)
+        return
+      }
+
+      if (!data.valid) {
+        setPromoError('Invalid promo code')
+        setPromoDiscount(0)
+        return
+      }
+
+      setPromoError('')
+      setPromoDiscount(data.discount || 0)
+
+      if (data.discountPercentage) {
+        const successMessage = `${promoCode.toUpperCase()} - ${data.discountPercentage}% off applied`
+        setPromoMessage(successMessage)
+        console.log('Success:', successMessage)
+      }
+    } catch (error) {
+      console.error('Error validating promo code:', error)
+      setPromoError('Failed to validate promo code. Please try again.')
+      setPromoDiscount(0)
+    }
   }
+
+  const finalTotal = totalPrice - promoDiscount
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
-      router.push(`/${locale}/auth/login?redirect=checkout`)
+      router.push(`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`)
       return
     }
 
     setIsProcessing(true)
   
     setTimeout(() => {
-      router.push(`/${locale}/checkout`)
+      const checkoutUrl = new URL(`/${locale}/checkout`, window.location.origin)
+      if (promoDiscount > 0 && promoCode) {
+        checkoutUrl.searchParams.set('promo', promoCode)
+      }
+      router.push(checkoutUrl.pathname + checkoutUrl.search)
       setIsProcessing(false)
     }, 1000)
   }
 
   if (items.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto text-center py-12">
-        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8">
+      <div className="max-w-4xl mx-auto text-center py-12">        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-800 hover:border-brand-blue-200 dark:hover:border-brand-red-800 transition-all duration-300">
           <ShoppingBag size={48} className="mx-auto text-gray-400 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {t('cart.empty')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8">
             Your shopping cart is empty. Add some items to continue shopping.
-          </p>          <Link href={`/${locale}/`}>
-            <AnimatedButton 
-              title={t('cart.continueShoping')}
-              direction="left"
-            />
+          </p>
+          <Link href={`/${locale}/`} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+            <ChevronLeft className="inline-block mr-2" size={20} />
+            {t('cart.continueShoping')}
           </Link>
         </div>
       </div>
@@ -60,159 +144,174 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Cart Items */}
-        <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
-            <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((item) => (
-                <div key={item.id} className="p-6">
-                  <div className="flex flex-col sm:flex-row">
-                    {/* Item Image (placeholder) */}
-                    <div className="w-full sm:w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center mb-4 sm:mb-0 sm:mr-6">
-                      <span className="text-gray-500 dark:text-gray-400 text-sm">
-                        {item.type === 'component' ? 'Component' : 'PC'}
-                      </span>
-                    </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:justify-between">
-                        <div>
-                          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                            {item.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            {item.type === 'component' ? 'Component' : 'PC Configuration'}
-                          </p>
-                        </div>
-                        
-                        <div className="mt-3 sm:mt-0 text-right">
-                          <p className="text-lg font-bold text-gray-900 dark:text-white">
-                            €{item.price.toFixed(2)}
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            €{(item.price * item.quantity).toFixed(2)}
-                          </p>
-                        </div>
+    <section className="py-8">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-center items-center">
+          <div className="w-full max-w-7xl">            <div className="bg-white dark:bg-stone-950 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-brand-blue-200 dark:hover:border-brand-red-800 transition-all duration-300">
+              <div className="p-0">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+                  {/* Left Column - Cart Items */}
+                  <div className="lg:col-span-8">
+                    <div className="p-8">
+                      <div className="flex justify-between items-center mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                          Shopping Cart
+                        </h1>
+                        <p className="text-gray-600 dark:text-gray-400">
+                          {items.reduce((sum, item) => sum + item.quantity, 0)} items
+                        </p>
                       </div>
-                      
-                      <div className="flex items-center justify-between mt-4">
-                        <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
-                          <button 
-                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                            className="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                          >
-                            <Minus size={16} />
-                          </button>
-                          <span className="px-3 py-1 text-gray-900 dark:text-white">
-                            {item.quantity}
-                          </span>
-                          <button 
-                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                            className="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                          >
-                            <Plus size={16} />
-                          </button>
+
+                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+
+                      {items.map((item, index) => (
+                        <div key={item.id}>
+                          <div className="flex items-center py-6">
+                            {/* Item Image */}
+                            <div className="relative w-20 h-20 lg:w-24 lg:h-24 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                              <Image
+                                src={item.imageUrl || '/images/Default-image.png'}
+                                alt={item.name}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 80px, 96px"
+                                priority
+                              />
+                            </div>
+                            
+                            {/* Item Details */}
+                            <div className="ml-6 flex-1">
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {item.type === 'component' ? 'Component' : 'PC Configuration'}
+                              </p>
+                              <h3 className="text-base font-medium text-gray-900 dark:text-white">
+                                {item.name}
+                              </h3>
+                            </div>
+
+                            {/* Quantity Controls */}
+                            <div className="flex items-center mx-4">
+                              <button 
+                                onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                              >
+                                <Minus size={16} />
+                              </button>
+
+                              <input
+                                type="number"
+                                value={item.quantity}
+                                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 0)}
+                                className="w-16 mx-2 text-center border border-gray-300 dark:border-gray-600 rounded-md py-1 text-gray-900 dark:text-white bg-white dark:bg-stone-950"
+                                min="0"
+                              />
+
+                              <button 
+                                onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                              >
+                                <Plus size={16} />
+                              </button>
+                            </div>                            {/* Remove Button */}
+                            <button 
+                              onClick={() => removeItem(item.id)}
+                              className="ml-4 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                            >
+                              <Trash2 size={20} />
+                            </button>
+                          </div>
+                          {index < items.length - 1 && <hr className="my-6 border-gray-200 dark:border-gray-700" />}
                         </div>
-                        
-                        <button 
-                          onClick={() => removeItem(item.id)}
-                          className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center"
+                      ))}
+
+                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+
+                      <div className="pt-8">
+                        <Link 
+                          href={`/${locale}/`} 
+                          className="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                         >
-                          <Trash2 size={18} className="mr-1" />
-                          <span className="text-sm">{t('cart.removeItem')}</span>
+                          <ChevronLeft className="mr-2" size={20} />
+                          Back to shop
+                        </Link>
+                      </div>
+                    </div>
+                  </div>                  {/* Right Column - Order Summary */}
+                  <div className="lg:col-span-4 bg-gray-50 dark:bg-stone-900 border-l border-gray-200 dark:border-gray-800">
+                    <div className="p-8">
+                      <h2 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">
+                        Summary
+                      </h2>
+
+                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+
+                      <div className="flex justify-between mb-4">
+                        <h5 className="text-sm text-gray-600 dark:text-gray-400">
+                          Subtotal
+                        </h5>
+                        <h5 className="text-gray-900 dark:text-white">€ {totalPrice.toFixed(2)}</h5>
+                      </div>
+
+                      {promoDiscount > 0 && (
+                        <div className="flex justify-between mb-4">
+                          <h5 className="text-sm text-green-600 dark:text-green-400">
+                            Promo Discount
+                          </h5>
+                          <h5 className="text-green-600 dark:text-green-400">-€ {promoDiscount.toFixed(2)}</h5>
+                        </div>
+                      )}
+
+                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+
+                      <div className="flex justify-between mb-8">
+                        <h5 className="text-sm uppercase font-medium text-gray-900 dark:text-white">
+                          Total price
+                        </h5>
+                        <h5 className="text-lg font-bold text-gray-900 dark:text-white">€ {finalTotal.toFixed(2)}</h5>
+                      </div>
+
+                      <div className="mb-8">
+                        <input
+                          type="text"
+                          placeholder="Enter your code"
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                          className="w-full p-3 rounded-md bg-white dark:bg-stone-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white uppercase"
+                          style={{ textTransform: 'uppercase' }}
+                        />
+                        {promoError && <p className="text-red-500 text-sm mt-2">{promoError}</p>}
+                        <button
+                          onClick={validatePromoCode}
+                          className="mt-4 w-full py-2 bg-gray-900 dark:bg-gray-800 text-white rounded-md hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200 font-medium"
+                        >
+                          Apply Promo Code
                         </button>
                       </div>
+
+                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+
+                      <button
+                        onClick={handleCheckout}
+                        disabled={isProcessing}
+                        className="w-full py-4 bg-gray-900 dark:bg-gray-800 text-white rounded-md hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200 font-medium disabled:opacity-70 disabled:cursor-not-allowed"
+                      >
+                        {isProcessing ? (
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
+                            Processing...
+                          </div>
+                        ) : (
+                          'Checkout'
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-            
-            <div className="p-6 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">                <Link href={`/${locale}/`}>
-                  <AnimatedButton 
-                    title={t('cart.continueShoping')}
-                    direction="left"
-                    className="text-red-600 dark:text-red-400" 
-                  />
-                </Link>
-                
-                <button 
-                  onClick={() => clearCart()}
-                  className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center"
-                >
-                  <Trash2 size={18} className="mr-1" />
-                  Clear Cart
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Order Summary */}
-        <div>
-          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 sticky top-24">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-              Order Summary
-            </h2>
-            
-            <div className="space-y-4">
-              <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                <span>€{totalPrice.toFixed(2)}</span>
-              </div>
-              
-              <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Shipping</span>
-                <span>Free</span>
-              </div>
-              
-              <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Tax</span>
-                <span>€{(totalPrice * 0.21).toFixed(2)}</span>
-              </div>
-              
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                <div className="flex justify-between font-semibold text-lg text-gray-900 dark:text-white">
-                  <span>{t('cart.total')}</span>
-                  <span>€{(totalPrice + totalPrice * 0.21).toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-            
-            <button
-              onClick={handleCheckout}
-              disabled={isProcessing}
-              className="w-full mt-6 flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <CreditCard size={18} className="mr-2" />
-                  {t('cart.checkout')}
-                </>
-              )}
-            </button>
-            
-            <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-              <p>We accept:</p>
-              <div className="flex justify-center mt-2 space-x-3">
-                <div className="h-8 w-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="h-8 w-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="h-8 w-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="h-8 w-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

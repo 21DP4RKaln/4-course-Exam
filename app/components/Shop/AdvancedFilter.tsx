@@ -31,6 +31,7 @@ interface AdvancedFilterProps {
   onPriceRangeChange: (min: number, max: number) => void
   maxPrice: number
   minPrice: number
+  className?: string
   categories?: FilterOption[]
   cpuOptions?: FilterOption[]
   gpuOptions?: FilterOption[]

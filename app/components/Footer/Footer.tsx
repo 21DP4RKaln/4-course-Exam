@@ -174,7 +174,7 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li className="flex items-start">
-                <Clock size={27} className={`mr-2 mt-0.5 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
+                <Clock size={16} className={`mr-2 mt-0.5 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
                 <div className="text-sm">
                   <p>{t('contact.workingHours')}</p>
                   <p>{t('contact.weekends')}</p>

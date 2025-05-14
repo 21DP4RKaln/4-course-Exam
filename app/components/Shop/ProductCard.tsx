@@ -180,7 +180,7 @@ export default function ProductCard({
               ? 'bg-black/40 text-white border border-stone-950' 
               : 'bg-white/40 text-gray-900 border border-gray-200'
           }`}>
-            {category}
+            {t(`shop.categories.${category.toLowerCase()}`)}
           </span>
         </div>
         
@@ -198,9 +198,8 @@ export default function ProductCard({
                 : (theme === 'dark' 
                     ? 'bg-green-900/40 text-green-400 border border-green-800' 
                     : 'bg-green-50 text-green-700 border border-green-100')
-          }`}>
-            {stock <= 0 ? 'Out of stock' : 
-            stock <= 3 ? `Only ${stock} left` : 'In Stock'}
+          }`}>            {stock <= 0 ? t('product.outOfStock') : 
+            stock <= 3 ? t('product.onlyLeft', { count: stock }) : t('product.inStock')}
           </span>
         </div>
         
@@ -304,7 +303,7 @@ export default function ProductCard({
                 }`}
               >
                 <Info size={16} className="mr-2" />
-                {showSpecs ? 'Hide Specs' : 'View Specs'}
+                {showSpecs ? t('buttons.hideSpecs') : t('buttons.viewSpecs')}
                 {showSpecs ? (
                   <ChevronUp size={16} className="ml-2" />
                 ) : (

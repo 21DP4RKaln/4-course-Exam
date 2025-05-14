@@ -21,6 +21,10 @@ model User {
   lastName         String?
   phone            String?            @unique
   profileImageUrl  String?
+  shippingAddress  String?
+  shippingCity     String?
+  shippingPostalCode String?
+  shippingCountry   String?
   auditLogs        AuditLog[]
   configurations   Configuration[]
   orders           Order[]
@@ -248,6 +252,7 @@ model Order {
   totalAmount     Float
   shippingAddress String?        @db.Text
   paymentMethod   String?
+  shippingMethod  String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   configuration   Configuration? @relation(fields: [configurationId], references: [id])
@@ -318,22 +323,28 @@ model OrderItem {
 }
 
 model PromoCode {
-  id                 String              @id @default(uuid())
-  code               String              @unique
-  description        String?
+  id                String              @id @default(uuid())
+  code              String              @unique
+  description       String?             @db.Text
   discountPercentage Int
-  maxDiscountAmount  Float?
-  minOrderValue      Float?
-  isActive           Boolean             @default(true)
-  usageCount         Int                 @default(0)
-  maxUsage           Int                 @default(1000)
-  scope              PromoScope          @default(ALL)
-  expiresAt          DateTime
-  createdAt          DateTime            @default(now())
-  marketingCampaigns MarketingCampaign[]
-  products           PromoProduct[]
+  maxDiscountAmount Float?
+  minOrderValue     Float?
+  maxUsage         Int?
+  usageCount       Int                 @default(0)
+  isActive         Boolean             @default(true)
+  expiresAt        DateTime
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  scope            PromoCodeScope      @default(ALL)
+  products         PromoProduct[]
+  campaigns        MarketingCampaign[]
 
-  @@map("promo_code")
+  @@map("promocode")
+}
+
+enum PromoCodeScope {
+  ALL
+  SPECIFIC_PRODUCTS
 }
 
 model PromoProduct {
@@ -343,8 +354,7 @@ model PromoProduct {
   productType String
   promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
 
-  @@unique([promoCodeId, productId, productType])
-  @@map("promo_product")
+  @@map("promoproduct")
 }
 
 model AuditLog {

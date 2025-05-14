@@ -13,6 +13,10 @@ type User = {
   name?: string
   role: 'USER' | 'ADMIN' | 'SPECIALIST'
   profileImageUrl?: string
+  shippingAddress?: string
+  shippingCity?: string
+  shippingPostalCode?: string
+  shippingCountry?: string
 }
 
 type AuthContextType = {

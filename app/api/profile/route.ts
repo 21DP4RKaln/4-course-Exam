@@ -18,7 +18,6 @@ export async function PUT(request: NextRequest) {
     if (!payload) {
       return createUnauthorizedResponse('Invalid token')
     }
-  
     const formData = await request.formData()
    
     const email = formData.get('email') as string | null
@@ -27,6 +26,10 @@ export async function PUT(request: NextRequest) {
     const lastName = formData.get('lastName') as string | null
     const password = formData.get('password') as string | null
     const profileImage = formData.get('profileImage') as File | null
+    const shippingAddress = formData.get('shippingAddress') as string | null
+    const shippingCity = formData.get('shippingCity') as string | null
+    const shippingPostalCode = formData.get('shippingPostalCode') as string | null
+    const shippingCountry = formData.get('shippingCountry') as string | null
     
     if (email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -54,11 +57,14 @@ export async function PUT(request: NextRequest) {
     }
     
     const updateData: any = {}
-    
-    if (email !== null) updateData.email = email
+      if (email !== null) updateData.email = email
     if (phone !== null) updateData.phone = phone
     if (firstName !== null) updateData.firstName = firstName
     if (lastName !== null) updateData.lastName = lastName
+    if (shippingAddress !== null) updateData.shippingAddress = shippingAddress
+    if (shippingCity !== null) updateData.shippingCity = shippingCity 
+    if (shippingPostalCode !== null) updateData.shippingPostalCode = shippingPostalCode
+    if (shippingCountry !== null) updateData.shippingCountry = shippingCountry
     
     if (firstName !== null || lastName !== null) {
       const currentUser = await prisma.user.findUnique({
@@ -94,8 +100,7 @@ export async function PUT(request: NextRequest) {
 
     const updatedUser = await prisma.user.update({
       where: { id: payload.userId },
-      data: updateData,
-      select: {
+      data: updateData,      select: {
         id: true,
         email: true,
         phone: true,
@@ -103,7 +108,11 @@ export async function PUT(request: NextRequest) {
         firstName: true,
         lastName: true,
         role: true,
-        profileImageUrl: true
+        profileImageUrl: true,
+        shippingAddress: true,
+        shippingCity: true,
+        shippingPostalCode: true,
+        shippingCountry: true
       }
     })
 

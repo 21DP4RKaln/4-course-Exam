@@ -28,7 +28,8 @@
     "description": "Description",
     "noDescription": "No description available",
     "createdDate": "Created Date",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "backToHome": "Back to Home"
   },
   "nav": {
     "home": "Home",
@@ -72,18 +73,23 @@
     "startBuilding": "Start Building"
   },
   "buttons": {
-    "viewAll": "View all",
-    "addToCart": "Add to cart",
-    "addToWishlist": "Add to wishlist",
-    "view": "View all",
+    "viewAll": "View All",
+    "addToCart": "Add to Cart",
+    "addToWishlist": "Add to Wishlist",
+    "filter": "Filter",
+    "view": "View All",
     "selected": "Selected",
     "select": "Select",
     "compare": "Compare",
     "reset": "Reset",
-    "filter": "Filter",
-    "backToHome": "Back to Home",
+    "backToCart": "Back to Cart",
+    "viewSpecs": "View Specifications",
+    "hideSpecs": "Hide Specifications",
+    "readMore": "Read More",
     "login": "Login",
-    "back": "Back"
+    "register": "Register",
+    "back": "Back",
+    "buildYourOwn": "Build Your Own"
   },
   "footer": {
     "contact": "Contact Us",
@@ -155,7 +161,8 @@
       "specifications": "Specifications",
       "reviews": "Reviews"
     },
-    "noSpecifications": "No specifications available for this product."
+    "noSpecifications": "No specifications available for this product.",
+    "addToCart": "Add to Cart"
   },
   "dashboard": {
     "profileInfo": "Profile Information",
@@ -446,7 +453,23 @@
     "case": "Case",
     "cooling": "Cooling",
     "psu": "Power Supply",
-    "peripherals": "Peripherals"
+    "peripherals": "Peripherals",
+    "title": "Computer Components",
+    "description": "Browse our selection of high-quality computer components for your custom PC build. Select a category to see available products.",
+    "needCompletePc": "Need a Complete PC?",
+    "preConfiguredDesc": "If you'd prefer not to select individual components, check out our pre-configured PCs or use our PC Builder tool.",
+    "buildYourOwnPc": "Build Your Own PC",
+    "readyMadePcs": "Ready-Made PCs",
+    "productsAvailable": "{count} products available"
+  },
+  "peripherals": {
+    "title": "Computer Peripherals",
+    "description": "Enhance your computing experience with our premium peripherals. Select a category to see available products.",
+    "buildingNewPc": "Building a New PC?",
+    "buildingDesc": "Looking to build a new PC or upgrade your existing one? Check out our components section or use our PC configurator.",
+    "browseComponents": "Browse Components",
+    "configurePc": "Configure a PC",
+    "productsAvailable": "{count} products available"
   },
   "privacyPolicy": {
     "title": "Privacy Policy",
@@ -555,7 +578,8 @@
         "priceDesc": "Price: High to Low",
         "nameAsc": "Name: A to Z",
         "nameDesc": "Name: Z to A",
-        "ratingDesc": "Rating: High to Low"
+        "ratingDesc": "Rating: High to Low",
+        "stockDesc": "Stock Availability"
       },
       "category": "Category",
       "processor": "Processor",
@@ -575,6 +599,12 @@
       "workstation": "Workstation",
       "office": "Office",
       "budget": "Budget",
+      "categories": {
+        "office": "Office",
+        "gaming": "Gaming",
+        "workstation": "Workstation",
+        "budget": "Budget"
+      },
       "draft": "Draft",
       "approved": "Approved",
       "published": "Published"
@@ -615,7 +645,9 @@
       "newBadge": "New",
       "offBadge": "-{percentage}% Off",
       "featuredBadge": "Featured"
-    }
+    },
+    "noProducts": "No Products Found",
+    "tryDifferentFilters": "Try changing your filters or search criteria"
   },
   "reviewComponents": {
     "customerReviews": "Customer Reviews",
@@ -670,7 +702,11 @@
   },
   "auth": {
     "loginTitle": "Log in to write a review",
-    "logout": "Logout"
+    "logout": "Logout",
+    "signInForBetterExperience": "Sign in for a better experience",
+    "checkoutPrompt": "Sign in to save your shipping address and track your orders easily",
+    "signIn": "Sign In",
+    "register": "Register"
   },
   "admin": {
     "dashboard": {
@@ -817,5 +853,52 @@
     "notesPlaceholder": "Enter notes about the status change...",
     "confirmDelete": "Are you sure you want to delete this repair?",
     "noProduct": "No product"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "postalCode": "Postal Code",
+    "country": "Country",
+    "shippingMethod": "Shipping Method",
+    "shippingAddress": "Shipping Address",
+    "savedAddress": "Saved Addresses",
+    "useNewAddress": "Use New Address",
+    "courier": "Courier",
+    "post": "Post",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "selectCountry": "Select Country",
+    "days": "days",
+    "items": "items",
+    "shipping": "Shipping",
+    "free": "Free",
+    "stripeError": "Stripe payment error",
+    "saveAddressForNextTime": "Save address for next time",
+    "selectShippingMethod": "Please select a shipping method",
+    "selectPaymentMethod": "Please select a payment method",
+    "stripeNotLoaded": "Payment system is not available",
+    "paymentError": "There was an error processing your payment",
+    "orderError": "There was an error creating your order",
+    "generalError": "Something went wrong. Please try again.",
+    "placeOrder": "Place Order",
+    "processing": "Processing...",
+    "shippingMethods": {
+      "title": "Shipping Method",
+      "standard": "Standard Shipping",
+      "express": "Express Shipping"
+    },
+    "paymentMethods": {
+      "title": "Payment Method",
+      "card": "Credit Card",
+      "cash": "Cash on Delivery"
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "invalidPhone": "Please enter a valid phone number"
   }
 }

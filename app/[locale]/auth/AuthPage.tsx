@@ -16,6 +16,7 @@ import styled from 'styled-components'
 import Image from 'next/image'
 import Loading from '@/app/components/ui/Loading'
 import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
+import PhoneInput from '@/app/components/ui/PhoneInput'
 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -282,14 +283,13 @@ export default function AuthPage() {
               
               <InputGroup $fullWidth>
                 <StyledInput>
-                  <input 
-                    type="tel"
-                    name="phone"
+                  <PhoneInput 
                     value={formData.phone}
-                    onChange={handleInputChange}
+                    onChange={(value) => handleInputChange({
+                      target: { name: 'phone', value }
+                    } as any)}
                     className="input"
                     placeholder="Phone (optional if email provided)"
-                    autoComplete="off"
                   />
                 </StyledInput>
               </InputGroup>

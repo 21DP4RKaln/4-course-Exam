@@ -15,44 +15,88 @@ import {
   Eye,
   EyeOff,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  MapPin
 } from 'lucide-react'
+import PhoneInput from '@/app/components/ui/PhoneInput'
+import AddressInput from '@/app/components/ui/AddressInput'
+
+type CountryCode = 'LV' | 'LT' | 'EE';
+
+interface AddressState {
+  street: string;
+  city: string;
+  postalCode: string;
+  country: CountryCode;
+}
+
+interface AddressErrors {
+  street?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+}
 
 export default function ProfileTab() {
-  const t = useTranslations('dashboard')
-  const profileT = useTranslations('dashboard.profileSection')
-  const validationT = useTranslations('dashboard.validation')
-  const imageT = useTranslations('dashboard.profileImage')
-  const actionsT = useTranslations('dashboard.formActions')
-  const { user, updateProfile, loading } = useAuth()
+  const t = useTranslations('dashboard');
+  const profileT = useTranslations('dashboard.profileSection');
+  const validationT = useTranslations('dashboard.validation');
+  const imageT = useTranslations('dashboard.profileImage');
+  const actionsT = useTranslations('dashboard.formActions');
+  const { user, updateProfile, loading } = useAuth();
   
-  const [firstName, setFirstName] = useState(user?.firstName || '')
-  const [lastName, setLastName] = useState(user?.lastName || '')
-  const [email, setEmail] = useState(user?.email || '')
-  const [phone, setPhone] = useState(user?.phone || '')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [successMessage, setSuccessMessage] = useState('')
-  const [error, setError] = useState('')
-  const [profileImage, setProfileImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
- 
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState('');
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [address, setAddress] = useState<{
+    street: string;
+    city: string;
+    postalCode: string;
+    country: 'LV' | 'LT' | 'EE';
+  }>({
+    street: '',
+    city: '',
+    postalCode: '',
+    country: 'LV'
+  });
+
+  const [addressErrors, setAddressErrors] = useState<{
+    street?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+  }>({});
+
   useEffect(() => {
     if (user) {
-      setFirstName(user.firstName || '')
-      setLastName(user.lastName || '')
-      setEmail(user.email || '')
-      setPhone(user.phone || '')
+      setFirstName(user.firstName || '');
+      setLastName(user.lastName || '');
+      setEmail(user.email || '');
+      setPhone(user.phone || '');
+      setAddress({
+        street: user.shippingAddress || '',
+        city: user.shippingCity || '',
+        postalCode: user.shippingPostalCode || '',
+        country: (user.shippingCountry as 'LV' | 'LT' | 'EE') || 'LV'
+      });
       
       if (user.profileImageUrl) {
-        setImagePreview(user.profileImageUrl)
+        setImagePreview(user.profileImageUrl);
       }
     }
-  }, [user])
-  
+  }, [user]);
+
   const handleImageClick = () => {
     fileInputRef.current?.click()
   }
@@ -73,75 +117,89 @@ export default function ProfileTab() {
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
-  
-  const validateForm = () => {
-    setError('')
-    setSuccessMessage('')
+    const validateForm = () => {
+    setError('');
+    setSuccessMessage('');
+    setAddressErrors({});
  
     if (!email && !phone) {
-      setError(validationT('emailOrPhone'))
-      return false
+      setError(validationT('emailOrPhone'));
+      return false;
     }
    
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError(validationT('emailInvalid'))
-      return false
-    }
-   
-    if (phone && phone.length < 6) {
-      setError(validationT('phoneLength'))
-      return false
+      setError(validationT('emailInvalid'));
+      return false;
     }
    
     if (password || confirmPassword) {
       if (password !== confirmPassword) {
-        setError(validationT('passwordMismatch'))
-        return false
+        setError(validationT('passwordMismatch'));
+        return false;
       }
       
       if (password.length < 8) {
-        setError(validationT('passwordLength'))
-        return false
+        setError(validationT('passwordLength'));
+        return false;
+      }
+    }
+
+    // Validate postal code format based on country if provided
+    if (address.postalCode) {
+      const postalCodePatterns = {
+        LV: /^LV-\d{4}$/,
+        LT: /^LT-\d{5}$/,
+        EE: /^\d{5}$/
+      };
+
+      if (!postalCodePatterns[address.country].test(address.postalCode)) {
+        setAddressErrors(prev => ({
+          ...prev,
+          postalCode: validationT('invalidPostalCode')
+        }));
+        return false;
       }
     }
     
-    return true
-  }
-  
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     
     if (!validateForm()) {
-      return
+      return;
     }
     
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     
     try {
-      const updateData: any = {}
+      const updateData: any = {};
 
-      if (firstName !== user?.firstName) updateData.firstName = firstName
-      if (lastName !== user?.lastName) updateData.lastName = lastName
-      if (email !== user?.email) updateData.email = email
-      if (phone !== user?.phone) updateData.phone = phone
-      if (password) updateData.password = password
+      if (firstName !== user?.firstName) updateData.firstName = firstName;
+      if (lastName !== user?.lastName) updateData.lastName = lastName;
+      if (email !== user?.email) updateData.email = email;
+      if (phone !== user?.phone) updateData.phone = phone;
+      if (password) updateData.password = password;
+      if (address.street !== user?.shippingAddress) updateData.shippingAddress = address.street;
+      if (address.city !== user?.shippingCity) updateData.shippingCity = address.city;
+      if (address.postalCode !== user?.shippingPostalCode) updateData.shippingPostalCode = address.postalCode;
+      if (address.country !== user?.shippingCountry) updateData.shippingCountry = address.country;
    
-      await updateProfile(updateData, profileImage)
-   
-      setSuccessMessage(t('updateSuccess'))
-
-      setPassword('')
-      setConfirmPassword('')
+      await updateProfile(updateData, profileImage);
+      setSuccessMessage(t('updateSuccess'));
+      setPassword('');
+      setConfirmPassword('');
    
       setTimeout(() => {
-        setSuccessMessage('')
-      }, 3000)
+        setSuccessMessage('');
+      }, 3000);
     } catch (err: any) {
-      setError(err.message || validationT('profileError'))
+      setError(err.message || validationT('profileError'));
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const missingContactInfo = (!user?.email && !user?.phone)
   
@@ -273,18 +331,11 @@ export default function ProfileTab() {
             <label className="form-label">
               {profileT('phoneNumber')} {!email && <span className="text-red-500">*</span>}
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Phone size={18} className="text-gray-400" />
-              </div>
-              <input 
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="form-input pl-10"
-                placeholder={profileT('phonePlaceholder')}
-              />
-            </div>
+            <PhoneInput
+              value={phone}
+              onChange={setPhone}
+              placeholder={profileT('phonePlaceholder')}
+            />
           </div>
         </div>
         
@@ -294,6 +345,20 @@ export default function ProfileTab() {
           </p>
         )}
         
+        {/* Shipping Address Section */}
+        <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-4">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+            <MapPin size={20} className="mr-2" />
+            {profileT('shippingAddress')}
+          </h3>
+
+          <AddressInput
+            values={address}
+            onChange={setAddress}
+            errors={addressErrors}
+          />
+        </div>
+
         {/* Password Change Section */}
         <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-4">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">

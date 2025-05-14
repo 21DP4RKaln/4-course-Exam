@@ -5,7 +5,7 @@ import { verifyJWT } from './lib/jwt'
 
 const PUBLIC_PATHS = [
   /^\/_next\//,
-  /\/api\//,
+  /\/api\/promo\/validate/,
   /\/favicon\.ico$/,
   /\.(jpg|jpeg|png|gif|svg|css|js)$/,
   /^\/(en|lv|ru)\/auth/,
@@ -18,6 +18,11 @@ const HOME_PATH = /^\/(en|lv|ru)$/
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Skip middleware for API routes
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
 
   // Skip middleware for public paths
   if (PUBLIC_PATHS.some(pattern => pattern.test(pathname))) {
@@ -100,5 +105,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  matcher: [
+    // Skip public files and API routes
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    // Match all paths except static files and api routes
+    '/((?!api/promo/validate|_next/static|_next/image|favicon.ico).*)'
+  ]
 }

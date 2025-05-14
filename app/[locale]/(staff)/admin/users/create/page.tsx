@@ -6,6 +6,7 @@ import { ArrowLeft, Save } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import PhoneInput from '@/app/components/ui/PhoneInput'
 
 const userSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -33,6 +34,8 @@ export default function CreateUserPage() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -131,14 +134,11 @@ export default function CreateUserPage() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Phone (optional)
               </label>
-              <input
-                type="tel"
-                {...register('phone')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              <PhoneInput
+                value={watch('phone') || ''}
+                onChange={(value) => setValue('phone', value)}
+                error={errors.phone?.message}
               />
-              {errors.phone && (
-                <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-              )}
             </div>
 
             <div>

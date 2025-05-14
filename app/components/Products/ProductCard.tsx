@@ -51,10 +51,15 @@ export default function ProductCard({
             </span>
           </div>
         )}
+        {stock > 0 && (
+          <div className="absolute top-2 right-2 px-2 py-1 bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-medium rounded">
+            {t('product.inStock')}
+          </div>
+        )}
         {/* Category badge */}
         {category === 'office' && (
           <div className="absolute top-2 left-2 px-2 py-1 bg-green-500/90 backdrop-blur-sm text-white text-xs font-medium rounded">
-            office
+            {t('shop.categories.office')}
           </div>
         )}
       </div>
@@ -71,10 +76,9 @@ export default function ProductCard({
         <div className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           €{price.toFixed(2)}
         </div>
-        
         {/* Specs button */}
         <button className="flex items-center justify-between w-full px-3 py-1.5 bg-gray-100 dark:bg-stone-950 rounded text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-          <span>Specs</span>
+          <span>{t('buttons.viewSpecs')}</span>
           <ChevronDown className="h-4 w-4" />
         </button>
       </div>

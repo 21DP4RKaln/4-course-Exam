@@ -19,8 +19,7 @@ export async function PUT(request: NextRequest) {
     if (!payload) {
       return createUnauthorizedResponse('Invalid token')
     }
-   
-    const formData = await request.formData()
+     const formData = await request.formData()
     
     const email = formData.get('email') as string | null
     const phone = formData.get('phone') as string | null
@@ -28,6 +27,10 @@ export async function PUT(request: NextRequest) {
     const lastName = formData.get('lastName') as string | null
     const password = formData.get('password') as string | null
     const profileImage = formData.get('profileImage') as File | null
+    const shippingAddress = formData.get('shippingAddress') as string | null
+    const shippingCity = formData.get('shippingCity') as string | null
+    const shippingPostalCode = formData.get('shippingPostalCode') as string | null
+    const shippingCountry = formData.get('shippingCountry') as string | null
    
     if (email === '' && phone === '') {
       return createBadRequestResponse('Either email or phone is required')
@@ -68,11 +71,14 @@ export async function PUT(request: NextRequest) {
     }
     
     const updateData: any = {}
-   
-    if (email !== null) updateData.email = email || null
+     if (email !== null) updateData.email = email || null
     if (phone !== null) updateData.phone = phone || null
     if (firstName !== null) updateData.firstName = firstName || null
     if (lastName !== null) updateData.lastName = lastName || null
+    if (shippingAddress !== null) updateData.shippingAddress = shippingAddress || null
+    if (shippingCity !== null) updateData.shippingCity = shippingCity || null
+    if (shippingPostalCode !== null) updateData.shippingPostalCode = shippingPostalCode || null
+    if (shippingCountry !== null) updateData.shippingCountry = shippingCountry || null
    
     if (firstName !== null || lastName !== null) {
       const newFirstName = firstName !== null ? firstName : currentUser.firstName || ''
@@ -121,7 +127,11 @@ export async function PUT(request: NextRequest) {
         firstName: true,
         lastName: true,
         role: true,
-        profileImageUrl: true
+        profileImageUrl: true,
+        shippingAddress: true,
+        shippingCity: true,
+        shippingPostalCode: true,
+        shippingCountry: true
       }
     })
 

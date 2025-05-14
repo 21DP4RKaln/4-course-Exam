@@ -10,24 +10,16 @@ export interface ShippingAddress {
     method: 'COURIER' | 'POST'
     estimatedDays: string
   }
-  
-  export function calculateShipping(address: ShippingAddress): ShippingRate[] {
+    export function calculateShipping(address: ShippingAddress): ShippingRate[] {
     const isRiga = address.city.toLowerCase().includes('rīga') || 
                   address.city.toLowerCase().includes('riga')
+    const isLatvia = address.country.toLowerCase() === 'latvia' || address.country.toLowerCase() === 'lv'
     
     const shippingRates: ShippingRate[] = []
  
-    if (address.country.toLowerCase() === 'latvia' || address.country.toLowerCase() === 'lv') {
-      let courierRate = 0
-      
-      if (isRiga) {
-        courierRate = 5 
-      } else {
-        const baseRate = 20
-        const additionalRate = calculateAdditionalDistance(address)
-        courierRate = baseRate + additionalRate
-      }
-      
+    // Kurjerpiegāde tikai Latvijai
+    if (isLatvia) {
+      const courierRate = isRiga ? 0 : 20 // Rīgā bezmaksas, ārpus Rīgas 20 EUR
       shippingRates.push({
         rate: courierRate,
         method: 'COURIER',
@@ -35,10 +27,12 @@ export interface ShippingAddress {
       })
     }
 
+    // Pasta piegāde visām valstīm
+    const postRate = isLatvia ? 10 : 30 // Latvijā 10 EUR, Lietuvā un Igaunijā 30 EUR
     shippingRates.push({
-      rate: 5, 
+      rate: postRate,
       method: 'POST',
-      estimatedDays: '3-5',
+      estimatedDays: isLatvia ? '2-3' : '3-5',
     })
     
     return shippingRates
