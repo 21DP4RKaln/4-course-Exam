@@ -129,7 +129,7 @@ export default function ConfigurationDetailsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'DRAFT':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-neutral-100 text-neutral-800'
       case 'SUBMITTED':
         return 'bg-yellow-100 text-yellow-800'
       case 'APPROVED':
@@ -137,7 +137,7 @@ export default function ConfigurationDetailsPage() {
       case 'REJECTED':
         return 'bg-red-100 text-red-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-neutral-100 text-neutral-800'
     }
   }
 
@@ -164,7 +164,7 @@ export default function ConfigurationDetailsPage() {
             <div className="grid gap-6">
               <div>
                 <h4 className="font-medium mb-2">Description</h4>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-neutral-600 dark:text-neutral-400">
                   {configuration.description || 'No description provided'}
                 </p>
               </div>
@@ -195,7 +195,7 @@ export default function ConfigurationDetailsPage() {
                 <div className="border rounded-lg">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                      <tr className="border-b bg-neutral-50 dark:bg-neutral-800">
                         <th className="px-4 py-2 text-left">Component</th>
                         <th className="px-4 py-2 text-left">Category</th>
                         <th className="px-4 py-2 text-center">Quantity</th>
@@ -213,7 +213,7 @@ export default function ConfigurationDetailsPage() {
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr className="bg-gray-50 dark:bg-gray-800">
+                      <tr className="bg-neutral-50 dark:bg-neutral-800">
                         <td colSpan={3} className="px-4 py-2 text-right font-medium">
                           Total:
                         </td>

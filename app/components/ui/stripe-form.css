@@ -1,0 +1,33 @@
+.stripe-form {
+  /* Base theme */
+  --stripe-color-text: theme('colors.neutral.900');
+  --stripe-color-background: theme('colors.white');
+  --stripe-color-border: theme('colors.neutral.300');
+  --stripe-color-primary: theme('colors.blue.600');
+  --stripe-border-radius: theme('borderRadius.lg');
+  --stripe-spacing-unit: theme('spacing.4');
+  
+  /* Input styles */
+  --stripe-input-background: theme('colors.white');
+  --stripe-input-border: theme('colors.neutral.300');
+  --stripe-input-border-focus: theme('colors.blue.500');
+  --stripe-input-placeholder: theme('colors.neutral.400');
+  --stripe-input-text: theme('colors.neutral.900');
+  --stripe-input-invalid: theme('colors.red.500');
+  
+  /* Button styles */
+  --stripe-button-background: theme('colors.blue.600');
+  --stripe-button-text: theme('colors.white');
+  --stripe-button-background-hover: theme('colors.blue.700');
+  
+  /* Dark mode */
+  &.dark {
+    --stripe-color-text: theme('colors.white');
+    --stripe-color-background: theme('colors.stone.950');
+    --stripe-color-border: theme('colors.neutral.700');
+    --stripe-input-background: theme('colors.stone.950');
+    --stripe-input-border: theme('colors.neutral.700');
+    --stripe-input-text: theme('colors.white');
+    --stripe-input-placeholder: theme('colors.neutral.500');
+  }
+}

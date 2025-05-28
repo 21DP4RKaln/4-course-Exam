@@ -1,104 +1,127 @@
-# IvaPro PC Configurator
+# PC E-Commerce & Configurator
 
-A full-stack web application for creating custom PC configurations, managing ready-made PCs, and handling orders.
+A full-stack web application for browsing computer components, creating custom PC configurations, purchasing pre-built configurations, and managing orders.
+
+## Features
+
+- 🌐 **Multi-language Support**: Latvian, English, and Russian language options
+- 🔄 **Light/Dark Mode**: Theme switching for better user experience
+- 🛒 **Advanced Shopping System**: Filter, sort, and search products by various criteria
+- 🔧 **PC Configurator**: Build custom PC configurations with compatible components
+- 👤 **User Authentication**: Secure login/registration with JWT
+- 📱 **Responsive Design**: Optimized for desktop and mobile devices
+- 💳 **Payment Processing**: Secure checkout experience
+- 📊 **User Dashboard**: Order tracking and account management
+- 🔒 **Admin Panel**: Manage products, orders, and users
+
+## Technology Stack
+
+### Frontend
+- **Framework**: Next.js 15.x (App Router)
+- **UI**: React 19.x with Tailwind CSS
+- **State Management**: React Context API
+- **Internationalization**: next-intl
+- **Icons**: Lucide React
+- **Form Handling**: React Hook Form
+- **Charts & Visualizations**: Recharts
+
+### Backend
+- **API**: Next.js API Routes
+- **Database**: MySQL with Prisma ORM
+- **Authentication**: JWT (JSON Web Tokens)
+- **Payment Processing**: Stripe API
+- **Email**: Nodemailer
 
 ## Project Structure
-
-### Root Files
-- `.gitignore` - Git ignore configuration
-- `README.md` - This project documentation
-- `next.config.mjs` - Next.js configuration
-- `package.json` - Project dependencies and scripts
-- `tsconfig.json` - TypeScript configuration
-- `postcss.config.js` - PostCSS configuration
-- `eslint.config.mjs` - ESLint configuration
-- `tailwind.config.js` - Tailwind CSS configuration
-- `middleware.ts` - Next.js middleware for routing
-- `next-intl.config.ts` - Internationalization configuration
 
 ### Core Directories
 - `/app` - Main application code (Next.js App Router)
 - `/lib` - Utility functions, services, and shared code
 - `/prisma` - Database schema and migrations
 - `/public` - Static assets
+- `/scripts` - Utility scripts for development and maintenance
 
-### App Structure
+### Key Components
 
-#### Core App Files
-- `app/layout.tsx` - Root layout
-- `app/page.tsx` - Root page (redirects to localized home)
-- `app/globals.css` - Global CSS
-
-#### Localization Setup
-- `app/i18n/config.ts` - i18n configuration 
-- `app/i18n/messages.ts` - Message loading utilities
-- `app/i18n/providers.tsx` - i18n provider components
+#### Shop Components
+- `AdvancedFilter.tsx` - Advanced filtering for shop products
+- `ProductCard.tsx` - Product display card component
+- `ProductDetail.tsx` - Detailed product view
+- `SpecificationsTable.tsx` - Technical specifications display
 
 #### Context Providers
-- `app/contexts/AuthContext.tsx` - Authentication context
-- `app/contexts/CartContext.tsx` - Shopping cart context
-- `app/contexts/ThemeContext.tsx` - Theme context (light/dark mode)
+- `app/contexts/AuthContext.tsx` - Authentication state management
+- `app/contexts/CartContext.tsx` - Shopping cart state management
+- `app/contexts/ThemeContext.tsx` - Theme (light/dark) state management
+- `app/contexts/WishlistContext.tsx` - User wishlist state management
+- `app/contexts/ConfiguratorCartContext.tsx` - PC configurator cart management
 
-#### Localized Pages and Routes
+#### Localized Routes
 - `app/[locale]/layout.tsx` - Main layout with header and footer
-- `app/[locale]/page.tsx` - Home page
+- `app/[locale]/(home)/page.tsx` - Home page
+- `app/[locale]/configurator/` - PC configurator tool
+- `app/[locale]/auth/` - Authentication pages (login, register)
+- `app/[locale]/(staff)/` - Admin and staff panels
 
-**Authentication Pages:**
-- `app/[locale]/auth/login/page.tsx` - Login page
-- `app/[locale]/auth/register/page.tsx` - Registration page
-- `app/[locale]/auth/forgot-password/page.tsx` - Password recovery
+## Getting Started
 
-**User Dashboard:**
-- `app/[locale]/dashboard/page.tsx` - User dashboard
+### Prerequisites
+- Node.js 18.x or higher
+- MySQL database
+- Stripe account (for payment processing)
 
-**Configurator:**
-- `app/[locale]/configurator/page.tsx` - PC configurator tool
+### Installation
 
-**Shop:**
-- `app/[locale]/shop/ready-made/page.tsx` - Pre-configured PCs
-- `app/[locale]/shop/product/[id]/page.tsx` - Product details
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/your-repo-name.git
+cd your-repo-name
+```
 
-**Cart & Checkout:**
-- `app/[locale]/cart/page.tsx` - Shopping cart
-- `app/[locale]/checkout/page.tsx` - Checkout process
-- `app/[locale]/orders/[id]/page.tsx` - Order details
+2. Install dependencies
+```bash
+npm install
+```
 
-**Admin Panel:**
-- `app/[locale]/admin/page.tsx` - Admin dashboard
-- `app/[locale]/admin/components/create/page.tsx` - Create components
-- `app/[locale]/admin/components/edit/[id]/page.tsx` - Edit components
-- `app/[locale]/admin/components/view/[id]/page.tsx` - View components
-- `app/[locale]/admin/configurations/create/page.tsx` - Create configurations
-- `app/[locale]/admin/configurations/edit/[id]/page.tsx` - Edit configurations
-- `app/[locale]/admin/configurations/view/[id]/page.tsx` - View configurations
-- `app/[locale]/admin/orders/edit/[id]/page.tsx` - Edit orders
-- `app/[locale]/admin/orders/view/[id]/page.tsx` - View orders
-- `app/[locale]/admin/users/edit/[id]/page.tsx` - Edit users
-- `app/[locale]/admin/users/view/[id]/page.tsx` - View users
+3. Set up environment variables
+Create a `.env` file based on `.env.example` with your database connection string and other configuration.
 
-**Specialist Panel:**
-- `app/[locale]/specialist/page.tsx` - Specialist dashboard
+4. Initialize the database
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+```
 
-#### Component Structure
-- `app/components/Configurator/` - Configurator components
-  - `ComponentSelectionPanel.tsx`
-  - `SelectedComponents.tsx`
-  - `ConfigurationSummary.tsx`
+5. Seed the database with initial data
+```bash
+npm run seed
+```
 
-- `app/components/Dashboard/` - Dashboard components
-  - `ProfileTab.tsx` - User profile management
+6. Start the development server
+```bash
+npm run dev
+```
 
-- `app/components/Footer/` - Footer components
-  - `Footer.tsx`
+### Build for Production
+```bash
+npm run build
+npm run start
+```
 
-- `app/components/Header/` - Header components
-  - `Header.tsx`
-  - `LanguageSwitcher.tsx`
-  - `MobileMenu.tsx`
+## Development Scripts
 
-- `app/components/Home/` - Home page components
-  - `HeroSection.tsx`
-  - `FeaturedConfigurations.tsx`
+- `npm run dev` - Start development server
+- `npm run dev:high-memory` - Start dev server with increased memory allocation
+- `npm run build` - Build for production
+- `npm run build:clean` - Clean and build for production
+- `npm run prisma:studio` - Open Prisma Studio to view/edit database
+- `npm run seed` - Seed the database with initial data
+
+## Notes for Developers
+
+- The project uses Next.js App Router with route groups and internationalized routing
+- Ensure you run prisma:generate after schema changes
+- Use the appropriate locale prefix for all internal links
   - `ServicesSection.tsx`
 
 - `app/components/ui/` - Shared UI components
@@ -157,6 +180,17 @@ A full-stack web application for creating custom PC configurations, managing rea
 - `public/uploads/profiles/` - User profile images
 - `public/file.svg`, `public/globe.svg`, etc. - Static SVG assets
 
+## Key Features
+
+- User authentication with both email and phone support
+- PC component configurator with compatibility checking
+- Ready-made PC shop with product listings and details
+- Role-based access (Admin, Specialist, User)
+- Multi-language support (English, Latvian, Russian)
+- Order management system
+- User dashboard with profile management
+- Admin panel for inventory and user management
+
 ## Recent Updates
 
 - Added profile picture support
@@ -188,11 +222,42 @@ npm run seed
 npm run dev
 ```
 
+### Memory-Optimized Development
+
+If you encounter memory issues during development, you can use these commands:
+
+```bash
+# Development with increased memory (8GB)
+npm run dev:high-memory
+
+# Development with optimized memory settings (4GB)
+npm run dev:simple
+
+# Development after cleaning caches
+npm run dev:clean
+
+# Development with reduced routes
+npm run dev:reduced
+```
+
 ## Deployment
 
 Build the application for production:
 ```bash
 npm run build
+```
+
+If you encounter memory issues during build, try one of these alternatives:
+
+```bash
+# High memory build (8GB)
+npm run build:high-memory
+
+# Low memory build (4GB, single thread)
+npm run build:low-memory
+
+# Clean build (removes caches first)
+npm run build:clean
 ```
 
 Start the production server:
@@ -205,3 +270,13 @@ npm start
 - Admin: admin@ivapro.com / admin123
 - Specialist: specialist@ivapro.com / admin123
 - User: user@ivapro.com / admin123
+
+## Technologies Used
+
+- **Frontend**: Next.js 15, React 19, TailwindCSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: MySQL
+- **Authentication**: JWT, next-auth
+- **Internationalization**: next-intl
+- **Payment Processing**: Stripe
+- **Validation**: Zod, React Hook Form

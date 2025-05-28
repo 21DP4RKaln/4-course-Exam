@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useTheme } from '@/app/contexts/ThemeContext'
 import { 
-  Eye, EyeOff, Mail, Lock, Phone, AlertTriangle, 
+  Eye, EyeOff, Mail, Lock, Phone, AlertTriangle,
   User, Loader,
 } from 'lucide-react'
 import AnimatedButton from '@/app/components/ui/animated-button'
@@ -17,6 +17,8 @@ import Image from 'next/image'
 import Loading from '@/app/components/ui/Loading'
 import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
 import PhoneInput from '@/app/components/ui/PhoneInput'
+import { Checkbox } from '@/components/ui/checkbox'
+import { analyzePasswordStrength } from '@/lib/passwordStrength'
 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -45,7 +47,7 @@ export default function AuthPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
-  const { login, register, loading } = useAuth()
+  const { login, register, socialLogin, loading } = useAuth()
   const { theme } = useTheme()
   const locale = pathname.split('/')[1]
   
@@ -55,14 +57,14 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [container, setContainer] = useState<HTMLElement | null>(null)
-
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    acceptTerms: false
   })
 
   // Move useEffects to the top level
@@ -92,11 +94,21 @@ export default function AuthPage() {
       setIsSignUp(true)
     }
   }, [searchParams])
-
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     
-    if (name === 'email' && value && !value.includes('@')) {
+    // Handle checkbox inputs
+    if (type === 'checkbox') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: checked
+      }))
+      return
+    }
+    
+    // Only auto-switch between email and phone in registration form
+    if (name === 'email' && value && !value.includes('@') && isSignUp) {
       const numericValue = value.replace(/\D/g, '')
       if (numericValue) {
         setFormData(prev => ({
@@ -151,14 +163,13 @@ export default function AuthPage() {
       setIsSubmitting(false)
     }
   }
-
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setError(null)
     
     try {
-      const { firstName, lastName, email, phone, password, confirmPassword } = formData
+      const { firstName, lastName, email, phone, password, confirmPassword, acceptTerms } = formData
       
       if (!firstName || !lastName || !password) {
         throw new Error('Please fill in all required fields')
@@ -167,13 +178,18 @@ export default function AuthPage() {
       if (!email && !phone) {
         throw new Error('Please provide either email or phone number')
       }
-      
-      if (password !== confirmPassword) {
+        if (password !== confirmPassword) {
         throw new Error('Passwords do not match')
       }
       
-      if (password.length < 8) {
-        throw new Error('Password must be at least 8 characters')
+      // Use password strength validation
+      const passwordAnalysis = analyzePasswordStrength(password)
+      if (!passwordAnalysis.isValid) {
+        throw new Error('Password must contain at least 3 of the following: lowercase letter, uppercase letter, number, or special character')
+      }
+
+      if (!acceptTerms) {
+        throw new Error(t('auth.termsRequired'))
       }
 
       await register(email || '', password, `${firstName} ${lastName}`, phone || '')
@@ -184,9 +200,16 @@ export default function AuthPage() {
       setIsSubmitting(false)
     }
   }
-
-  const handleSocialLogin = (provider: string) => {
-    alert(`${provider} login not implemented yet`)
+  const handleSocialLogin = async (provider: 'google' | 'apple' | 'linkedin') => {
+    try {
+      setIsSubmitting(true)
+      setError(null)
+      await socialLogin(provider)
+    } catch (error: any) {
+      setError(error.message || `${provider} login failed`)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -214,19 +237,17 @@ export default function AuthPage() {
 
       <Container className={isSignUp ? 'right-panel-active' : ''} id="container" theme={theme}>
         {/* Sign Up Form */}
-        <SignUpContainer className="sign-up-container">
-          <Form onSubmit={handleRegisterSubmit} theme={theme}>
-            <Title theme={theme}>Create Account</Title>
+        <SignUpContainer className="sign-up-container">          <Form onSubmit={handleRegisterSubmit} theme={theme}>            <Title theme={theme}>{t('auth.createAccount')}</Title>
             
             {/* Social Login Buttons */}
             <SocialContainer>
-              <SocialButton onClick={() => handleSocialLogin('Google')} theme={theme}>
+              <SocialButton onClick={() => handleSocialLogin('google')} theme={theme}>
                 <GoogleIcon />
               </SocialButton>
-              <SocialButton onClick={() => handleSocialLogin('Apple')} theme={theme}>
+              <SocialButton onClick={() => handleSocialLogin('apple')} theme={theme}>
                 <AppleIcon />
               </SocialButton>
-              <SocialButton onClick={() => handleSocialLogin('LinkedIn')} theme={theme}>
+              <SocialButton onClick={() => handleSocialLogin('linkedin')} theme={theme}>
                 <LinkedInIcon />
               </SocialButton>
             </SocialContainer>
@@ -246,8 +267,7 @@ export default function AuthPage() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className="input"
-                    placeholder="First Name"
+                    className="input"                    placeholder={t('auth.firstName')}
                     autoComplete="off"
                   />
                 </StyledInput>
@@ -260,8 +280,7 @@ export default function AuthPage() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className="input"
-                    placeholder="Last Name"
+                    className="input"                    placeholder={t('auth.lastName')}
                     autoComplete="off"
                   />
                 </StyledInput>
@@ -274,8 +293,7 @@ export default function AuthPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="input"
-                    placeholder="Email (optional if phone provided)"
+                    className="input"                    placeholder={t('auth.emailOptional')}
                     autoComplete="off"
                   />
                 </StyledInput>
@@ -288,26 +306,23 @@ export default function AuthPage() {
                     onChange={(value) => handleInputChange({
                       target: { name: 'phone', value }
                     } as any)}
-                    className="input"
-                    placeholder="Phone (optional if email provided)"
+                    className="input"                    placeholder={t('auth.phoneOptional')}
                   />
                 </StyledInput>
               </InputGroup>
-              
-              <InputGroup $fullWidth>
+                <InputGroup $fullWidth>
                 <PasswordWrapper>
                   <StyledInput>
                     <input 
                       type={showPassword ? 'text' : 'password'}
                       name="password"
                       value={formData.password}
-                      onChange={handleInputChange}
-                      className="input"
-                      placeholder="Password"
+                      onChange={handleInputChange}                      className="input"
+                      placeholder={t('auth.password')}
                       autoComplete="off"
                     />
                   </StyledInput>
-                  <PasswordToggle onClick={() => setShowPassword(!showPassword)} theme={theme}>
+                  <PasswordToggle type="button" onClick={() => setShowPassword(!showPassword)} theme={theme}>
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </PasswordToggle>
                 </PasswordWrapper>
@@ -320,22 +335,138 @@ export default function AuthPage() {
                       type={showConfirmPassword ? 'text' : 'password'}
                       name="confirmPassword"
                       value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      className="input"
-                      placeholder="Confirm Password"
+                      onChange={handleInputChange}                      className="input"                      placeholder={t('auth.confirmPassword')}
                       autoComplete="off"
                     />
                   </StyledInput>
-                  <PasswordToggle onClick={() => setShowConfirmPassword(!showConfirmPassword)} theme={theme}>
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </PasswordToggle>
+                  <PasswordToggle type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} theme={theme}>
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}                  </PasswordToggle>
                 </PasswordWrapper>
-              </InputGroup>
-            </FormGrid>
+              </InputGroup>            </FormGrid>
+            
+            {/* Password Strength Indicator */}
+            {isSignUp && formData.password && (
+              <div className="space-y-3 mb-4">
+                {(() => {
+                  const passwordAnalysis = analyzePasswordStrength(formData.password);
+                  const strength = passwordAnalysis.score;
+                  
+                  const getStrengthText = (strength: number) => {
+                    if (strength <= 2) return 'Vāja';
+                    if (strength <= 3) return 'Vidēja';
+                    if (strength <= 4) return 'Laba';
+                    return 'Stipra';
+                  };
+                  
+                  return (
+                    <>
+                      <div className="space-y-1">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                            Paroles stiprums
+                          </span>
+                          <span className={`text-xs font-bold ${
+                            strength <= 2 ? 'text-red-500' : 
+                            strength <= 3 ? 'text-yellow-500' : 
+                            strength <= 4 ? 'text-blue-500' : 
+                            'text-green-500'
+                          }`}>
+                            {getStrengthText(strength)}
+                          </span>
+                        </div>
+                        <div className="flex space-x-1">
+                          {[1, 2, 3, 4, 5].map((level) => (
+                            <div
+                              key={level}
+                              className={`h-2 flex-1 rounded-full transition-all duration-300 ${
+                                level <= strength
+                                  ? strength <= 2
+                                    ? 'bg-red-500'
+                                    : strength <= 3
+                                    ? 'bg-yellow-500'
+                                    : strength <= 4
+                                    ? 'bg-blue-500'
+                                    : 'bg-green-500'
+                                  : 'bg-gray-200 dark:bg-gray-700'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-3 space-y-2">
+                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Prasības:</p>
+                        <div className="grid grid-cols-2 gap-1">
+                          <div className={`flex items-center space-x-1 text-xs ${
+                            passwordAnalysis.requirements.minLength ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                          }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${
+                              passwordAnalysis.requirements.minLength ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                            }`} />
+                            <span>8+ rakstzīmes</span>
+                          </div>
+                          <div className={`flex items-center space-x-1 text-xs ${
+                            passwordAnalysis.requirements.hasLowercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                          }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${
+                              passwordAnalysis.requirements.hasLowercase ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                            }`} />
+                            <span>Mazais burts</span>
+                          </div>
+                          <div className={`flex items-center space-x-1 text-xs ${
+                            passwordAnalysis.requirements.hasUppercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                          }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${
+                              passwordAnalysis.requirements.hasUppercase ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                            }`} />
+                            <span>Lielais burts</span>
+                          </div>
+                          <div className={`flex items-center space-x-1 text-xs ${
+                            passwordAnalysis.requirements.hasNumber ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                          }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${
+                              passwordAnalysis.requirements.hasNumber ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                            }`} />
+                            <span>Cipars</span>
+                          </div>
+                          <div className={`flex items-center space-x-1 text-xs ${
+                            passwordAnalysis.requirements.hasSpecialChar ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                          }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${
+                              passwordAnalysis.requirements.hasSpecialChar ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                            }`} />
+                            <span>Speciālā rakstzīme</span>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+            
+            {/* Terms and Conditions Checkbox */}
+            <TermsCheckboxWrapper><Checkbox
+                id="acceptTerms"
+                checked={formData.acceptTerms}
+                onCheckedChange={(checked: boolean) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    acceptTerms: checked === true
+                  }))
+                }}
+              />
+              <TermsLabel htmlFor="acceptTerms" theme={theme}>
+                {t('auth.acceptTerms')}{' '}
+                <TermsLink href={`/${locale}/terms-of-service`} target="_blank" theme={theme}>
+                  {t('auth.termsOfService')}
+                </TermsLink>
+              </TermsLabel>
+            </TermsCheckboxWrapper>
             
             <StyledButton>
               <button type="submit" className="Btn-Container" disabled={isSubmitting}>
-                <span className="text">{isSubmitting ? 'Processing...' : 'Sign Up'}</span>
+                <span className="text">{isSubmitting ? t('auth.signingUp') : t('auth.signUp')}</span>
                 <span className="icon-Container">
                   <svg width={16} height={19} viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="1.61321" cy="1.61321" r="1.5" fill="white" />
@@ -356,19 +487,17 @@ export default function AuthPage() {
         </SignUpContainer>
 
         {/* Sign In Form */}
-        <SignInContainer className="sign-in-container">
-          <Form onSubmit={handleLoginSubmit} theme={theme}>
-            <Title theme={theme}>Login</Title>
+        <SignInContainer className="sign-in-container">          <Form onSubmit={handleLoginSubmit} theme={theme}>            <Title theme={theme}>{t('buttons.login')}</Title>
             
             {/* Social Login Buttons */}
             <SocialContainer>
-              <SocialButton onClick={() => handleSocialLogin('Google')} theme={theme}>
+              <SocialButton onClick={() => handleSocialLogin('google')} theme={theme}>
                 <GoogleIcon />
               </SocialButton>
-              <SocialButton onClick={() => handleSocialLogin('Apple')} theme={theme}>
+              <SocialButton onClick={() => handleSocialLogin('apple')} theme={theme}>
                 <AppleIcon />
               </SocialButton>
-              <SocialButton onClick={() => handleSocialLogin('LinkedIn')} theme={theme}>
+              <SocialButton onClick={() => handleSocialLogin('linkedin')} theme={theme}>
                 <LinkedInIcon />
               </SocialButton>
             </SocialContainer>
@@ -385,9 +514,8 @@ export default function AuthPage() {
                 type="text"
                 name="email"
                 value={formData.email}
-                onChange={handleInputChange}
-                className="input"
-                placeholder="Email or Phone"
+                onChange={handleInputChange}                className="input"
+                placeholder={t('common.email') + ' ' + t('common.or') + ' ' + t('contact.phoneLabel')}
                 autoComplete="off"
               />
             </StyledInput>
@@ -397,25 +525,22 @@ export default function AuthPage() {
                 <input 
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="input"
-                  placeholder="Password"
+                  value={formData.password}                  onChange={handleInputChange}                  className="input"
+                  placeholder={t('auth.password')}
                   autoComplete="off"
                 />
               </StyledInput>
-              <PasswordToggle onClick={() => setShowPassword(!showPassword)} theme={theme}>
+              <PasswordToggle type="button" onClick={() => setShowPassword(!showPassword)} theme={theme}>
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </PasswordToggle>
             </PasswordWrapper>
-            
-            <StyledLink href={`/${locale}/auth/forgot-password`} theme={theme}>
-              Forgot your password?
+              <StyledLink href={`/${locale}/auth/forgot-password`} theme={theme}>
+              {t('auth.forgotPassword')}
             </StyledLink>
             
             <StyledButton>
               <button type="submit" className="Btn-Container" disabled={isSubmitting}>
-                <span className="text">{isSubmitting ? 'Signing in...' : 'Sign In'}</span>
+                <span className="text">{isSubmitting ? t('auth.signingIn') : t('auth.signIn')}</span>
                 <span className="icon-Container">
                   <svg width={16} height={19} viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="1.61321" cy="1.61321" r="1.5" fill="white" />
@@ -437,23 +562,19 @@ export default function AuthPage() {
 
         {/* Overlay */}
         <OverlayContainer className="overlay-container">
-          <Overlay className="overlay" theme={theme}>
-            <OverlayPanel className="overlay-panel overlay-left">
-              <Title theme="light">Do you have profile?</Title>
-              <Paragraph>Then login to your profile with email or phone</Paragraph>
-              <AnimatedButtonWrapper>
+          <Overlay className="overlay" theme={theme}>            <OverlayPanel className="overlay-panel overlay-left">
+              <Title theme="light">{t('auth.haveProfileTitle')}</Title>
+              <Paragraph>{t('auth.thenLogin')}</Paragraph>              <AnimatedButtonWrapper>
                 <button className="animated-button ghost" onClick={toggleForm}>
-                  <span>Login</span>
+                  <span>{t('buttons.login')}</span>
                   <span />
                 </button>
               </AnimatedButtonWrapper>
-            </OverlayPanel>
-            <OverlayPanel className="overlay-panel overlay-right">
-              <Title theme="light">First time?</Title>
-              <Paragraph>Then press here for create new profile</Paragraph>
-              <AnimatedButtonWrapper>
+            </OverlayPanel>            <OverlayPanel className="overlay-panel overlay-right">
+              <Title theme="light">{t('auth.firstTimeTitle')}</Title>
+              <Paragraph>{t('auth.thenRegister')}</Paragraph>              <AnimatedButtonWrapper>
                 <button className="animated-button ghost" onClick={toggleForm}>
-                  <span>Register</span>
+                  <span>{t('buttons.register')}</span>
                   <span />
                 </button>
               </AnimatedButtonWrapper>
@@ -633,6 +754,11 @@ export const PasswordToggle = styled.button`
   align-items: center;
   justify-content: center;
   z-index: 1;
+
+  /* Specific positioning for login form */
+  .sign-in-container & {
+    top: 40%;
+  }
 
   &:hover {
     color: ${props => props.theme === 'dark' ? '#fff' : '#333'};
@@ -910,7 +1036,7 @@ export const AnimatedButtonWrapper = styled.div`
 
   .animated-button:hover {
     box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    color:rgb(8, 8, 8);
   }
 
   .animated-button:active {
@@ -926,5 +1052,31 @@ export const AnimatedButtonWrapper = styled.div`
   .animated-button.ghost {
     background-color: transparent;
     border-color: #FFFFFF;
+  }
+`
+
+export const TermsCheckboxWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+`
+
+export const TermsLabel = styled.label`
+  font-size: 14px;
+  color: ${props => props.theme === 'dark' ? '#e5e7eb' : '#374151'};
+  line-height: 1.4;
+  cursor: pointer;
+  user-select: none;
+`
+
+export const TermsLink = styled(Link)`
+  color: ${props => props.theme === 'dark' ? '#60a5fa' : '#2563eb'};
+  text-decoration: underline;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: ${props => props.theme === 'dark' ? '#93c5fd' : '#1d4ed8'};
   }
 `

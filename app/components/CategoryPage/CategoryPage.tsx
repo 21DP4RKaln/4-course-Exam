@@ -1,9 +1,27 @@
-'use client'
+﻿'use client'
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Component, Specification, CategoryPageProps } from './types'
+import { FilterGroup, FilterOption } from './filterInterfaces'
+import { createKeyboardFilterGroups } from './filters/keyboardFilters'
+import { createMouseFilterGroups } from './filters/mouseFilters'
+import { createHeadphonesFilterGroups } from './filters/headphonesFilters'
+import { createMonitorFilterGroups } from './filters/monitorFilters'
+import { createMicrophoneFilterGroups } from './filters/microphoneFilters'
+import { createGpuFilterGroups } from './filters/gpuFilters'
+import { createCpuFilterGroups } from './filters/cpuFilters'
+import { createMotherboardFilterGroups } from './filters/motherboardFilters'
+import { createRamFilterGroups } from './filters/ramFilters'
+import { createStorageFilterGroups } from './filters/storageFilters'
+import { createPsuFilterGroups } from './filters/psuFilters'
+import { createCaseFilterGroups } from './filters/caseFilters'
+import { createCoolerFilterGroups } from './filters/coolerFilters'
+import { createCameraFilterGroups } from './filters/cameraFilters'
+import { createSpeakerFilterGroups } from './filters/speakerFilters'
+import { createMousePadFilterGroups } from './filters/mousePadFilters'
 import { 
   AlertTriangle,
   Info,
@@ -18,63 +36,23 @@ import {
 import AnimatedButton from '@/app/components/ui/animated-button'
 import ProductCard from '@/app/components/Shop/ProductCard'
 import Loading from '@/app/components/ui/Loading'
-import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
 import { useTheme } from '@/app/contexts/ThemeContext'
 import styled from 'styled-components'
 
-interface Component {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  imageUrl: string | null;
-  categoryId: string;
-  categoryName: string;
-  specifications: Record<string, string>;
-  sku: string;
-}
-
-interface Specification {
-  id: string;
-  name: string;
-  displayName: string;
-  values: string[];
-  multiSelect?: boolean; // Add support for multi-select filters
-}
-
-interface FilterOption {
-  id: string;
-  name: string;
-}
-
-interface FilterGroup {
-  title: string;
-  type: string;
-  options: FilterOption[];
-}
-
-interface CategoryPageProps {
-  params: Promise<{ 
-    slug: string;
-  }>;
-  type?: 'component' | 'peripheral';
-}
-
-export default function CategoryPage({ params, type = 'component' }: CategoryPageProps) {
+export default function CategoryPage({ params, type }: CategoryPageProps) {
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const locale = pathname.split('/')[1]
-  const categorySlug = React.use(params).slug
-
+  const pathParts = pathname.split('/')
+  const categorySlug = pathParts[3]
   const [components, setComponents] = useState<Component[]>([])
   const [filteredComponents, setFilteredComponents] = useState<Component[]>([])
   const [specifications, setSpecifications] = useState<Specification[]>([])
   const [categoryName, setCategoryName] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { theme } = useTheme()
+  const { theme, resolvedTheme } = useTheme()
 
   const maxPrice = useMemo(() => {
     if (components.length === 0) return 5000
@@ -101,166 +79,309 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({})
   const [sortOption, setSortOption] = useState('price-asc')
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
-  const [filterGroups, setFilterGroups] = useState<FilterGroup[]>([])  // No longer need allExpanded state and toggleAllSections function as filters will stay collapsed by default
+  const [filterGroups, setFilterGroups] = useState<FilterGroup[]>([])
 
-  const apiEndpoint = type === 'peripheral' ? 
-    `/api/components?category=${categorySlug}&type=peripherals` : 
-    `/api/components?category=${categorySlug}&type=components`;
+  // Organize specifications into filter groups
+  const organizeFiltersIntoGroups = (specs: Specification[]): FilterGroup[] => {
+    // Define common filter types
+    const filterTypes = {
+      manufacturer: ['brand', 'manufacturer', 'make'],
+      performance: ['clock', 'speed', 'frequency', 'power', 'tdp'],
+      memory: ['memory', 'ram', 'capacity', 'storage'],
+      display: ['resolution', 'refresh', 'panel', 'size'],
+      connectivity: ['port', 'interface', 'connection', 'wireless'],
+      physical: ['dimension', 'size', 'weight', 'material'],
+      features: ['rgb', 'lighting', 'fan', 'cooling']
+    };
 
+    // Initialize filter groups
+    const groupMap: Record<string, FilterGroup> = {};
+
+    // Process specifications
+    specs.forEach(spec => {
+      if (!spec?.values?.length) return;
+
+      const name = spec.name.toLowerCase();
+      const displayName = spec.displayName || spec.name;
+
+      // Determine group type
+      let groupType = 'other';
+      let groupTitle = displayName;
+
+      // Check for manufacturer/brand first
+      if (filterTypes.manufacturer.some(term => name.includes(term))) {
+        groupType = 'manufacturer';
+        groupTitle = t('categoryPage.filterGroups.manufacturer');
+      } 
+      // Then check other filter types
+      else {
+        for (const [type, terms] of Object.entries(filterTypes)) {
+          if (terms.some(term => name.includes(term))) {
+            groupType = type;
+            groupTitle = t(`categoryPage.filterGroups.${type}`);
+            break;
+          }
+        }
+      }
+
+      // Get or create group
+      if (!groupMap[groupType]) {
+        groupMap[groupType] = {
+          title: groupTitle,
+          type: groupType,
+          options: []
+        };
+      }
+
+      // Add options to group
+      spec.values
+        .filter(value => value && String(value).trim())
+        .forEach(value => {
+          const option = {
+            id: `${spec.name}=${value}`,
+            name: String(value).trim()
+          };
+
+          // Check for duplicate before adding
+          if (!groupMap[groupType].options.some(o => o.id === option.id)) {
+            groupMap[groupType].options.push(option);
+          }
+        });
+    });
+
+    // Sort groups and their options
+    const groups = Object.values(groupMap)
+      .filter(g => g.options.length > 0)
+      .sort((a, b) => {
+        // Put manufacturer first
+        if (a.type === 'manufacturer') return -1;
+        if (b.type === 'manufacturer') return 1;
+        return a.title.localeCompare(b.title);
+      });
+
+    // Sort options within each group
+    groups.forEach(group => {
+      group.options.sort((a, b) => a.name.localeCompare(b.name));
+    });
+
+    return groups;
+  };
+    
+  // Extract specifications from components
+  const extractSpecificationsFromComponents = (components: Component[]): Specification[] => {
+    // Map to store unique values for each specification
+    const specValueMap = new Map<string, Set<string>>();
+    
+    // Helper to add a specification value
+    const addSpecValue = (name: string, value: string) => {
+      if (!specValueMap.has(name)) {
+        specValueMap.set(name, new Set());
+      }
+      specValueMap.get(name)?.add(value);
+    };
+
+    // Process each component
+    components.forEach(component => {
+      if (!component.specifications) return;
+
+      // Extract category type
+      const category = (component.categoryName || '').toLowerCase();
+
+      // Process each specification
+      Object.entries(component.specifications).forEach(([key, rawValue]) => {
+        if (!rawValue) return;
+        
+        const value = String(rawValue).trim();
+        const keyLower = key.toLowerCase();
+
+        // Add basic specification
+        addSpecValue(key, value);
+
+        // Special handling based on category and key
+        if (category.includes('gpu') && keyLower.includes('memory')) {
+          addSpecValue('vram', value);
+        }
+        else if (keyLower.includes('core') && keyLower.includes('clock')) {
+          addSpecValue('core_clock', value);
+        }
+        else if (keyLower.includes('boost') && keyLower.includes('clock')) {
+          addSpecValue('boost_clock', value);
+        }
+        else if (keyLower.includes('memory') && keyLower.includes('type')) {
+          addSpecValue('memory_type', value);
+        }
+        else if (keyLower.includes('tdp') || keyLower.includes('power')) {
+          addSpecValue('tdp', value);
+        }
+      });
+    });
+
+    // Convert map to specifications array
+    const specifications: Specification[] = Array.from(specValueMap.entries())
+      .map(([name, values]) => ({
+        id: name,
+        name,
+        displayName: name
+          .split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
+        values: Array.from(values)
+      }))
+      .sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+    return specifications;
+  };
+
+  // Fetch and process component data
   useEffect(() => {
-    const fetchComponentsData = async () => {
-      setLoading(true)
+    // Create category helper
+    const createCheckCategory = (slug?: string, name?: string) => {
+      return (slugs: string[], namePatterns: string[]) => {
+        if (!slug && !name) return false;
+        return (
+          (slug && slugs.includes(slug.toLowerCase())) ||
+          (name && namePatterns.some(pattern => name.toLowerCase().includes(pattern)))
+        );
+      };
+    };
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      
       try {
-        const response = await fetch(apiEndpoint)
+        const resolvedParams = await params;
+        const categorySlug = resolvedParams.category;
+        const url = categorySlug
+          ? `/api/shop/product/${type}s?category=${categorySlug}`
+          : `/api/shop/product/${type}s`;
+
+        const response = await fetch(url);
         
         if (!response.ok) {
-          throw new Error(t('categoryPage.fetchError', { type }))
+          const errorData = await response.text();
+          throw new Error(t('categoryPage.fetchError', { type, details: errorData }));
         }
-        
-        const data = await response.json()
-        
-        if (data.categories && data.categories.length > 0) {
-          const category = data.categories.find((cat: any) => cat.slug === categorySlug)
-          if (category) {
-            setCategoryName(category.name)
-          } else {
-            setCategoryName(data.categories[0].name)
-          }
-        }
-        
-        if (data.components && Array.isArray(data.components)) {
-          setComponents(data.components)
-          setFilteredComponents(data.components)
-        }
-        
-        if (data.specifications && Array.isArray(data.specifications)) {
-          setSpecifications(data.specifications)
-         
-          const initialExpandedSections: Record<string, boolean> = {}
-         
-          const groups = organizeFiltersIntoGroups(data.specifications)
-          setFilterGroups(groups)
-            // Initialize all sections as collapsed
-          setExpandedSections(initialExpandedSections)
-          
-          const initialSelectedFilters: Record<string, string[]> = {}
-          groups.forEach(group => {
-            initialSelectedFilters[group.type] = []
-          })
-          setSelectedFilters(initialSelectedFilters)
-        }
-      } catch (err) {
-        console.error(`Error fetching ${type}s:`, err)
-        setError(t('categoryPage.fetchError', { type }))
-      } finally {
-        setLoading(false)
-      }
-    }
-    
-    fetchComponentsData()
-  }, [categorySlug, type, apiEndpoint, t])
- 
-  const organizeFiltersIntoGroups = (specs: Specification[]): FilterGroup[] => {
-    const groups: FilterGroup[] = []
-    const groupMappings: Record<string, string> = {
-      // Common groupings for all component types
-      'brand': t('categoryPage.filterGroups.manufacturer'),
-      'manufacturer': t('categoryPage.filterGroups.manufacturer'),
-      'model': t('categoryPage.filterGroups.model'),
-      
-      // CPUs
-      'socket': t('categoryPage.filterGroups.socket'),
-      'cores': t('categoryPage.filterGroups.cores'),
-      'threads': t('categoryPage.filterGroups.threads'),
-      'frequency': t('categoryPage.filterGroups.frequency'),
-      'architecture': t('categoryPage.filterGroups.architecture'),
-      
-      // GPUs
-      'memory': t('categoryPage.filterGroups.memory'),
-      'memoryType': t('categoryPage.filterGroups.memoryType'),
-      'interface': t('categoryPage.filterGroups.interface'),
-      
-      // Mice & Peripherals
-      'sensor': t('categoryPage.filterGroups.sensor'),
-      'dpi': t('categoryPage.filterGroups.dpi'),
-      'rgb': t('categoryPage.filterGroups.rgb'),
-      'connection': t('categoryPage.filterGroups.connection'),
-      'wireless': t('categoryPage.filterGroups.wireless'),
-      'switches': t('categoryPage.filterGroups.switches'),
-      'polling': t('categoryPage.filterGroups.polling'),
-      
-      // RAM
-      'capacity': t('categoryPage.filterGroups.capacity'),
-      'speed': t('categoryPage.filterGroups.speed'),
-      'cas': t('categoryPage.filterGroups.cas'),
-      
-    }
-  
-    const generalGroup: FilterGroup = {
-      title: t('categoryPage.filterGroups.general'),
-      type: 'general',
-      options: []
-    }
- 
-    const manufacturerGroup: FilterGroup = {
-      title: t('categoryPage.filterGroups.manufacturer'),
-      type: 'manufacturer',
-      options: []
-    }
- 
-    const groupMap: Record<string, FilterGroup> = {}
-    
-    specs.forEach(spec => {
-      const specName = spec.name.toLowerCase()
-      const specDisplayName = spec.displayName
 
-      let groupName = 'general' 
-      
-      if (specName.includes('brand') || specName.includes('manufacturer')) {
-        groupName = 'manufacturer'
-      } else {
-        for (const [key, value] of Object.entries(groupMappings)) {
-          if (specName.includes(key.toLowerCase())) {
-            groupName = key
-            break
+        const data = await response.json();
+
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid response format');
+        }
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        // Set category name
+        let currentCategoryName = '';
+        if (data.categories?.length) {
+          const category = data.categories.find((cat: any) => cat.slug === categorySlug);
+          currentCategoryName = category ? category.name : data.categories[0].name;
+          setCategoryName(currentCategoryName);
+        }
+
+        // Process components
+        if (data.components?.length) {
+          setComponents(data.components);
+          setFilteredComponents(data.components);
+
+          // If no specifications provided, extract them from components
+          if (!data.specifications?.length) {
+            const extractedSpecs = extractSpecificationsFromComponents(data.components);
+            data.specifications = extractedSpecs;
           }
         }
-      }
-      
-      let group = groupMap[groupName]
-      if (!group) {
-        group = {
-          title: groupMappings[groupName] || specDisplayName,
-          type: groupName,
-          options: []
+
+        // Create filter groups based on specifications
+        if (data.specifications?.length) {
+          setSpecifications(data.specifications);
+
+          // Initialize category checker with resolved values
+          const checkCategory = createCheckCategory(categorySlug, currentCategoryName);          // Define category checks
+          const categoryChecks = {
+            isGpuCategory: checkCategory(['graphics-cards', 'gpu'], ['gpu', 'graphics']),
+            isKeyboardCategory: checkCategory(['keyboards', 'keyboard'], ['keyboard']),
+            isMouseCategory: checkCategory(['mice', 'mouse'], ['mouse']),
+            isMousePadCategory: checkCategory(['mouse-pads', 'mousepad', 'mouse-pad'], ['mouse pad', 'mousepad']),
+            isHeadphonesCategory: checkCategory(['headphones', 'headset'], ['headphone', 'headset']),
+            isMonitorCategory: checkCategory(['monitors', 'monitor', 'displays'], ['monitor', 'display']),
+            isMicrophoneCategory: checkCategory(['microphones', 'microphone', 'mics'], ['microphone', 'mic']),
+            isCameraCategory: checkCategory(['cameras', 'camera', 'webcams'], ['camera', 'webcam']),
+            isSpeakerCategory: checkCategory(['speakers', 'speaker'], ['speaker']),
+            isCpuCategory: checkCategory(['processors', 'cpus', 'cpu'], ['cpu', 'processor']),
+            isMotherboardCategory: checkCategory(['motherboards', 'motherboard', 'mainboards'], ['motherboard']),
+            isRamCategory: checkCategory(['memory', 'ram'], ['ram', 'memory']),
+            isStorageCategory: checkCategory(['storage', 'drives', 'ssd', 'hdd'], ['storage', 'drive', 'ssd', 'hdd']),
+            isPsuCategory: checkCategory(['power-supplies', 'psu'], ['psu', 'power supply']),
+            isCaseCategory: checkCategory(['cases', 'case', 'chassis'], ['case', 'chassis']),
+            isCoolerCategory: checkCategory(['coolers', 'cooling'], ['cooler', 'cooling'])
+          };
+
+          // Create filter groups
+          let filterGroups: FilterGroup[] = [];          if (data.components?.length) {
+            // Use specialized filter creators based on category
+            if (categoryChecks.isGpuCategory) filterGroups = createGpuFilterGroups(data.components);
+            else if (categoryChecks.isKeyboardCategory) filterGroups = createKeyboardFilterGroups(data.components);
+            else if (categoryChecks.isMouseCategory) filterGroups = createMouseFilterGroups(data.components);
+            else if (categoryChecks.isMousePadCategory) filterGroups = createMousePadFilterGroups(data.components);
+            else if (categoryChecks.isHeadphonesCategory) filterGroups = createHeadphonesFilterGroups(data.components);
+            else if (categoryChecks.isMonitorCategory) filterGroups = createMonitorFilterGroups(data.components);
+            else if (categoryChecks.isMicrophoneCategory) filterGroups = createMicrophoneFilterGroups(data.components);
+            else if (categoryChecks.isCameraCategory) filterGroups = createCameraFilterGroups(data.components);
+            else if (categoryChecks.isSpeakerCategory) filterGroups = createSpeakerFilterGroups(data.components);
+            else if (categoryChecks.isCpuCategory) filterGroups = createCpuFilterGroups(data.components);
+            else if (categoryChecks.isMotherboardCategory) filterGroups = createMotherboardFilterGroups(data.components);
+            else if (categoryChecks.isRamCategory) filterGroups = createRamFilterGroups(data.components);
+            else if (categoryChecks.isStorageCategory) filterGroups = createStorageFilterGroups(data.components);
+            else if (categoryChecks.isPsuCategory) filterGroups = createPsuFilterGroups(data.components);
+            else if (categoryChecks.isCaseCategory) filterGroups = createCaseFilterGroups(data.components);
+            else if (categoryChecks.isCoolerCategory) filterGroups = createCoolerFilterGroups(data.components);
+          }
+
+          // Fall back to generic filter organization if no specialized filters created
+          if (!filterGroups.length) {
+            filterGroups = organizeFiltersIntoGroups(data.specifications);
+          }
+
+          // Ensure we have at least an empty manufacturer filter group
+          if (!filterGroups.length) {
+            filterGroups = [{
+              title: t('categoryPage.filterGroups.manufacturer'),
+              type: 'manufacturer',
+              options: []
+            }];
+          }
+
+          setFilterGroups(filterGroups);
+
+          // Initialize filter states
+          const initialExpandedSections = filterGroups.reduce((acc, group) => ({
+            ...acc,
+            [group.type]: group.type === 'manufacturer'
+          }), {});
+
+          const initialSelectedFilters = filterGroups.reduce((acc, group) => ({
+            ...acc,
+            [group.type]: []
+          }), {});
+
+          setExpandedSections(initialExpandedSections);
+          setSelectedFilters(initialSelectedFilters);
         }
-        groupMap[groupName] = group
+
+      } catch (error) {
+        console.error('Error in fetchData:', error);
+        setError(error instanceof Error ? error.message : String(error));
+        setComponents([]);
+        setFilteredComponents([]);
+      } finally {
+        setLoading(false);
       }
-    
-      spec.values.forEach(value => {
-        group.options.push({
-          id: `${spec.name}=${value}`,
-          name: value
-        })
-      })
-    })
-   
-    if (manufacturerGroup.options.length > 0) {
-      groups.push(manufacturerGroup)
-    }
-   
-    const sortedGroups = Object.values(groupMap)
-      .filter(g => g.type !== 'manufacturer' && g.type !== 'general' && g.options.length > 0)
-      .sort((a, b) => a.title.localeCompare(b.title))
-  
-    groups.push(...sortedGroups)
-   
-    if (generalGroup.options.length > 0) {
-      groups.push(generalGroup)
-    }
-    
-    return groups
-  }
+    };
+
+    fetchData();
+  }, [params, type, t]);
 
   const handleFilterChange = (type: string, value: string) => {
     setSelectedFilters(prev => {
@@ -286,79 +407,108 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
       [type]: !prev[type]
     }))
   }
-   useEffect(() => {
-    if (components.length === 0) return
+
+  useEffect(() => {
+    if (!components.length) return;
     
-    let result = [...components]
-   
-    // Apply text search
+    let filtered = [...components];
+
+    // Apply text search filter
     if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter(component => 
-        component.name.toLowerCase().includes(query) || 
-        component.description.toLowerCase().includes(query) ||
-        Object.entries(component.specifications).some(([key, value]) => 
-          value.toLowerCase().includes(query)
-        )
-      )
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(component => {
+        // Check basic fields
+        if (component.name.toLowerCase().includes(query) ||
+            component.description.toLowerCase().includes(query)) {
+          return true;
+        }
+        // Check specifications
+        return Object.values(component.specifications || {}).some(value =>
+          String(value).toLowerCase().includes(query)
+        );
+      });
     }
 
-    // Apply price filter
-    result = result.filter(component => 
+    // Apply price range filter
+    filtered = filtered.filter(component => 
       component.price >= priceRange.min && 
       component.price <= priceRange.max
-    )
- 
-    // Improved filter logic to handle multiple values per specification
-    Object.entries(selectedFilters).forEach(([type, filterValues]) => {
-      if (filterValues.length > 0) {
-        result = result.filter(component => {
-          // Group filter values by specification key
-          const filtersBySpec = filterValues.reduce((acc, filter) => {
-            const [key, value] = filter.split('=')
-            if (!acc[key]) acc[key] = []
-            acc[key].push(value)
-            return acc
-          }, {} as Record<string, string[]>)
+    );
 
-          // Check if component matches all filter groups
-          return Object.entries(filtersBySpec).every(([key, values]) => {
-            const componentValue = component.specifications[key]
-            // If any value in the group matches, it's a match
-            return values.some(value => {
-              // Handle numeric comparisons
-              if (!isNaN(Number(componentValue)) && !isNaN(Number(value))) {
-                return Number(componentValue) === Number(value)
-              }
-              // Handle string comparisons
-              return componentValue.toLowerCase() === value.toLowerCase()
-            })
-          })
-        })
-      }
-    })
-  
-    switch (sortOption) {
-      case 'price-asc':
-        result.sort((a, b) => a.price - b.price)
-        break
-      case 'price-desc':
-        result.sort((a, b) => b.price - a.price)
-        break
-      case 'name-asc':
-        result.sort((a, b) => a.name.localeCompare(b.name))
-        break
-      case 'name-desc':
-        result.sort((a, b) => b.name.localeCompare(a.name))
-        break
-      case 'stock-desc':
-        result.sort((a, b) => b.stock - a.stock)
-        break
+    // Apply selected filters
+    const activeFilters = Object.entries(selectedFilters)
+      .filter(([_, values]) => values.length > 0);
+      
+    if (activeFilters.length) {
+      filtered = filtered.filter(component => {
+        return activeFilters.every(([type, filters]) => {
+          // Manufacturer filter: match against component.brand or component.manufacturer
+          if (type === 'manufacturer') {
+            // Determine manufacturer from component.brand/vehicle or spec entries
+            const brandField = (component.brand || component.manufacturer || '').trim();
+            const specEntry = Object.entries(component.specifications || {}).find(
+              ([key, val]) => val && (key.toLowerCase().includes('brand') || key.toLowerCase().includes('manufacturer') || key.toLowerCase() === 'make')
+            );
+            const specBrand = specEntry ? String(specEntry[1]).trim() : '';
+            const compBrand = (brandField || specBrand).toLowerCase();
+            return filters.some(filter => {
+              const [, val] = filter.split('=');
+              return compBrand === val.toLowerCase();
+            });
+          }
+          // CPU series filter: match against component name
+          if (type === 'cpu_series') {
+            const compName = component.name.toLowerCase();
+            return filters.some(filter => {
+              const [, val] = filter.split('=');
+              return compName.includes(val.toLowerCase());
+            });
+          }
+          // Other filters: group filters by their base key (before the = sign)
+          const filterGroups = filters.reduce((acc, filter) => {
+            const [key, value] = filter.split('=');
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(value.toLowerCase());
+            return acc;
+          }, {} as Record<string, string[]>);
+          // Check each filter group against specifications
+          return Object.entries(filterGroups).every(([key, values]) => {
+            const matchingSpec = Object.entries(component.specifications || {}).find(
+              ([specKey]) => specKey.toLowerCase().includes(key.toLowerCase())
+            );
+            if (!matchingSpec) return false;
+            const [, specValue] = matchingSpec;
+            const specValueStr = String(specValue).toLowerCase();
+            return values.some(value => 
+              specValueStr.includes(value) || value.includes(specValueStr)
+            );
+          });
+        });
+      });
     }
-    
-    setFilteredComponents(result)
-  }, [components, searchQuery, selectedFilters, sortOption, priceRange])
-    const resetFilters = () => {
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortOption) {
+        case 'price-asc':
+          return a.price - b.price;
+        case 'price-desc':
+          return b.price - a.price;
+        case 'name-asc':
+          return a.name.localeCompare(b.name);
+        case 'name-desc':
+          return b.name.localeCompare(a.name);
+        case 'stock-desc':
+          return b.stock - a.stock;
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredComponents(filtered);
+  }, [components, searchQuery, selectedFilters, sortOption, priceRange]);
+
+  const resetFilters = () => {
     const initialSelectedFilters: Record<string, string[]> = {}
     filterGroups.forEach(group => {
       initialSelectedFilters[group.type] = []
@@ -371,7 +521,7 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh] bg-gray-50 dark:bg-gray-900">
+      <div className="flex justify-center items-center min-h-[50vh] bg-neutral-50 dark:bg-neutral-900">
         <Loading size="medium" />
       </div>
     )
@@ -381,7 +531,7 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
     return (
       <div className="max-w-7xl mx-auto text-center py-16">
         <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           {error}
         </h2>
         <button
@@ -404,28 +554,25 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
               type: type === 'peripheral' ? t('nav.peripherals') : t('nav.components')
             })}
             direction="left"
-            className="text-gray-600 dark:text-gray-200"
+            className="text-neutral-600 dark:text-neutral-200"
           />
         </Link>
       </div>
 
       {/* Header Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {categoryName}
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-lg text-neutral-600 dark:text-neutral-400 mt-2">
           {filteredComponents.length} {t(`categoryPage.${filteredComponents.length === 1 ? 'item' : 'items'}`)}
         </p>
       </div>
-
+      
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Filters */}
         <div className="w-full lg:w-80 shrink-0">
-          <div className="sticky top-4 -translate-x-40 transition-transform duration-200">
-            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md p-6">
+          <div className="sticky top-4 transition-transform duration-200">
+            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md p-6 overflow-y-auto max-h-[calc(100vh-2rem)] overflow-x-hidden scrollbar-hide">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                <h2 className="text-lg font-semibold text-neutral-900 dark:text-white flex items-center">
                   <Filter size={18} className="mr-2" />
                   {t('categoryPage.filters')}
                 </h2>
@@ -441,32 +588,32 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
               {/* Active Filters Summary */}
               {Object.entries(selectedFilters).some(([_, values]) => values.length > 0) && (
                 <div className="mb-4 p-3 bg-blue-50 dark:bg-red-950/30 rounded-lg">
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <h4 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
                     {t('categoryPage.activeFilters')}
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(selectedFilters).map(([type, values]) => 
                       values.map(value => {
                         const [key, val] = value.split('=')
+                        // Find the filter option to get translation
+                        const filterGroup = filterGroups.find(g => g.type === type)
+                        const filterOption = filterGroup?.options.find(o => o.id === value)
+                        const displayValue = filterOption?.translationKey                          
+                          ? t(`filterValues.${filterOption.translationKey.split('.').pop()}`, { value: val })
+                          : val
+                        
                         return (
                           <button
                             key={value}
                             onClick={() => handleFilterChange(type, value)}
                             className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 dark:bg-red-900/40 text-blue-700 dark:text-red-300 hover:bg-blue-200 dark:hover:bg-red-800/40 transition-colors"
                           >
-                            {val}
+                            {displayValue}
                             <X size={14} className="ml-1" />
                           </button>
                         )
                       })
                     )}
-                    <button
-                      onClick={resetFilters}
-                      className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 dark:bg-red-900/60 text-blue-700 dark:text-red-300 hover:bg-blue-200 dark:hover:bg-red-800/60 transition-colors"
-                    >
-                      {t('buttons.clearAll')}
-                      <X size={14} className="ml-1" />
-                    </button>
                   </div>
                 </div>
               )}
@@ -474,19 +621,19 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
               {/* Search bar */}
               <div className="relative mb-6">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search size={16} className="text-gray-500 dark:text-gray-400" />
+                  <Search size={16} className="text-neutral-500 dark:text-neutral-400" />
                 </div>
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('categoryPage.searchPlaceholder')}
-                  className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
+                  className="block w-full pl-10 pr-10 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
                   >
                     <X size={16} />
                   </button>
@@ -495,13 +642,13 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
               
               {/* Sort options */}
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
                   {t('categoryPage.sortBy')}
                 </h3>
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
+                  className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
                 >
                   <option value="price-asc">{t('categoryPage.sortOptions.priceAsc')}</option>
                   <option value="price-desc">{t('categoryPage.sortOptions.priceDesc')}</option>
@@ -513,13 +660,13 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
 
               {/* Price Range Filter */}
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
                   {t('categoryPage.priceRange')}
                 </h3>
                 <div className="space-y-2">
                   <div className="flex gap-4">
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">
                         {t('categoryPage.min')}
                       </label>
                       <input
@@ -528,11 +675,11 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
                         max={maxPrice}
                         value={priceRange.min}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
-                        className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
+                        className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
                       />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">
                         {t('categoryPage.max')}
                       </label>
                       <input
@@ -541,71 +688,60 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
                         max={maxPrice}
                         value={priceRange.max}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
-                        className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
+                        className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
                       />
                     </div>
                   </div>
-                  <input                    type="range"
-                    min={minPrice}
-                    max={maxPrice}
-                    value={priceRange.min}
-                    onChange={(e) => setPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
-                    className="w-full accent-blue-500 dark:accent-red-500"
-                  />
-                  <input                    type="range"
-                    min={minPrice}
-                    max={maxPrice}
-                    value={priceRange.max}
-                    onChange={(e) => setPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
-                    className="w-full accent-blue-500 dark:accent-red-500"
-                  />
                 </div>
               </div>
               
               {/* Filter groups */}
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-y-visible">
                 {filterGroups.map((group) => (
-                  <div key={group.type} className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                  <div key={group.type} className="border-t border-neutral-200 dark:border-neutral-700 pt-4">
                     <button
                       onClick={() => toggleSection(group.type)}
                       className="flex items-center justify-between w-full text-left hover:text-red-600 dark:hover:text-red-400 transition-colors"
                     >
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        {group.title}
+                      <span className="font-medium text-neutral-900 dark:text-white">
+                        {group.titleTranslationKey ? t(group.titleTranslationKey) : group.title}
                       </span>
                       <ChevronDown 
                         size={18} 
-                        className={`text-gray-500 transform transition-transform ${
+                        className={`text-neutral-500 transform transition-transform ${
                           expandedSections[group.type] ? 'rotate-180' : ''
                         }`} 
                       />
                     </button>
                     
                     {expandedSections[group.type] && (
-                      <div className="mt-2 ml-2 space-y-1 max-h-48 overflow-y-auto">
-                        {group.options.map(option => (
-                          <div key={option.id} className="flex items-center">
-                            <label className="flex items-center cursor-pointer">
-                              <div                   
-                                className={`w-4 h-4 mr-2 border rounded-sm flex items-center justify-center transition-all ${
-                                  (selectedFilters[group.type] || []).includes(option.id)
-                                    ? 'bg-red-600 border-red-600 text-white shadow-sm'
-                                    : 'border-gray-300 dark:border-gray-600 hover:border-red-500 dark:hover:border-red-400'
-                                }`}
-                              >
-                                {(selectedFilters[group.type] || []).includes(option.id) && (
-                                  <Check size={12} />
-                                )} 
-                              </div>
-                              <span 
-                                className="text-sm text-gray-700 dark:text-gray-300"
-                                onClick={() => handleFilterChange(group.type, option.id)}
-                              >
-                                {option.name}
-                              </span>
-                            </label>
+                      <div className="mt-2 ml-2 space-y-1 max-h-48 overflow-y-auto scrollbar-hide">
+                        {group.options.length > 0 ? (
+                          group.options.map(option => (
+                            <div key={option.id} className="flex items-center">
+                              <label className="flex items-center cursor-pointer" onClick={() => handleFilterChange(group.type, option.id)}>
+                                <div                   
+                                  className={`w-4 h-4 mr-2 border rounded-sm flex items-center justify-center transition-all ${
+                                    (selectedFilters[group.type] || []).includes(option.id)
+                                      ? 'bg-blue-600 dark:bg-red-600 border-blue-600 dark:border-red-600 text-white shadow-sm'
+                                      : 'border-neutral-300 dark:border-neutral-600 hover:border-blue-500 dark:hover:border-red-400'
+                                  }`}
+                                >
+                                  {(selectedFilters[group.type] || []).includes(option.id) && (
+                                    <Check size={12} />
+                                  )} 
+                                </div>
+                                <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                                  {option.name}
+                                </span>
+                              </label>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                            {t('categoryPage.noOptions')}
                           </div>
-                        ))}
+                        )}
                       </div>
                     )}
                   </div>
@@ -614,16 +750,16 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
             </div>
           </div>
         </div>
-
+        
         {/* Product grid */}
-        <div className="flex-1 -translate-x-20 min-w-0">
+        <div className="flex-1 min-w-0">
           {filteredComponents.length === 0 ? (
             <div className="bg-white/95 dark:bg-red-900/20 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-400/50 dark:border-red-900/30 shadow-lg">
               <Info size={48} className="mx-auto text-blue-500 dark:text-red-400 mb-4" />
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                 {t('categoryPage.noProductsFound')}
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-neutral-600 dark:text-neutral-400 mb-6">
                 {t('categoryPage.noCriteriaMatch')}
               </p>
               <button
@@ -644,6 +780,7 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
                     imageUrl={component.imageUrl}
                     category={component.categoryName}
                     type={type}
+                    linkPrefix={`/${locale}/${type}s/${categorySlug}`}
                     stock={component.stock}
                     specs={component.specifications}
                     showRating={false}
@@ -657,6 +794,27 @@ export default function CategoryPage({ params, type = 'component' }: CategoryPag
     </div>
   )
 }
+
+const StyledScrollbar = styled.div`
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: ${props => props.theme === 'dark' ? 'rgba(185, 28, 28, 0.5)' : 'rgba(59, 130, 246, 0.5)'};
+    border-radius: 20px;
+    border: none;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${props => props.theme === 'dark' ? 'rgba(220, 38, 38, 0.8)' : 'rgba(37, 99, 235, 0.8)'};
+  }
+`;
 
 const StyledWrapper = styled.div`
   .button {
@@ -704,11 +862,11 @@ const StyledWrapper = styled.div`
     transform: scale(0.95);
   }
 
-  .points_wrapper {
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    position: absolute;
-  }
-`
+    .points_wrapper {
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      position: absolute;
+    }
+  `;

@@ -53,11 +53,11 @@ export default function GeneralSettingsPage() {
       <div className="flex items-center space-x-4">
         <Link 
           href="/admin/settings"
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
           General Settings
         </h1>
       </div>
@@ -67,7 +67,7 @@ export default function GeneralSettingsPage() {
           <h2 className="text-lg font-semibold mb-4">Company Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Company Name
               </label>
               <input
@@ -75,11 +75,11 @@ export default function GeneralSettingsPage() {
                 name="companyName"
                 value={formData.companyName}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Company Email
               </label>
               <input
@@ -87,11 +87,11 @@ export default function GeneralSettingsPage() {
                 name="companyEmail"
                 value={formData.companyEmail}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Phone Number
               </label>
               <input
@@ -99,11 +99,11 @@ export default function GeneralSettingsPage() {
                 name="companyPhone"
                 value={formData.companyPhone}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Address
               </label>
               <input
@@ -111,7 +111,7 @@ export default function GeneralSettingsPage() {
                 name="companyAddress"
                 value={formData.companyAddress}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
             </div>
           </div>
@@ -121,14 +121,14 @@ export default function GeneralSettingsPage() {
           <h2 className="text-lg font-semibold mb-4">Regional Settings</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Timezone
               </label>
               <select
                 name="timezone"
                 value={formData.timezone}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               >
                 <option value="Europe/Riga">Europe/Riga</option>
                 <option value="Europe/London">Europe/London</option>
@@ -137,14 +137,14 @@ export default function GeneralSettingsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Date Format
               </label>
               <select
                 name="dateFormat"
                 value={formData.dateFormat}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               >
                 <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                 <option value="MM/DD/YYYY">MM/DD/YYYY</option>
@@ -152,14 +152,14 @@ export default function GeneralSettingsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Currency
               </label>
               <select
                 name="currency"
                 value={formData.currency}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               >
                 <option value="EUR">EUR (€)</option>
                 <option value="USD">USD ($)</option>
@@ -167,14 +167,14 @@ export default function GeneralSettingsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Default Language
               </label>
               <select
                 name="language"
                 value={formData.language}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               >
                 <option value="en">English</option>
                 <option value="lv">Latvian</option>
@@ -190,7 +190,7 @@ export default function GeneralSettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">Maintenance Mode</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
                   Enable maintenance mode to prevent users from accessing the site
                 </p>
               </div>
@@ -202,14 +202,14 @@ export default function GeneralSettingsPage() {
                   onChange={handleChange}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
               </label>
             </div>
             
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">User Registration</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
                   Allow new users to register accounts
                 </p>
               </div>
@@ -221,14 +221,14 @@ export default function GeneralSettingsPage() {
                   onChange={handleChange}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
               </label>
             </div>
             
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">Product Reviews</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
                   Enable product review system
                 </p>
               </div>
@@ -240,14 +240,14 @@ export default function GeneralSettingsPage() {
                   onChange={handleChange}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
               </label>
             </div>
             
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">Guest Checkout</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
                   Allow checkout without registration
                 </p>
               </div>
@@ -259,7 +259,7 @@ export default function GeneralSettingsPage() {
                   onChange={handleChange}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
               </label>
             </div>
           </div>

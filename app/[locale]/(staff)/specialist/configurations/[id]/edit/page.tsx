@@ -194,7 +194,7 @@ export default function EditConfigurationPage() {
                   <div className="border rounded-lg">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                        <tr className="border-b bg-neutral-50 dark:bg-neutral-800">
                           <th className="px-4 py-2 text-left">Component</th>
                           <th className="px-4 py-2 text-center">Quantity</th>
                           <th className="px-4 py-2 text-right">Price</th>
@@ -228,7 +228,7 @@ export default function EditConfigurationPage() {
                         ))}
                       </tbody>
                       <tfoot>
-                        <tr className="bg-gray-50 dark:bg-gray-800">
+                        <tr className="bg-neutral-50 dark:bg-neutral-800">
                           <td colSpan={2} className="px-4 py-2 text-right font-medium">
                             Total:
                           </td>
@@ -274,11 +274,11 @@ export default function EditConfigurationPage() {
                     .map((component) => (
                       <div
                         key={component.id}
-                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800"
                       >
                         <div>
                           <div className="font-medium">{component.name}</div>
-                          <div className="text-sm text-gray-500">€{component.price}</div>
+                          <div className="text-sm text-neutral-500">€{component.price}</div>
                         </div>
                         <Button
                           size="sm"

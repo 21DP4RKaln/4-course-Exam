@@ -62,7 +62,7 @@ export default function ViewComponentPage({ params }: { params: { id: string } }
   if (!component) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">Component not found</p>
+        <p className="text-neutral-500 dark:text-neutral-400">Component not found</p>
       </div>
     )
   }
@@ -73,11 +73,11 @@ export default function ViewComponentPage({ params }: { params: { id: string } }
         <div className="flex items-center space-x-4">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
             Component Details
           </h1>
         </div>
@@ -96,24 +96,24 @@ export default function ViewComponentPage({ params }: { params: { id: string } }
             <h3 className="text-lg font-medium mb-4">Basic Information</h3>
             <dl className="space-y-3">
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Name</dt>
-                <dd className="text-gray-900 dark:text-white">{component.name}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Name</dt>
+                <dd className="text-neutral-900 dark:text-white">{component.name}</dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">SKU</dt>
-                <dd className="text-gray-900 dark:text-white">{component.sku}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">SKU</dt>
+                <dd className="text-neutral-900 dark:text-white">{component.sku}</dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Category</dt>
-                <dd className="text-gray-900 dark:text-white">{component.category.name}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Category</dt>
+                <dd className="text-neutral-900 dark:text-white">{component.category.name}</dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Price</dt>
-                <dd className="text-gray-900 dark:text-white">€{component.price.toFixed(2)}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Price</dt>
+                <dd className="text-neutral-900 dark:text-white">€{component.price.toFixed(2)}</dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Stock</dt>
-                <dd className="text-gray-900 dark:text-white">{component.stock}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Stock</dt>
+                <dd className="text-neutral-900 dark:text-white">{component.stock}</dd>
               </div>
             </dl>
           </div>
@@ -135,7 +135,7 @@ export default function ViewComponentPage({ params }: { params: { id: string } }
         {component.description && (
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Description</h3>
-            <p className="text-gray-600 dark:text-gray-300">{component.description}</p>
+            <p className="text-neutral-600 dark:text-neutral-300">{component.description}</p>
           </div>
         )}
 
@@ -145,25 +145,25 @@ export default function ViewComponentPage({ params }: { params: { id: string } }
             <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(component.specifications).map(([key, value]) => (
                 <div key={key}>
-                  <dt className="text-sm text-gray-500 dark:text-gray-400">{key}</dt>
-                  <dd className="text-gray-900 dark:text-white">{value}</dd>
+                  <dt className="text-sm text-neutral-500 dark:text-neutral-400">{key}</dt>
+                  <dd className="text-neutral-900 dark:text-white">{value}</dd>
                 </div>
               ))}
             </dl>
           </div>
         )}
 
-        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-700">
           <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <dt className="text-sm text-gray-500 dark:text-gray-400">Created</dt>
-              <dd className="text-gray-900 dark:text-white">
+              <dt className="text-sm text-neutral-500 dark:text-neutral-400">Created</dt>
+              <dd className="text-neutral-900 dark:text-white">
                 {new Date(component.createdAt).toLocaleDateString()}
               </dd>
             </div>
             <div>
-              <dt className="text-sm text-gray-500 dark:text-gray-400">Last Updated</dt>
-              <dd className="text-gray-900 dark:text-white">
+              <dt className="text-sm text-neutral-500 dark:text-neutral-400">Last Updated</dt>
+              <dd className="text-neutral-900 dark:text-white">
                 {new Date(component.updatedAt).toLocaleDateString()}
               </dd>
             </div>

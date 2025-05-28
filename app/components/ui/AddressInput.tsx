@@ -74,14 +74,13 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
   };
 
   return (
-    <div className="space-y-4">
-      <div>
+    <div className="space-y-4">      <div>
         <label className="form-label">Street Address</label>
         <input
           type="text"
           value={values.street}
           onChange={(e) => onChange({ ...values, street: e.target.value })}
-          className={`w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          className={`w-full px-4 py-2.5 border rounded-lg dark:bg-neutral-950 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 focus:border-transparent ${
             errors?.street ? 'border-red-500' : ''
           }`}
           placeholder="Enter street address"
@@ -89,16 +88,14 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
         {errors?.street && (
           <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.street}</p>
         )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      </div><div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <label className="form-label">City</label>
           <input
             type="text"
             value={values.city}
             onChange={(e) => onChange({ ...values, city: e.target.value })}
-            className={`w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            className={`w-full px-4 py-2.5 border rounded-lg dark:bg-neutral-950 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 focus:border-transparent ${
               errors?.city ? 'border-red-500' : ''
             }`}
             placeholder="Enter city"
@@ -114,7 +111,7 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
             type="text"
             value={formattedPostalCode}
             onChange={handlePostalCodeChange}
-            className={`w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            className={`w-full px-4 py-2.5 border rounded-lg dark:bg-neutral-950 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 focus:border-transparent ${
               errors?.postalCode ? 'border-red-500' : ''
             }`}
             placeholder={POSTAL_CODE_FORMATS[values.country]}
@@ -123,14 +120,12 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.postalCode}</p>
           )}
         </div>
-      </div>
-
-      <div>
+      </div>      <div>
         <label className="form-label">Country</label>
         <select
           value={values.country}
           onChange={handleCountryChange}
-          className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2.5 border rounded-lg dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 focus:border-transparent appearance-none bg-white dark:bg-neutral-950"
         >
           <option value="LV">Latvia</option>
           <option value="LT">Lithuania</option>

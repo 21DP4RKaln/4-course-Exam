@@ -1,14 +1,6 @@
-'use client'
+// filepath: app/[locale]/(main)/components/[slug]/[id]/page.tsx
+import UniversalProductPage from '@/app/components/Products/UniversalProductPage'
 
-import ProductDetail from '@/app/components/Shop/ProductDetail'
-
-interface ComponentDetailPageProps {
-  params: { 
-    slug: string;
-    id: string;
-  }
-}
-
-export default function ComponentDetailPage({ params }: ComponentDetailPageProps) {
-  return <ProductDetail params={params} type="component" />
+export default function Page({ params }: { params: { slug: string; id: string } }) {
+  return <UniversalProductPage productId={params.id} />
 }

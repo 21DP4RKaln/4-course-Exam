@@ -146,7 +146,7 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
           Users Management
         </h1>
         <button
@@ -159,7 +159,7 @@ export default function UsersPage() {
       </div>
 
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}

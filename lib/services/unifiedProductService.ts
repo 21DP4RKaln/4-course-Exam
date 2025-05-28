@@ -117,12 +117,10 @@ export function extractComponentSpecifications(component: any): Record<string, s
  * regardless of whether it's a configuration, component, or peripheral
  */
 export async function getProductById(id: string): Promise<Product | null> {
-  try {    // Try to find as a configuration first
+  try {
+    // Try to find as a configuration first
     const configuration = await prisma.configuration.findUnique({
-      where: {
-        id,
-        isTemplate: true,
-      },
+      where: { id },
       include: {
         components: {
           include: {

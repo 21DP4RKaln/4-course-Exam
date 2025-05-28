@@ -58,7 +58,7 @@ export function DataTable<T extends { id: string }>({
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+      <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
         {emptyMessage}
       </div>
     )
@@ -66,14 +66,14 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead className="bg-gray-50 dark:bg-stone-950">
+      <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+        <thead className="bg-neutral-50 dark:bg-stone-950">
           <tr>
             {columns.map((column) => (
               <th
                 key={String(column.key)}
-                className={`px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${
-                  column.sortable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : ''
+                className={`px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider ${
+                  column.sortable ? 'cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-700' : ''
                 }`}
                 onClick={() => column.sortable && handleSort(column.key)}
               >
@@ -93,19 +93,19 @@ export function DataTable<T extends { id: string }>({
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+        <tbody className="bg-white dark:bg-neutral-900 divide-y divide-neutral-200 dark:divide-neutral-700">
           {sortedData.map((item) => (
             <tr
               key={item.id}
               className={`${
-                onRowClick ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-stone-950' : ''
+                onRowClick ? 'cursor-pointer hover:bg-neutral-50 dark:hover:bg-stone-950' : ''
               }`}
               onClick={() => onRowClick?.(item)}
             >
               {columns.map((column) => (
                 <td
                   key={String(column.key)}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"
+                  className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white"
                 >
                   {column.render
                     ? column.render(item[column.key], item)

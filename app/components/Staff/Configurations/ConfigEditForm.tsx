@@ -221,27 +221,27 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Configuration Name
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               required
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
             />
           </div>
         </div>
@@ -254,13 +254,13 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Available Components */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Available Components</h3>
+            <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">Available Components</h3>
             
             <div className="space-y-3 mb-4">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               >
                 <option value="">Select Category</option>
                 {categories.map(category => (
@@ -272,29 +272,29 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
               
               {selectedCategory && (
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
                   <input
                     type="text"
                     placeholder="Search components..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                    className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
                   />
                 </div>
               )}
             </div>
             
-            <div className="border dark:border-gray-700 rounded-lg overflow-hidden">
+            <div className="border dark:border-neutral-700 rounded-lg overflow-hidden">
               <div className="max-h-96 overflow-y-auto">
                 {filteredComponents.length > 0 ? (
                   filteredComponents.map(component => (
                     <div 
                       key={component.id} 
-                      className="flex items-center justify-between p-3 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      className="flex items-center justify-between p-3 border-b dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
                     >
                       <div>
                         <div className="font-medium dark:text-white">{component.name}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-neutral-500 dark:text-neutral-400">
                           €{component.price.toFixed(2)} - Stock: {component.stock}
                         </div>
                       </div>
@@ -308,7 +308,7 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
                     </div>
                   ))
                 ) : (
-                  <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                  <div className="p-4 text-center text-neutral-500 dark:text-neutral-400">
                     {selectedCategory ? 'No components found' : 'Select a category'}
                   </div>
                 )}
@@ -318,19 +318,19 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
           
           {/* Selected Components */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Selected Components</h3>
+            <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">Selected Components</h3>
             
-            <div className="border dark:border-gray-700 rounded-lg overflow-hidden">
+            <div className="border dark:border-neutral-700 rounded-lg overflow-hidden">
               <div className="max-h-96 overflow-y-auto">
                 {formData.components.length > 0 ? (
                   formData.components.map(component => (
                     <div 
                       key={component.id} 
-                      className="flex items-center justify-between p-3 border-b dark:border-gray-700"
+                      className="flex items-center justify-between p-3 border-b dark:border-neutral-700"
                     >
                       <div className="flex-1">
                         <div className="font-medium dark:text-white">{component.name}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-neutral-500 dark:text-neutral-400">
                           €{component.price.toFixed(2)} × {component.quantity} = €{(component.price * component.quantity).toFixed(2)}
                         </div>
                       </div>
@@ -338,7 +338,7 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
                         <button
                           type="button"
                           onClick={() => handleQuantityChange(component.id, -1)}
-                          className="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                          className="p-1 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
                           disabled={component.quantity <= 1}
                         >
                           <Minus size={16} />
@@ -347,7 +347,7 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
                         <button
                           type="button"
                           onClick={() => handleQuantityChange(component.id, 1)}
-                          className="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                          className="p-1 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
                         >
                           <Plus size={16} />
                         </button>
@@ -362,14 +362,14 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
                     </div>
                   ))
                 ) : (
-                  <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                  <div className="p-4 text-center text-neutral-500 dark:text-neutral-400">
                     No components selected
                   </div>
                 )}
               </div>
               
               {formData.components.length > 0 && (
-                <div className="p-3 bg-gray-50 dark:bg-gray-700/50 border-t dark:border-gray-700">
+                <div className="p-3 bg-neutral-50 dark:bg-neutral-700/50 border-t dark:border-neutral-700">
                   <div className="flex justify-between items-center">
                     <span className="font-medium dark:text-white">Total Price:</span>
                     <span className="text-lg font-bold dark:text-white">€{formData.totalPrice.toFixed(2)}</span>
@@ -386,7 +386,7 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
         <button
           type="button"
           onClick={onCancel || (() => router.back())}
-          className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          className="px-4 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
           Cancel
         </button>

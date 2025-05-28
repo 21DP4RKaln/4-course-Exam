@@ -79,7 +79,7 @@ export default function MarketingOverviewPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
           Marketing Overview
         </h1>
         <div className="flex gap-4">
@@ -105,8 +105,8 @@ export default function MarketingOverviewPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Promo Codes</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Active Promo Codes</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {stats?.activePromoCodes || 0}
               </p>
             </div>
@@ -119,8 +119,8 @@ export default function MarketingOverviewPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Discount Given</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Total Discount Given</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 €{stats?.totalDiscountGiven?.toFixed(2) || '0.00'}
               </p>
             </div>
@@ -133,8 +133,8 @@ export default function MarketingOverviewPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Users</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Active Users</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {stats?.activeUsers || 0}
               </p>
             </div>
@@ -147,8 +147,8 @@ export default function MarketingOverviewPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Conversion Rate</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Conversion Rate</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {stats?.conversionRate?.toFixed(1) || 0}%
               </p>
             </div>
@@ -162,56 +162,56 @@ export default function MarketingOverviewPage() {
       {/* Quick Links */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">
             Marketing Tools
           </h2>
           <div className="space-y-3">
             <Link 
               href={`/${locale}/admin/marketing/promo-codes`}
-              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
+              className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-600"
             >
               <div className="flex items-center gap-3">
-                <Tag className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                <span className="text-gray-900 dark:text-white">Promo Codes</span>
+                <Tag className="h-5 w-5 text-neutral-600 dark:text-neutral-300" />
+                <span className="text-neutral-900 dark:text-white">Promo Codes</span>
               </div>
-              <ArrowRight className="h-5 w-5 text-gray-400" />
+              <ArrowRight className="h-5 w-5 text-neutral-400" />
             </Link>
 
             <Link 
               href={`/${locale}/admin/marketing/campaigns`}
-              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
+              className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-600"
             >
               <div className="flex items-center gap-3">
-                <Megaphone className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                <span className="text-gray-900 dark:text-white">Campaigns</span>
+                <Megaphone className="h-5 w-5 text-neutral-600 dark:text-neutral-300" />
+                <span className="text-neutral-900 dark:text-white">Campaigns</span>
               </div>
-              <ArrowRight className="h-5 w-5 text-gray-400" />
+              <ArrowRight className="h-5 w-5 text-neutral-400" />
             </Link>
           </div>
         </div>
 
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">
             Recent Campaigns
           </h2>
           <div className="space-y-3">
             {stats?.recentCampaigns?.map((campaign) => (
               <div 
                 key={campaign.id}
-                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg"
               >
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">{campaign.name}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="font-medium text-neutral-900 dark:text-white">{campaign.name}</p>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
                     {campaign.type} • {campaign.status}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-300">
                     {new Date(campaign.startDate).toLocaleDateString()}
                   </p>
                   {campaign.endDate && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
                       to {new Date(campaign.endDate).toLocaleDateString()}
                     </p>
                   )}
@@ -225,39 +225,39 @@ export default function MarketingOverviewPage() {
       {/* Promo Code Usage */}
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
         <div className="p-6">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">
             Top Promo Codes
           </h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                     Code
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                     Usage Count
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                     Total Discount
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="bg-white dark:bg-stone-950 divide-y divide-neutral-200 dark:divide-neutral-700">
                 {stats?.promoCodeUsage?.map((promo) => (
                   <tr key={promo.code}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      <span className="text-sm font-medium text-neutral-900 dark:text-white">
                         {promo.code}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900 dark:text-white">
+                      <span className="text-sm text-neutral-900 dark:text-white">
                         {promo.usageCount}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900 dark:text-white">
+                      <span className="text-sm text-neutral-900 dark:text-white">
                         €{promo.discountAmount.toFixed(2)}
                       </span>
                     </td>

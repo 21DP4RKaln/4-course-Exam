@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
@@ -8,31 +9,34 @@ datasource db {
 }
 
 model User {
-  id               String             @id @default(uuid())
-  email            String?            @unique
-  password         String
-  name             String?
-  role             Role               @default(USER)
-  isBlocked        Boolean            @default(false)
-  blockReason      String?            @db.Text
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  firstName        String?
-  lastName         String?
-  phone            String?            @unique
-  profileImageUrl  String?
-  shippingAddress  String?
-  shippingCity     String?
+  id                 String             @id @default(uuid())
+  email              String?            @unique
+  password           String?
+  name               String?
+  role               Role               @default(USER)
+  isBlocked          Boolean            @default(false)
+  blockReason        String?            @db.Text
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  firstName          String?
+  lastName           String?
+  phone              String?            @unique
+  profileImageUrl    String?
+  shippingAddress    String?
+  shippingCity       String?
   shippingPostalCode String?
-  shippingCountry   String?
-  auditLogs        AuditLog[]
-  configurations   Configuration[]
-  orders           Order[]
-  repairs          Repair[]
-  repairSpecialist RepairSpecialist[]
-  reviews          Review[]
-  reviewHelpful    ReviewHelpful[]
-  wishlists        Wishlist[]
+  shippingCountry    String?
+  auditLogs          AuditLog[]
+  configurations     Configuration[]
+  orders             Order[]
+  repairs            Repair[]
+  repairSpecialist   RepairSpecialist[]
+  reviews            Review[]
+  reviewHelpful      ReviewHelpful[]
+  wishlists          Wishlist[]
+  accounts           Account[]
+  sessions           Session[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("user")
 }
@@ -51,24 +55,33 @@ model ComponentCategory {
 }
 
 model Component {
-  id             String            @id @default(uuid())
-  name           String
-  description    String?           @db.Text
-  price          Float
-  discountPrice  Float?
+  id                String            @id @default(uuid())
+  name              String
+  description       String?           @db.Text
+  price             Float
+  stock             Int               @default(0)
+  imageUrl          String?
+  categoryId        String
+  specifications    String?           @db.LongText
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  sku               String?           @unique
+  viewCount         Int               @default(0)
   discountExpiresAt DateTime?
-  stock          Int               @default(0)
-  imageUrl       String?
-  categoryId     String
-  specifications String?           @db.LongText
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  sku            String?           @unique
-  viewCount      Int               @default(0)
-  category       ComponentCategory @relation(fields: [categoryId], references: [id])
-  specValues     ComponentSpec[]
-  configItems    ConfigItem[]
-  repairParts    RepairPart[]
+  discountPrice     Float?
+  subType           String?
+  case              Case?
+  category          ComponentCategory @relation(fields: [categoryId], references: [id])
+  specValues        ComponentSpec[]
+  configItems       ConfigItem[]
+  cooling           Cooling?
+  cpu               CPU?
+  gpu               GPU?
+  motherboard       Motherboard?
+  psu               PSU?
+  ram               RAM?
+  repairParts       RepairPart[]
+  storage           Storage?
 
   @@index([categoryId], map: "component_categoryId_fkey")
   @@map("component")
@@ -87,23 +100,33 @@ model PeripheralCategory {
 }
 
 model Peripheral {
-  id             String             @id @default(uuid())
-  name           String
-  description    String?            @db.Text
-  price          Float
-  discountPrice  Float?
+  id                String             @id @default(uuid())
+  name              String
+  description       String?            @db.Text
+  price             Float
+  stock             Int                @default(0)
+  imageUrl          String?
+  categoryId        String
+  specifications    String?            @db.LongText
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  sku               String?            @unique
+  viewCount         Int                @default(0)
   discountExpiresAt DateTime?
-  stock          Int                @default(0)
-  imageUrl       String?
-  categoryId     String
-  specifications String?            @db.LongText
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  sku            String?            @unique
-  viewCount      Int                @default(0)
-  category       PeripheralCategory @relation(fields: [categoryId], references: [id])
-  specValues     PeripheralSpec[]
-  repairs        Repair[]
+  discountPrice     Float?
+  subType           String?
+  camera            Camera?
+  gamepad           Gamepad?
+  headphones        Headphones?
+  keyboard          Keyboard?
+  microphone        Microphone?
+  monitor           Monitor?
+  mouse             Mouse?
+  mousePad          MousePad?
+  category          PeripheralCategory @relation(fields: [categoryId], references: [id])
+  specValues        PeripheralSpec[]
+  repairs           Repair[]
+  speakers          Speakers?
 
   @@index([categoryId], map: "peripheral_categoryId_fkey")
   @@map("peripheral")
@@ -165,25 +188,25 @@ model ConfigItem {
 }
 
 model Configuration {
-  id               String       @id @default(uuid())
-  name             String
-  description      String?      @db.Text
-  userId           String?
-  totalPrice       Float
-  discountPrice    Float?
+  id                String       @id @default(uuid())
+  name              String
+  description       String?      @db.Text
+  userId            String?
+  totalPrice        Float
+  status            ConfigStatus @default(DRAFT)
+  isTemplate        Boolean      @default(false)
+  isPublic          Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  category          String?
+  imageUrl          String?
+  viewCount         Int          @default(0)
   discountExpiresAt DateTime?
-  status           ConfigStatus @default(DRAFT)
-  isTemplate       Boolean      @default(false)
-  isPublic         Boolean      @default(false)
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  category         String?
-  imageUrl         String?
-  viewCount        Int          @default(0)
-  components       ConfigItem[]
-  user             User?        @relation(fields: [userId], references: [id])
-  orders           Order[]
-  repairs          Repair[]
+  discountPrice     Float?
+  components        ConfigItem[]
+  user              User?        @relation(fields: [userId], references: [id])
+  orders            Order[]
+  repairs           Repair[]
 
   @@index([userId], map: "configuration_userId_fkey")
   @@map("configuration")
@@ -246,17 +269,21 @@ model RepairPart {
 
 model Order {
   id              String         @id @default(uuid())
-  userId          String
+  userId          String?
   configurationId String?
   status          OrderStatus    @default(PENDING)
   totalAmount     Float
   shippingAddress String?        @db.Text
   paymentMethod   String?
-  shippingMethod  String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  shippingMethod  String?
+  isGuestOrder    Boolean        @default(false)
+  shippingEmail   String?
+  shippingName    String?
+  shippingPhone   String?
   configuration   Configuration? @relation(fields: [configurationId], references: [id])
-  user            User           @relation(fields: [userId], references: [id])
+  user            User?          @relation(fields: [userId], references: [id])
   orderItems      OrderItem[]
 
   @@index([configurationId], map: "order_configurationId_fkey")
@@ -323,28 +350,23 @@ model OrderItem {
 }
 
 model PromoCode {
-  id                String              @id @default(uuid())
-  code              String              @unique
-  description       String?             @db.Text
+  id                 String              @id @default(uuid())
+  code               String              @unique
+  description        String?             @db.Text
   discountPercentage Int
-  maxDiscountAmount Float?
-  minOrderValue     Float?
-  maxUsage         Int?
-  usageCount       Int                 @default(0)
-  isActive         Boolean             @default(true)
-  expiresAt        DateTime
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  scope            PromoCodeScope      @default(ALL)
-  products         PromoProduct[]
-  campaigns        MarketingCampaign[]
+  maxDiscountAmount  Float?
+  minOrderValue      Float?
+  maxUsage           Int?
+  usageCount         Int                 @default(0)
+  isActive           Boolean             @default(true)
+  expiresAt          DateTime
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  scope              PromoCodeScope      @default(ALL)
+  campaigns          MarketingCampaign[]
+  products           PromoProduct[]
 
   @@map("promocode")
-}
-
-enum PromoCodeScope {
-  ALL
-  SPECIFIC_PRODUCTS
 }
 
 model PromoProduct {
@@ -354,6 +376,7 @@ model PromoProduct {
   productType String
   promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
 
+  @@index([promoCodeId], map: "promoproduct_promoCodeId_fkey")
   @@map("promoproduct")
 }
 
@@ -411,6 +434,299 @@ model CampaignMetrics {
   @@map("campaign_metrics")
 }
 
+model CPU {
+  id            String    @id @default(uuid())
+  componentId   String    @unique
+  manufacturer  String
+  socket        String
+  series        String
+  model         String
+  cores         Int
+  threads       Int
+  baseClock     Float
+  boostClock    Float
+  cache         String
+  tdp           Int
+  architecture  String
+  integratedGpu Boolean   @default(false)
+  component     Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@map("cpu")
+}
+
+model GPU {
+  id              String    @id @default(uuid())
+  componentId     String    @unique
+  manufacturer    String
+  chipset         String
+  memory          Int
+  memoryType      String
+  coreClock       Float
+  boostClock      Float
+  tdp             Int
+  powerConnectors String
+  length          Int
+  width           Int
+  hdmiPorts       Int
+  displayPorts    Int
+  rayTracing      Boolean   @default(false)
+  component       Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@map("gpu")
+}
+
+model Motherboard {
+  id               String    @id @default(uuid())
+  componentId      String    @unique
+  manufacturer     String
+  socket           String
+  chipset          String
+  formFactor       String
+  memoryType       String
+  memorySlots      Int
+  maxMemory        Int
+  pciSlots         String    @db.Text
+  m2Slots          Int
+  sataConnectors   Int
+  wifiBuiltIn      Boolean   @default(false)
+  bluetoothBuiltIn Boolean   @default(false)
+  component        Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@map("motherboard")
+}
+
+model RAM {
+  id           String    @id @default(uuid())
+  componentId  String    @unique
+  manufacturer String
+  capacity     Int
+  speed        Int
+  type         String
+  modules      Int
+  casLatency   Int
+  voltage      Float
+  rgb          Boolean   @default(false)
+  component    Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@map("ram")
+}
+
+model Storage {
+  id           String    @id @default(uuid())
+  componentId  String    @unique
+  manufacturer String
+  type         String
+  capacity     Int
+  formFactor   String
+  interface    String
+  readSpeed    Int
+  writeSpeed   Int
+  tbw          Int?
+  cache        Int?
+  component    Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@map("storage")
+}
+
+model PSU {
+  id           String    @id @default(uuid())
+  componentId  String    @unique
+  manufacturer String
+  wattage      Int
+  efficiency   String
+  modular      String
+  fanSize      Int
+  length       Int
+  atx3Support  Boolean   @default(false)
+  component    Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@map("psu")
+}
+
+model Case {
+  id           String    @id @default(uuid())
+  componentId  String    @unique
+  manufacturer String
+  formFactor   String
+  dimensions   String
+  materials    String
+  windowType   String?
+  includedFans Int
+  maxGpuLength Int
+  maxCpuHeight Int
+  maxPsuLength Int
+  usbPorts     String
+  colorVariant String
+  component    Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@map("case")
+}
+
+model Cooling {
+  id            String    @id @default(uuid())
+  componentId   String    @unique
+  manufacturer  String
+  type          String
+  radiatorSize  Int?
+  fanSize       Int
+  fanCount      Int
+  rgb           Boolean   @default(false)
+  noiseLevel    Float?
+  maxTdp        Int
+  socketSupport String    @db.Text
+  component     Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@map("cooling")
+}
+
+model Keyboard {
+  id           String     @id @default(uuid())
+  peripheralId String     @unique
+  manufacturer String
+  switchType   String?
+  layout       String
+  size         String
+  connection   String
+  rgb          Boolean    @default(false)
+  numpad       Boolean    @default(true)
+  multimedia   Boolean    @default(false)
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("keyboard")
+}
+
+model Mouse {
+  id           String     @id @default(uuid())
+  peripheralId String     @unique
+  manufacturer String
+  dpi          Int
+  buttons      Int
+  connection   String
+  rgb          Boolean    @default(false)
+  weight       Int
+  sensor       String
+  batteryLife  Int?
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("mouse")
+}
+
+model MousePad {
+  id           String     @id @default(uuid())
+  peripheralId String     @unique
+  manufacturer String
+  dimensions   String
+  thickness    Int
+  material     String
+  rgb          Boolean    @default(false)
+  surface      String
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("mousepad")
+}
+
+model Microphone {
+  id           String     @id @default(uuid())
+  peripheralId String     @unique
+  manufacturer String
+  type         String
+  pattern      String
+  frequency    String
+  sensitivity  String
+  interface    String
+  stand        Boolean    @default(true)
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("microphone")
+}
+
+model Camera {
+  id           String     @id @default(uuid())
+  peripheralId String     @unique
+  manufacturer String
+  resolution   String
+  fps          Int
+  fov          Int
+  microphone   Boolean    @default(false)
+  autofocus    Boolean    @default(false)
+  connection   String
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("camera")
+}
+
+model Monitor {
+  id           String     @id @default(uuid())
+  peripheralId String     @unique
+  manufacturer String
+  size         Float
+  resolution   String
+  refreshRate  Int
+  panelType    String
+  responseTime Float
+  brightness   Int
+  hdr          Boolean    @default(false)
+  ports        String     @db.Text
+  speakers     Boolean    @default(false)
+  curved       Boolean    @default(false)
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("monitor")
+}
+
+model Headphones {
+  id              String     @id @default(uuid())
+  peripheralId    String     @unique
+  manufacturer    String
+  type            String
+  connection      String
+  microphone      Boolean    @default(false)
+  impedance       Int?
+  frequency       String
+  weight          Int
+  noiseCancelling Boolean    @default(false)
+  rgb             Boolean    @default(false)
+  peripheral      Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("headphones")
+}
+
+model Speakers {
+  id           String     @id @default(uuid())
+  peripheralId String     @unique
+  manufacturer String
+  type         String
+  totalWattage Int
+  frequency    String
+  connections  String     @db.Text
+  bluetooth    Boolean    @default(false)
+  remote       Boolean    @default(false)
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("speakers")
+}
+
+model Gamepad {
+  id           String     @id @default(uuid())
+  peripheralId String     @unique
+  manufacturer String
+  connection   String
+  platform     String
+  layout       String
+  vibration    Boolean    @default(false)
+  rgb          Boolean    @default(false)
+  batteryLife  Int?
+  programmable Boolean    @default(false)
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id], onDelete: Cascade)
+
+  @@map("gamepad")
+}
+
+enum PromoCodeScope {
+  ALL
+  SPECIFIC_PRODUCTS
+}
+
 enum OrderStatus {
   PENDING
   PROCESSING
@@ -453,7 +769,57 @@ enum ProductType {
   PERIPHERAL
 }
 
-enum PromoScope {
-  ALL
-  SPECIFIC_PRODUCTS
+// NextAuth.js tables
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  code      String   // 6-digit verification code
+  type      String   // "email" or "phone"
+  contact   String   // email address or phone number
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
 }

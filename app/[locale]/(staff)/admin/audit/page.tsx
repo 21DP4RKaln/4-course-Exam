@@ -204,7 +204,7 @@ export default function AuditPage() {
       case 'login':
         return <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>;
       case 'logout':
-        return <div className="w-2 h-2 bg-gray-500 rounded-full mr-2"></div>;
+        return <div className="w-2 h-2 bg-neutral-500 rounded-full mr-2"></div>;
       case 'view':
         return <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>;
       case 'error':
@@ -212,7 +212,7 @@ export default function AuditPage() {
       case 'publish':
         return <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>;
       default:
-        return <div className="w-2 h-2 bg-gray-500 rounded-full mr-2"></div>;
+        return <div className="w-2 h-2 bg-neutral-500 rounded-full mr-2"></div>;
     }
   }
 
@@ -316,7 +316,7 @@ export default function AuditPage() {
       <div className="bg-white dark:bg-stone-950 p-4 rounded-md shadow">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-neutral-600 dark:text-neutral-300">
               Search
             </label>
             <div className="relative">
@@ -327,12 +327,12 @@ export default function AuditPage() {
                 value={filter}
                 onChange={e => setFilter(e.target.value)}
               />
-              <FileSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <FileSearch className="absolute left-3 top-2.5 h-5 w-5 text-neutral-400" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-neutral-600 dark:text-neutral-300">
               Action
             </label>
             <select
@@ -350,7 +350,7 @@ export default function AuditPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-neutral-600 dark:text-neutral-300">
               Entity Type
             </label>
             <select
@@ -368,7 +368,7 @@ export default function AuditPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-neutral-600 dark:text-neutral-300">
               Date Range
             </label>
             <select
@@ -397,7 +397,7 @@ export default function AuditPage() {
       )}
 
       {/* Results count */}
-      <div className="text-sm text-gray-500 dark:text-gray-400">
+      <div className="text-sm text-neutral-500 dark:text-neutral-400">
         {!loading && (
           <span>
             Showing {filteredLogs.length} logs (page {page} of {totalPages || 1})
@@ -410,29 +410,29 @@ export default function AuditPage() {
       <div className="bg-white dark:bg-stone-950 rounded-md shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-neutral-50 dark:bg-neutral-700">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Action
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Timestamp
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Entity
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Details
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   IP Address
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center">
@@ -444,7 +444,7 @@ export default function AuditPage() {
                 </tr>
               ) : filteredLogs.length > 0 ? (
                 filteredLogs.map(log => (
-                  <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
+                  <tr key={log.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-750">
                     <td className="px-4 py-3 whitespace-nowrap text-sm">
                       <div className="flex items-center">
                         {getActivityIcon(log.action)}
@@ -457,50 +457,50 @@ export default function AuditPage() {
                           ${log.action === 'view' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : ''}
                           ${log.action === 'publish' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' : ''}
                           ${log.action === 'approve' ? 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200' : ''}
-                          ${'bg-gray-100 text-stone-950 dark:bg-gray-700 dark:text-gray-200'}
+                          ${'bg-neutral-100 text-stone-950 dark:bg-neutral-700 dark:text-neutral-200'}
                         `}>
                           {log.action.charAt(0).toUpperCase() + log.action.slice(1)}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-neutral-600 dark:text-neutral-300">
                       <div className="flex items-center">
-                        <Clock size={14} className="mr-1 text-gray-400" />
+                        <Clock size={14} className="mr-1 text-neutral-400" />
                         {formatDate(log.createdAt)}
                       </div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-neutral-600 dark:text-neutral-300">
                       <div className="flex items-center">
-                        <User size={14} className="mr-1 text-gray-400" />
+                        <User size={14} className="mr-1 text-neutral-400" />
                         {log.userName || 'System'}
                       </div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-neutral-600 dark:text-neutral-300">
                       <div className="flex items-center">
                         <span className="font-medium">{log.entityType}</span>
                         {log.entityId && (
-                          <span className="ml-1 text-gray-400">#{log.entityId.substring(0, 8)}</span>
+                          <span className="ml-1 text-neutral-400">#{log.entityId.substring(0, 8)}</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 max-w-sm truncate">
+                    <td className="px-4 py-3 text-sm text-neutral-600 dark:text-neutral-300 max-w-sm truncate">
                       {log.details ? (
                         <span title={JSON.stringify(log.details)}>
                           {JSON.stringify(log.details).substring(0, 50)}
                           {JSON.stringify(log.details).length > 50 && '...'}
                         </span>
                       ) : (
-                        <span className="text-gray-400">No details</span>
+                        <span className="text-neutral-400">No details</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
                       {log.ipAddress || 'N/A'}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-4 py-3 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={6} className="px-4 py-3 text-center text-neutral-500 dark:text-neutral-400">
                     No audit logs found matching the current filters
                   </td>
                 </tr>
@@ -513,7 +513,7 @@ export default function AuditPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-between items-center mt-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-sm text-neutral-500 dark:text-neutral-400">
             Showing page {page} of {totalPages}
           </div>
           <div className="flex space-x-2">

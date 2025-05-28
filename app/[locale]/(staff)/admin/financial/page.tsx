@@ -78,7 +78,7 @@ export default function AdminFinancialPage() {
   if (!stats) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">Failed to load financial data</p>
+        <p className="text-neutral-500 dark:text-neutral-400">Failed to load financial data</p>
       </div>
     )
   }
@@ -87,14 +87,14 @@ export default function AdminFinancialPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
           Financial Dashboard
         </h1>
         <div className="flex space-x-3">
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value as 'week' | 'month' | 'year')}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950"
+            className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-stone-950"
           >
             <option value="week">This Week</option>
             <option value="month">This Month</option>
@@ -102,7 +102,7 @@ export default function AdminFinancialPage() {
           </select>
           <button
             onClick={() => exportReport('csv')}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="inline-flex items-center px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-stone-950 hover:bg-neutral-50 dark:hover:bg-neutral-700"
           >
             <Download className="w-4 h-4 mr-2" />
             Export CSV
@@ -122,8 +122,8 @@ export default function AdminFinancialPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Total Revenue</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 €{stats.totalRevenue.toFixed(2)}
               </p>
             </div>
@@ -136,8 +136,8 @@ export default function AdminFinancialPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Monthly Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Monthly Revenue</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 €{stats.monthlyRevenue.toFixed(2)}
               </p>
               <p className={`text-sm ${stats.monthlyGrowth >= 0 ? 'text-green-600' : 'text-red-600'} flex items-center`}>
@@ -154,8 +154,8 @@ export default function AdminFinancialPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Total Orders</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {stats.totalOrders}
               </p>
             </div>
@@ -168,8 +168,8 @@ export default function AdminFinancialPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Average Order Value</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Average Order Value</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 €{stats.averageOrderValue.toFixed(2)}
               </p>
             </div>
@@ -184,39 +184,39 @@ export default function AdminFinancialPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Selling Products */}
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Top Selling Products</h3>
+          <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+            <h3 className="text-lg font-medium text-neutral-900 dark:text-white">Top Selling Products</h3>
           </div>
           <div className="p-6">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
               <thead>
                 <tr>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider pb-3">
+                  <th className="text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider pb-3">
                     Product
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider pb-3">
+                  <th className="text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider pb-3">
                     Quantity
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider pb-3">
+                  <th className="text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider pb-3">
                     Revenue
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
                 {stats.topSellingProducts.map((product) => (
                   <tr key={product.id}>
                     <td className="py-3">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-neutral-900 dark:text-white">
                         {product.name}
                       </p>
                     </td>
                     <td className="py-3">
-                      <p className="text-sm text-gray-900 dark:text-white">
+                      <p className="text-sm text-neutral-900 dark:text-white">
                         {product.quantity}
                       </p>
                     </td>
                     <td className="py-3">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-neutral-900 dark:text-white">
                         €{product.revenue.toFixed(2)}
                       </p>
                     </td>
@@ -229,18 +229,18 @@ export default function AdminFinancialPage() {
 
         {/* Revenue by Category */}
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Revenue by Category</h3>
+          <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+            <h3 className="text-lg font-medium text-neutral-900 dark:text-white">Revenue by Category</h3>
           </div>
           <div className="p-6">
             <div className="space-y-4">
               {stats.revenueByCategory.map((category) => (
                 <div key={category.category}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-900 dark:text-white">{category.category}</span>
-                    <span className="text-gray-900 dark:text-white">€{category.revenue.toFixed(2)}</span>
+                    <span className="text-neutral-900 dark:text-white">{category.category}</span>
+                    <span className="text-neutral-900 dark:text-white">€{category.revenue.toFixed(2)}</span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full"
                       style={{ width: `${(category.revenue / stats.totalRevenue) * 100}%` }}
@@ -262,8 +262,8 @@ export default function AdminFinancialPage() {
           <div className="flex items-center">
             <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             <div className="ml-4">
-              <p className="text-lg font-medium text-gray-900 dark:text-white">Financial Reports</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">View detailed reports</p>
+              <p className="text-lg font-medium text-neutral-900 dark:text-white">Financial Reports</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">View detailed reports</p>
             </div>
           </div>
         </Link>
@@ -275,8 +275,8 @@ export default function AdminFinancialPage() {
           <div className="flex items-center">
             <FileText className="w-8 h-8 text-green-600 dark:text-green-400" />
             <div className="ml-4">
-              <p className="text-lg font-medium text-gray-900 dark:text-white">Invoices</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Manage invoices</p>
+              <p className="text-lg font-medium text-neutral-900 dark:text-white">Invoices</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Manage invoices</p>
             </div>
           </div>
         </Link>
@@ -288,8 +288,8 @@ export default function AdminFinancialPage() {
           <div className="flex items-center">
             <Package className="w-8 h-8 text-purple-600 dark:text-purple-400" />
             <div className="ml-4">
-              <p className="text-lg font-medium text-gray-900 dark:text-white">Orders</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">View all orders</p>
+              <p className="text-lg font-medium text-neutral-900 dark:text-white">Orders</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">View all orders</p>
             </div>
           </div>
         </Link>

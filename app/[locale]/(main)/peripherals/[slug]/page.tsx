@@ -7,5 +7,5 @@ interface PeripheralCategoryPageProps {
 }
 
 export default function PeripheralCategoryPage({ params }: PeripheralCategoryPageProps) {
-  return <CategoryPage params={Promise.resolve(params)} type="peripheral" />
+  return <CategoryPage params={Promise.resolve({ category: params.slug })} type="peripheral" />
 }

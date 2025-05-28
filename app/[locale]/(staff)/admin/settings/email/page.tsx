@@ -226,11 +226,11 @@ export default function EmailSettingsPage() {
       <div className="flex items-center space-x-4">
         <Link 
           href={`/${locale}/admin/settings`}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
           Email Settings
         </h1>
       </div>
@@ -242,7 +242,7 @@ export default function EmailSettingsPage() {
           
           {/* Provider Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
               Email Provider
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -254,7 +254,7 @@ export default function EmailSettingsPage() {
                   className={`p-3 border rounded-lg text-center transition-colors ${
                     smtpConfig.provider === provider
                       ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                      : 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-400 dark:hover:border-neutral-500'
                   }`}
                 >
                   {provider.charAt(0).toUpperCase() + provider.slice(1)}
@@ -265,7 +265,7 @@ export default function EmailSettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 SMTP Host
               </label>
               <input
@@ -273,13 +273,13 @@ export default function EmailSettingsPage() {
                 name="host"
                 value={smtpConfig.host}
                 onChange={handleSmtpChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="smtp.example.com"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 SMTP Port
               </label>
               <input
@@ -287,13 +287,13 @@ export default function EmailSettingsPage() {
                 name="port"
                 value={smtpConfig.port}
                 onChange={handleSmtpChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="587"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 SMTP Username
               </label>
               <input
@@ -301,13 +301,13 @@ export default function EmailSettingsPage() {
                 name="username"
                 value={smtpConfig.username}
                 onChange={handleSmtpChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="username@example.com"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 SMTP Password
               </label>
               <input
@@ -315,20 +315,20 @@ export default function EmailSettingsPage() {
                 name="password"
                 value={smtpConfig.password}
                 onChange={handleSmtpChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="••••••••"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Security
               </label>
               <select
                 name="secure"
                 value={smtpConfig.secure}
                 onChange={handleSmtpChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="none">None</option>
                 <option value="ssl">SSL</option>
@@ -337,7 +337,7 @@ export default function EmailSettingsPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 From Email
               </label>
               <input
@@ -345,13 +345,13 @@ export default function EmailSettingsPage() {
                 name="fromEmail"
                 value={smtpConfig.fromEmail}
                 onChange={handleSmtpChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="noreply@example.com"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 From Name
               </label>
               <input
@@ -359,13 +359,13 @@ export default function EmailSettingsPage() {
                 name="fromName"
                 value={smtpConfig.fromName}
                 onChange={handleSmtpChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Company Name"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Reply-To Email
               </label>
               <input
@@ -373,7 +373,7 @@ export default function EmailSettingsPage() {
                 name="replyTo"
                 value={smtpConfig.replyTo}
                 onChange={handleSmtpChange}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="support@example.com"
               />
             </div>
@@ -385,11 +385,11 @@ export default function EmailSettingsPage() {
           <h2 className="text-lg font-semibold mb-4">Email Templates</h2>
           <div className="space-y-4">
             {templates.map((template) => (
-              <div key={template.id} className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+              <div key={template.id} className="flex items-center justify-between p-4 border rounded-lg dark:border-neutral-700">
                 <div>
-                  <h3 className="font-medium text-gray-900 dark:text-white">{template.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{template.description}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  <h3 className="font-medium text-neutral-900 dark:text-white">{template.name}</h3>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">{template.description}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
                     Subject: {template.subject}
                   </p>
                 </div>
@@ -400,7 +400,7 @@ export default function EmailSettingsPage() {
                     onChange={() => handleTemplateToggle(template.id)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
             ))}
@@ -416,7 +416,7 @@ export default function EmailSettingsPage() {
               value={testEmail}
               onChange={(e) => setTestEmail(e.target.value)}
               placeholder="Enter email address to send test"
-              className="flex-1 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <button
               type="button"

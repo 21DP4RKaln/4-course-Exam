@@ -57,7 +57,7 @@ export default function LanguageSwitcher() {
       <button
         className={`flex items-center space-x-1 rounded-full p-2 transition-colors ${
           pathname.includes('/about') || theme !== 'dark'
-            ? 'text-stone-950 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-950' 
+            ? 'text-stone-950 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-stone-950' 
             : 'text-white hover:bg-white/10'
         }`}
         onClick={() => setIsOpen(!isOpen)}
@@ -71,7 +71,7 @@ export default function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 w-40 bg-white dark:bg-dark-card rounded-xl shadow-soft dark:shadow-medium overflow-hidden z-50 border border-gray-100 dark:border-stone-950">
+        <div className="absolute top-full right-0 mt-1 w-40 bg-white dark:bg-dark-card rounded-xl shadow-soft dark:shadow-medium overflow-hidden z-50 border border-neutral-100 dark:border-stone-950">
           <div className="py-1">
             {locales.map((locale) => (
               <button
@@ -81,7 +81,7 @@ export default function LanguageSwitcher() {
                     ? `${theme === 'dark' 
                         ? 'bg-brand-red-50/10 text-brand-red-500' 
                         : 'bg-brand-blue-50 text-brand-blue-600'}`
-                    : 'hover:bg-gray-50 dark:hover:bg-stone-950 text-gray-700 dark:text-gray-300'
+                    : 'hover:bg-neutral-50 dark:hover:bg-stone-950 text-neutral-700 dark:text-neutral-300'
                 }`}
                 onClick={() => changeLocale(locale)}
               >

@@ -79,7 +79,7 @@ export function RepairList() {
       render: (value: string, repair: Repair) => (
         <div>
           <p className="font-medium">{repair.title}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             {repair.peripheral?.name || repair.configuration?.name || t('repairs.noProduct')}
           </p>
         </div>
@@ -91,7 +91,7 @@ export function RepairList() {
       render: (value: Repair['user']) => (
         <div>
           <p className="font-medium">{value?.name}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{value?.email}</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">{value?.email}</p>
         </div>
       )
     },
@@ -108,7 +108,7 @@ export function RepairList() {
           ${value === 'URGENT' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
             value === 'HIGH' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
             value === 'NORMAL' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-            'bg-gray-100 text-stone-950 dark:bg-gray-900 dark:text-gray-200'}`}>
+            'bg-neutral-100 text-stone-950 dark:bg-neutral-900 dark:text-neutral-200'}`}>
           {t(`repairs.priority.${value.toLowerCase()}`)}
         </span>
       )
@@ -157,21 +157,21 @@ export function RepairList() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
           <input
             type="text"
             placeholder={t('repairs.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
           />
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="text-gray-400" size={20} />
+          <Filter className="text-neutral-400" size={20} />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as RepairStatus | 'ALL')}
-            className="border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            className="border rounded-lg px-3 py-2 dark:bg-neutral-700 dark:border-neutral-600"
           >
             <option value="ALL">{t('repairs.allStatuses')}</option>
             {Object.values(RepairStatus).map(status => (

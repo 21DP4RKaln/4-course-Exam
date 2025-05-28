@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
     const categories = await getCategories(type)
 
-    let components: any[] = [] 
+    let components: any[] = []
     let featuredProducts: any[] = []
     let availableSpecifications: any[] = []
 
@@ -59,19 +59,19 @@ export async function GET(request: NextRequest) {
           componentSpecValues: {
             where: {
               component: {
-                category: {
-                  slug: category
-                }              }
+                category: {                  slug: category
+                }
+              }
             },
             include: {
               specKey: true
             },
             distinct: ['value']
-          }
-        }
-      })
+          }        }
+      });
 
-      availableSpecifications = specKeys.map(key => ({        id: key.id,
+      let availableSpecifications = specKeys.map(key => ({
+        id: key.id,
         name: key.name,
         displayName: key.displayName,
         values: key.componentSpecValues.map(spec => spec.value)
@@ -109,14 +109,25 @@ export async function GET(request: NextRequest) {
           categoryId: comp.categoryId,
           categoryName: comp.category.name,
           specifications: combinedSpecs,
-          sku: comp.sku || ''
-        }
-      })
+          sku: comp.sku || ''      };
+      });
 
-      if (specFilters.length > 0) {      components = components.filter(filteredComp => {
+      if (specFilters.length > 0) {
+        components = components.filter(filteredComp => {
           return specFilters.every(filter => {
             const [key, value] = filter.split('=')
-            return filteredComp.specifications[key] === value
+            const compValue = filteredComp.specifications[key]?.toLowerCase() || ''
+            const filterValue = value.toLowerCase()
+            
+            // Special handling for model names
+            if (key === 'model') {
+              // Handle Core i9 vs core-i9 format differences
+              const normalizedCompValue = compValue.replace(/\s+/g, '-')
+              const normalizedFilterValue = filterValue.replace(/\s+/g, '-')
+              return normalizedCompValue.includes(normalizedFilterValue)
+            }
+            
+            return compValue.includes(filterValue)
           })
         })
       }
@@ -148,7 +159,7 @@ async function getCategories(type: string) {
     } else if (type === 'components') {
       whereClause.type = 'component'
     }
-
+    
     const categories = await prisma.componentCategory.findMany({
       where: whereClause,
       orderBy: {
@@ -185,6 +196,7 @@ async function getFeaturedProducts(type: string) {
     }
     
     if (type === 'peripherals') {
+      // Simplified query after fixing the categories
       whereClause.category = {
         type: 'peripheral'
       }

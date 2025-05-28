@@ -63,17 +63,17 @@ export function ConfirmDialog({
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+            className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-500 dark:hover:text-neutral-300"
           >
             <X size={20} />
           </button>
           
           {/* Content */}
           <div className="text-center">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">
               {title}
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">
               {message}
             </p>
             
@@ -81,7 +81,7 @@ export function ConfirmDialog({
             <div className="flex justify-center space-x-4">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                className="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
                 {cancelText}
               </button>

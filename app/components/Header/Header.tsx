@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/app/contexts/AuthContext'
@@ -80,18 +81,22 @@ export default function Header() {
         ? 'bg-white/80 dark:bg-dark-background/80 backdrop-blur-md shadow-sm' 
         : 'bg-transparent'
     }`}>
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href={`/${locale}`} className="flex items-center">
-            <span className={`text-xl font-bold transition-colors ${
-              theme === 'dark' 
-                ? 'text-white' 
-                : isScrolled ? 'text-brand-blue-600' : 'text-brand-blue-600'
-            }`}>
-              {t('common.appName')}
-            </span>
-          </Link>
+      <div className="container mx-auto">
+        <div className="flex items-center justify-between">          {/* Logo */}
+          <LogoWrapper $theme={theme}>
+            <Link href={`/${locale}`} className="logo-link">
+              <div className="logo-container">
+                <Image 
+                  src={theme === 'dark' ? "/images/logo-dark.png" : "/images/logo-light.png"}
+                  alt="IvaPro" 
+                  width={70}
+                  height={28}
+                  className="logo-image"
+                  priority
+                />
+              </div>
+            </Link>
+          </LogoWrapper>
 
           {/* Main navigation (hidden on mobile) */}
           <nav className="hidden md:flex items-center space-x-3">
@@ -114,11 +119,11 @@ export default function Header() {
               </StyledButtonWrapper>
               
               {pcDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-dark-card rounded-xl shadow-medium dark:shadow-hard overflow-hidden z-50 border border-gray-100 dark:border-stone-950">
+                <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-dark-card rounded-xl shadow-medium dark:shadow-hard overflow-hidden z-50 border border-neutral-100 dark:border-stone-950">
                   <div className="py-1">
                     <Link
                       href={`/${locale}/configurator`}
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-stone-950 transition-colors"
+                      className="flex items-center px-4 py-3 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-stone-950 transition-colors"
                       onClick={() => setPcDropdownOpen(false)}
                     >
                       <Cpu size={18} className={`mr-3 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -126,7 +131,7 @@ export default function Header() {
                     </Link>
                     <Link
                       href={`/${locale}/shop/ready-made`}
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-stone-950 transition-colors"
+                      className="flex items-center px-4 py-3 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-stone-950 transition-colors"
                       onClick={() => setPcDropdownOpen(false)}
                     >
                       <Monitor size={18} className={`mr-3 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -212,7 +217,7 @@ export default function Header() {
               href={`/${locale}/cart`}
               className={`relative rounded-full w-8 h-8 flex items-center justify-center transition-colors ${
                 isScrolled || theme !== 'dark'
-                  ? 'text-stone-950 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-950' 
+                  ? 'text-stone-950 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-stone-950' 
                   : 'text-white hover:bg-white/10'
               }`}
             >
@@ -233,7 +238,7 @@ export default function Header() {
                   href={getDashboardLink()}
                   className={`flex items-center space-x-2 ${
                     isScrolled || theme !== 'dark'
-                      ? 'text-stone-950 dark:text-gray-200' 
+                      ? 'text-stone-950 dark:text-neutral-200' 
                       : 'text-white'
                   } hover:text-brand-blue-500 dark:hover:text-brand-red-400 transition-colors`}
                 >
@@ -244,7 +249,7 @@ export default function Header() {
                   onClick={() => logout()}
                   className={`rounded-full w-8 h-8 flex items-center justify-center transition-colors ${
                     isScrolled || theme !== 'dark'
-                      ? 'text-stone-950 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-950' 
+                      ? 'text-stone-950 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-stone-950' 
                       : 'text-white hover:bg-white/10'
                   }`}
                   aria-label={t('nav.logout')}
@@ -294,7 +299,7 @@ export default function Header() {
               className="relative p-2"
             >
               <ShoppingCart size={20} className={`${
-                isScrolled || theme !== 'dark' ? 'text-stone-950 dark:text-gray-200' : 'text-white'
+                isScrolled || theme !== 'dark' ? 'text-stone-950 dark:text-neutral-200' : 'text-white'
               }`} />
               {totalItems > 0 && (
                 <span className={`absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white rounded-full ${
@@ -421,6 +426,50 @@ const StyledButtonWrapper = styled.div<{ $theme: string }>`
   .nav-button.active:hover {
     background-color: ${props => props.$theme === 'dark' ? '#b91c1c' : '#0054b3'};
     transform: none;
+  }
+`;
+
+const LogoWrapper = styled.div<{ $theme: string }>`
+  .logo-link {
+    display: inline-block;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transform-origin: center;
+  }
+
+  .logo-link:hover {
+    transform: scale(1.05);
+  }
+
+  .logo-link:active {
+    transform: scale(0.95);
+    transition: all 0.1s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  .logo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .logo-link:hover .logo-container {
+    background-color: ${props => props.$theme === 'dark' ? 'rgba(220, 38, 38, 0.1)' : 'rgba(0, 102, 204, 0.1)'};
+    box-shadow: 0 4px 20px ${props => props.$theme === 'dark' ? 'rgba(220, 38, 38, 0.3)' : 'rgba(0, 102, 204, 0.3)'};
+  }
+
+  .logo-image {
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+  }
+
+  .logo-link:hover .logo-image {
+    filter: drop-shadow(0 4px 12px ${props => props.$theme === 'dark' ? 'rgba(220, 38, 38, 0.4)' : 'rgba(0, 102, 204, 0.4)'});
+  }
+
+  .logo-link:active .logo-image {
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.3));
   }
 `;
 

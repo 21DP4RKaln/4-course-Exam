@@ -121,7 +121,7 @@ export default function CreatePromoCodePage() {
       <div className="mb-6">
         <Link 
           href={`/${usePathname().split('/')[1]}/admin/marketing/promo-codes`}
-          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          className="inline-flex items-center text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
         >
           <ArrowLeft size={18} className="mr-2" />
           Back to Promo Codes
@@ -129,8 +129,8 @@ export default function CreatePromoCodePage() {
       </div>
 
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="p-6 border-b border-neutral-200 dark:border-neutral-700">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
             Create Promo Code
           </h1>
         </div>
@@ -154,7 +154,7 @@ export default function CreatePromoCodePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="code" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Promo Code *
               </label>
               <input
@@ -165,15 +165,15 @@ export default function CreatePromoCodePage() {
                 onChange={handleInputChange}
                 required
                 placeholder="e.g., SUMMER20"
-                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
               />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 This is the code customers will enter at checkout
               </p>
             </div>
 
             <div>
-              <label htmlFor="discountPercentage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="discountPercentage" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Discount Percentage *
               </label>
               <input
@@ -186,15 +186,15 @@ export default function CreatePromoCodePage() {
                 min="1"
                 max="100"
                 placeholder="e.g., 20"
-                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
               />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 Percentage discount (1-100)
               </p>
             </div>
 
             <div>
-              <label htmlFor="maxDiscountAmount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="maxDiscountAmount" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Max Discount Amount (Optional)
               </label>
               <input
@@ -206,15 +206,15 @@ export default function CreatePromoCodePage() {
                 min="0"
                 step="0.01"
                 placeholder="e.g., 50"
-                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
               />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 Maximum discount amount in EUR
               </p>
             </div>
 
             <div>
-              <label htmlFor="minOrderValue" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="minOrderValue" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Minimum Order Value (Optional)
               </label>
               <input
@@ -226,15 +226,15 @@ export default function CreatePromoCodePage() {
                 min="0"
                 step="0.01"
                 placeholder="e.g., 100"
-                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
               />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 Minimum order value required to use this code
               </p>
             </div>
 
             <div>
-              <label htmlFor="maxUsage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="maxUsage" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Maximum Usage *
               </label>
               <input
@@ -246,15 +246,15 @@ export default function CreatePromoCodePage() {
                 required
                 min="1"
                 placeholder="e.g., 1000"
-                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
               />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 How many times this code can be used
               </p>
             </div>
 
             <div>
-              <label htmlFor="expiresAt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="expiresAt" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Expiration Date *
               </label>
               <input
@@ -265,16 +265,16 @@ export default function CreatePromoCodePage() {
                 onChange={handleInputChange}
                 required
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
               />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 When this promo code expires
               </p>
             </div>
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Description (Optional)
             </label>
             <textarea
@@ -284,15 +284,15 @@ export default function CreatePromoCodePage() {
               onChange={handleInputChange}
               rows={3}
               placeholder="e.g., Summer sale discount for all products"
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
             />
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
               Internal description for this promo code
             </p>
           </div>
 
           <div>
-            <label htmlFor="scope" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="scope" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Applies To *
             </label>
             <select
@@ -300,7 +300,7 @@ export default function CreatePromoCodePage() {
               name="scope"
               value={formData.scope}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
             >
               <option value="ALL">All Products</option>
               <option value="SPECIFIC_PRODUCTS">Specific Products</option>
@@ -309,25 +309,25 @@ export default function CreatePromoCodePage() {
 
           {formData.scope === 'SPECIFIC_PRODUCTS' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Select Products
               </label>
-              <div className="border rounded-md dark:border-gray-600 max-h-64 overflow-y-auto">
+              <div className="border rounded-md dark:border-neutral-600 max-h-64 overflow-y-auto">
                 {products.map((product) => (
-                  <label key={product.id} className="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <label key={product.id} className="flex items-center p-3 hover:bg-neutral-50 dark:hover:bg-neutral-700">
                     <input
                       type="checkbox"
                       checked={selectedProducts.includes(product.id)}
                       onChange={() => handleProductSelection(product.id)}
-                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-neutral-300 rounded"
                     />
-                    <span className="ml-3 text-sm text-gray-900 dark:text-white">
+                    <span className="ml-3 text-sm text-neutral-900 dark:text-white">
                       {product.name} - €{product.price} ({product.type})
                     </span>
                   </label>
                 ))}
               </div>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 Select products this promo code applies to
               </p>
             </div>
@@ -340,9 +340,9 @@ export default function CreatePromoCodePage() {
               name="isActive"
               checked={formData.isActive}
               onChange={handleInputChange}
-              className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+              className="h-4 w-4 text-red-600 focus:ring-red-500 border-neutral-300 rounded"
             />
-            <label htmlFor="isActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+            <label htmlFor="isActive" className="ml-2 text-sm text-neutral-700 dark:text-neutral-300">
               Active
             </label>
           </div>
@@ -350,7 +350,7 @@ export default function CreatePromoCodePage() {
           <div className="flex justify-end gap-4">
             <Link
               href={`/${usePathname().split('/')[1]}/admin/marketing/promo-codes`}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
             >
               Cancel
             </Link>

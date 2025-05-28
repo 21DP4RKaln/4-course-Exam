@@ -15,6 +15,7 @@ import {
 interface FilterOption {
   id: string
   name: string
+  translationKey?: string
 }
 
 interface FilterGroup {
@@ -22,6 +23,7 @@ interface FilterGroup {
   title: string
   icon?: React.ReactNode
   options: FilterOption[]
+  titleTranslationKey?: string
 }
 
 interface AdvancedFilterProps {
@@ -61,8 +63,7 @@ export default function AdvancedFilter({
   caseOptions = [],
   coolingOptions = [],
   filterGroups
-}: AdvancedFilterProps) {
-  const pathname = usePathname()
+}: AdvancedFilterProps) {  const pathname = usePathname()
   const locale = pathname.split('/')[1]
   const t = useTranslations()
   const { theme } = useTheme()
@@ -129,7 +130,6 @@ export default function AdvancedFilter({
       [section]: !prev[section]
     }))
   }
-
   const toggleFilter = (key: string, value: string) => {
     setSelectedFilters(prev => {
       const current = [...(prev[key] || [])]
@@ -141,13 +141,16 @@ export default function AdvancedFilter({
         current.push(value)
       }
       
-      return {
+      const newFilters = {
         ...prev,
         [key]: current
       }
+      
+      onFilterChange(newFilters)
+      
+      return newFilters
     })
   }
-
   const resetFilters = () => {
     const resetSelectedFilters: Record<string, string[]> = {}
     internalFilterGroups.forEach(group => {
@@ -158,6 +161,9 @@ export default function AdvancedFilter({
     setSearchQuery('')
     setSortOption('price-asc')
     setCurrentPriceRange({ min: minPrice, max: maxPrice })
+    
+    onFilterChange(resetSelectedFilters)
+    onSearchChange('')
     onSortChange('price-asc')
     onPriceRangeChange(minPrice, maxPrice)
   }
@@ -196,7 +202,7 @@ export default function AdvancedFilter({
       <div className="p-6 space-y-6">
         {/* Search input */}
         <div className="relative">
-          <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" />
+          <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 dark:text-neutral-400" />
           <input
             type="text"
             value={searchQuery}
@@ -205,7 +211,7 @@ export default function AdvancedFilter({
               onSearchChange(e.target.value);
             }}
             placeholder={t('shop.filters.searchPlaceholder')}
-            className="w-full pl-12 pr-12 py-3 bg-white/50 dark:bg-gray-900/50 border border-blue-200 dark:border-red-700/50 rounded-lg text-gray-900 dark:text-white text-base placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-red-500 focus:border-transparent transition duration-200"
+            className="w-full pl-12 pr-12 py-3 bg-white/50 dark:bg-neutral-900/50 border border-blue-200 dark:border-red-700/50 rounded-lg text-neutral-900 dark:text-white text-base placeholder-neutral-500 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-red-500 focus:border-transparent transition duration-200"
           />
           {searchQuery && (
             <button
@@ -213,7 +219,7 @@ export default function AdvancedFilter({
                 setSearchQuery('')
                 onSearchChange('')
               }}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
             >
               <X size={20} />
             </button>
@@ -227,19 +233,19 @@ export default function AdvancedFilter({
             setSortOption(e.target.value);
             onSortChange(e.target.value);
           }}
-          className="w-full px-4 py-3 bg-white dark:bg-stone-950 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-brand-blue-400 dark:focus:ring-brand-red-500 transition duration-200 cursor-pointer appearance-none"
-        >          <option className="bg-white dark:bg-stone-950 text-gray-900 dark:text-white" value="price-asc">{t('shop.filters.sortOptions.priceAsc')}</option>
-          <option className="bg-white dark:bg-stone-950 text-gray-900 dark:text-white" value="price-desc">{t('shop.filters.sortOptions.priceDesc')}</option>
-          <option className="bg-white dark:bg-stone-950 text-gray-900 dark:text-white" value="name-asc">{t('shop.filters.sortOptions.nameAsc')}</option>
-          <option className="bg-white dark:bg-stone-950 text-gray-900 dark:text-white" value="name-desc">{t('shop.filters.sortOptions.nameDesc')}</option>
-          <option className="bg-white dark:bg-stone-950 text-gray-900 dark:text-white" value="availability">{t('shop.filters.sortOptions.stockDesc')}</option>
+          className="w-full px-4 py-3 bg-white dark:bg-stone-950 border border-neutral-300 dark:border-neutral-600 rounded-lg text-neutral-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-brand-blue-400 dark:focus:ring-brand-red-500 transition duration-200 cursor-pointer appearance-none"
+        >          <option className="bg-white dark:bg-stone-950 text-neutral-900 dark:text-white" value="price-asc">{t('shop.filters.sortOptions.priceAsc')}</option>
+          <option className="bg-white dark:bg-stone-950 text-neutral-900 dark:text-white" value="price-desc">{t('shop.filters.sortOptions.priceDesc')}</option>
+          <option className="bg-white dark:bg-stone-950 text-neutral-900 dark:text-white" value="name-asc">{t('shop.filters.sortOptions.nameAsc')}</option>
+          <option className="bg-white dark:bg-stone-950 text-neutral-900 dark:text-white" value="name-desc">{t('shop.filters.sortOptions.nameDesc')}</option>
+          <option className="bg-white dark:bg-stone-950 text-neutral-900 dark:text-white" value="availability">{t('shop.filters.sortOptions.stockDesc')}</option>
         </select>
 
         {/* Filter content */}
         <div className={`${(!isOpen && 'hidden lg:block') || 'block'}`}>
           <div className="bg-transparent rounded-lg p-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-white flex items-center">
                 <Filter size={20} className="mr-2" />
                 {t('buttons.filter')}
               </h3>
@@ -261,16 +267,16 @@ export default function AdvancedFilter({
                   className="flex items-center justify-between w-full text-left"
                 >
                   <div className="flex items-center">
-                    <span className="font-medium text-gray-900 dark:text-white text-base">
+                    <span className="font-medium text-neutral-900 dark:text-white text-base">
                       {t('shop.filters.price')} 
-                      <span className="ml-2 text-sm font-normal text-gray-600 dark:text-gray-400">
+                      <span className="ml-2 text-sm font-normal text-neutral-600 dark:text-neutral-400">
                         (€{currentPriceRange.min} - €{currentPriceRange.max})
                       </span>
                     </span>
                   </div>
                   <ChevronDown 
                     size={18} 
-                    className={`text-gray-400 transform transition-transform ${
+                    className={`text-neutral-400 transform transition-transform ${
                       expandedSections['price'] ? 'rotate-180' : ''
                     }`} 
                   />
@@ -280,24 +286,24 @@ export default function AdvancedFilter({
                     <div className="space-y-5">
                       <div className="flex gap-4">
                         <div className="w-1/2">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Min Price</label>
+                          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Min Price</label>
                           <input
                             type="number"
                             value={currentPriceRange.min}
                             onChange={(e) => handlePriceRangeChange('min', Number(e.target.value))}
-                            className="w-full px-3 py-2 bg-white/50 dark:bg-stone-950/50 border dark:border-red-700/50 light:border-blue-300 rounded-md text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-400 dark:focus:ring-red-500"
+                            className="w-full px-3 py-2 bg-white/50 dark:bg-stone-950/50 border dark:border-red-700/50 light:border-blue-300 rounded-md text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-blue-400 dark:focus:ring-red-500"
                             min={minPrice}
                             max={currentPriceRange.max}
                             step="1"
                           />
                         </div>
                         <div className="w-1/2">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max Price</label>
+                          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Max Price</label>
                           <input
                             type="number"
                             value={currentPriceRange.max}
                             onChange={(e) => handlePriceRangeChange('max', Number(e.target.value))}
-                            className="w-full px-3 py-2 bg-white/50 dark:bg-stone-950/50 border dark:border-red-700/50 light:border-blue-300 rounded-md text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-400 dark:focus:ring-red-500"
+                            className="w-full px-3 py-2 bg-white/50 dark:bg-stone-950/50 border dark:border-red-700/50 light:border-blue-300 rounded-md text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-blue-400 dark:focus:ring-red-500"
                             min={currentPriceRange.min}
                             max={maxPrice}
                             step="1"
@@ -305,24 +311,24 @@ export default function AdvancedFilter({
                         </div>
                       </div>
                       <div className="px-1">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Min Price</label>
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Min Price</label>
                         <input
                           type="range"
                           value={currentPriceRange.min}
                           onChange={(e) => handlePriceRangeChange('min', Number(e.target.value))}
-                          className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600 dark:accent-red-600"
+                          className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-blue-600 dark:accent-red-600"
                           min={minPrice}
                           max={maxPrice}
                           step="1"
                         />
                       </div>
                       <div className="px-1">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Max Price</label>
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Max Price</label>
                         <input
                           type="range"
                           value={currentPriceRange.max}
                           onChange={(e) => handlePriceRangeChange('max', Number(e.target.value))}
-                          className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600 dark:accent-red-600"
+                          className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-blue-600 dark:accent-red-600"
                           min={minPrice}
                           max={maxPrice}
                           step="1"
@@ -341,9 +347,8 @@ export default function AdvancedFilter({
                     className="flex items-center justify-between w-full text-left"
                   >
                     <div className="flex items-center">
-                      {group.icon}
-                      <span className="font-medium text-gray-900 dark:text-white text-base">
-                        {group.title}
+                      {group.icon}                      <span className="font-medium text-neutral-900 dark:text-white text-base">
+                        {group.titleTranslationKey ? t(group.titleTranslationKey) : group.title}
                         {selectedFilters[group.key]?.length > 0 && (
                           <span className="ml-2 text-xs font-normal px-2 py-0.5 rounded-full bg-blue-100 dark:bg-red-900 text-blue-800 dark:text-red-300">
                             {selectedFilters[group.key].length}
@@ -353,7 +358,7 @@ export default function AdvancedFilter({
                     </div>
                     <ChevronDown 
                       size={18} 
-                      className={`text-gray-500 transform transition-transform ${
+                      className={`text-neutral-500 transform transition-transform ${
                         expandedSections[group.title] ? 'rotate-180' : ''
                       }`} 
                     />
@@ -371,8 +376,8 @@ export default function AdvancedFilter({
                                     ? 'bg-red-600 border-red-600 text-white'
                                     : 'bg-blue-600 border-blue-600 text-white'
                                   : theme === 'dark'
-                                    ? 'border-gray-600 hover:border-red-500'
-                                    : 'border-gray-400 hover:border-blue-500'
+                                    ? 'border-neutral-600 hover:border-red-500'
+                                    : 'border-neutral-400 hover:border-blue-500'
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
@@ -383,7 +388,7 @@ export default function AdvancedFilter({
                                 <Check size={14} />
                               )}
                             </div>
-                            <span className="text-sm text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+                            <span className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors">
                               {option.name}
                             </span>
                           </label>

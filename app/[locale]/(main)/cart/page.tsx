@@ -5,9 +5,51 @@ import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/app/contexts/CartContext'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { Trash2, Plus, Minus, ShoppingBag, ChevronLeft } from 'lucide-react'
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { duration: 0.4 }
+  }
+};
+
+const slideUp = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { 
+    y: 0, 
+    opacity: 1,
+    transition: { duration: 0.5 }
+  }
+};
+
+const cartItemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: { duration: 0.3 }
+  },
+  exit: { 
+    opacity: 0, 
+    x: -20,
+    transition: { duration: 0.2 }
+  }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
 
 export default function CartPage() {
   const t = useTranslations()
@@ -30,7 +72,7 @@ export default function CartPage() {
 
   const validatePromoCode = async () => {
     if (!promoCode.trim()) {
-      setPromoError('Please enter a promo code')
+      setPromoError(t('cart.enterPromoCode'))
       return
     }
     
@@ -60,7 +102,6 @@ export default function CartPage() {
         statusText: response.statusText,
         headers: Object.fromEntries(response.headers.entries())
       })
-        // Try to get the response text first
       const responseText = await response.text()
       console.log('Raw response text:', responseText)
 
@@ -75,16 +116,20 @@ export default function CartPage() {
         return
       }
 
+      // replace server error handling to use translations
       if (!response.ok) {
-        const errorMessage = data?.error || 'Failed to validate promo code'
-        console.error('Promo code error:', errorMessage)
-        setPromoError(errorMessage)
+        console.error('Promo code validation failed with status:', response.status, data)
+        if (response.status === 400) {
+          setPromoError(t('cart.invalidPromoCode'))
+        } else {
+          setPromoError(t('cart.promoValidationFailed'))
+        }
         setPromoDiscount(0)
         return
       }
 
       if (!data.valid) {
-        setPromoError('Invalid promo code')
+        setPromoError(t('cart.invalidPromoCode'))
         setPromoDiscount(0)
         return
       }
@@ -99,7 +144,7 @@ export default function CartPage() {
       }
     } catch (error) {
       console.error('Error validating promo code:', error)
-      setPromoError('Failed to validate promo code. Please try again.')
+      setPromoError(t('cart.promoValidationFailed'))
       setPromoDiscount(0)
     }
   }
@@ -107,211 +152,385 @@ export default function CartPage() {
   const finalTotal = totalPrice - promoDiscount
 
   const handleCheckout = () => {
-    if (!isAuthenticated) {
-      router.push(`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`)
-      return
-    }
-
     setIsProcessing(true)
-  
-    setTimeout(() => {
-      const checkoutUrl = new URL(`/${locale}/checkout`, window.location.origin)
-      if (promoDiscount > 0 && promoCode) {
-        checkoutUrl.searchParams.set('promo', promoCode)
-      }
-      router.push(checkoutUrl.pathname + checkoutUrl.search)
-      setIsProcessing(false)
-    }, 1000)
+    const checkoutUrl = new URL(`/${locale}/checkout`, window.location.origin)
+    if (promoDiscount > 0 && promoCode) {
+      checkoutUrl.searchParams.set('promo', promoCode)
+    }
+    // Add guest parameter if user is not authenticated
+    if (!isAuthenticated) {
+      checkoutUrl.searchParams.set('guest', 'true')
+    }
+    router.push(checkoutUrl.pathname + checkoutUrl.search)
+    setIsProcessing(false)
   }
 
   if (items.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto text-center py-12">        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-800 hover:border-brand-blue-200 dark:hover:border-brand-red-800 transition-all duration-300">
-          <ShoppingBag size={48} className="mx-auto text-gray-400 mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+      <motion.div 
+        className="max-w-4xl mx-auto text-center py-12"
+        initial="hidden"
+        animate="visible"
+        variants={fadeIn}
+      >        
+        <motion.div 
+          className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8 border border-neutral-200 dark:border-neutral-800 hover:border-brand-blue-200 dark:hover:border-brand-red-800 transition-all duration-300"
+          variants={slideUp}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+        >
+          <motion.div 
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <ShoppingBag size={48} className="mx-auto text-neutral-400 mb-4" />
+          </motion.div>
+          <motion.h1 
+            className="text-2xl font-bold text-neutral-900 dark:text-white mb-4"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
             {t('cart.empty')}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Your shopping cart is empty. Add some items to continue shopping.
-          </p>
-          <Link href={`/${locale}/`} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-            <ChevronLeft className="inline-block mr-2" size={20} />
-            {t('cart.continueShoping')}
-          </Link>
-        </div>
-      </div>
+          </motion.h1>          <motion.p 
+            className="text-neutral-600 dark:text-neutral-400 mb-8"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            {t('cart.emptyMessage')}
+          </motion.p>
+          <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            whileHover={{ x: -5, transition: { duration: 0.2 } }}
+          >
+            <Link href={`/${locale}/`} className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white">
+              <ChevronLeft className="inline-block mr-2" size={20} />
+              {t('cart.continueShoping')}
+            </Link>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     )
   }
 
   return (
-    <section className="py-8">
+    <motion.section 
+      className="py-8"
+      initial="hidden"
+      animate="visible"
+      variants={fadeIn}
+    >
       <div className="container mx-auto px-4">
         <div className="flex justify-center items-center">
-          <div className="w-full max-w-7xl">            <div className="bg-white dark:bg-stone-950 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-brand-blue-200 dark:hover:border-brand-red-800 transition-all duration-300">
+          <motion.div 
+            className="w-full max-w-7xl"
+            variants={slideUp}
+          >            
+            <motion.div 
+              className="bg-white dark:bg-stone-950 rounded-2xl shadow-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 hover:border-brand-blue-200 dark:hover:border-brand-red-800 transition-all duration-300"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              whileHover={{ boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
+            >
               <div className="p-0">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
                   {/* Left Column - Cart Items */}
                   <div className="lg:col-span-8">
                     <div className="p-8">
-                      <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                          Shopping Cart
+                      <motion.div 
+                        className="flex justify-between items-center mb-8"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                      >                        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
+                          {t('cart.shoppingCart')}
                         </h1>
-                        <p className="text-gray-600 dark:text-gray-400">
-                          {items.reduce((sum, item) => sum + item.quantity, 0)} items
+                        <p className="text-neutral-600 dark:text-neutral-400">
+                          {items.reduce((sum, item) => sum + item.quantity, 0)} {t('cart.items')}
                         </p>
-                      </div>
+                      </motion.div>
 
-                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+                      <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
-                      {items.map((item, index) => (
-                        <div key={item.id}>
-                          <div className="flex items-center py-6">
-                            {/* Item Image */}
-                            <div className="relative w-20 h-20 lg:w-24 lg:h-24 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
-                              <Image
-                                src={item.imageUrl || '/images/Default-image.png'}
-                                alt={item.name}
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 768px) 80px, 96px"
-                                priority
-                              />
-                            </div>
-                            
-                            {/* Item Details */}
-                            <div className="ml-6 flex-1">
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                {item.type === 'component' ? 'Component' : 'PC Configuration'}
-                              </p>
-                              <h3 className="text-base font-medium text-gray-900 dark:text-white">
-                                {item.name}
-                              </h3>
-                            </div>
-
-                            {/* Quantity Controls */}
-                            <div className="flex items-center mx-4">
-                              <button 
-                                onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                              >
-                                <Minus size={16} />
-                              </button>
-
-                              <input
-                                type="number"
-                                value={item.quantity}
-                                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 0)}
-                                className="w-16 mx-2 text-center border border-gray-300 dark:border-gray-600 rounded-md py-1 text-gray-900 dark:text-white bg-white dark:bg-stone-950"
-                                min="0"
-                              />
-
-                              <button 
-                                onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                              >
-                                <Plus size={16} />
-                              </button>
-                            </div>                            {/* Remove Button */}
-                            <button 
-                              onClick={() => removeItem(item.id)}
-                              className="ml-4 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                      <motion.div
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="visible"
+                      >
+                        <AnimatePresence>
+                          {items.map((item, index) => (
+                            <motion.div 
+                              key={item.id}
+                              variants={cartItemVariants}
+                              initial="hidden"
+                              animate="visible"
+                              exit="exit"
+                              custom={index}
+                              layout
                             >
-                              <Trash2 size={20} />
-                            </button>
-                          </div>
-                          {index < items.length - 1 && <hr className="my-6 border-gray-200 dark:border-gray-700" />}
-                        </div>
-                      ))}
+                              <div className="flex items-center py-6">
+                                {/* Item Image */}
+                                <motion.div 
+                                  className="relative w-20 h-20 lg:w-24 lg:h-24 bg-neutral-200 dark:bg-neutral-700 rounded-lg overflow-hidden border border-neutral-300 dark:border-neutral-600"
+                                  whileHover={{ scale: 1.05 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <Image
+                                    src={item.imageUrl || '/images/product-placeholder.svg'}
+                                    alt={item.name}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 80px, 96px"
+                                    priority
+                                  />
+                                </motion.div>
+                                
+                                {/* Item Details */}
+                                <div className="ml-6 flex-1">
+                                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                                    {item.type === 'component' ? t('cart.itemType.component') : t('cart.itemType.configuration')}
+                                  </p>                                  <motion.div 
+                                    whileHover={{ x: 3 }}
+                                    transition={{ type: "spring", stiffness: 400 }}
+                                  >
+                                    <Link 
+                                      href={item.type === 'component' 
+                                        ? `/${locale}/components/${item.id}` 
+                                        : `/${locale}/shop/product/${item.id}`
+                                      }
+                                      className="hover:text-brand-blue-600 dark:hover:text-brand-red-500 transition-colors"
+                                    >
+                                      <h3 className="text-base font-medium text-neutral-900 dark:text-white">
+                                        {item.name}
+                                      </h3>
+                                    </Link>
+                                  </motion.div>
+                                </div>
 
-                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+                                {/* Quantity Controls */}                                <div className="flex items-center mx-4">
+                                  <motion.button 
+                                    onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                    className="p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    aria-label={t('cart.decreaseQuantity')}
+                                  >
+                                    <Minus size={16} />
+                                  </motion.button>
+
+                                  <input
+                                    type="number"
+                                    value={item.quantity}
+                                    onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 0)}
+                                    className="w-16 mx-2 text-center border border-neutral-300 dark:border-neutral-600 rounded-md py-1 text-neutral-900 dark:text-white bg-white dark:bg-stone-950"
+                                    min="0"
+                                    aria-label={t('cart.quantity')}
+                                  />
+
+                                  <motion.button 
+                                    onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                    className="p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    aria-label={t('cart.increaseQuantity')}
+                                  >
+                                    <Plus size={16} />
+                                  </motion.button>
+                                </div>
+                                
+                                {/* Remove Button */}
+                                <motion.button 
+                                  onClick={() => removeItem(item.id)}
+                                  className="ml-4 text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400"
+                                  whileHover={{ scale: 1.1, color: '#ef4444' }}
+                                  whileTap={{ scale: 0.95 }}
+                                >
+                                  <Trash2 size={20} />
+                                </motion.button>
+                              </div>
+                              {index < items.length - 1 && <hr className="my-6 border-neutral-200 dark:border-neutral-700" />}
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </motion.div>
+
+                      <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
                       <div className="pt-8">
-                        <Link 
-                          href={`/${locale}/`} 
-                          className="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                        <motion.div
+                          whileHover={{ x: -5 }}
+                          transition={{ type: "spring", stiffness: 400 }}
                         >
-                          <ChevronLeft className="mr-2" size={20} />
-                          Back to shop
-                        </Link>
+                          <Link 
+                            href={`/${locale}/`} 
+                            className="inline-flex items-center text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"
+                          >
+                            <ChevronLeft className="mr-2" size={20} />
+                            {t('cart.backToShop')}
+                          </Link>
+                        </motion.div>
                       </div>
                     </div>
-                  </div>                  {/* Right Column - Order Summary */}
-                  <div className="lg:col-span-4 bg-gray-50 dark:bg-stone-900 border-l border-gray-200 dark:border-gray-800">
+                  </div>
+                  
+                  {/* Right Column - Order Summary */}
+                  <motion.div 
+                    className="lg:col-span-4 bg-neutral-50 dark:bg-stone-900 border-l border-neutral-200 dark:border-neutral-800"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
                     <div className="p-8">
-                      <h2 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">
-                        Summary
-                      </h2>
+                      <motion.h2 
+                        className="text-2xl font-bold mb-8 text-neutral-900 dark:text-white"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                      >
+                        {t('cart.summary')}
+                      </motion.h2>
 
-                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+                      <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
-                      <div className="flex justify-between mb-4">
-                        <h5 className="text-sm text-gray-600 dark:text-gray-400">
-                          Subtotal
+                      <motion.div 
+                        className="flex justify-between mb-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                      >
+                        <h5 className="text-sm text-neutral-600 dark:text-neutral-400">
+                          {t('cart.subtotal')}
                         </h5>
-                        <h5 className="text-gray-900 dark:text-white">€ {totalPrice.toFixed(2)}</h5>
-                      </div>
+                        <h5 className="text-neutral-900 dark:text-white">€ {totalPrice.toFixed(2)}</h5>
+                      </motion.div>
 
-                      {promoDiscount > 0 && (
-                        <div className="flex justify-between mb-4">
-                          <h5 className="text-sm text-green-600 dark:text-green-400">
-                            Promo Discount
-                          </h5>
-                          <h5 className="text-green-600 dark:text-green-400">-€ {promoDiscount.toFixed(2)}</h5>
-                        </div>
-                      )}
+                      <AnimatePresence>
+                        {promoDiscount > 0 && (
+                          <motion.div 
+                            className="flex justify-between mb-4"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <h5 className="text-sm text-green-600 dark:text-green-400">
+                              {t('cart.promoDiscount')}
+                            </h5>
+                            <h5 className="text-green-600 dark:text-green-400">-€ {promoDiscount.toFixed(2)}</h5>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
 
-                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+                      <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
-                      <div className="flex justify-between mb-8">
-                        <h5 className="text-sm uppercase font-medium text-gray-900 dark:text-white">
-                          Total price
+                      <motion.div 
+                        className="flex justify-between mb-8"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                      >
+                        <h5 className="text-sm uppercase font-medium text-neutral-900 dark:text-white">
+                          {t('cart.totalPrice')}
                         </h5>
-                        <h5 className="text-lg font-bold text-gray-900 dark:text-white">€ {finalTotal.toFixed(2)}</h5>
-                      </div>
+                        <motion.h5 
+                          className="text-lg font-bold text-neutral-900 dark:text-white"
+                          key={finalTotal} // Šī atslēga liks animēt cenu katru reizi, kad tā mainās
+                          initial={{ scale: 1 }}
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          € {finalTotal.toFixed(2)}
+                        </motion.h5>
+                      </motion.div>
 
-                      <div className="mb-8">
+                      <motion.div 
+                        className="mb-8"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.6 }}
+                      >
                         <input
                           type="text"
-                          placeholder="Enter your code"
+                          placeholder={t('cart.promoCode')}
                           value={promoCode}
                           onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                          className="w-full p-3 rounded-md bg-white dark:bg-stone-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white uppercase"
+                          className="w-full p-3 rounded-md bg-white dark:bg-stone-800 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white uppercase"
                           style={{ textTransform: 'uppercase' }}
                         />
-                        {promoError && <p className="text-red-500 text-sm mt-2">{promoError}</p>}
-                        <button
+                        <AnimatePresence>
+                          {promoError && (
+                            <motion.p 
+                              className="text-red-500 text-sm mt-2"
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, height: 0 }}
+                            >
+                              {promoError}
+                            </motion.p>
+                          )}
+                        </AnimatePresence>
+                        <motion.button
                           onClick={validatePromoCode}
-                          className="mt-4 w-full py-2 bg-gray-900 dark:bg-gray-800 text-white rounded-md hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200 font-medium"
+                          className="mt-4 w-full py-2 bg-neutral-900 dark:bg-neutral-800 text-white rounded-md hover:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors duration-200 font-medium"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
                         >
-                          Apply Promo Code
-                        </button>
-                      </div>
+                          {t('cart.applyPromoCode')}
+                        </motion.button>
+                      </motion.div>
 
-                      <hr className="my-6 border-gray-200 dark:border-gray-700" />
+                      <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
-                      <button
+                      <motion.button
                         onClick={handleCheckout}
                         disabled={isProcessing}
-                        className="w-full py-4 bg-gray-900 dark:bg-gray-800 text-white rounded-md hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200 font-medium disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="w-full py-4 bg-neutral-900 dark:bg-neutral-800 text-white rounded-md hover:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors duration-200 font-medium disabled:opacity-70 disabled:cursor-not-allowed"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.7 }}
+                        whileHover={{ scale: 1.02, boxShadow: "0 5px 15px rgba(0,0,0,0.1)" }}
+                        whileTap={{ scale: 0.98 }}
                       >
                         {isProcessing ? (
                           <div className="flex items-center justify-center">
                             <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                            Processing...
+                            {t('cart.processing')}
                           </div>
                         ) : (
-                          'Checkout'
+                          !isAuthenticated ? t('cart.checkoutAsGuest') : t('cart.checkout')
                         )}
-                      </button>
+                      </motion.button>
+
+                      {!isAuthenticated && (
+                        <motion.div 
+                          className="mt-4 text-center"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.8 }}
+                        >
+                          <Link 
+                            href={`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`}
+                            className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                          >
+                            {t('cart.alreadyHaveAccount')}
+                          </Link>
+                        </motion.div>
+                      )}
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }

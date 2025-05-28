@@ -51,7 +51,7 @@ export default function SettingsPage() {
       description: 'View system status, logs, and performance metrics',
       icon: Server,
       href: 'settings/system',
-      color: 'gray'
+      color: 'neutral'
     },
     {
       title: 'Notifications',
@@ -69,16 +69,16 @@ export default function SettingsPage() {
       purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400',
       red: 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400',
       yellow: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400',
-      gray: 'bg-gray-50 text-gray-600 dark:bg-gray-900/20 dark:text-gray-400',
+      neutral: 'bg-neutral-50 text-neutral-600 dark:bg-neutral-900/20 dark:text-neutral-400',
       indigo: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400'
     }
-    return colors[color as keyof typeof colors] || colors.gray
+    return colors[color as keyof typeof colors] || colors.neutral
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
           System Settings
         </h1>
       </div>
@@ -97,14 +97,14 @@ export default function SettingsPage() {
                   <Icon className="h-6 w-6" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                  <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">
                     {section.title}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     {section.description}
                   </p>
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                <ChevronRight className="h-5 w-5 text-neutral-400" />
               </div>
             </Link>
           )

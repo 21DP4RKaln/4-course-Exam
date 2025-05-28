@@ -43,7 +43,7 @@ export function StockLevelChart() {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-stone-950 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-stone-950 p-4 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700">
           <p className="font-semibold">{payload[0].name}</p>
           <p>{t('admin.charts.stockCount')}: {payload[0].value}</p>
           <p>{t('admin.charts.totalValue')}: €{payload[0].payload.value.toLocaleString()}</p>
@@ -99,24 +99,24 @@ export function StockLevelChart() {
         
         {/* Stock Summary Table */}
         <div className="mt-6 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
             <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                   {t('admin.charts.category')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                   {t('admin.charts.stockCount')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                   {t('admin.charts.totalValue')}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
               {data.map((item, index) => (
                 <tr key={item.category}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900 dark:text-white">
                     <div className="flex items-center">
                       <div 
                         className="w-3 h-3 rounded-full mr-2" 
@@ -125,10 +125,10 @@ export function StockLevelChart() {
                       {item.category}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
                     {item.count}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
                     €{item.value.toLocaleString()}
                   </td>
                 </tr>

@@ -83,7 +83,7 @@ export default function ReadyMadePCsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
           {t('staff.readyPCs')}
         </h1>
         <Link href={`/${locale}/specialist/configurations/create`}>
@@ -96,17 +96,17 @@ export default function ReadyMadePCsPage() {
 
       <div className="flex gap-4 items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-4 w-4" />
           <input
             type="text"
             placeholder={t('shop.filters.searchPlaceholder')}
-            className="pl-10 pr-4 py-2 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="pl-10 pr-4 py-2 w-full border rounded-lg dark:bg-neutral-800 dark:border-neutral-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <select
-          className="border rounded-lg px-4 py-2 dark:bg-gray-800 dark:border-gray-700"
+          className="border rounded-lg px-4 py-2 dark:bg-neutral-800 dark:border-neutral-700"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
@@ -117,7 +117,7 @@ export default function ReadyMadePCsPage() {
           <option value="budget">{t('shop.filters.budget')}</option>
         </select>
         <select
-          className="border rounded-lg px-4 py-2 dark:bg-gray-800 dark:border-gray-700"
+          className="border rounded-lg px-4 py-2 dark:bg-neutral-800 dark:border-neutral-700"
           value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
         >
@@ -133,7 +133,7 @@ export default function ReadyMadePCsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                <tr className="border-b bg-neutral-50 dark:bg-neutral-800">
                   <th className="px-6 py-3 text-left">{t('shop.table.name')}</th>
                   <th className="px-6 py-3 text-left">{t('shop.table.category')}</th>
                   <th className="px-6 py-3 text-right">{t('shop.table.price')}</th>
@@ -153,7 +153,7 @@ export default function ReadyMadePCsPage() {
                       <Badge className={
                         pc.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' :
                         pc.status === 'APPROVED' ? 'bg-blue-100 text-blue-800' :
-                        'bg-gray-100 text-gray-800'
+                        'bg-neutral-100 text-neutral-800'
                       }>
                         {pc.status}
                       </Badge>

@@ -148,7 +148,7 @@ export function ConfigActions({
       label: 'Duplicate',
       onClick: onDuplicate || (() => console.log('Duplicate functionality not implemented')),
       show: isAdmin || isSpecialist,
-      className: 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+      className: 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-300'
     },
     {
       icon: ShoppingCart,
@@ -173,9 +173,9 @@ export function ConfigActions({
       <div className="relative">
         <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700"
         >
-          <MoreVertical size={20} className="text-gray-500 dark:text-gray-400" />
+          <MoreVertical size={20} className="text-neutral-500 dark:text-neutral-400" />
         </button>
         
         {showDropdown && (

@@ -7,7 +7,8 @@ import { usePathname } from 'next/navigation'
 import { useTheme } from '@/app/contexts/ThemeContext'
 import { Cpu, Monitor, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
-import styled from 'styled-components';
+import styled from 'styled-components'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 export default function HeroSection() {
   const t = useTranslations()
@@ -15,6 +16,12 @@ export default function HeroSection() {
   const locale = pathname.split('/')[1]
   const { theme } = useTheme()
   const [imageSrc, setImageSrc] = useState('/images/dark-pc.png')
+  
+
+  const { scrollY } = useScroll()
+  const opacity = useTransform(scrollY, [0, 300], [1, 0])
+  const scale = useTransform(scrollY, [0, 300], [1, 0.9])
+  const translateY = useTransform(scrollY, [0, 300], [0, -50])
   
   useEffect(() => {
     if (theme === 'dark') {
@@ -26,124 +33,201 @@ export default function HeroSection() {
       setImageSrc(randomLightImage)
     }
   }, [theme])
-  
-  return (
-    <section className={`relative min-h-[85vh] w-full flex flex-col justify-center ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'}`}>
+    return (
+    <section className={`relative min-h-[85vh] w-full flex flex-col justify-center overflow-hidden ${theme === 'dark' ? 'bg-black' : 'bg-neutral-100'}`}>
       {/* Background image with gradient overlay based on theme */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0">        
         {theme === 'dark' ? (
-        <div className="absolute inset-0 z-0 flex justify-end">
-          <div className="relative w-1/2 h-full">
-            <Image 
-              src={imageSrc}
-              alt="Dark PC" 
-              fill 
-              className="object-right"
-              priority
-            />
-          </div>
-        </div>
-        ) : (
-          <div className="absolute inset-0 z-0 flex justify-end">
-            <div className="relative w-1/2 h-full">
-            <Image 
-              src={imageSrc}
-              alt="Light PC" 
-              fill 
-              className="object-right"
-              priority
-            />
+          <motion.div 
+            className="absolute inset-0 z-0 flex justify-end"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            style={{ 
+              x: useTransform(scrollY, [0, 300], [0, 50])
+            }}
+          >
+            <div className="relative w-1/2 h-full md:block hidden">
+              <Image 
+                src={imageSrc}
+                alt="Dark PC" 
+                fill 
+                className="object-right"
+                priority
+              />
             </div>
-          </div>
+            <div className="relative w-full h-full md:hidden">
+              <Image 
+                src={imageSrc}
+                alt="Dark PC Mobile" 
+                fill 
+                className="object-contain object-right-bottom opacity-30"
+                priority
+              />
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div 
+            className="absolute inset-0 z-0 flex justify-end"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            style={{ 
+              x: useTransform(scrollY, [0, 300], [0, 50])
+            }}
+          >
+            <div className="relative w-1/2 h-full md:block hidden">
+              <Image 
+                src={imageSrc}
+                alt="Light PC" 
+                fill 
+                className="object-right"
+                priority
+              />
+            </div>
+            <div className="relative w-full h-full md:hidden">
+              <Image 
+                src={imageSrc}
+                alt="Light PC Mobile" 
+                fill 
+                className="object-contain object-right-bottom opacity-30"
+                priority
+              />
+            </div>
+          </motion.div>
         )}
         
         {/* Gradient overlay */}
-        <div className={`absolute inset-0 ${
-          theme === 'dark' 
-            ? 'bg-gradient-to-r from-black/70 to-brand-red-800/50' 
-            : 'bg-gradient-to-r from-white/70 to-brand-blue-600/50'
-        }`}></div>
+        <motion.div 
+          className={`absolute inset-0 ${
+            theme === 'dark' 
+              ? 'bg-gradient-to-r from-black/70 to-brand-red-800/50' 
+              : 'bg-gradient-to-r from-white/70 to-brand-blue-600/50'
+          }`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2 }}
+          style={{ 
+            opacity: useTransform(scrollY, [0, 300], [1, 0.7]),
+            backgroundPosition: useTransform(
+              scrollY, 
+              [0, 300], 
+              ['0% 0%', '10% 0%']
+            )
+          }}
+        />
       </div>
-      
-      {/* Hero content */}
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="max-w-3xl">
-          <h1 className={`text-5xl md:text-6xl font-bold mb-6 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+        {/* Hero content */}
+      <div className="container mx-auto px-4 md:px-6 relative z-10 pt-16 md:pt-0 w-full max-w-full">
+        <motion.div 
+          className="max-w-3xl w-full"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          style={{ opacity, scale, y: translateY }}
+        >
+          <motion.h1 
+            className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 ${
+              theme === 'dark' ? 'text-white' : 'text-neutral-900'
+            }`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
             {t('nav.Name')}
-          </h1>
+          </motion.h1>
           
-          <p className={`text-xl md:text-2xl mb-8 ${
-            theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
-          }`}>
+          <motion.p 
+            className={`text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 ${
+              theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'
+            }`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
             {t('nav.Info')}
-          </p>
-          
-          <div className="flex flex-wrap gap-4">
-          <StyledWrapper>
-          <Link href={`/${locale}/configurator`} className="button">
-            <span className="fold" />
-            <div className="points_wrapper">
-              {Array.from({ length: 10 }).map((_, i) => (
-                <i className="point" key={i} />
-              ))}
-            </div>
-            <span className="inner">
-              <Cpu className="icon" />
-              {t('nav.configurator')}
-              <ArrowRight className="icon" />
-            </span>
-          </Link>
-        </StyledWrapper>
-            
-          <StyledButtonWrapper themeMode={theme} style={{ minWidth: '200px' }}>
-            <Link href={`/${locale}/shop/ready-made`} className="no-underline w-full">
-              <button className="custom-button w-full h-12 flex justify-center items-center">
-                <div className="text">
-                  <Monitor className="icon" />
-                  {t('nav.readyMade')}
+          </motion.p>
+            <motion.div 
+            className="flex flex-wrap gap-4 w-full max-w-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+            style={{ 
+              y: useTransform(scrollY, [0, 300], [0, -20]),
+              opacity: useTransform(scrollY, [0, 300], [1, 0.7])
+            }}
+          >
+            <StyledWrapper>
+              <Link href={`/${locale}/configurator`} className="button">
+                <span className="fold" />
+                <div className="points_wrapper">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <i className="point" key={i} />
+                  ))}
                 </div>
-              </button>
-            </Link>
-          </StyledButtonWrapper>
-          </div>
-          
-          <div className={`flex flex-wrap gap-4 mt-10`}>
-            <div className={`flex items-center px-4 py-1.5 rounded-full ${
+                <span className="inner">
+                  <Cpu className="icon" />
+                  {t('nav.configurator')}
+                  <ArrowRight className="icon" />
+                </span>
+              </Link>
+            </StyledWrapper>
+              
+            <StyledButtonWrapper themeMode={theme} style={{ minWidth: '200px' }}>
+              <Link href={`/${locale}/shop/ready-made`} className="no-underline w-full">
+                <button className="custom-button w-full h-12 flex justify-center items-center">
+                  <div className="text">
+                    <Monitor className="icon" />
+                    {t('nav.readyMade')}
+                  </div>
+                </button>
+              </Link>
+            </StyledButtonWrapper>
+          </motion.div>
+            <motion.div 
+            className={`flex flex-wrap gap-3 mt-8 md:mt-10 w-full max-w-full overflow-hidden`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.9 }}
+            style={{ 
+              y: useTransform(scrollY, [0, 300], [0, -30]),
+              opacity: useTransform(scrollY, [0, 200, 300], [1, 0.8, 0.5])
+            }}
+          >
+            <div className={`flex items-center px-3 md:px-4 py-1.5 rounded-full text-xs md:text-sm ${
               theme === 'dark' ? 'bg-brand-red-500/20 border border-brand-red-500/40' : 'bg-brand-blue-500/20 border border-brand-blue-500/40'
             }`}>
-              <div className={`w-2.5 h-1.5 rounded-full mr-2 ${
+              <div className={`w-2 h-1 md:w-2.5 md:h-1.5 rounded-full mr-2 ${
                 theme === 'dark' ? 'bg-brand-red-500' : 'bg-brand-blue-500'
               }`}></div>
-              <span className={`text-sm font-medium ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              <span className={`font-medium ${
+                theme === 'dark' ? 'text-white' : 'text-neutral-900'
               }`}>{t('nav.shipping')}</span>
             </div>
             
-            <div className={`flex items-center px-4 py-1.5 rounded-full ${
+            <div className={`flex items-center px-3 md:px-4 py-1.5 rounded-full text-xs md:text-sm ${
               theme === 'dark' ? 'bg-brand-red-500/20 border border-brand-red-500/40' : 'bg-brand-blue-500/20 border border-brand-blue-500/40'
             }`}>
-              <div className={`w-2.5 h-1.5 rounded-full mr-2 ${
+              <div className={`w-2 h-1 md:w-2.5 md:h-1.5 rounded-full mr-2 ${
                 theme === 'dark' ? 'bg-brand-red-500' : 'bg-brand-blue-500'
               }`}></div>
-              <span className={`text-sm font-medium ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              <span className={`font-medium ${
+                theme === 'dark' ? 'text-white' : 'text-neutral-900'
               }`}>{t('nav.warranty')}</span>
             </div>
             
-            <div className={`flex items-center px-4 py-1.5 rounded-full ${
+            <div className={`flex items-center px-3 md:px-4 py-1.5 rounded-full text-xs md:text-sm ${
               theme === 'dark' ? 'bg-brand-red-500/20 border border-brand-red-500/40' : 'bg-brand-blue-500/20 border border-brand-blue-500/40'
             }`}>
-              <div className={`w-2.5 h-1.5 rounded-full mr-2 ${
+              <div className={`w-2 h-1 md:w-2.5 md:h-1.5 rounded-full mr-2 ${
                 theme === 'dark' ? 'bg-brand-red-500' : 'bg-brand-blue-500'
               }`}></div>
-              <span className={`text-sm font-medium ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              <span className={`font-medium ${
+                theme === 'dark' ? 'text-white' : 'text-neutral-900'
               }`}>{t('nav.support')}</span>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   )
@@ -151,6 +235,8 @@ export default function HeroSection() {
 
 
 const StyledWrapper = styled.div`
+  max-width: 100%;
+  
   .button {
     --h-button: 48px;
     --w-button: 102px;
@@ -172,6 +258,7 @@ const StyledWrapper = styled.div`
     border: none;
     outline: none;
     padding: 12px 18px;
+    max-width: 100%;
   }
   .button::before,
   .button::after {
@@ -337,6 +424,8 @@ const StyledButtonWrapper = styled.div.withConfig({
   componentId: 'StyledButtonWrapper',
   shouldForwardProp: (prop: string) => prop !== 'themeMode'
 })<{ themeMode: string }>`
+  max-width: 100%;
+  
   .custom-button {
     background: transparent;
     border-radius: 0.5em;
@@ -351,6 +440,7 @@ const StyledButtonWrapper = styled.div.withConfig({
     outline: none;
     transition: all 0.3s;
     user-select: none;
+    max-width: 100%;
   }
 
   .custom-button:hover {

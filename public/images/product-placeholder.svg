@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Light gray background -->
+  <rect width="400" height="400" fill="#F5F5F5"/>
+  
+  <!-- Computer outline icon in center -->
+  <g transform="translate(100,100) scale(2)">
+    <path d="M80 20H20C17.8 20 16 21.8 16 24V70H84V24C84 21.8 82.2 20 80 20Z" stroke="#CCCCCC" stroke-width="4" fill="#E0E0E0"/>
+    <path d="M12 78H88L92 86H8L12 78Z" stroke="#CCCCCC" stroke-width="4" fill="#E0E0E0"/>
+    <path d="M40 70V78H60V70H40Z" stroke="#CCCCCC" stroke-width="4" fill="#E0E0E0"/>
+    <path d="M24 30H76V60H24V30Z" stroke="#CCCCCC" stroke-width="4" fill="#F0F0F0"/>
+  </g>
+</svg>

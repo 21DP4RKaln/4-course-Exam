@@ -1,11 +1,5 @@
-'use client'
-
 import CategoryPage from '@/app/components/CategoryPage/CategoryPage'
 
-interface ComponentCategoryPageProps {
-  params: { slug: string }
-}
-
-export default async function ComponentCategoryPage({ params }: ComponentCategoryPageProps) {
-  return <CategoryPage params={Promise.resolve(params)} type="component" />
+export default function Page({ params }: { params: { slug: string } }) {
+  return <CategoryPage params={Promise.resolve({ category: params.slug })} type="component" />
 }

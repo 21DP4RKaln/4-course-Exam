@@ -77,7 +77,7 @@ export function ProductActions({
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setShowMenu(!showMenu)}
-        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+        className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg transition-colors"
       >
         <MoreVertical size={20} />
       </button>
@@ -87,7 +87,7 @@ export function ProductActions({
           <div className="py-1">
             <button
               onClick={handleView}
-              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
             >
               <Eye size={16} className="mr-2" />
               View Details
@@ -96,7 +96,7 @@ export function ProductActions({
             {canEdit && (
               <button
                 onClick={handleEdit}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
                 <Edit size={16} className="mr-2" />
                 Edit

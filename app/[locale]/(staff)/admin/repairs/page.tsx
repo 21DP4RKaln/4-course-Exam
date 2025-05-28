@@ -38,7 +38,7 @@ export default function AdminRepairsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+        <div className="text-neutral-500 dark:text-neutral-400">Loading...</div>
       </div>
     )
   }
@@ -46,33 +46,33 @@ export default function AdminRepairsPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">All Repairs</h1>
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">All Repairs</h1>
       </div>
 
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700">
+        <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+          <thead className="bg-neutral-50 dark:bg-neutral-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Assigned To</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Title</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Customer</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Priority</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Assigned To</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Created</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-stone-950 divide-y divide-neutral-200 dark:divide-neutral-700">
             {repairs.map((repair: any) => (
               <tr key={repair.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   {repair.id.slice(0, 8)}...
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   {repair.title}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   {repair.user?.name || 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -90,18 +90,18 @@ export default function AdminRepairsPage() {
                     ${repair.priority === 'URGENT' ? 'bg-red-100 text-red-800' : ''}
                     ${repair.priority === 'HIGH' ? 'bg-orange-100 text-orange-800' : ''}
                     ${repair.priority === 'NORMAL' ? 'bg-blue-100 text-blue-800' : ''}
-                    ${repair.priority === 'LOW' ? 'bg-gray-100 text-stone-950' : ''}
+                    ${repair.priority === 'LOW' ? 'bg-neutral-100 text-stone-950' : ''}
                   `}>
                     {repair.priority}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   {repair.specialists?.length > 0 ? 
                     repair.specialists[0].specialist?.name : 
-                    <span className="text-gray-500">Unassigned</span>
+                    <span className="text-neutral-500">Unassigned</span>
                   }
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   {new Date(repair.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

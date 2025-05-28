@@ -6,11 +6,13 @@ import { usePathname, useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/app/contexts/CartContext'
 import { useAuth } from '@/app/contexts/AuthContext'
+import { useTheme } from '@/app/contexts/ThemeContext'
 import SpecificationsTable from '../Shop/SpecificationsTable'
 import { useProductView } from '@/app/hooks/useProductView'
 import ReviewSystem from '../ReviewSystem/ReviewSystem'
 import Loading from '@/app/components/ui/Loading'
 import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
+import { parseSpecifications } from '@/lib/utils/specifications'
 import { 
   ShoppingCart,
   Heart,
@@ -63,9 +65,8 @@ interface UniversalProductPageProps {
   productId?: string;
 }
 
-export default function UniversalProductPage({ productId: propProductId }: UniversalProductPageProps) {
-  const params = useParams()
-  const routeProductId = params.id as string
+export default function UniversalProductPage({ productId: propProductId }: UniversalProductPageProps) {  const params = useParams()
+  const routeProductId = params?.id as string
   const productId = propProductId || routeProductId
   
   console.log("UniversalProductPage - params:", params);
@@ -93,9 +94,13 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const defaultImageUrl = '/images/Default-image.png'
-
+  const defaultImageUrl = '/images/product-placeholder.svg'
   useProductView(productId, product?.type)
+
+  // Debug productId
+  useEffect(() => {
+    console.log("ProductID in UniversalProductPage:", productId);
+  }, [productId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -105,9 +110,7 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
         setReferrer(ref.substring(origin.length));
       }
     }
-  }, []);
-
-  useEffect(() => {
+  }, []);  useEffect(() => {
     const fetchProduct = async () => {
       if (!productId) {
         setError(t('productIdMissing'));
@@ -117,19 +120,33 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
 
       setLoading(true);
       try {
+        console.log("Attempting to fetch product with ID:", productId);
+        
         // First try to fetch from shop/product for configurations
-        let response = await fetch(`/api/shop/product/${productId}`);
+        // Add cache-busting parameter to avoid browser caching issues
+        let timestamp = new Date().getTime();
+        let response = await fetch(`/api/shop/product/${productId}?_t=${timestamp}`);
+        let responseText = await response.clone().text();
+        console.log("First API response status:", response.status);
+        console.log("First API response body preview:", responseText.substring(0, 200));
         
         if (response.status === 404) {
           // If not found, try components
-          response = await fetch(`/api/shop/product/components/${productId}`);
+          console.log("Trying components API...");
+          response = await fetch(`/api/shop/product/components/${productId}?_t=${timestamp}`);
+          responseText = await response.clone().text();
+          console.log("Components API response status:", response.status);
+          console.log("Components API response body preview:", responseText.substring(0, 200));
+          
           if (response.status === 404) {
             // Finally try peripherals
-            response = await fetch(`/api/shop/product/peripherals/${productId}`);
+            console.log("Trying peripherals API...");
+            response = await fetch(`/api/shop/product/peripherals/${productId}?_t=${timestamp}`);
+            responseText = await response.clone().text();
+            console.log("Peripherals API response status:", response.status);
+            console.log("Peripherals API response body preview:", responseText.substring(0, 200));
           }
-        }
-
-        if (!response.ok) {
+        }if (!response.ok) {
           if (response.status === 404) {
             setError(t('productNotFound'));
           } else {
@@ -138,13 +155,28 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
           setLoading(false);
           return;
         }
-        
-        const data = await response.json();
+          const data = await response.json();
         
         if (!data || typeof data !== 'object' || !data.name) {
           throw new Error(t('invalidProductData'));
+        }     
+        if (data.specifications) {
+          // Store original specs for debugging
+          const origSpecs = data.specifications;
+          data.specifications = parseSpecifications(data.specifications);
+          console.log('Original specifications:', origSpecs);
+          console.log('Parsed specifications:', data.specifications);
+        } else {
+          data.specifications = {}; 
         }
         
+        console.log('Product data loaded:', data);
+        console.log('Specifications parsed:', data.specifications, 'Type:', typeof data.specifications);
+        console.log('Specifications keys:', Object.keys(data.specifications));
+        
+        console.log('Product data loaded:', data);
+        console.log('Specifications parsed:', data.specifications, 'Type:', typeof data.specifications);
+        console.log('Specifications keys:', Object.keys(data.specifications));
         setProduct(data);
       
         if (isAuthenticated) {
@@ -255,8 +287,7 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
         return `/${locale}/shop`;
     }
   };
- 
-  const renderSpecificationsSection = () => {
+   const renderSpecificationsSection = () => {
     if (!product) return null;
     
     if (product.type === 'configuration') { 
@@ -278,16 +309,56 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
             ))}
           </div>
         </div>
-      );
-    } else if (product.type === 'component' || product.type === 'peripheral') {
+      );    } else if (product.type === 'component' || product.type === 'peripheral') {
       const componentProduct = product as ComponentProduct | PeripheralProduct;
-      const specs = componentProduct.specifications || {};
+        // Get specifications directly from the product
+      // Note: At this point product.specifications should already be parsed by the earlier call
+      let specs: Record<string, string> = {};
+      
+      if (componentProduct.specifications) {
+        // If it's a string (which shouldn't normally happen at this point),
+        // try to parse it, otherwise use it directly
+        if (typeof componentProduct.specifications === 'string') {
+          try {
+            const parsedSpecs = JSON.parse(componentProduct.specifications);
+            if (typeof parsedSpecs === 'object' && parsedSpecs !== null) {
+              // Convert each value to string for consistency
+              Object.entries(parsedSpecs).forEach(([key, value]) => {
+                specs[key] = String(value);
+              });
+            } else {
+              specs = { 'raw': componentProduct.specifications };
+            }
+          } catch (e) {
+            console.error('Failed to parse specifications string:', e);
+            // Try to use it as is
+            specs = { 'raw': componentProduct.specifications };
+          }
+        } else if (typeof componentProduct.specifications === 'object' && componentProduct.specifications !== null) {
+          // Use directly if it's already an object, but ensure values are strings
+          Object.entries(componentProduct.specifications as Record<string, any>).forEach(([key, value]) => {
+            specs[key] = String(value);
+          });
+        }
+      }
+        // For debugging, remove debug keys if they exist
+      const debugKeysToRemove = ['_debug_count', '_debug_keys', '_debug_timestamp'];
+      const displaySpecs = { ...specs };
+      debugKeysToRemove.forEach(key => delete displaySpecs[key]);
+      
+      // Extended debugging information
+      console.log('Rendering specifications:');
+      console.log('- Type:', typeof componentProduct.specifications);
+      console.log('- Raw specs:', componentProduct.specifications);
+      console.log('- Final specs:', displaySpecs);
+      console.log('- Keys count:', Object.keys(displaySpecs).length);
+      console.log('- Keys:', Object.keys(displaySpecs));
       
       return (
         <div className="max-w-3xl mx-auto">
-          {Object.keys(specs).length > 0 ? (
+          {displaySpecs && Object.keys(displaySpecs).length > 0 ? (
             <SpecificationsTable 
-              specifications={specs}
+              specifications={displaySpecs}
               isExpanded={true}
               toggleExpand={() => {}}
             />
@@ -376,10 +447,6 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
                 {product.name}
               </h1>
-              
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                {product.description}
-              </p>
             </div>
             
             <div className="mb-6">
@@ -490,14 +557,10 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
             {/* Shipping information */}
             <div className="mt-8 space-y-3">
               <div className="product-info-icon">
-                <Truck size={16} className="mr-2" />
-                <span>{t('freeShippingOver100')}</span>
-              </div>
-              <div className="product-info-icon">
                 <Shield size={16} className="mr-2" />
                 <span>{t('yearsWarranty', { years: 2 })}</span>
               </div>
-              <div className="product-info-icon">
+              <div className="product-info-icon ps-4">
                 <Clock size={16} className="mr-2" />
                 <span>{t('deliveryTime')}</span>
               </div>

@@ -73,7 +73,7 @@ export default function ViewUserPage({ params }: { params: { id: string } }) {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">User not found</p>
+        <p className="text-neutral-500 dark:text-neutral-400">User not found</p>
       </div>
     )
   }
@@ -84,11 +84,11 @@ export default function ViewUserPage({ params }: { params: { id: string } }) {
         <div className="flex items-center space-x-4">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
             User Details
           </h1>
         </div>
@@ -129,19 +129,19 @@ export default function ViewUserPage({ params }: { params: { id: string } }) {
             <h3 className="text-lg font-medium mb-4">Personal Information</h3>
             <dl className="space-y-3">
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Full Name</dt>
-                <dd className="text-gray-900 dark:text-white">{user.name}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Full Name</dt>
+                <dd className="text-neutral-900 dark:text-white">{user.name}</dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Email</dt>
-                <dd className="text-gray-900 dark:text-white">{user.email}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Email</dt>
+                <dd className="text-neutral-900 dark:text-white">{user.email}</dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Phone</dt>
-                <dd className="text-gray-900 dark:text-white">{user.phone || 'Not provided'}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Phone</dt>
+                <dd className="text-neutral-900 dark:text-white">{user.phone || 'Not provided'}</dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Role</dt>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Role</dt>
                 <dd>
                   <StatusBadge 
                     status={user.role} 
@@ -150,7 +150,7 @@ export default function ViewUserPage({ params }: { params: { id: string } }) {
                 </dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Status</dt>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Status</dt>
                 <dd>
                   <StatusBadge 
                     status={user.isBlocked ? 'Blocked' : 'Active'}
@@ -160,8 +160,8 @@ export default function ViewUserPage({ params }: { params: { id: string } }) {
               </div>
               {user.isBlocked && user.blockReason && (
                 <div>
-                  <dt className="text-sm text-gray-500 dark:text-gray-400">Block Reason</dt>
-                  <dd className="text-gray-900 dark:text-white">{user.blockReason}</dd>
+                  <dt className="text-sm text-neutral-500 dark:text-neutral-400">Block Reason</dt>
+                  <dd className="text-neutral-900 dark:text-white">{user.blockReason}</dd>
                 </div>
               )}
             </dl>
@@ -182,18 +182,18 @@ export default function ViewUserPage({ params }: { params: { id: string } }) {
             <h3 className="text-lg font-medium mb-4">Account Information</h3>
             <dl className="space-y-3">
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">User ID</dt>
-                <dd className="text-gray-900 dark:text-white font-mono text-sm">{user.id}</dd>
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">User ID</dt>
+                <dd className="text-neutral-900 dark:text-white font-mono text-sm">{user.id}</dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Created</dt>
-                <dd className="text-gray-900 dark:text-white">
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Created</dt>
+                <dd className="text-neutral-900 dark:text-white">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </dd>
               </div>
               <div>
-                <dt className="text-sm text-gray-500 dark:text-gray-400">Last Updated</dt>
-                <dd className="text-gray-900 dark:text-white">
+                <dt className="text-sm text-neutral-500 dark:text-neutral-400">Last Updated</dt>
+                <dd className="text-neutral-900 dark:text-white">
                   {new Date(user.updatedAt).toLocaleDateString()}
                 </dd>
               </div>

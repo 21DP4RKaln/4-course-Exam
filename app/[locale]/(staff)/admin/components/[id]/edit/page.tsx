@@ -133,27 +133,27 @@ export default function EditComponentPage({ params }: { params: { id: string } }
       <div className="flex items-center space-x-4">
         <button
           onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
           Edit Component
         </h1>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Same form fields as create page */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Name
               </label>
               <input
                 type="text"
                 {...register('name')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.name && (
                 <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -161,13 +161,13 @@ export default function EditComponentPage({ params }: { params: { id: string } }
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 SKU
               </label>
               <input
                 type="text"
                 {...register('sku')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.sku && (
                 <p className="mt-1 text-sm text-red-600">{errors.sku.message}</p>
@@ -175,14 +175,14 @@ export default function EditComponentPage({ params }: { params: { id: string } }
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Price (€)
               </label>
               <input
                 type="number"
                 step="0.01"
                 {...register('price', { valueAsNumber: true })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.price && (
                 <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
@@ -190,48 +190,48 @@ export default function EditComponentPage({ params }: { params: { id: string } }
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Discount Price (€)
               </label>
               <input
                 type="number"
                 step="0.01"
                 {...register('discountPrice', { valueAsNumber: true })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.discountPrice && (
                 <p className="mt-1 text-sm text-red-600">{errors.discountPrice.message}</p>
               )}
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                 Leave empty for no discount
               </p>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Discount Valid Until
               </label>
               <input
                 type="date"
                 {...register('discountExpiresAt')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.discountExpiresAt && (
                 <p className="mt-1 text-sm text-red-600">{errors.discountExpiresAt.message}</p>
               )}
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                 Leave empty for no expiration
               </p>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Stock
               </label>
               <input
                 type="number"
                 {...register('stock', { valueAsNumber: true })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.stock && (
                 <p className="mt-1 text-sm text-red-600">{errors.stock.message}</p>
@@ -239,12 +239,12 @@ export default function EditComponentPage({ params }: { params: { id: string } }
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Category
               </label>
               <select
                 {...register('categoryId')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               >
                 <option value="">Select a category</option>
                 {categories.map(category => (
@@ -259,13 +259,13 @@ export default function EditComponentPage({ params }: { params: { id: string } }
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Image URL
               </label>
               <input
                 type="text"
                 {...register('imageUrl')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.imageUrl && (
                 <p className="mt-1 text-sm text-red-600">{errors.imageUrl.message}</p>
@@ -273,13 +273,13 @@ export default function EditComponentPage({ params }: { params: { id: string } }
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Description
               </label>
               <textarea
                 rows={4}
                 {...register('description')}
-                className="w-full px-3 py-2 border rounded-lg resize-none dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg resize-none dark:bg-neutral-700 dark:border-neutral-600"
               ></textarea>
               {errors.description && (
                 <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
@@ -291,7 +291,7 @@ export default function EditComponentPage({ params }: { params: { id: string } }
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 border rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700"
             >
               Cancel
             </button>

@@ -229,7 +229,7 @@ export default function ReadyMadePCsPage() {
     return (
       <div className="max-w-7xl mx-auto text-center py-16">
         <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           {error}
         </h2>
         <button
@@ -247,10 +247,10 @@ export default function ReadyMadePCsPage() {
       {/* Back button */}
       <div className="mb-3 flex justify-start">
         <AnimatedButton
-          href={`/${locale}`}
+          href={`/${locale}/`}
           title={t('buttons.backToHome')}
           direction="left"
-          className="text-gray-600 dark:text-gray-200"
+          className="text-neutral-600 dark:text-neutral-200"
         />
       </div>
 
@@ -305,10 +305,10 @@ export default function ReadyMadePCsPage() {
           {filteredPCs.length === 0 ? (
             <div className="bg-white/95 dark:bg-red-900/20 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-400/50 dark:border-red-900/30 shadow-lg">
               <Info size={48} className="mx-auto text-blue-500 dark:text-red-400 mb-4" />
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                 {t('shop.noProducts')}
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-neutral-600 dark:text-neutral-400 mb-6">
                 {t('shop.tryDifferentFilters')}
               </p>
             </div>
@@ -338,8 +338,8 @@ export default function ReadyMadePCsPage() {
       <div className="mt-12 relative overflow-hidden rounded-2xl">
         <div className={`absolute inset-0 
           ${theme === 'dark' 
-            ? 'bg-gradient-to-r from-gray-900 via-gray-800 to-red-900/30' 
-            : 'bg-gradient-to-r from-gray-100 via-gray-50 to-blue-100/30'
+            ? 'bg-gradient-to-r from-neutral-900 via-neutral-800 to-red-900/30' 
+            : 'bg-gradient-to-r from-neutral-100 via-neutral-50 to-blue-100/30'
           }`}
         />
       </div>

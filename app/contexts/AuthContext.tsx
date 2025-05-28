@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useSession, signIn, signOut } from 'next-auth/react'
 
 type User = {
   id: string
@@ -19,12 +20,18 @@ type User = {
   shippingCountry?: string
 }
 
+// Extended type for profile updates that includes password
+type ProfileUpdateData = Partial<User> & {
+  password?: string
+}
+
 type AuthContextType = {
   user: User | null
   loading: boolean
   login: (emailOrPhone: string, password: string) => Promise<void>
   register: (email: string, password: string, name?: string, phone?: string, profileImage?: File | null) => Promise<void>
-  updateProfile: (userData: Partial<User>, profileImage?: File | null) => Promise<void>
+  socialLogin: (provider: 'google' | 'apple' | 'linkedin') => Promise<void>
+  updateProfile: (userData: ProfileUpdateData, profileImage?: File | null, deleteProfileImage?: boolean) => Promise<void>
   logout: () => Promise<void>
   isAuthenticated: boolean
 }
@@ -33,6 +40,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const t = useTranslations()
+  const { data: session, status } = useSession()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -40,14 +48,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams()
   const locale = pathname?.split('/')[1] || 'en'
   const [initialCheckDone, setInitialCheckDone] = useState(false)
-
   useEffect(() => {
     let mounted = true
 
     const checkAuth = async () => {
       if (!mounted) return
 
-      try {
+      try {        // If NextAuth session exists, use it
+        if (session?.user) {
+          if (!mounted) return
+          
+          // Convert NextAuth user to our User type
+          const userData: User = {
+            id: (session.user as any).id || session.user.email || 'unknown',
+            email: session.user.email || undefined,
+            name: session.user.name || undefined,
+            firstName: session.user.name?.split(' ')[0] || undefined,
+            lastName: session.user.name?.split(' ').slice(1).join(' ') || undefined,
+            role: ((session.user as any).role || 'USER') as 'USER' | 'ADMIN' | 'SPECIALIST',
+            profileImageUrl: session.user.image || undefined,
+          }
+          
+          setUser(userData)
+          setLoading(false)
+          setInitialCheckDone(true)
+          return
+        }
+
+        // Otherwise, check custom auth
         const response = await fetch('/api/auth/me')
         if (!mounted) return
 
@@ -72,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [session, status])
 
   // Separate effect for handling route protection
   useEffect(() => {
@@ -187,9 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const userData = await response.json()
-      setUser(userData)
-
-      // New users are always USER role, so redirect to dashboard
+      setUser(userData)      // New users are always USER role, so redirect to dashboard
       router.push(`/${locale}/dashboard`)
     } catch (error: any) {
       console.error('Registration error:', error)
@@ -198,8 +224,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     }
   }
-  
-  const updateProfile = async (userData: Partial<User>, profileImage?: File | null) => {
+
+  const socialLogin = async (provider: 'google' | 'apple' | 'linkedin') => {
+    try {
+      setLoading(true)
+      const result = await signIn(provider, {
+        callbackUrl: `/${locale}/dashboard`,
+        redirect: false,
+      })
+      
+      if (result?.error) {
+        throw new Error(`${provider} authentication failed`)
+      }
+      
+      // The signIn callback in NextAuth config will handle user creation/update
+      // and NextAuth will manage the session
+      
+    } catch (error: any) {
+      console.error('Social login error:', error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+    const updateProfile = async (userData: ProfileUpdateData, profileImage?: File | null, deleteProfileImage?: boolean) => {
     setLoading(true)
     try {
       const formData = new FormData()
@@ -212,6 +260,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (profileImage) {
         formData.append('profileImage', profileImage)
+      }
+      
+      if (deleteProfileImage) {
+        formData.append('deleteProfileImage', 'true')
       }
       
       const response = await fetch('/api/auth/update-profile', {
@@ -234,10 +286,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     }
   }
-
   const logout = async () => {
     setLoading(true)
     try {
+      // Handle both NextAuth and custom auth logout
+      await signOut({ redirect: false })
       await fetch('/api/auth/logout', {
         method: 'POST',
       })
@@ -256,6 +309,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     login,
     register,
+    socialLogin,
     updateProfile,
     logout,
     isAuthenticated: !!user,

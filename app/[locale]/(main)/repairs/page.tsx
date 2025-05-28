@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
@@ -14,6 +14,7 @@ import {
   Zap,
   CheckCircle,
   ChevronRight,
+  ChevronLeft,
   Shield,
   AlertTriangle,
   Upload,
@@ -26,7 +27,9 @@ import {
   Code,
   ScrollText,
   BarChart,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react'
 import AnimatedButton from '@/app/components/ui/animated-button'
 import PhoneInput from '@/app/components/ui/PhoneInput'
@@ -34,76 +37,111 @@ import PhoneInput from '@/app/components/ui/PhoneInput'
 const repairServices = [
   {
     id: 'diagnostics',
-    name: 'PC Diagnostics & Troubleshooting', 
     icon: <Wrench size={24} />,
-    description: 'Complete computer diagnostics to identify hardware and software issues.',
     price: 10,
     timeEstimate: '1-3 days',
   },
   {
     id: 'hardware-replacement',
-    name: 'Hardware Replacement',
     icon: <Cpu size={24} />,
-    description: 'Professional replacement of damaged or failing hardware components.',
     price: 20,
     timeEstimate: '1-2 weeks',
-    note: 'Bring your own parts and save on costs'
+    hasNote: true
   },
   {
     id: 'data-recovery', 
-    name: 'Data Recovery',
     icon: <HardDrive size={24} />,
-    description: 'Recovery of lost, deleted, or corrupted data from storage devices.',
     price: 30,
     timeEstimate: '3-7 days',
   },
   {
     id: 'virus-removal',
-    name: 'Virus & Malware Removal',
     icon: <Shield size={24} />,
-    description: 'Removal of viruses, malware, and other threats from your computer.',
     price: 20,
     timeEstimate: '1-3 days',
   },
   {
     id: 'performance-optimization',
-    name: 'Performance Optimization',
     icon: <Zap size={24} />,
-    description: 'Speed up your computer by optimizing software and hardware settings.',
     timeEstimate: '1-3 days',
   },
   {
     id: 'custom',
-    name: 'Custom Repair',
     icon: <Code size={24} />,
-    description: 'For unique issues that require specialized attention.',
     price: 35,
     timeEstimate: '1-7 days',
   }
 ]
 
 export default function RepairsPage() {
-  const t = useTranslations()
+  const t = useTranslations('repairs')
   const pathname = usePathname()
   const router = useRouter()
   const { user, isAuthenticated } = useAuth()
   const locale = pathname.split('/')[1]
   
+  // Form state
+  const [currentStep, setCurrentStep] = useState(1)
   const [firstName, setFirstName] = useState(user?.firstName || '')
   const [lastName, setLastName] = useState(user?.lastName || '')
   const [email, setEmail] = useState(user?.email || '')
-  const [phone, setPhone] = useState(user?.phone || '')
-  const [selectedService, setSelectedService] = useState('')
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [selectedService, setSelectedService] = useState('');
   const [issue, setIssue] = useState('')
-  const [image, setImage] = useState<File | null>(null)
+  const [images, setImages] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   
-  const selectedServiceDetails = repairServices.find(s => s.id === selectedService)
+  // Refs for smooth scrolling
+  const formRef = useRef<HTMLDivElement>(null)
   
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0])
+  const selectedServiceDetails = repairServices.find(s => s.id === selectedService)
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files)
+      setImages(prevImages => [...prevImages, ...newFiles])
+    }
+  }
+
+  const removeImage = (index: number) => {
+    setImages(prevImages => prevImages.filter((_, i) => i !== index))
+  }
+  
+  const scrollToForm = () => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+  
+  const nextStep = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1)
+      setTimeout(scrollToForm, 100)
+    }
+  }
+  
+  const previousStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+      setTimeout(scrollToForm, 100)
+    }
+  }
+  
+  const canProceedFromStep = (step: number) => {
+    switch(step) {
+      case 1:
+        if (!user) {
+          return firstName && lastName && email && phone
+        }
+        return true
+      case 2:
+        return selectedService !== ''
+      case 3:
+        return issue.trim() !== ''
+      case 4:
+        return true // Image is optional
+      default:
+        return true
     }
   }
   
@@ -115,19 +153,19 @@ export default function RepairsPage() {
       return
     }
     
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     
     try {
       const formData = new FormData()
       formData.append('firstName', firstName)
-      formData.append('lastName', lastName)
+      formData.append('lastName', lastName);
       formData.append('email', email)
       formData.append('phone', phone)
       formData.append('serviceId', selectedService)
       formData.append('issue', issue)
-      if (image) {
-        formData.append('image', image)
-      }
+      images.forEach((image, index) => {
+        formData.append(`image_${index}`, image)
+      })
       
       // Here you would send to API
       await new Promise(resolve => setTimeout(resolve, 1500))
@@ -144,7 +182,8 @@ export default function RepairsPage() {
       }
       setSelectedService('')
       setIssue('')
-      setImage(null)
+      setImages([])
+      setCurrentStep(1)
       
       setTimeout(() => {
         setShowSuccess(false)
@@ -160,252 +199,410 @@ export default function RepairsPage() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Hero section */}
-      <div className="bg-gradient-to-r from-blue-600 to-red-600 dark:from-red-700 dark:to-red-900 rounded-lg p-8 mb-12 text-white">
+      <div className="bg-gradient-to-r from-blue-600 to-red-600 dark:from-red-600 dark:to-blue-600 rounded-lg p-8 mb-12 text-white">
         <h1 className="text-3xl font-bold mb-4">
-          Computer Repair Services
+          {t('pageTitle')}
         </h1>
         <p className="text-lg opacity-90 max-w-2xl">
-          Professional repair services for your PC, laptop, and peripherals. Fast, reliable, and affordable.
+          {t('pageSubtitle')}
         </p>
       </div>
       
       {/* Main content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Repair Form */}
-        <div className="order-2 md:order-1">
-          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-              Request a Repair
-            </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Step-by-step Form */}
+        <div className="lg:col-span-2 order-2 lg:order-1">
+          <div ref={formRef} className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
+            {/* Progress indicator */}
+            <div className="bg-gradient-to-r from-blue-700 to-blue-400 dark:from-red-700 dark:to-red-900 p-6 text-white">
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('requestTitle')}
+              </h2>
+              
+              {/* Step indicators */}
+              <div className="flex items-center justify-between">
+                {[1, 2, 3, 4, 5].map((step) => (
+                  <div key={step} className="flex items-center">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+                      step <= currentStep 
+                        ? 'bg-white text-blue-600 dark:text-red-600' 
+                        : 'bg-white/30 text-white'
+                    }`}>
+                      {step < currentStep ? (
+                        <CheckCircle size={20} />
+                      ) : (
+                        step
+                      )}
+                    </div>
+                    {step < 5 && (
+                      <div className={`w-8 h-0.5 mx-2 transition-all duration-300 ${
+                        step < currentStep ? 'bg-white' : 'bg-white/30'
+                      }`} />
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Step labels */}
+              <div className="flex justify-between mt-3 text-sm">
+                <span className={currentStep === 1 ? 'font-semibold' : 'opacity-70'}>{t('step1')}</span>
+                <span className={currentStep === 2 ? 'font-semibold' : 'opacity-70'}>{t('step2')}</span>
+                <span className={currentStep === 3 ? 'font-semibold' : 'opacity-70'}>{t('step3')}</span>
+                <span className={currentStep === 4 ? 'font-semibold' : 'opacity-70'}>{t('step4')}</span>
+                <span className={currentStep === 5 ? 'font-semibold' : 'opacity-70'}>{t('step5')}</span>
+              </div>
+            </div>
             
             {showSuccess && (
-              <div className="mb-6 p-4 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-lg flex items-start">
+              <div className="p-6 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 flex items-start animate-in slide-in-from-top duration-500">
                 <CheckCircle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium">Success!</p>
-                  <p className="text-sm mt-1">Your repair request has been submitted. We'll contact you shortly.</p>
+                  <p className="font-medium">{t('successTitle')}</p>
+                  <p className="text-sm mt-1">{t('successMessage')}</p>
                 </div>
               </div>
             )}
             
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {!user && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      First Name
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <User size={18} className="text-gray-400" />
+            {/* Form content */}
+            <form onSubmit={handleSubmit} className="p-6">
+              {/* Step 1: Personal Information */}
+              {currentStep === 1 && (
+                <div className="space-y-6 animate-in slide-in-from-right duration-500">
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
+                    {t('step1')}
+                  </h3>
+                  
+                  {!user && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                          {t('firstName')}
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <User size={18} className="text-neutral-400" />
+                          </div>
+                          <input
+                            id="firstName"
+                            type="text"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            required
+                            className="block w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 transition-all duration-200"
+                          />
+                        </div>
                       </div>
-                      <input
-                        id="firstName"
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        required
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
-                      />
+                      
+                      <div>
+                        <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                          {t('lastName')}
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <User size={18} className="text-neutral-400" />
+                          </div>
+                          <input
+                            id="lastName"
+                            type="text"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            required
+                            className="block w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 transition-all duration-200"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                          {t('email')}
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Mail size={18} className="text-neutral-400" />
+                          </div>
+                          <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="block w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 transition-all duration-200"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                          {t('phoneRequired')}
+                        </label>
+                        <div className="relative">
+                          <PhoneInput
+                            value={phone}
+                            onChange={setPhone}
+                            required
+                            placeholder="Enter phone number"
+                          />
+                        </div>
+                      </div>
                     </div>
+                  )}
+                  
+                  {user && (
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                      <p className="text-blue-800 dark:text-blue-300 text-sm">
+                        Logged in as: <span className="font-medium">{user.firstName} {user.lastName}</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Step 2: Select Service */}
+              {currentStep === 2 && (
+                <div className="space-y-6 animate-in slide-in-from-right duration-500">
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
+                    {t('step2')}
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {repairServices.map((service) => (
+                      <div
+                        key={service.id}
+                        onClick={() => setSelectedService(service.id)}
+                        className={`border-2 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-md ${
+                          selectedService === service.id
+                            ? 'border-blue-500 dark:border-red-500 bg-blue-50 dark:bg-red-900/20 shadow-md'
+                            : 'border-neutral-200 dark:border-neutral-700 hover:border-blue-300 dark:hover:border-red-400'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-blue-600 dark:text-red-400">{service.icon}</div>
+                          {service.price && (
+                            <span className="font-semibold text-neutral-900 dark:text-white">
+                              From €{service.price}
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="font-medium text-neutral-900 dark:text-white mb-1">
+                          {t(`services.${service.id}.name`)}
+                        </h4>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                          {t(`services.${service.id}.description`)}
+                        </p>
+                        <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+                          <Clock size={14} className="mr-1" />
+                          {service.timeEstimate}
+                        </div>
+                        {service.hasNote && (
+                          <p className="text-sm text-green-600 dark:text-green-400 mt-2">
+                            {t(`services.${service.id}.note`)}
+                          </p>
+                        )}
+                      </div>
+                    ))}
                   </div>
+                </div>
+              )}
+              
+              {/* Step 3: Describe Issue */}
+              {currentStep === 3 && (
+                <div className="space-y-6 animate-in slide-in-from-right duration-500">
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
+                    {t('step3')}
+                  </h3>
                   
                   <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Last Name
+                    <label htmlFor="issue" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                      {t('describeIssue')}
                     </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <User size={18} className="text-gray-400" />
+                    <textarea
+                      id="issue"
+                      value={issue}
+                      onChange={(e) => setIssue(e.target.value)}
+                      required
+                      rows={6}
+                      className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 transition-all duration-200"
+                      placeholder={t('issueDescription')}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* Step 4: Upload Image */}
+              {currentStep === 4 && (
+                <div className="space-y-6 animate-in slide-in-from-right duration-500">
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
+                    {t('step4')}
+                  </h3>
+                    <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                      {t('attachImage')}
+                    </label>
+                    
+                    {/* Display uploaded images */}
+                    {images.length > 0 && (
+                      <div className="mb-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {images.map((img, index) => (
+                          <div key={index} className="relative bg-neutral-100 dark:bg-neutral-800 rounded-lg p-3">
+                            <div className="flex items-center justify-center mb-2">
+                              <ImageIcon size={32} className="text-neutral-400" />
+                            </div>
+                            <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate text-center">
+                              {img.name}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Upload area */}
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md relative transition-all duration-200 hover:border-blue-400 dark:hover:border-red-400">
+                      <div className="space-y-1 text-center">
+                        <Upload size={48} className="mx-auto text-neutral-400" />
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                          {t('uploadImageText')}
+                        </p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                          {images.length > 0 ? `${images.length} ${t('imagesSelected')}` : t('selectMultipleImages')}
+                        </p>
                       </div>
                       <input
-                        id="lastName"
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        required
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Email Address
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Mail size={18} className="text-gray-400" />
-                      </div>
-                      <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Phone Number (Required)
-                    </label>
-                    <div className="relative">
-                      <PhoneInput
-                        value={phone}
-                        onChange={setPhone}
-                        required
-                        placeholder="Enter phone number"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageUpload}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       />
                     </div>
                   </div>
                 </div>
               )}
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Select Service
-                </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {repairServices.map((service) => (
-                    <div
-                      key={service.id}
-                      onClick={() => setSelectedService(service.id)}
-                      className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                        selectedService === service.id
-                          ? 'border-blue-500 dark:border-red-500 bg-blue-50 dark:bg-red-900/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-red-400'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="text-blue-600 dark:text-red-400">{service.icon}</div>
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                          From €{service.price}
-                        </span>
-                      </div>
-                      <h3 className="font-medium text-gray-900 dark:text-white mb-1">
-                        {service.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        {service.description}
+              {/* Step 5: Review & Submit */}
+              {currentStep === 5 && (
+                <div className="space-y-6 animate-in slide-in-from-right duration-500">
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
+                    {t('step5')}
+                  </h3>
+                  
+                  <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 space-y-4">
+                    {/* Personal info summary */}
+                    <div>
+                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">{t('step1')}</h4>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        {firstName} {lastName} • {email} • {phone}
                       </p>
-                      <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <Clock size={14} className="mr-1" />
-                        {service.timeEstimate}
-                      </div>
-                      {service.note && (
-                        <p className="text-sm text-green-600 dark:text-green-400 mt-2">
-                          {service.note}
-                        </p>
-                      )}
                     </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <label htmlFor="issue" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Describe the Issue
-                </label>
-                <textarea
-                  id="issue"
-                  value={issue}
-                  onChange={(e) => setIssue(e.target.value)}
-                  required
-                  rows={4}
-                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500"
-                  placeholder="Please provide as much detail as possible about the issue..."
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Attach Image (Optional)
-                </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    {image ? (
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        <div className="flex items-center justify-center">
-                          <ImageIcon size={48} className="mx-auto text-gray-400 mb-2" />
-                        </div>
-                        <p className="font-medium">{image.name}</p>
-                        <button
-                          type="button"
-                          onClick={() => setImage(null)}
-                          className="mt-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload size={48} className="mx-auto text-gray-400" />
-                        <div className="flex text-sm text-gray-600 dark:text-gray-400">
-                          <label
-                            htmlFor="file-upload"
-                            className="relative cursor-pointer rounded-md bg-white dark:bg-gray-900 font-medium text-blue-600 dark:text-red-400 hover:text-blue-500 dark:hover:text-red-300"
-                          >
-                            <span>Upload a file</span>
-                            <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageUpload} accept="image/*" />
-                          </label>
-                          <p className="pl-1">or drag and drop</p>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          PNG, JPG, GIF up to 10MB
+                    
+                    {/* Service summary */}
+                    <div>
+                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">{t('step2')}</h4>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        {selectedServiceDetails && t(`services.${selectedServiceDetails.id}.name`)}
+                      </p>
+                    </div>
+                    
+                    {/* Issue summary */}
+                    <div>
+                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">{t('step3')}</h4>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
+                        {issue}
+                      </p>
+                    </div>
+                    
+                    {/* Image summary */}
+                    {images.length > 0 && (
+                      <div>
+                        <h4 className="font-medium text-neutral-900 dark:text-white mb-2">{t('step4')}</h4>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                          {images.map(img => img.name).join(', ')}
                         </p>
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>
-              </div>
+              )}
               
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3 px-4 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit Repair Request'}
-              </button>
+              {/* Navigation buttons */}
+              <div className="flex justify-between mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
+                <button
+                  type="button"
+                  onClick={previousStep}
+                  disabled={currentStep === 1}
+                  className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    currentStep === 1
+                      ? 'opacity-50 cursor-not-allowed text-neutral-400'
+                      : 'text-neutral-600 dark:text-neutral-300 hover:text-neutral-800 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                  }`}
+                >
+                  <ChevronLeft size={16} className="mr-1" />
+                  {t('previousStep')}
+                </button>
+                
+                {currentStep < 5 ? (
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!canProceedFromStep(currentStep)}
+                    className={`flex items-center px-6 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                      canProceedFromStep(currentStep)
+                        ? 'bg-blue-600 dark:bg-red-600 text-white hover:bg-blue-700 dark:hover:bg-red-700'
+                        : 'opacity-50 cursor-not-allowed bg-neutral-300 dark:bg-neutral-700 text-neutral-500'
+                    }`}
+                  >
+                    {t('nextStep')}
+                    <ChevronRight size={16} className="ml-1" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex items-center px-6 py-2 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-red-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    {isSubmitting ? t('submitting') : t('submitRequest')}
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         </div>
         
-        {/* Service Details & Summary */}
-        <div className="order-1 md:order-2 space-y-6">
+        {/* Service Details & Information */}
+        <div className="order-1 lg:order-2 space-y-6">
           {selectedServiceDetails && (
-            <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                Service Details
+            <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 animate-in slide-in-from-left duration-500">
+              <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
+                {t('serviceDetails')}
               </h3>
               <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-red-400 mr-4">
-                    {selectedServiceDetails.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 dark:text-white">{selectedServiceDetails.name}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{selectedServiceDetails.description}</p>
-                  </div>
+                <div className="flex items-center">
+                  <div className="text-blue-600 dark:text-red-400 mr-2">{selectedServiceDetails.icon}</div>
+                  <h4 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                    {t(`services.${selectedServiceDetails.id}.name`)}
+                  </h4>
                 </div>
-                
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-gray-600 dark:text-gray-400">Estimated Price:</span>
-                    <span className="font-semibold text-gray-900 dark:text-white">From €{selectedServiceDetails.price}</span>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  {t(`services.${selectedServiceDetails.id}.description`)}
+                </p>
+                {selectedServiceDetails.price && (
+                  <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+                    <Package size={16} className="mr-1" /> From €{selectedServiceDetails.price}
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Estimated Time:</span>
-                    <span className="font-semibold text-gray-900 dark:text-white">{selectedServiceDetails.timeEstimate}</span>
-                  </div>
+                )}
+                <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+                  <Clock size={16} className="mr-1" /> {selectedServiceDetails.timeEstimate}
                 </div>
-                
-                {selectedServiceDetails.note && (
-                  <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md">
-                    <p className="text-sm text-green-700 dark:text-green-400">{selectedServiceDetails.note}</p>
-                  </div>
+                {selectedServiceDetails.hasNote && (
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    {t(`services.${selectedServiceDetails.id}.note`)}
+                  </p>
                 )}
               </div>
             </div>
@@ -413,24 +610,21 @@ export default function RepairsPage() {
           
           {/* Process steps */}
           <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Repair Process
+            <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
+              {t('repairProcess')}
             </h3>
             <div className="space-y-4">
               {[
-                { icon: <Package size={20} />, title: 'Submission', desc: 'Submit your repair request' },
-                { icon: <CheckCircle size={20} />, title: 'Review', desc: 'Our specialists review your case' },
-                { icon: <Wrench size={20} />, title: 'Repair', desc: 'Professional repair service' },
-                { icon: <CheckCircle size={20} />, title: 'Complete', desc: 'Device returned to you' },
-              ].map((step, index) => (
-                <div key={index} className="flex items-center">
-                  <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-blue-600 dark:text-red-400 mr-3">
-                    {step.icon}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">{step.title}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{step.desc}</p>
-                  </div>
+                { icon: <ScrollText size={20} />, key: 'submit' },
+                { icon: <Mail size={20} />, key: 'contact' },
+                { icon: <Package size={20} />, key: 'ship' },
+                { icon: <Wrench size={20} />, key: 'repair' },
+                { icon: <CheckCircle size={20} />, key: 'receive' },
+              ].map((step, idx) => (
+                <div key={idx} className="flex items-center">
+                  <div className="text-blue-600 dark:text-red-400 mr-2">{step.icon}</div>
+                  <span className="text-neutral-900 dark:text-white">{t(`processSteps.${step.key}`)}</span>
+                  {idx < 4 && <ChevronRight size={14} className="mx-2 text-neutral-500 dark:text-neutral-400" />}
                 </div>
               ))}
             </div>
@@ -441,12 +635,11 @@ export default function RepairsPage() {
             <div className="flex">
               <AlertTriangle size={20} className="text-amber-400 mr-2 flex-shrink-0" />
               <div className="text-sm text-amber-700 dark:text-amber-300">
-                <p className="font-medium">Important Note</p>
-                <p className="mt-1">Final pricing may vary based on the actual issues found during diagnostics. We'll contact you with a detailed quote before proceeding.</p>
+                <p className="font-medium">{t('importantNote')}</p>
+                <p className="mt-1">{t('finalPricingNote')}</p>
               </div>
             </div>
-          </div>
-        </div>
+          </div>        </div>
       </div>
     </div>
   )

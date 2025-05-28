@@ -11,7 +11,7 @@ export default function HomePage() {
   const t = useTranslations()
   
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 md:space-y-12">
       <HeroSection />
       <FeaturedConfigurations />
       <ServicesSection />

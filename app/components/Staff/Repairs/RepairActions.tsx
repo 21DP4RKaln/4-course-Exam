@@ -122,20 +122,20 @@ export function RepairActions({ repair, onUpdate, userRole }: RepairActionsProps
     <div className="relative">
       <button
         onClick={() => setShowMenu(!showMenu)}
-        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+        className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full"
         disabled={loading}
       >
         <MoreVertical size={20} />
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-stone-950 rounded-md shadow-lg z-10 border dark:border-gray-700">
+        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-stone-950 rounded-md shadow-lg z-10 border dark:border-neutral-700">
           {menuItems.map((item, index) => (
             <button
               key={index}
               onClick={item.onClick}
-              className={`flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                item.className || 'text-gray-700 dark:text-gray-200'
+              className={`flex items-center w-full px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
+                item.className || 'text-neutral-700 dark:text-neutral-200'
               }`}
               disabled={loading}
             >

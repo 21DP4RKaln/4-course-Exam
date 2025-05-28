@@ -7,13 +7,15 @@ import Link from 'next/link'
 import { Check, ArrowLeft, Package, Truck, CreditCard, Mail } from 'lucide-react'
 import Loading from '@/app/components/ui/Loading'
 import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
+import { useCart } from '@/app/contexts/CartContext'
 
 export default function OrderConfirmationPage() {
-  const t = useTranslations()
+  const t = useTranslations('orderConfirmation')
   const pathname = usePathname()
   const params = useParams()
   const locale = pathname.split('/')[1]
   const orderId = params.id as string
+  const { clearCart } = useCart()
 
   const [order, setOrder] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -25,6 +27,9 @@ export default function OrderConfirmationPage() {
         if (response.ok) {
           const data = await response.json()
           setOrder(data)
+          
+          // Clear the cart when order is successfully fetched
+          clearCart()
         }
       } catch (error) {
         console.error('Error fetching order:', error)
@@ -34,7 +39,7 @@ export default function OrderConfirmationPage() {
     }
 
     fetchOrder()
-  }, [orderId])
+  }, [orderId, clearCart])
 
   if (loading) {
     return (
@@ -47,15 +52,15 @@ export default function OrderConfirmationPage() {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-          Order Not Found
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
+          {t('notFoundTitle')}
         </h1>
         <Link
           href={`/${locale}/dashboard`}
           className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
         >
           <ArrowLeft size={18} className="mr-2" />
-          Back to Dashboard
+          {t('backToDashboard')}
         </Link>
       </div>
     )
@@ -68,19 +73,19 @@ export default function OrderConfirmationPage() {
           <Check className="h-8 w-8 text-green-600 dark:text-green-300" />
         </div>
         
-        <h1 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
-          Order Successful!
+        <h1 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
+          {t('successTitle')}
         </h1>
         
-        <p className="mt-3 text-gray-600 dark:text-gray-400">
-          Thank you for your order! Your payment has been received and we're processing your order.
+        <p className="mt-3 text-neutral-600 dark:text-neutral-400">
+          {t('successMessage')}
         </p>
         
-        <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-md inline-block">
-          <p className="text-gray-600 dark:text-gray-400">
-            Order Number:
+        <div className="mt-6 p-4 bg-neutral-50 dark:bg-neutral-900 rounded-md inline-block">
+          <p className="text-neutral-600 dark:text-neutral-400">
+            {t('orderNumberLabel')}
           </p>
-          <p className="text-xl font-semibold text-gray-900 dark:text-white">
+          <p className="text-xl font-semibold text-neutral-900 dark:text-white">
             #{orderId}
           </p>
         </div>
@@ -90,11 +95,11 @@ export default function OrderConfirmationPage() {
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
               <Mail className="h-6 w-6 text-red-600 dark:text-red-400" />
             </div>
-            <p className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-              Confirmation Email
+            <p className="mt-2 text-sm font-medium text-neutral-900 dark:text-white">
+              {t('confirmationEmailTitle')}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Sent to your email
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              {t('confirmationEmailSubtitle')}
             </p>
           </div>
           
@@ -102,11 +107,11 @@ export default function OrderConfirmationPage() {
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
               <Package className="h-6 w-6 text-red-600 dark:text-red-400" />
             </div>
-            <p className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-              Processing
+            <p className="mt-2 text-sm font-medium text-neutral-900 dark:text-white">
+              {t('processingTitle')}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              1-2 business days
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              {t('processingSubtitle')}
             </p>
           </div>
           
@@ -114,11 +119,11 @@ export default function OrderConfirmationPage() {
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
               <Truck className="h-6 w-6 text-red-600 dark:text-red-400" />
             </div>
-            <p className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-              Shipping
+            <p className="mt-2 text-sm font-medium text-neutral-900 dark:text-white">
+              {t('shippingTitle')}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Track your order
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              {t('shippingSubtitle')}
             </p>
           </div>
         </div>
@@ -128,14 +133,14 @@ export default function OrderConfirmationPage() {
             href={`/${locale}/orders/${orderId}`}
             className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-block"
           >
-            View Order Details
+            {t('viewOrderDetails')}
           </Link>
           
           <Link 
             href={`/${locale}`}
-            className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 inline-block"
+            className="px-6 py-3 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-700 inline-block"
           >
-            Continue Shopping
+            {t('continueShopping')}
           </Link>
         </div>
       </div>

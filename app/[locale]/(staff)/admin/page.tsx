@@ -1,14 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useRouter, usePathname } from 'next/navigation'
 import { 
   BarChart, Users, Package, Wrench, DollarSign, 
   TrendingUp, AlertCircle, CheckCircle, Clock
 } from 'lucide-react'
+import { SalesChart } from '@/app/components/Admin/SalesChart'
+import { RepairChart } from '@/app/components/Admin/RepairChart'
 
 export default function AdminDashboard() {
+  const t = useTranslations()
   const { user, isAuthenticated, loading } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
@@ -23,7 +27,13 @@ export default function AdminDashboard() {
     pendingConfigurations: 0,
     activeRepairs: 0,
     lowStockItems: 0,
-    monthlyGrowth: 0
+    monthlyGrowth: 0,
+    trends: {
+      users: 0,
+      orders: 0,
+      revenue: 0,
+      repairs: 0
+    }
   })
 
   useEffect(() => {
@@ -47,17 +57,15 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/dashboard/stats')
       if (!response.ok) {
         throw new Error('Failed to fetch dashboard stats')
-      }
-      const data = await response.json()
+      }      const data = await response.json()
       setStats(data)
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
-      setError('Failed to load dashboard data')
+      setError(t('staff.failedToLoadData'))
     } finally {
       setLoadingStats(false)
     }
   }
-
   if (loading || loadingStats) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -74,7 +82,7 @@ export default function AdminDashboard() {
           onClick={fetchDashboardData}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
-          Retry
+          {t('staff.retry')}
         </button>
       </div>
     )
@@ -83,41 +91,41 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Admin Dashboard
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+          {t('staff.adminDashboard')}
         </h1>
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Welcome back, {user?.name || user?.email}
+        <div className="text-sm text-neutral-500 dark:text-neutral-400">
+          {t('staff.welcomeBack')}, {user?.name || user?.email}
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          title="Total Users"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">        <StatsCard
+          title={t('staff.totalUsers')}
           value={stats.totalUsers}
           icon={Users}
-          trend={+12.5}
+          trend={stats.trends.users}
           color="blue"
         />
         <StatsCard
-          title="Total Orders"
+          title={t('staff.totalOrders')}
           value={stats.totalOrders}
           icon={Package}
-          trend={+8.2}
+          trend={stats.trends.orders}
           color="green"
         />
         <StatsCard
-          title="Active Repairs"
+          title={t('staff.activeRepairs')}
           value={stats.activeRepairs}
           icon={Wrench}
+          trend={stats.trends.repairs}
           color="orange"
         />
         <StatsCard
-          title="Total Revenue"
+          title={t('staff.totalRevenue')}
           value={`€${stats.totalRevenue}`}
           icon={DollarSign}
-          trend={+15.3}
+          trend={stats.trends.revenue}
           color="purple"
         />
       </div>
@@ -127,8 +135,8 @@ export default function AdminDashboard() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Pending Configurations</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.pendingConfigurations}</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('staff.pendingConfigurations')}</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">{stats.pendingConfigurations}</p>
             </div>
             <Clock className="h-8 w-8 text-yellow-500" />
           </div>
@@ -136,8 +144,8 @@ export default function AdminDashboard() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Low Stock Items</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.lowStockItems}</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('staff.lowStockItems')}</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">{stats.lowStockItems}</p>
             </div>
             <AlertCircle className="h-8 w-8 text-red-500" />
           </div>
@@ -145,27 +153,21 @@ export default function AdminDashboard() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Growth</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">+{stats.monthlyGrowth}%</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('staff.monthlyGrowth')}</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">+{stats.monthlyGrowth}%</p>
             </div>
             <TrendingUp className="h-8 w-8 text-green-500" />
           </div>
         </div>
-      </div>
-
-      {/* Charts Placeholder */}
+      </div>      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">Sales Overview</h2>
-          <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded">
-            <span className="text-gray-500 dark:text-gray-400">Sales Chart Coming Soon</span>
-          </div>
+          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">Sales Overview</h2>
+          <SalesChart />
         </div>
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">Repair Metrics</h2>
-          <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded">
-            <span className="text-gray-500 dark:text-gray-400">Repair Chart Coming Soon</span>
-          </div>
+          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">Repair Metrics</h2>
+          <RepairChart />
         </div>
       </div>
     </div>
@@ -194,8 +196,8 @@ function StatsCard({ title, value, icon: Icon, trend, color }: StatsCardProps) {
     <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">{title}</p>
+          <p className="text-2xl font-bold text-neutral-900 dark:text-white">{value}</p>
           {trend && (
             <p className={`text-sm ${trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
               {trend > 0 ? '+' : ''}{trend}%

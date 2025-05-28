@@ -102,7 +102,7 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
   if (!repair) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500 dark:text-gray-400">{t('repairs.notFound')}</p>
+        <p className="text-neutral-500 dark:text-neutral-400">{t('repairs.notFound')}</p>
       </div>
     )
   }
@@ -114,7 +114,7 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-2xl font-bold">{repair.title}</h2>
-            <p className="text-gray-500 dark:text-gray-400">ID: {repair.id}</p>
+            <p className="text-neutral-500 dark:text-neutral-400">ID: {repair.id}</p>
           </div>
           <div className="flex items-center gap-4">
             <RepairStatusBadge status={repair.status} />
@@ -143,16 +143,16 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
             <h3 className="text-lg font-semibold">{t('repairs.customerInfo')}</h3>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <User size={18} className="text-gray-400" />
+                <User size={18} className="text-neutral-400" />
                 <span>{repair.user.name}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail size={18} className="text-gray-400" />
+                <Mail size={18} className="text-neutral-400" />
                 <span>{repair.user.email}</span>
               </div>
               {repair.user.phone && (
                 <div className="flex items-center gap-2">
-                  <Phone size={18} className="text-gray-400" />
+                  <Phone size={18} className="text-neutral-400" />
                   <span>{repair.user.phone}</span>
                 </div>
               )}
@@ -164,22 +164,22 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
             <h3 className="text-lg font-semibold">{t('repairs.repairInfo')}</h3>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Calendar size={18} className="text-gray-400" />
+                <Calendar size={18} className="text-neutral-400" />
                 <span>{format(new Date(repair.createdAt), 'MMM d, yyyy HH:mm')}</span>
               </div>
               <div className="flex items-center gap-2">
-                <AlertTriangle size={18} className="text-gray-400" />
+                <AlertTriangle size={18} className="text-neutral-400" />
                 <span className={`px-2 py-1 rounded-full text-xs font-medium
                   ${repair.priority === 'URGENT' ? 'bg-red-100 text-red-800' :
                     repair.priority === 'HIGH' ? 'bg-orange-100 text-orange-800' :
                     repair.priority === 'NORMAL' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-stone-950'}`}>
+                    'bg-neutral-100 text-stone-950'}`}>
                   {t(`repairs.priority.${repair.priority.toLowerCase()}`)}
                 </span>
               </div>
               {repair.estimatedCost && (
                 <div className="flex items-center gap-2">
-                  <DollarSign size={18} className="text-gray-400" />
+                  <DollarSign size={18} className="text-neutral-400" />
                   <span>Est: €{repair.estimatedCost.toFixed(2)}</span>
                 </div>
               )}
@@ -197,7 +197,7 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
         {repair.description && (
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-2">{t('repairs.description')}</h3>
-            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+            <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap">
               {repair.description}
             </p>
           </div>
@@ -207,7 +207,7 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
         {repair.diagnosticNotes && (
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-2">{t('repairs.diagnosticNotes')}</h3>
-            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+            <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap">
               {repair.diagnosticNotes}
             </p>
           </div>
@@ -219,13 +219,13 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
             <h3 className="text-lg font-semibold mb-2">{t('repairs.device')}</h3>
             {repair.peripheral && (
               <div className="flex items-center gap-2">
-                <Wrench size={18} className="text-gray-400" />
+                <Wrench size={18} className="text-neutral-400" />
                 <span>{repair.peripheral.name} ({repair.peripheral.category.name})</span>
               </div>
             )}
             {repair.configuration && (
               <div className="flex items-center gap-2">
-                <Wrench size={18} className="text-gray-400" />
+                <Wrench size={18} className="text-neutral-400" />
                 <span>{repair.configuration.name}</span>
               </div>
             )}
@@ -238,12 +238,12 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
             <h3 className="text-lg font-semibold mb-2">{t('repairs.specialists')}</h3>
             <div className="space-y-2">
               {repair.specialists.map(specialist => (
-                <div key={specialist.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-3 rounded">
+                <div key={specialist.id} className="flex items-center justify-between bg-neutral-50 dark:bg-neutral-700 p-3 rounded">
                   <div>
                     <p className="font-medium">{specialist.specialist.name}</p>
-                    <p className="text-sm text-gray-500">{specialist.specialist.email}</p>
+                    <p className="text-sm text-neutral-500">{specialist.specialist.email}</p>
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-neutral-500">
                     {format(new Date(specialist.assignedAt), 'MMM d, yyyy')}
                   </div>
                 </div>
@@ -257,16 +257,16 @@ export function RepairDetails({ repairId, onBack }: RepairDetailsProps) {
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-2">{t('repairs.partsUsed')}</h3>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
                 <thead>
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('repairs.part')}</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('repairs.quantity')}</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('repairs.price')}</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('repairs.total')}</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">{t('repairs.part')}</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">{t('repairs.quantity')}</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">{t('repairs.price')}</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">{t('repairs.total')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
                   {repair.parts.map(part => (
                     <tr key={part.id}>
                       <td className="px-4 py-2">{part.component.name}</td>

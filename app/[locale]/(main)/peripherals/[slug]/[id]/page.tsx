@@ -1,14 +1,10 @@
-'use client'
-
-import ProductDetail from '@/app/components/Shop/ProductDetail'
+// filepath: app/[locale]/(main)/peripherals/[slug]/[id]/page.tsx
+import UniversalProductPage from '@/app/components/Products/UniversalProductPage'
 
 interface PeripheralDetailPageProps {
-  params: { 
-    slug: string;
-    id: string;
-  }
+  params: { slug: string; id: string }
 }
 
 export default function PeripheralDetailPage({ params }: PeripheralDetailPageProps) {
-  return <ProductDetail params={params} type="peripheral" />
+  return <UniversalProductPage productId={params.id} />
 }

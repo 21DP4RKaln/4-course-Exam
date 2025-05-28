@@ -7,65 +7,101 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Badge } from '@/app/components/ui/badge'
 import { Button } from '@/app/components/ui/button'
-import { Plus, Search } from 'lucide-react'
+import { Clock, Wrench, CheckCircle, AlertCircle, Search, Plus } from 'lucide-react'
 
-interface Configuration {
+type RepairStatus = 'PENDING' | 'DIAGNOSING' | 'WAITING_FOR_PARTS' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+type RepairPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT'
+
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+}
+
+interface Repair {
   id: string
-  name: string
-  description: string
-  status: string
-  totalPrice: number
+  title: string
+  status: RepairStatus
+  priority: RepairPriority
   userId: string
   userName: string
   createdAt: string
+  estimatedCost: number
+  finalCost?: number
+  diagnosticNotes?: string
+  completionDate?: string
+  customer?: Customer
 }
 
-export default function ConfigurationsPage() {
+export default function RepairsPage() {
   const t = useTranslations()
   const pathname = usePathname()
   const locale = pathname.split('/')[1]
-  const [configurations, setConfigurations] = useState<Configuration[]>([])
+  const [repairs, setRepairs] = useState<Repair[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState<'all' | RepairStatus>('all')
+  const [priorityFilter, setPriorityFilter] = useState<'all' | RepairPriority>('all')
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
-    fetchConfigurations()
+    fetchRepairs()
   }, [])
 
-  const fetchConfigurations = async () => {
+  const fetchRepairs = async () => {
     try {
-      const response = await fetch('/api/specialist/configurations')
+      const response = await fetch('/api/staff/repairs')
       if (response.ok) {
         const data = await response.json()
-        setConfigurations(data)
+        setRepairs(data)
       }
     } catch (error) {
-      console.error('Error fetching configurations:', error)
+      console.error('Error fetching repairs:', error)
     } finally {
       setLoading(false)
     }
   }
+  
+  const getStatusBadge = (status: RepairStatus) => {
+    const statusConfig = {
+      'PENDING': { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+      'DIAGNOSING': { color: 'bg-purple-100 text-purple-800', icon: Wrench },
+      'WAITING_FOR_PARTS': { color: 'bg-orange-100 text-orange-800', icon: Clock },
+      'IN_PROGRESS': { color: 'bg-blue-100 text-blue-800', icon: Wrench },
+      'COMPLETED': { color: 'bg-green-100 text-green-800', icon: CheckCircle },
+      'CANCELLED': { color: 'bg-red-100 text-red-800', icon: AlertCircle }
+    } as const
 
-  const getStatusBadge = (status: string) => {
-    const colors = {
-      'DRAFT': 'bg-gray-100 text-gray-800',
-      'SUBMITTED': 'bg-yellow-100 text-yellow-800',
-      'APPROVED': 'bg-green-100 text-green-800',
-      'REJECTED': 'bg-red-100 text-red-800'
-    }
+    const config = statusConfig[status]
+    const Icon = config.icon
 
     return (
-      <Badge className={colors[status] || colors['DRAFT']}>
-        {status}
+      <Badge className={`${config.color} flex items-center gap-1`}>
+        <Icon className="h-3 w-3" />
+        {status.replace('_', ' ')}
       </Badge>
     )
   }
 
-  const filteredConfigurations = configurations.filter(config => {
-    if (filter !== 'all' && config.status !== filter) return false
-    if (searchQuery && !config.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !config.userName.toLowerCase().includes(searchQuery.toLowerCase())) return false
+  const getPriorityBadge = (priority: RepairPriority) => {
+    const colors = {
+      'LOW': 'bg-neutral-100 text-neutral-800',
+      'NORMAL': 'bg-blue-100 text-blue-800',
+      'HIGH': 'bg-orange-100 text-orange-800',
+      'URGENT': 'bg-red-100 text-red-800'
+    } as const
+
+    return (
+      <Badge className={colors[priority]}>
+        {priority}
+      </Badge>
+    )
+  }
+  const filteredRepairs = repairs.filter(repair => {
+    if (filter !== 'all' && repair.status !== filter) return false
+    if (priorityFilter !== 'all' && repair.priority !== priorityFilter) return false
+    if (searchQuery && !repair.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !repair.userName.toLowerCase().includes(searchQuery.toLowerCase())) return false
     return true
   })
 
@@ -80,63 +116,88 @@ export default function ConfigurationsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Configurations
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
+          Repair Requests
         </h1>
-        <Link href={`/${locale}/specialist/configurations/create`}>
+        <Link href={`/${locale}/specialist/repairs/new`}>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Create New
+            New Repair
           </Button>
         </Link>
       </div>
 
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-wrap gap-4 items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-4 w-4" />
           <input
             type="text"
-            placeholder="Search configurations..."
-            className="pl-10 pr-4 py-2 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            placeholder="Search repairs..."
+            className="pl-10 pr-4 py-2 w-full border rounded-lg dark:bg-neutral-800 dark:border-neutral-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <select
-          className="border rounded-lg px-4 py-2 dark:bg-gray-800 dark:border-gray-700"
+          className="border rounded-lg px-4 py-2 dark:bg-neutral-800 dark:border-neutral-700"
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          onChange={(e) => setFilter(e.target.value as 'all' | RepairStatus)}
         >
           <option value="all">All Status</option>
-          <option value="DRAFT">Draft</option>
-          <option value="SUBMITTED">Submitted</option>
-          <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
+          <option value="PENDING">Pending</option>
+          <option value="DIAGNOSING">Diagnosing</option>
+          <option value="WAITING_FOR_PARTS">Waiting For Parts</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
         </select>
-      </div>
-
-      <div className="grid gap-4">
-        {filteredConfigurations.map((config) => (
-          <Card key={config.id}>
+        <select
+          className="border rounded-lg px-4 py-2 dark:bg-neutral-800 dark:border-neutral-700"
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value as 'all' | RepairPriority)}
+        >
+          <option value="all">All Priorities</option>
+          <option value="LOW">Low Priority</option>
+          <option value="NORMAL">Normal Priority</option>
+          <option value="HIGH">High Priority</option>
+          <option value="URGENT">Urgent Priority</option>
+        </select>
+      </div>      <div className="grid gap-4">
+        {filteredRepairs.map((repair) => (
+          <Card key={repair.id} className={repair.priority === 'URGENT' ? 'border-red-500' : ''}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-2">
-                    <h3 className="text-lg font-semibold">{config.name}</h3>
-                    {getStatusBadge(config.status)}
+                  <div className="flex items-center flex-wrap gap-2 mb-2">
+                    <h3 className="text-lg font-semibold">{repair.title}</h3>
+                    {getStatusBadge(repair.status)}
+                    {getPriorityBadge(repair.priority)}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <p>Customer: {config.userName}</p>
-                    <p>Created: {new Date(config.createdAt).toLocaleDateString()}</p>
-                    <p>Price: €{config.totalPrice}</p>
+                  <div className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                    <p>Customer: {repair.userName}</p>
+                    <p>Created: {new Date(repair.createdAt).toLocaleDateString()}</p>
+                    {repair.estimatedCost && <p>Estimated: €{repair.estimatedCost}</p>}
+                    {repair.finalCost && <p>Final Cost: €{repair.finalCost}</p>}
+                    {repair.completionDate && (
+                      <p>Completed: {new Date(repair.completionDate).toLocaleDateString()}</p>
+                    )}
+                    {repair.diagnosticNotes && (
+                      <p className="col-span-2 mt-2 italic text-xs line-clamp-1">
+                        Note: {repair.diagnosticNotes}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Link href={`/${locale}/specialist/configurations/${config.id}`}>
-                    <Button variant="outline">View</Button>
+                <div className="flex flex-col gap-2">
+                  <Link href={`/${locale}/specialist/repairs/${repair.id}`}>
+                    <Button className="w-full">View Details</Button>
                   </Link>
-                  {config.status === 'SUBMITTED' && (
-                    <Button>Review</Button>
+                  {repair.status !== 'COMPLETED' && repair.status !== 'CANCELLED' && (
+                    <Link href={`/${locale}/specialist/repairs/${repair.id}?action=complete`}>
+                      <Button variant="outline" className="w-full text-sm">
+                        Complete
+                      </Button>
+                    </Link>
                   )}
                 </div>
               </div>

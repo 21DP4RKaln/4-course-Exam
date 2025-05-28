@@ -65,24 +65,24 @@ export default function FeaturedConfigurations() {
     return (
       <section className="py-12">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-3xl font-bold text-neutral-900 dark:text-white">
             {t('nav.Popular')}
           </h2>
-          <div className="animate-pulse h-6 w-24 bg-gray-300 dark:bg-gray-700 rounded"></div>
+          <div className="animate-pulse h-6 w-24 bg-neutral-300 dark:bg-neutral-700 rounded"></div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
-              <div className="h-48 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+              <div className="h-48 bg-neutral-300 dark:bg-neutral-700 animate-pulse"></div>
               <div className="p-4 space-y-3">
-                <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-6 bg-neutral-300 dark:bg-neutral-700 rounded animate-pulse"></div>
+                <div className="h-4 bg-neutral-300 dark:bg-neutral-700 rounded animate-pulse"></div>
                 <div className="flex justify-between items-center">
-                  <div className="h-6 w-20 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-6 w-20 bg-neutral-300 dark:bg-neutral-700 rounded animate-pulse"></div>
                   <div className="flex space-x-2">
-                    <div className="h-8 w-8 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                    <div className="h-8 w-8 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-8 w-8 bg-neutral-300 dark:bg-neutral-700 rounded animate-pulse"></div>
+                    <div className="h-8 w-8 bg-neutral-300 dark:bg-neutral-700 rounded animate-pulse"></div>
                   </div>
                 </div>
               </div>
@@ -97,10 +97,10 @@ export default function FeaturedConfigurations() {
     return (
       <section className="py-12">
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
             {t('error.loadingConfigs')}
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-neutral-600 dark:text-neutral-400">
             {error}
           </p>
         </div>
@@ -111,7 +111,7 @@ export default function FeaturedConfigurations() {
   return (
     <section className="py-12">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-3xl font-bold text-neutral-900 dark:text-white">
           {t('nav.Popular')}
         </h2>
         <Link
@@ -130,7 +130,7 @@ export default function FeaturedConfigurations() {
           >
             {/* Image or placeholder */}
             <Link href={`/${locale}/shop/product/${config.id}`}>
-              <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative">
+              <div className="h-48 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center relative">
                 {config.imageUrl ? (
                   <img 
                     src={config.imageUrl} 
@@ -138,7 +138,7 @@ export default function FeaturedConfigurations() {
                     className="h-full w-full object-contain"
                   />
                 ) : (
-                  <span className="text-gray-500 dark:text-gray-400">
+                  <span className="text-neutral-500 dark:text-neutral-400">
                     {t('product.imageAlt')}
                   </span>
                 )}
@@ -163,11 +163,11 @@ export default function FeaturedConfigurations() {
             
             <div className="p-4">
               <Link href={`/${locale}/shop/product/${config.id}`}>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 hover:text-brand-red-600 dark:hover:text-brand-red-400">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1 hover:text-brand-red-600 dark:hover:text-brand-red-400">
                   {config.name}
                 </h3>
               </Link>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+              <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-3">
                 {config.description}
               </p>
               <div className="flex items-center justify-between">
@@ -177,19 +177,19 @@ export default function FeaturedConfigurations() {
                       <span className="text-xl font-bold text-brand-red-600 dark:text-brand-red-500">
                         €{config.discountPrice}
                       </span>
-                      <span className="ml-2 text-sm text-gray-500 line-through">
+                      <span className="ml-2 text-sm text-neutral-500 line-through">
                         €{config.price}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    <span className="text-xl font-bold text-neutral-900 dark:text-white">
                       €{config.price}
                     </span>
                   )}
                 </div>
                 <div className="flex space-x-2">
                   <button 
-                    className="p-2 text-gray-500 dark:text-gray-400 hover:text-brand-red-500 dark:hover:text-brand-red-400"
+                    className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-brand-red-500 dark:hover:text-brand-red-400"
                     aria-label={t('buttons.addToWishlist')}
                   >
                     <Heart size={20} />

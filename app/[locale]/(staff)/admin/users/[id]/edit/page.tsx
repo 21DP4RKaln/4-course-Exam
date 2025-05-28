@@ -101,11 +101,11 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
       <div className="flex items-center space-x-4">
         <button
           onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
           Edit User
         </h1>
       </div>
@@ -114,13 +114,13 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 First Name
               </label>
               <input
                 type="text"
                 {...register('firstName')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.firstName && (
                 <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
@@ -128,13 +128,13 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Last Name
               </label>
               <input
                 type="text"
                 {...register('lastName')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.lastName && (
                 <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
@@ -142,13 +142,13 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Email
               </label>
               <input
                 type="email"
                 {...register('email')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -156,7 +156,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Phone
               </label>
               <PhoneInput
@@ -167,12 +167,12 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Role
               </label>
               <select
                 {...register('role')}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               >
                 <option value="USER">User</option>
                 <option value="SPECIALIST">Specialist</option>
@@ -184,7 +184,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Account Status
               </label>
               <div className="flex items-center">
@@ -199,13 +199,13 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
 
             {isBlocked && (
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Block Reason
                 </label>
                 <textarea
                   {...register('blockReason')}
                   rows={3}
-                  className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
                   placeholder="Provide a reason for blocking this user..."
                 />
               </div>
@@ -216,7 +216,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 border rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700"
             >
               Cancel
             </button>

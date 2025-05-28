@@ -66,7 +66,7 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
       <div className="bg-white dark:bg-stone-950 rounded-lg p-6 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">{t('repairs.completeRepair')}</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700">
             <X size={20} />
           </button>
         </div>
@@ -82,14 +82,14 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
                 type="number"
                 value={finalCost}
                 onChange={(e) => setFinalCost(e.target.value)}
-                className="w-full border rounded-lg pl-8 pr-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+                className="w-full border rounded-lg pl-8 pr-3 py-2 dark:bg-neutral-700 dark:border-neutral-600"
                 step="0.01"
                 min="0"
                 required
               />
             </div>
             {repair.estimatedCost && (
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-neutral-500 mt-1">
                 {t('repairs.estimatedCost')}: €{repair.estimatedCost.toFixed(2)}
               </p>
             )}
@@ -102,7 +102,7 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
             <textarea
               value={completionNotes}
               onChange={(e) => setCompletionNotes(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+              className="w-full border rounded-lg px-3 py-2 dark:bg-neutral-700 dark:border-neutral-600"
               rows={4}
               placeholder={t('repairs.completionNotesPlaceholder')}
               required
@@ -134,8 +134,8 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <Camera className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
+                  <Camera className="mx-auto h-12 w-12 text-neutral-400" />
+                  <div className="flex text-sm text-neutral-600">
                     <label className="relative cursor-pointer bg-white dark:bg-stone-950 rounded-md font-medium text-primary hover:text-primary/80">
                       <span>{t('common.uploadFile')}</span>
                       <input
@@ -147,7 +147,7 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
                     </label>
                     <p className="pl-1">{t('common.orDragAndDrop')}</p>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-neutral-500">
                     {t('common.imageFormats')}
                   </p>
                 </div>

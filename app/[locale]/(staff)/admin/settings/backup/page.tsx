@@ -139,11 +139,11 @@ export default function BackupSettingsPage() {
       <div className="flex items-center space-x-4">
         <Link 
           href="/admin/settings"
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
           Backup & Restore
         </h1>
       </div>
@@ -172,32 +172,32 @@ export default function BackupSettingsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
             <div className="flex items-center space-x-3">
               <CheckCircle className="h-8 w-8 text-green-500" />
               <div>
                 <h3 className="font-medium">Last Backup</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Today at 02:00 AM</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">Today at 02:00 AM</p>
               </div>
             </div>
           </div>
           
-          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
             <div className="flex items-center space-x-3">
               <HardDrive className="h-8 w-8 text-blue-500" />
               <div>
                 <h3 className="font-medium">Total Backups</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">12 backups (1.4 GB)</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">12 backups (1.4 GB)</p>
               </div>
             </div>
           </div>
           
-          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
             <div className="flex items-center space-x-3">
               <Clock className="h-8 w-8 text-orange-500" />
               <div>
                 <h3 className="font-medium">Next Backup</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Tomorrow at 02:00 AM</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">Tomorrow at 02:00 AM</p>
               </div>
             </div>
           </div>
@@ -206,17 +206,17 @@ export default function BackupSettingsPage() {
 
       {/* Backup List */}
       <div className="bg-white dark:bg-stone-950 shadow rounded-lg">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-6 border-b border-neutral-200 dark:border-neutral-700">
           <h2 className="text-lg font-semibold">Recent Backups</h2>
         </div>
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
           {backups.map((backup) => (
             <div key={backup.id} className="p-6 flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <Database className="h-6 w-6 text-gray-400" />
+                <Database className="h-6 w-6 text-neutral-400" />
                 <div>
                   <h3 className="font-medium">{backup.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     {new Date(backup.date).toLocaleString()} • {backup.size} • {backup.type}
                   </p>
                 </div>
@@ -224,7 +224,7 @@ export default function BackupSettingsPage() {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => alert('Download functionality not implemented')}
-                  className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  className="p-2 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                   title="Download"
                 >
                   <Download className="h-5 w-5" />
@@ -263,7 +263,7 @@ export default function BackupSettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">Automatic Backups</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
                   Enable automatic scheduled backups
                 </p>
               </div>
@@ -275,13 +275,13 @@ export default function BackupSettingsPage() {
                   onChange={handleChange}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
               </label>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Backup Frequency
                 </label>
                 <select
@@ -289,7 +289,7 @@ export default function BackupSettingsPage() {
                   value={settings.backupFrequency}
                   onChange={handleChange}
                   disabled={!settings.autoBackup}
-                  className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 disabled:opacity-50"
                 >
                   <option value="hourly">Hourly</option>
                   <option value="daily">Daily</option>
@@ -299,7 +299,7 @@ export default function BackupSettingsPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Backup Time
                 </label>
                 <input
@@ -308,12 +308,12 @@ export default function BackupSettingsPage() {
                   value={settings.backupTime}
                   onChange={handleChange}
                   disabled={!settings.autoBackup}
-                  className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 disabled:opacity-50"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Retention Period (days)
                 </label>
                 <input
@@ -323,19 +323,19 @@ export default function BackupSettingsPage() {
                   onChange={handleChange}
                   min="1"
                   max="365"
-                  className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Backup Location
                 </label>
                 <select
                   name="backupLocation"
                   value={settings.backupLocation}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
                 >
                   <option value="local">Local Storage</option>
                   <option value="s3">Amazon S3</option>
@@ -349,7 +349,7 @@ export default function BackupSettingsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">Include Uploads</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     Include uploaded files in backups
                   </p>
                 </div>
@@ -361,14 +361,14 @@ export default function BackupSettingsPage() {
                     onChange={handleChange}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
               
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">Compress Backups</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     Compress backup files to save space
                   </p>
                 </div>
@@ -380,14 +380,14 @@ export default function BackupSettingsPage() {
                     onChange={handleChange}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
               
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">Email Notifications</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     Send email notifications for backup status
                   </p>
                 </div>
@@ -399,7 +399,7 @@ export default function BackupSettingsPage() {
                     onChange={handleChange}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
             </div>

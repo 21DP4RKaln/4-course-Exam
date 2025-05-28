@@ -59,24 +59,24 @@ export default function ComponentsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
           Components Inventory
         </h1>
       </div>
 
       <div className="flex gap-4 items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-4 w-4" />
           <input
             type="text"
             placeholder="Search components..."
-            className="pl-10 pr-4 py-2 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="pl-10 pr-4 py-2 w-full border rounded-lg dark:bg-neutral-800 dark:border-neutral-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <select
-          className="border rounded-lg px-4 py-2 dark:bg-gray-800 dark:border-gray-700"
+          className="border rounded-lg px-4 py-2 dark:bg-neutral-800 dark:border-neutral-700"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
@@ -96,7 +96,7 @@ export default function ComponentsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                <tr className="border-b bg-neutral-50 dark:bg-neutral-800">
                   <th className="px-6 py-3 text-left">Component</th>
                   <th className="px-6 py-3 text-left">Category</th>
                   <th className="px-6 py-3 text-left">SKU</th>

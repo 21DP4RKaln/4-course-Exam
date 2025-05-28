@@ -34,11 +34,11 @@ export default function ProductCard({
   const t = useTranslations()
   
   return (
-    <div className="relative bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+    <div className="relative bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden">
       {/* Product Image */}
-      <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-stone-950">
+      <div className="relative aspect-square overflow-hidden bg-neutral-100 dark:bg-stone-950">
         <Image
-          src={imageUrl || '/images/Default-image.png'}
+          src={imageUrl || '/images/product-placeholder.svg'}
           alt={name}
           width={400}
           height={400}
@@ -67,17 +67,17 @@ export default function ProductCard({
       {/* Product Info */}
       <div className="p-4">
         <Link href={`/${locale}/product/${type}/${id}`} className="block">
-          <h3 className="font-medium text-gray-900 dark:text-white mb-1 hover:text-red-500 dark:hover:text-red-400 transition-colors">
+          <h3 className="font-medium text-neutral-900 dark:text-white mb-1 hover:text-red-500 dark:hover:text-red-400 transition-colors">
             {name}
           </h3>
         </Link>
 
         {/* Price */}
-        <div className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        <div className="text-lg font-semibold text-neutral-900 dark:text-white mb-2">
           €{price.toFixed(2)}
         </div>
         {/* Specs button */}
-        <button className="flex items-center justify-between w-full px-3 py-1.5 bg-gray-100 dark:bg-stone-950 rounded text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+        <button className="flex items-center justify-between w-full px-3 py-1.5 bg-neutral-100 dark:bg-stone-950 rounded text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors">
           <span>{t('buttons.viewSpecs')}</span>
           <ChevronDown className="h-4 w-4" />
         </button>

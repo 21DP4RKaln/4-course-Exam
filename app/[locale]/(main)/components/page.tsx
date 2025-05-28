@@ -1,13 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { AlertTriangle, Cpu, Monitor, HardDrive, Zap, Server, Shield, Layers, Fan } from 'lucide-react'
+import { AlertTriangle, Cpu, Monitor, HardDrive, Zap, Server, Shield, Layers, Fan, Keyboard } from 'lucide-react'
 import Loading from '@/app/components/ui/Loading'
 import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
 import AnimatedButton from '@/app/components/ui/animated-button'
+import { motion, useInView } from 'framer-motion'
 
 interface Category {
   id: string;
@@ -27,7 +28,7 @@ const getCategoryIcon = (slug: string) => {
     'psu': <Zap size={30} className="text-yellow-500" />,
     'case': <Shield size={30} className="text-pink-500" />,
     'cooler': <Fan size={30} className="text-teal-500" />,
-    'default': <Layers size={30} className="text-gray-500" />
+    'default': <Layers size={30} className="text-neutral-500" />
   }
   return icons[slug as keyof typeof icons] || icons.default
 }
@@ -41,6 +42,43 @@ export default function ComponentsPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  // Ref for scroll animation
+  const ctaRef = useRef(null)
+  const ctaInView = useInView(ctaRef, { once: true, amount: 0.3 })
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5
+      }
+    }
+  }
+
+  const bannerVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.6
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -81,7 +119,7 @@ export default function ComponentsPage() {
           className="mb-6 inline-block"
         />
         <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           {error}
         </h2>
         <button
@@ -95,72 +133,101 @@ export default function ComponentsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">      
-      <div className="mb-6 flex justify-start">          <AnimatedButton
-            href={`/${locale}`}
-            title={t('common.backToHome')}
-            direction="left"
-            className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-          />
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      className="max-w-7xl mx-auto px-4 py-8"
+    >      
+      <div className="mb-6 flex justify-start">
+        <AnimatedButton
+          href={`/${locale}`}
+          title={t('common.backToHome')}
+          direction="left"
+          className="text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+        />
       </div>
       
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+      <motion.h1 
+        variants={itemVariants}
+        className="text-3xl font-bold text-neutral-900 dark:text-white mb-6"
+      >
         {t('components.title')}
-      </h1>
+      </motion.h1>
       
-      <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+      <motion.p 
+        variants={itemVariants}
+        className="text-lg text-neutral-600 dark:text-neutral-400 mb-8"
+      >
         {t('components.description')}
-      </p>
+      </motion.p>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div 
+        variants={containerVariants}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
         {categories.map(category => (
-          <Link
-            key={category.id}
-            href={`/${locale}/components/${category.slug}`}
-            className="bg-white dark:bg-stone-950 border border-gray-200 dark:border-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            <div className="p-6">
-              <div className="mb-4">
-                {getCategoryIcon(category.slug)}
+          <motion.div key={category.id} variants={itemVariants}>
+            <Link
+              href={`/${locale}/components/${category.slug}`}
+              className="block bg-white dark:bg-stone-950 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              <div className="p-6">
+                <div className="mb-4">
+                  {getCategoryIcon(category.slug)}
+                </div>
+                <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+                  {(() => {
+                    try {
+                      // Mēģinām atrast tulkojumu no kategroijas, ja neatrod, izmanto datubāzes nosaukumu
+                      return t(`categories.${category.slug}`)
+                    } catch (e) {
+                      return category.name
+                    }
+                  })()}
+                </h2>
+                <p className="text-neutral-600 dark:text-neutral-400 mb-3">
+                  {(() => {
+                    try {
+                      // Mēģinām atrast apraksta tulkojumu, ja tāds ir pieejams
+                      return t(`categoryDescriptions.${category.slug}`)
+                    } catch (e) {
+                      // Ja tulkojums nav pieejams, izmantojam datubāzes aprakstu vai noklusējuma aprakstu
+                      return category.description || t('components.description')
+                    }
+                  })()}
+                </p>
+                <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                  {t('components.productsAvailable', { count: category.componentCount })}
+                </div>
               </div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {category.name}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-3">
-                {category.description || t('components.description')}
-              </p>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {t('components.productsAvailable', { count: category.componentCount })}
-              </div>
-            </div>
-          </Link>
+            </Link>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
       
-      <div className="mt-12 bg-gradient-to-r from-gray-900 to-stone-950 dark:from-red-900/30 dark:to-gray-900 rounded-lg border border-gray-700 dark:border-gray-800 shadow-lg p-8 text-center">
+       {/* CTA section */}      <div className="mt-12 bg-gradient-to-r from-blue-800 to-blue-950 dark:from-red-900/30 dark:to-neutral-900 rounded-lg border border-blue-700 dark:border-neutral-800 shadow-lg p-8 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">
-          {t('components.needCompletePc')}
+          {t('peripherals.buildingNewPc')}
         </h2>
-        <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-          {t('components.preConfiguredDesc')}
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <p className="text-neutral-300 mb-6 max-w-2xl mx-auto">
+          {t('peripherals.buildingDesc')}
+        </p>        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href={`/${locale}/components`}
+            className="px-6 py-3 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 border border-blue-500 dark:border-red-500"
+          >
+            <Keyboard size={18} className="inline-block mr-2" />
+            {t('peripherals.browseComponents')}
+          </Link>
           <Link
             href={`/${locale}/configurator`}
-            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 border border-red-500"
-          >
-            <Cpu size={18} className="inline-block mr-2" />
-            {t('components.buildYourOwnPc')}
-          </Link>
-          <Link
-            href={`/${locale}/shop/ready-made`}
-            className="px-6 py-3 bg-white text-gray-900 rounded-md hover:bg-gray-100 border border-gray-300"
+            className="px-6 py-3 bg-white text-neutral-900 rounded-md hover:bg-neutral-100 border border-neutral-300"
           >
             <Monitor size={18} className="inline-block mr-2" />
-            {t('components.readyMadePcs')}
+            {t('peripherals.configurePc')}
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

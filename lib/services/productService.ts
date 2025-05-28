@@ -321,6 +321,38 @@ export async function getAllProducts(): Promise<Product[]> {
  * Get products by category
  */
 export async function getProductsByCategory(category: string): Promise<Product[]> {
+  if (category === 'peripheral') {
+    // Get all peripheral type components
+    const peripheralComponents = await prisma.component.findMany({
+      where: {
+        categoryId: {
+          in: (
+            await prisma.componentCategory.findMany({
+              where: { type: 'peripheral' }
+            })
+          ).map(c => c.id)
+        },
+        stock: { gt: 0 }
+      },
+      include: {
+        category: true
+      }
+    });
+
+    // Map to product interface
+    return peripheralComponents.map(p => ({
+      id: p.id,
+      name: p.name,
+      category: p.category.name,
+      description: p.description || '',
+      specs: p.specifications ? JSON.parse(p.specifications as string) : {},
+      price: p.price,
+      discountPrice: p.discountPrice,
+      imageUrl: p.imageUrl,
+      stock: p.stock
+    }));
+  }
+
   try {
     const products: Product[] = [];
 
@@ -352,9 +384,7 @@ export async function getProductsByCategory(category: string): Promise<Product[]
         const configCategory = getConfigCategory(specs);
 
         if (category === 'pc' || configCategory.toLowerCase() === category.toLowerCase()) {
-          const discountPrice = config.isPublic ? Math.round(config.totalPrice * 0.9 * 100) / 100 : null;
-      
-          products.push({
+          const discountPrice = config.isPublic ? Math.round(config.totalPrice * 0.9 * 100) / 100 : null;          products.push({
             id: config.id,
             name: config.name,
             category: configCategory,
@@ -362,7 +392,7 @@ export async function getProductsByCategory(category: string): Promise<Product[]
             specs,
             price: config.totalPrice,
             discountPrice,
-            imageUrl: null,
+            imageUrl: config.imageUrl || `/images/pcs/${configCategory.toLowerCase()}.jpg`,
             stock: 10,
             ratings: {
               average: 4.5,
@@ -370,6 +400,49 @@ export async function getProductsByCategory(category: string): Promise<Product[]
             },
           });
         }
+      }
+    } else if (category === 'peripheral') {
+      const peripherals = await prisma.component.findMany({
+        where: {
+          category: {
+            type: 'peripheral'
+          },
+          stock: {
+            gt: 0
+          }
+        },
+        include: {
+          category: true,
+          specValues: {
+            include: {
+              specKey: true
+            }
+          }
+        }
+      });
+
+      for (const peripheral of peripherals) {
+        const specs: Record<string, string> = { ...(peripheral.specifications as any || {}) };
+        
+        for (const specValue of peripheral.specValues) {
+          specs[specValue.specKey.name] = specValue.value;
+        }
+
+        products.push({
+          id: peripheral.id,
+          name: peripheral.name,
+          category: peripheral.category.name,
+          description: peripheral.description || '',
+          specs,
+          price: peripheral.price,
+          discountPrice: peripheral.discountPrice,
+          imageUrl: peripheral.imageUrl,
+          stock: peripheral.stock,
+          ratings: {
+            average: 4.2,
+            count: 12,
+          },
+        });
       }
     } else {
       const components = await prisma.component.findMany({

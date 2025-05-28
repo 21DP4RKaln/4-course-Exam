@@ -101,8 +101,8 @@ export function ComponentList() {
           className="w-10 h-10 object-cover rounded"
         />
       ) : (
-        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
-          <Package size={20} className="text-gray-400" />
+        <div className="w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded flex items-center justify-center">
+          <Package size={20} className="text-neutral-400" />
         </div>
       )
     },
@@ -180,7 +180,7 @@ export function ComponentList() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
           Components Inventory
         </h2>
         <SearchBar

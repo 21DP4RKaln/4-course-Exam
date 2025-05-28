@@ -105,7 +105,7 @@ export default function ReadyMadePCDetailsPage() {
           onClick={() => router.back()}
           title={t('common.back')}
           direction="left"
-          className="text-gray-600 dark:text-gray-400" 
+          className="text-neutral-600 dark:text-neutral-400" 
         />
       </div>
 
@@ -118,7 +118,7 @@ export default function ReadyMadePCDetailsPage() {
                 <Badge className={
                   pc.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' :
                   pc.status === 'APPROVED' ? 'bg-blue-100 text-blue-800' :
-                  'bg-gray-100 text-gray-800'
+                  'bg-neutral-100 text-neutral-800'
                 }>
                   {t(`shop.status.${pc.status.toLowerCase()}`)}
                 </Badge>
@@ -132,7 +132,7 @@ export default function ReadyMadePCDetailsPage() {
             <div className="grid gap-6">
               <div>
                 <h4 className="font-medium mb-2">{t('common.description')}</h4>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-neutral-600 dark:text-neutral-400">
                   {pc.description || t('common.noDescription')}
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default function ReadyMadePCDetailsPage() {
                 <div className="border rounded-lg">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                      <tr className="border-b bg-neutral-50 dark:bg-neutral-800">
                         <th className="px-4 py-2 text-left">{t('shop.table.component')}</th>
                         <th className="px-4 py-2 text-left">{t('shop.table.category')}</th>
                         <th className="px-4 py-2 text-center">{t('shop.table.quantity')}</th>
@@ -179,7 +179,7 @@ export default function ReadyMadePCDetailsPage() {
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr className="bg-gray-50 dark:bg-gray-800">
+                      <tr className="bg-neutral-50 dark:bg-neutral-800">
                         <td colSpan={3} className="px-4 py-2 text-right font-medium">
                           {t('shop.table.total')}:
                         </td>

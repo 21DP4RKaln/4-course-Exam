@@ -68,14 +68,14 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             {/* Language Toggle */}
             <button 
               onClick={() => setLanguageMenuOpen(!languageMenuOpen)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-stone-950 relative"
+              className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-stone-950 relative"
             >
-              <Globe size={20} className="text-gray-600 dark:text-gray-400" />
+              <Globe size={20} className="text-neutral-600 dark:text-neutral-400" />
             </button>
             
             <button 
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-stone-950"
+              className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-stone-950"
               aria-label={theme === 'dark' ? t('common.lightMode') : t('common.darkMode')}
             >
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
@@ -85,8 +85,8 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
 
         {/* Language Dropdown */}
         {languageMenuOpen && (
-          <div className="mb-6 bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
-            <h3 className="mb-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+          <div className="mb-6 bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4">
+            <h3 className="mb-3 text-sm font-medium text-neutral-500 dark:text-neutral-400">
               {t('common.language')}
             </h3>
             <div className="space-y-2">
@@ -99,12 +99,12 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
                       ? theme === 'dark'
                         ? 'bg-brand-red-900/20 text-brand-red-400 border border-brand-red-800/30'
                         : 'bg-brand-blue-50 text-brand-blue-600 border border-brand-blue-200'
-                      : 'hover:bg-gray-100 dark:hover:bg-stone-950 text-stone-950 dark:text-gray-300'
+                      : 'hover:bg-neutral-100 dark:hover:bg-stone-950 text-stone-950 dark:text-neutral-300'
                   }`}
                 >
                   <span>{languageNames[localeOption]}</span>
                   {localeOption === locale && (
-                    <ChevronRight size={16} className="ml-auto text-gray-400" />
+                    <ChevronRight size={16} className="ml-auto text-neutral-400" />
                   )}
                 </button>
               ))}
@@ -115,7 +115,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
         <nav className="space-y-6">
           <Link 
             href={`/${locale}`}
-            className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+            className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
             onClick={onClose}
           >
             <Home size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -123,12 +123,12 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           </Link>
 
           {/* PC Options Group */}
-          <div className="space-y-1 border-l-2 border-gray-100 dark:border-stone-950 pl-2">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 ml-3">PCs</div>
+          <div className="space-y-1 border-l-2 border-neutral-100 dark:border-stone-950 pl-2">
+            <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-3 ml-3">PCs</div>
             
             <Link 
               href={`/${locale}/configurator`}
-              className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+              className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
               onClick={onClose}
             >
               <Cpu size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -137,7 +137,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
 
             <Link 
               href={`/${locale}/shop/ready-made`}
-              className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+              className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
               onClick={onClose}
             >
               <Monitor size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -148,7 +148,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           {/* Other navigation items */}
           <Link 
             href={`/${locale}/components`}
-            className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+            className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
             onClick={onClose}
           >
             <Cpu size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -157,7 +157,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           
           <Link 
             href={`/${locale}/peripherals`}
-            className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+            className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
             onClick={onClose}
           >
             <Keyboard size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -166,7 +166,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           
           <Link 
             href={`/${locale}/repairs`}
-            className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+            className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
             onClick={onClose}
           >
             <Wrench size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -175,7 +175,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           
           <Link 
             href={`/${locale}/about`}
-            className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+            className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
             onClick={onClose}
           >
             <Info size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -184,7 +184,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           
           <Link 
             href={`/${locale}/cart`}
-            className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+            className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
             onClick={onClose}
           >
             <ShoppingCart size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
@@ -192,19 +192,19 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
           </Link>
 
           {/* Authentication links */}
-          <div className="pt-6 border-t border-gray-100 dark:border-stone-950">
+          <div className="pt-6 border-t border-neutral-100 dark:border-stone-950">
             {isAuthenticated ? (
               <>
                 <Link 
                   href={dashboardLink}
-                  className="flex items-center justify-between w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+                  className="flex items-center justify-between w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
                   onClick={onClose}
                 >
                   <div className="flex items-center">
                     <User size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
                     <span className="font-medium">{t('nav.dashboard')}</span>
                   </div>
-                  <ChevronRight size={18} className="text-gray-400" />
+                  <ChevronRight size={18} className="text-neutral-400" />
                 </Link>
 
                 <button 
@@ -212,7 +212,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
                     logout()
                     onClose()
                   }}
-                  className="flex items-center w-full p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+                  className="flex items-center w-full p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
                 >
                   <LogOut size={20} className={`mr-4 ${theme === 'dark' ? 'text-brand-red-500' : 'text-brand-blue-500'}`} />
                   <span className="font-medium">{t('nav.logout')}</span>
@@ -225,7 +225,7 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
                   className={`flex items-center justify-center w-full p-3 rounded-xl text-center font-medium ${
                     theme === 'dark' 
                       ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20' 
-                      : 'bg-white text-stone-950 border border-gray-200 hover:bg-gray-50'
+                      : 'bg-white text-stone-950 border border-neutral-200 hover:bg-neutral-50'
                   }`}
                   onClick={onClose}
                 >
@@ -254,8 +254,8 @@ export default function MobileMenu({ isOpen, onClose, dashboardLink }: MobileMen
             onClick={onClose}
             className={`px-6 py-2 rounded-xl text-sm font-medium ${
               theme === 'dark' 
-                ? 'text-gray-400 hover:text-white' 
-                : 'text-gray-500 hover:text-gray-900'
+                ? 'text-neutral-400 hover:text-white' 
+                : 'text-neutral-500 hover:text-neutral-900'
             }`}
           >
             {t('nav.close')}

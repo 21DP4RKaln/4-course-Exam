@@ -5,21 +5,17 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
-import WishlistTab from '@/app/components/Dashboard/WishlistTab'
+import { motion } from 'framer-motion'
 import Loading from '@/app/components/ui/Loading'
-import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
-import { 
-  User, 
-  Package, 
-  Cpu,
-  Clock,
-  Settings,
-  Heart
-} from 'lucide-react'
-
+import { User, Package, Cpu, Heart } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs'
 import { getUserConfigurations, getUserOrders, type UserConfiguration, type UserOrder } from '@/lib/services/dashboardService'
+
+// Import dashboard components
 import ProfileTab from '@/app/components/Dashboard/Dashboard'
+import WishlistTab from '@/app/components/Dashboard/WishlistTab'
+import ConfigurationsTab from '@/app/components/Dashboard/ConfigurationsTab'
+import OrdersTab from '@/app/components/Dashboard/OrdersTab'
 
 export default function DashboardPage() {
   const t = useTranslations()
@@ -29,12 +25,7 @@ export default function DashboardPage() {
   const tabParam = searchParams.get('tab')
   
   const { user, isAuthenticated, loading } = useAuth()
-
-  const [activeTab, setActiveTab] = useState(
-    tabParam === 'profile' ? 'profile' : 
-    tabParam === 'orders' ? 'orders' : 'configurations'
-  )
-  
+  const [activeTab, setActiveTab] = useState(tabParam || 'configurations')
   const locale = pathname.split('/')[1]
   
   const [configurations, setConfigurations] = useState<UserConfiguration[]>([])
@@ -54,7 +45,17 @@ export default function DashboardPage() {
     }
   }, [isAuthenticated, loading, router, locale, pathname, user?.role])
 
+  // Sync tab state with URL parameters
   useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['configurations', 'orders', 'profile', 'wishlist'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    let mounted = true;
+    
     if (!isAuthenticated || loading || user?.role !== 'USER') return;
 
     const fetchData = async () => {
@@ -63,22 +64,28 @@ export default function DashboardPage() {
       
       try {
         if (activeTab === 'configurations') {
-          const configData = await getUserConfigurations(user!.id);
-          setConfigurations(configData);
+          const configData = await getUserConfigurations(user.id);
+          console.log('Fetched configurations:', configData);          if (mounted) setConfigurations(configData);
         } else if (activeTab === 'orders') {
-          const orderData = await getUserOrders(user!.id);
-          setOrders(orderData);
+          const response = await fetch('/api/dashboard/orders');
+          const orderData = await response.json();
+          console.log('Fetched orders:', orderData);
+          if (mounted) setOrders(orderData);
         }
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
-        setError('Failed to load data. Please try again later.');
+        if (mounted) setError('Failed to load data. Please try again later.');
       } finally {
-        setDataLoading(false);
+        if (mounted) setDataLoading(false);
       }
     };
     
     fetchData();
-  }, [activeTab, isAuthenticated, loading, user]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [activeTab, isAuthenticated, loading, user?.id]);
 
   if (loading) {
     return (
@@ -100,273 +107,151 @@ export default function DashboardPage() {
       year: 'numeric' 
     }).format(date)
   }
-
   const getStatusColor = (status: string) => {
     const statusColors = {
-      // Configuration statuses
-      'DRAFT': 'bg-gray-100 text-stone-950 dark:bg-stone-950 dark:text-gray-300',
+      'DRAFT': 'bg-neutral-100 text-stone-950 dark:bg-stone-950 dark:text-neutral-300',
       'SUBMITTED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'APPROVED': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       'REJECTED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-      // Order statuses
       'PENDING': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
       'PROCESSING': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'COMPLETED': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       'CANCELLED': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
     }
     
-    return statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-stone-950'
+    return statusColors[status as keyof typeof statusColors] || 'bg-neutral-100 text-stone-950'
   }
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
- 
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('tab', value);
-    router.push(`${pathname}?${newParams.toString()}`);
+    const baseUrl = pathname.split('?')[0];
+    router.replace(`${baseUrl}?tab=${value}`, { scroll: false });
   };
-
-  return (
-    <div className="max-w-5xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0">
-          {t('dashboard.title')}
-        </h1>
-        
-        <div className="flex items-center space-x-4">
-          <div className="bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-lg">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {t('common.welcome')},
-            </p>
-            <p className="font-semibold text-gray-900 dark:text-white">
-              {user?.name || user?.email}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white dark:bg-stone-950 rounded-xl shadow-md overflow-hidden">
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="w-full flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-            <TabsTrigger 
-              value="configurations"
-              className="flex-1 py-4 px-4 text-sm font-medium"
-            >
-              <Cpu size={18} className="mr-2" />
-              {t('dashboard.myConfigurations')}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="orders"
-              className="flex-1 py-4 px-4 text-sm font-medium"
-            >
-              <Package size={18} className="mr-2" />
-              {t('dashboard.myOrders')}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="profile"
-              className="flex-1 py-4 px-4 text-sm font-medium"
-            >
-              <User size={18} className="mr-2" />
-              {t('dashboard.profile')}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="wishlist"
-              className="flex-1 py-4 px-4 text-sm font-medium"
-            >
-              <Heart size={18} className="mr-2" />
-              {t('dashboard.wishlist')}
-            </TabsTrigger>
-          </TabsList>
-          
-          {/* My Configurations Tab */}
-          <TabsContent value="configurations" className="p-6">
-            {dataLoading ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mr-3"></div>
-                <span className="text-gray-600 dark:text-gray-400">Loading configurations...</span>
-              </div>
-            ) : error ? (
-              <div className="text-center py-8">
-                <p className="text-red-600 dark:text-red-400">{error}</p>
-                <button
-                  onClick={() => handleTabChange('configurations')}
-                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                >
-                  Retry
-                </button>
-              </div>
-            ) : configurations.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-600 dark:text-gray-400">
-                  {t('dashboard.noConfigurations')}
-                </p>
-                <button
-                  onClick={() => router.push(`/${locale}/configurator`)}
-                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                >
-                  {t('nav.configurator')}
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {t('dashboard.myConfigurations')}
-                  </h2>
-                  <button
-                    onClick={() => router.push(`/${locale}/configurator`)}
-                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
-                  >
-                    + New Configuration
-                  </button>
-                </div>
-
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {configurations.map((config) => (
-                    <div key={config.id} className="py-4">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between">
-                        <div className="mb-3 md:mb-0">
-                          <div className="flex items-center">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                              {config.name}
-                            </h3>
-                            <span className={`ml-3 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(config.status)}`}>
-                              {config.status}
-                            </span>
-                          </div>
-                          {config.description && (
-                            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                              {config.description}
-                            </p>
-                          )}
-                          <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
-                            <Clock size={14} className="mr-1" />
-                            {formatDate(config.createdAt)}
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                          <span className="text-lg font-bold text-gray-900 dark:text-white">
-                            €{config.totalPrice.toFixed(2)}
-                          </span>
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => router.push(`/${locale}/configurator?edit=${config.id}`)}
-                              className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
-                              Edit
-                            </button>
-                            {config.status === 'APPROVED' && (
-                              <button
-                                onClick={() => router.push(`/${locale}/shop/product/${config.id}`)}
-                                className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
-                              >
-                                Order
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </TabsContent>
-          
-          {/* My Orders Tab */}
-          <TabsContent value="orders" className="p-6">
-            {dataLoading ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mr-3"></div>
-                <span className="text-gray-600 dark:text-gray-400">Loading orders...</span>
-              </div>
-            ) : error ? (
-              <div className="text-center py-8">
-                <p className="text-red-600 dark:text-red-400">{error}</p>
-                <button
-                  onClick={() => handleTabChange('orders')}
-                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                >
-                  Retry
-                </button>
-              </div>
-            ) : orders.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-600 dark:text-gray-400">
-                  {t('dashboard.noOrders')}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {t('dashboard.myOrders')}
-                </h2>
-                
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-900">
-                      <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Order ID
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Date
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Configuration
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Total
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
-                      {orders.map((order) => (
-                        <tr 
-                          key={order.id}
-                          className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
-                          onClick={() => router.push(`/${locale}/orders/${order.id}`)}
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                            #{order.id}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {formatDate(order.createdAt)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {order.configurationName || '—'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                              {order.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                            €{order.totalAmount.toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </TabsContent>
-          
-          {/* Profile Tab */}
-          <TabsContent value="profile" className="p-6">
-            <ProfileTab />
-          </TabsContent>
+  return (    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50 via-white to-white dark:from-neutral-800 dark:via-neutral-950 dark:to-stone-950">
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <motion.div 
+          className="relative p-6 mb-8 bg-gradient-to-r from-blue-500/10 via-blue-500/5 to-transparent dark:from-red-800/20 dark:via-red-900/10 dark:to-transparent rounded-2xl border border-blue-200/20 dark:border-red-800/20 backdrop-blur-sm"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between">
+            <div className="flex-1">              <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+                {t('dashboard.title')}
+              </h1>
+              <p className="text-neutral-600 dark:text-neutral-400 text-lg">
+                {t('dashboard.welcomeBack')}
+              </p>
+            </div>
             
-            {/* Wishlist Tab */}
-          <TabsContent value="wishlist" className="p-6">
-            <WishlistTab />
-          </TabsContent>
-        </Tabs>
+            <motion.div 
+              className="mt-4 md:mt-0 md:ml-8"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}            >              <div className="bg-white/50 dark:bg-neutral-800/30 px-6 py-4 rounded-xl border border-blue-200/30 dark:border-red-700/30 backdrop-blur-md shadow-2xl">
+                <div className="flex items-center gap-4">                  <div className="h-12 w-12 rounded-full overflow-hidden flex items-center justify-center shadow-lg">
+                    {user?.profileImageUrl ? (
+                      <img 
+                        src={user.profileImageUrl}
+                        alt={user?.name || "User Profile"}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-red-600 dark:to-red-700 flex items-center justify-center">
+                        <User size={24} className="text-white" />
+                      </div>
+                    )}
+                  </div>                  <div>
+                    <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      {t('common.welcome')},
+                    </p>
+                    <p className="text-lg font-bold text-neutral-900 dark:text-white">
+                      {user?.name || user?.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>        </motion.div>        <motion.div 
+          className="bg-white/80 dark:bg-stone-950/80 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md border border-blue-200/30 dark:border-red-800/30"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">            <TabsList className="w-full flex p-2 gap-2 border-b border-blue-200/30 dark:border-red-800/30 bg-blue-50/50 dark:bg-neutral-900/50">              <TabsTrigger 
+                value="configurations"                className="flex-1 py-3 px-4 text-sm font-medium rounded-xl transition-all data-[state=active]:bg-white/90 data-[state=active]:border-brand-blue-200 data-[state=active]:text-brand-blue-600 dark:data-[state=active]:bg-neutral-800/90 dark:data-[state=active]:border-red-900/20 dark:data-[state=active]:text-red-400 data-[state=active]:shadow-lg hover:bg-white/80 dark:hover:bg-neutral-800/80 group"
+              >
+                <div className="flex items-center justify-center gap-2">                    <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-blue-500 to-brand-blue-600 dark:from-brand-red-600 dark:to-brand-red-700 shadow-md group-data-[state=active]:ring-4 group-data-[state=active]:ring-brand-blue-500/20 dark:group-data-[state=active]:ring-brand-red-500/20 transition-all">
+                    <Cpu size={16} className="text-white" />
+                  </div>
+                  <span>{t('dashboard.myConfigurations')}</span>
+                </div>
+              </TabsTrigger>              <TabsTrigger 
+                value="orders"
+                className="flex-1 py-3 px-4 text-sm font-medium rounded-xl transition-all data-[state=active]:bg-white/90 data-[state=active]:border-brand-blue-200 data-[state=active]:text-brand-blue-600 dark:data-[state=active]:bg-neutral-800/90 dark:data-[state=active]:border-red-900/20 dark:data-[state=active]:text-red-400 data-[state=active]:shadow-lg hover:bg-white/80 dark:hover:bg-neutral-800/80 group"
+              >
+                <div className="flex items-center justify-center gap-2">                  
+                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-blue-500 to-brand-blue-600 dark:from-brand-red-600 dark:to-brand-red-700 shadow-md group-data-[state=active]:ring-4 group-data-[state=active]:ring-brand-blue-500/20 dark:group-data-[state=active]:ring-brand-red-500/20 transition-all">
+                    <Package size={16} className="text-white" />
+                  </div>
+                  <span>{t('dashboard.myOrders')}</span>
+                </div>
+              </TabsTrigger>          <TabsTrigger 
+                value="profile"
+                className="flex-1 py-3 px-4 text-sm font-medium rounded-xl transition-all data-[state=active]:bg-white/90 data-[state=active]:border-brand-blue-200 data-[state=active]:text-brand-blue-600 dark:data-[state=active]:bg-neutral-800/90 dark:data-[state=active]:border-red-900/20 dark:data-[state=active]:text-red-400 data-[state=active]:shadow-lg hover:bg-white/80 dark:hover:bg-neutral-800/80 group"
+              >
+                <div className="flex items-center justify-center gap-2">                  
+                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-blue-500 to-brand-blue-600 dark:from-brand-red-600 dark:to-brand-red-700 shadow-md group-data-[state=active]:ring-4 group-data-[state=active]:ring-brand-blue-500/20 dark:group-data-[state=active]:ring-brand-red-500/20 transition-all">
+                    <User size={16} className="text-white" />
+                  </div>
+                  <span>{t('dashboard.profile')}</span>
+                </div>
+              </TabsTrigger>              <TabsTrigger 
+                value="wishlist"
+                className="flex-1 py-3 px-4 text-sm font-medium rounded-xl transition-all data-[state=active]:bg-white/90 data-[state=active]:border-brand-blue-200 data-[state=active]:text-brand-blue-600 dark:data-[state=active]:bg-neutral-800/90 dark:data-[state=active]:border-red-900/20 dark:data-[state=active]:text-red-400 data-[state=active]:shadow-lg hover:bg-white/80 dark:hover:bg-neutral-800/80 group"
+              >
+                <div className="flex items-center justify-center gap-2">                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-blue-500 to-brand-blue-600 dark:from-brand-red-600 dark:to-brand-red-700 shadow-md group-data-[state=active]:ring-4 group-data-[state=active]:ring-brand-blue-500/20 dark:group-data-[state=active]:ring-brand-red-500/20 transition-all">
+                    <Heart size={16} className="text-white" />
+                  </div>
+                  <span>{t('dashboard.wishlist')}</span>
+                </div>
+              </TabsTrigger>
+            </TabsList>
+            
+            <div className="p-6">
+              <TabsContent value="configurations">
+                <ConfigurationsTab
+                  configurations={configurations}
+                  loading={dataLoading}
+                  error={error}
+                  onRetry={() => handleTabChange('configurations')}
+                  getStatusColor={getStatusColor}
+                  formatDate={formatDate}
+                  locale={locale}
+                />
+              </TabsContent>
+              
+              <TabsContent value="orders">
+                <OrdersTab
+                  orders={orders}
+                  loading={dataLoading}
+                  error={error}
+                  onRetry={() => handleTabChange('orders')}
+                  getStatusColor={getStatusColor}
+                  formatDate={formatDate}
+                  locale={locale}
+                />
+              </TabsContent>
+              
+              <TabsContent value="profile">
+                <ProfileTab />
+              </TabsContent>
+              
+              <TabsContent value="wishlist">
+                <WishlistTab />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </motion.div>
       </div>
     </div>
   )

@@ -49,7 +49,7 @@ export function ActionButtons({
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full"
         >
           <MoreVertical size={20} />
         </button>
@@ -67,7 +67,7 @@ export function ActionButtons({
                   className={`flex items-center w-full px-4 py-2 text-sm ${
                     action.variant === 'danger'
                       ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
                   }`}
                 >
                   {action.icon && <span className="mr-2">{action.icon}</span>}
@@ -90,7 +90,7 @@ export function ActionButtons({
           className={`p-2 rounded-full transition-colors ${
             action.variant === 'danger'
               ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
-              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+              : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'
           }`}
           title={action.label}
         >

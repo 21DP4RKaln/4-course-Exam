@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,6 +9,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
+import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { useCart } from '@/app/contexts/CartContext'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { calculateShipping, type ShippingRate } from '@/lib/utils/shipping'
@@ -34,11 +35,95 @@ function CheckoutForm() {
   const { items, totalPrice, clearCart } = useCart()
   const { user, isAuthenticated } = useAuth()
 
+  // Animation refs and effects
+  const formRef = useRef(null)
+  const shippingRef = useRef(null)
+  const paymentRef = useRef(null)
+  
+  const isFormInView = useInView(formRef, { once: false, margin: "-100px", amount: 0.2 })
+  const isShippingInView = useInView(shippingRef, { once: false, margin: "-100px", amount: 0.2 })
+  const isPaymentInView = useInView(paymentRef, { once: false, amount: 0.2 })
+
+  // Animation variants
+  const formVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  }
+  
+  const cardVariants = {
+    initial: { scale: 1, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" },
+    hover: { 
+      scale: 1.01, 
+      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      transition: { duration: 0.2 } 
+    }
+  }
+  
+  const shippingMethodVariants = {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0, transition: { duration: 0.4 } }
+  }
+  
+  const listItemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: (i: number) => ({ 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        delay: i * 0.1,
+        duration: 0.3 
+      } 
+    })
+  }
+
   const [useStoredAddress, setUseStoredAddress] = useState(true)
   const [selectedShipping, setSelectedShipping] = useState<string | null>(null)
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [paymentError, setPaymentError] = useState('')
+  const [promoDiscount, setPromoDiscount] = useState(0)
+  const [promoCode, setPromoCode] = useState<string | null>(null)
+
+  // Validate promo code when component mounts if code exists in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('promo')
+    if (code) {
+      setPromoCode(code)
+      validatePromoCode(code)
+    }
+  }, [])
+
+  const validatePromoCode = async (code: string) => {
+    try {
+      const response = await fetch('/api/promo/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: code,
+          total: totalPrice
+        })
+      })
+
+      if (!response.ok) {
+        console.error('Failed to validate promo code:', await response.text())
+        setPromoDiscount(0)
+        return
+      }
+
+      const data = await response.json()
+      if (data.valid) {
+        setPromoDiscount(data.discount || 0)
+      } else {
+        setPromoDiscount(0)
+      }
+    } catch (error) {
+      console.error('Error validating promo code:', error)
+      setPromoDiscount(0)
+    }
+  }
 
   const formSchema = z.object({
     email: z.string().email(t('validation.invalidEmail')),
@@ -87,93 +172,159 @@ function CheckoutForm() {
   }, [formValues.address, formValues.city, formValues.postalCode, formValues.country])
 
   const onSubmit = async (data: CheckoutFormData) => {
-    setPaymentError('')
-    
-    if (!selectedShipping) {
-      setPaymentError(t('checkout.selectShippingMethod'))
-      return
-    }
-
-    if (!data.paymentMethod) {
-      setPaymentError(t('checkout.selectPaymentMethod'))
-      return
-    }
-
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
+      setPaymentError('');
 
-      const shippingRate = shippingRates.find(rate => rate.method === selectedShipping)
-      const order = {
-        items,
-        shippingAddress: {
-          fullName: user?.name || 'Customer',
-          email: data.email,
-          phone: data.phone,
-          address: data.address,
-          city: data.city,
-          postalCode: data.postalCode,
-          country: data.country
-        },
-        paymentMethod: data.paymentMethod,
-        shippingMethod: selectedShipping,
-        promoCode: new URLSearchParams(window.location.search).get('promo') || undefined,
-        subtotal: totalPrice,
-        discount: 0, // TODO: Implement promo code discount
-        shippingCost: shippingRate?.rate || 0,
-        taxAmount: 0, // TODO: Implement tax calculation if needed
-        total: totalPrice + (shippingRate?.rate || 0)
+      if (!selectedShipping) {
+        setPaymentError(t('checkout.selectShippingMethod'));
+        return;
       }
 
+      if (!data.paymentMethod) {
+        setPaymentError(t('checkout.selectPaymentMethod'));
+        return;
+      }
+
+      const shippingRate = shippingRates.find(rate => rate.method === selectedShipping);
+
+      // Prepare common order data
+      const orderData = {
+        items: items.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          type: item.type,
+          images: item.imageUrl ? [item.imageUrl] : []
+        })),
+        total: totalPrice + (shippingRate?.rate || 0) - promoDiscount,
+        shipping: {
+          method: selectedShipping,
+          rate: shippingRate?.rate || 0,
+          address: {
+            email: data.email,
+            phone: data.phone,
+            address: data.address,
+            city: data.city,
+            postalCode: data.postalCode,
+            country: data.country
+          }
+        }
+      };
+
+      // Handle card payment
+      if (data.paymentMethod === 'card') {
+        try {
+          console.log('Creating Stripe session...');
+          const sessionResponse = await fetch('/api/checkout/create-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...orderData,
+              promoDiscount,
+              promoCode
+            })
+          });
+
+          if (!sessionResponse.ok) {
+            const errorData = await sessionResponse.json();
+            console.error('Session creation failed:', errorData);
+            throw new Error(errorData.error || t('checkout.stripeError'));
+          }
+
+          const responseData = await sessionResponse.json();
+          console.log('Session created successfully:', responseData);
+
+          if (responseData.sessionUrl && /^https?:\/\//.test(responseData.sessionUrl)) {
+            window.location.assign(responseData.sessionUrl);
+          } else {
+            console.error('Invalid session URL:', responseData.sessionUrl);
+            throw new Error(t('checkout.stripeError'));
+          }
+        } catch (error) {
+          console.error('Stripe session error:', error);
+          setPaymentError(error instanceof Error ? error.message : t('checkout.stripeError'));
+          return;
+        }
+      }
+
+      // Handle cash payment
+      console.log('Processing cash payment order...');
       const orderResponse = await fetch('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(order)
-      })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...orderData,
+          paymentMethod: data.paymentMethod,
+          promoCode: promoCode,
+          promoDiscount: promoDiscount
+        })
+      });
 
       if (!orderResponse.ok) {
-        const errorData = await orderResponse.json()
-        throw new Error(errorData.error || t('checkout.orderError'))
+        const errorData = await orderResponse.json();
+        throw new Error(errorData.error || t('checkout.orderError'));
       }
 
+      // Save address if requested
       if (isAuthenticated && data.saveAddress) {
+        console.log('Saving address...');
         await fetch('/api/user/address', {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             address: data.address,
             city: data.city,
             postalCode: data.postalCode,
             country: data.country
           })
-        })
+        });
       }
 
-      const orderData = await orderResponse.json()
-      clearCart()
-      router.push(`/${locale}/order-confirmation/${orderData.id}`)
+      const { id } = await orderResponse.json();
+      clearCart();
+      router.push(`/${locale}/order-confirmation/${id}`);
     } catch (error: any) {
-      console.error('Checkout error:', error)
-      setPaymentError(error.message || t('checkout.generalError'))
+      console.error('Checkout error:', error);
+      setPaymentError(error.message || t('checkout.generalError'));
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+    <motion.form
+      onSubmit={handleSubmit(onSubmit)} 
+      className="space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
+        ref={formRef}
+        initial="hidden"
+        animate={isFormInView ? "visible" : "hidden"}
+        variants={formVariants}
+        whileHover="hover"
+        className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6"
+      >
+        <motion.h2 
+          className="text-xl font-semibold text-neutral-900 dark:text-white mb-6 flex items-center"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <MapPin size={20} className="mr-2" />
           {t('checkout.shippingAddress')}
-        </h2>
+        </motion.h2>
 
         {isAuthenticated && user?.shippingAddress && (
           <div className="mb-6">
-            <div className={`p-4 border rounded-lg ${useStoredAddress ? 'border-primary' : 'border-gray-200 dark:border-gray-700'} mb-4`}>
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className={`p-4 border rounded-lg ${useStoredAddress ? 'border-primary' : 'border-neutral-200 dark:border-neutral-700'} mb-4`}
+            >
               <label className="flex items-start">
                 <input
                   type="radio"
@@ -188,17 +339,20 @@ function CheckoutForm() {
                   className="mt-1 mr-3"
                 />
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">{t('checkout.savedAddress')}</div>
-                  <div className="text-gray-600 dark:text-gray-400">
+                  <div className="font-medium text-neutral-900 dark:text-white">{t('checkout.savedAddress')}</div>
+                  <div className="text-neutral-600 dark:text-neutral-400">
                     {user.shippingAddress}<br />
                     {user.shippingCity}, {user.shippingPostalCode}<br />
                     {user.shippingCountry}
                   </div>
                 </div>
               </label>
-            </div>
+            </motion.div>
 
-            <label className="flex items-start">
+            <motion.label 
+              whileHover={{ scale: 1.02 }}
+              className="flex items-start"
+            >
               <input
                 type="radio"
                 checked={!useStoredAddress}
@@ -211,17 +365,21 @@ function CheckoutForm() {
                 }}
                 className="mt-1 mr-3"
               />
-              <div className="font-medium text-gray-900 dark:text-white">
+              <div className="font-medium text-neutral-900 dark:text-white">
                 {t('checkout.useNewAddress')}
               </div>
-            </label>
+            </motion.label>
           </div>
         )}
 
         {(!isAuthenticated || !user?.shippingAddress || !useStoredAddress) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
+            >
+              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Email
               </label>
               <input
@@ -229,17 +387,21 @@ function CheckoutForm() {
                 type="email"
                 {...register('email')}
                 className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
-                  border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white 
+                  border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white 
                   focus:ring-2 focus:ring-primary focus:border-transparent transition-colors
-                  placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                  placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
               />
               {errors.email && (
                 <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+            >
+              <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('checkout.phone')}
               </label>
               <PhoneInput
@@ -248,10 +410,15 @@ function CheckoutForm() {
                 error={errors.phone?.message}
                 placeholder="+371 12345678"
               />
-            </div>
+            </motion.div>
 
-            <div className="md:col-span-2">
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <motion.div 
+              className="md:col-span-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
+            >
+              <label htmlFor="address" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('checkout.address')}
               </label>
               <input
@@ -259,17 +426,21 @@ function CheckoutForm() {
                 type="text"
                 {...register('address')}
                 className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
-                  border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white 
+                  border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white 
                   focus:ring-2 focus:ring-primary focus:border-transparent transition-colors
-                  placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                  placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
               />
               {errors.address && (
                 <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.address.message}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+            >
+              <label htmlFor="city" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('checkout.city')}
               </label>
               <input
@@ -277,17 +448,21 @@ function CheckoutForm() {
                 type="text"
                 {...register('city')}
                 className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
-                  border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white 
+                  border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white 
                   focus:ring-2 focus:ring-primary focus:border-transparent transition-colors
-                  placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                  placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
               />
               {errors.city && (
                 <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.city.message}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div>
-              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.3 }}
+            >
+              <label htmlFor="postalCode" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('checkout.postalCode')}
               </label>
               <input
@@ -295,24 +470,29 @@ function CheckoutForm() {
                 type="text"
                 {...register('postalCode')}
                 className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
-                  border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white 
+                  border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white 
                   focus:ring-2 focus:ring-primary focus:border-transparent transition-colors
-                  placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                  placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
               />
               {errors.postalCode && (
                 <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.postalCode.message}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div className="md:col-span-2">
-              <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <motion.div 
+              className="md:col-span-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.3 }}
+            >
+              <label htmlFor="country" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('checkout.country')}
               </label>
               <select
                 id="country"
                 {...register('country')}
                 className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
-                  border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white 
+                  border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white 
                   focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
               >
                 <option value="">{t('checkout.selectCountry')}</option>
@@ -323,41 +503,67 @@ function CheckoutForm() {
               {errors.country && (
                 <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.country.message}</p>
               )}
-            </div>
+            </motion.div>
 
             {isAuthenticated && (
-              <div className="md:col-span-2">
+              <motion.div 
+                className="md:col-span-2"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.3 }}
+              >
                 <label className="flex items-center space-x-2">
                   <input
                     type="checkbox"
                     {...register('saveAddress')}
-                    className="rounded border-gray-300 dark:border-gray-700 text-primary 
+                    className="rounded border-neutral-300 dark:border-neutral-700 text-primary 
                       focus:ring-primary dark:focus:ring-offset-stone-950"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span className="text-sm text-neutral-700 dark:text-neutral-300">
                     {t('checkout.saveAddressForNextTime')}
                   </span>
                 </label>
-              </div>
+              </motion.div>
             )}
           </div>
         )}
-      </div>
+      </motion.div>
 
-      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+      <motion.div 
+        ref={shippingRef}
+        initial="hidden"
+        animate={isShippingInView ? "visible" : "hidden"}
+        variants={formVariants}
+        whileHover="hover"
+        className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6"
+      >
+        <motion.h3 
+          className="text-lg font-medium text-neutral-900 dark:text-white mb-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           {t('checkout.shippingMethod')}
-        </h3>
+        </motion.h3>
         
         <div className="space-y-3 mb-6">
-          {shippingRates.map((rate) => (
-            <label key={rate.method} className="flex items-center p-4 border rounded-lg hover:border-primary cursor-pointer">
+          {shippingRates.map((rate, index) => (
+            <motion.label 
+              key={rate.method} 
+              className="flex items-center p-4 border rounded-lg hover:border-primary cursor-pointer"
+              custom={index}
+              variants={listItemVariants}
+              initial="hidden"
+              animate="visible"
+              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+            >
               <input
                 type="radio"
                 name="shippingMethod"
                 value={rate.method}
                 checked={selectedShipping === rate.method}
-                onChange={() => {                  setSelectedShipping(rate.method)
+                onChange={() => {
+                  setSelectedShipping(rate.method)
                   // Reset payment method when changing shipping
                   setValue('paymentMethod', 'card')
                 }}
@@ -365,29 +571,46 @@ function CheckoutForm() {
               />
               <div className="flex-1 flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white flex items-center">
+                  <div className="font-medium text-neutral-900 dark:text-white flex items-center">
                     <Truck className="w-5 h-5 mr-2" />
                     {rate.method === 'COURIER' ? t('checkout.courier') : t('checkout.post')}
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-sm text-neutral-500 dark:text-neutral-400">
                     {rate.estimatedDays} {t('checkout.days')}
                   </div>
                 </div>
-                <div className="font-medium text-gray-900 dark:text-white">
+                <div className="font-medium text-neutral-900 dark:text-white">
                   {rate.rate === 0 ? t('checkout.free') : `€${rate.rate.toFixed(2)}`}
                 </div>
               </div>
-            </label>
+            </motion.label>
           ))}
         </div>
 
         {selectedShipping && (
-          <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          <motion.div 
+            ref={paymentRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+          >
+            <motion.h3 
+              className="text-lg font-medium text-neutral-900 dark:text-white mb-4"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
               {t('checkout.paymentMethods.title')}
-            </h3>
+            </motion.h3>
             <div className="space-y-3">
-              <label className="flex items-center p-4 border rounded-lg hover:border-primary cursor-pointer">
+              <motion.label 
+                className="flex items-center p-4 border rounded-lg hover:border-primary cursor-pointer"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+              >
                 <input
                   type="radio"
                   value="card"
@@ -396,12 +619,18 @@ function CheckoutForm() {
                 />
                 <div className="flex items-center">
                   <CreditCard className="w-5 h-5 mr-2" />
-                  <span className="text-gray-700 dark:text-gray-300">{t('checkout.paymentMethods.card')}</span>
+                  <span className="text-neutral-700 dark:text-neutral-300">{t('checkout.paymentMethods.card')}</span>
                 </div>
-              </label>
+              </motion.label>
               
               {selectedShipping === 'COURIER' && (
-                <label className="flex items-center p-4 border rounded-lg hover:border-primary cursor-pointer">
+                <motion.label 
+                  className="flex items-center p-4 border rounded-lg hover:border-primary cursor-pointer"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
+                  whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                >
                   <input
                     type="radio"
                     value="cash"
@@ -410,53 +639,88 @@ function CheckoutForm() {
                   />
                   <div className="flex items-center">
                     <Truck className="w-5 h-5 mr-2" />
-                    <span className="text-gray-700 dark:text-gray-300">{t('checkout.paymentMethods.cash')}</span>
+                    <span className="text-neutral-700 dark:text-neutral-300">{t('checkout.paymentMethods.cash')}</span>
                   </div>
-                </label>
+                </motion.label>
               )}
             </div>
             {errors.paymentMethod && (
               <p className="mt-1.5 text-sm text-red-600">{errors.paymentMethod.message}</p>
             )}
-          </div>
+          </motion.div>
         )}
 
-        <div className="space-y-4">
-          <div className="flex justify-between text-gray-600 dark:text-gray-400">
+        <motion.div 
+          className="space-y-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
             <span>{t('checkout.subtotal')} ({items.length} {t('checkout.items')})</span>
             <span>€{totalPrice.toFixed(2)}</span>
           </div>
           
           {selectedShipping && (
-            <div className="flex justify-between text-gray-600 dark:text-gray-400">
+            <motion.div 
+              className="flex justify-between text-neutral-600 dark:text-neutral-400"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
               <span>{t('checkout.shipping')}</span>
               <span>
                 {shippingRates.find(rate => rate.method === selectedShipping)?.rate === 0 
                   ? t('checkout.free') 
                   : `€${shippingRates.find(rate => rate.method === selectedShipping)?.rate.toFixed(2)}`}
               </span>
-            </div>
+            </motion.div>
+          )}
+
+          {promoDiscount > 0 && (
+            <motion.div 
+              className="flex justify-between text-green-600 dark:text-green-400"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <span>{t('checkout.promoDiscount')}</span>
+              <span>-€{promoDiscount.toFixed(2)}</span>
+            </motion.div>
           )}
           
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-            <div className="flex justify-between font-semibold text-lg text-gray-900 dark:text-white">
+          <motion.div 
+            className="border-t border-neutral-200 dark:border-neutral-700 pt-4"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+          >
+            <div className="flex justify-between font-semibold text-lg text-neutral-900 dark:text-white">
               <span>{t('checkout.total')}</span>
-              <span>€{(totalPrice + (selectedShipping ? (shippingRates.find(rate => rate.method === selectedShipping)?.rate || 0) : 0)).toFixed(2)}</span>
+              <span>€{(totalPrice + (selectedShipping ? (shippingRates.find(rate => rate.method === selectedShipping)?.rate || 0) : 0) - promoDiscount).toFixed(2)}</span>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {paymentError && (
-          <p className="mt-4 text-red-600 dark:text-red-400 flex items-center">
+          <motion.p 
+            className="mt-4 text-red-600 dark:text-red-400 flex items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             <AlertCircle size={16} className="mr-1" />
             {paymentError}
-          </p>
+          </motion.p>
         )}
         
-        <button
+        <motion.button
           type="submit"
           disabled={isSubmitting}
           className="w-full mt-6 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
         >
           {isSubmitting ? (
             <>
@@ -464,11 +728,11 @@ function CheckoutForm() {
               {t('checkout.processing')}
             </>
           ) : (
-            `${t('checkout.placeOrder')} - €${(totalPrice + (selectedShipping ? (shippingRates.find(rate => rate.method === selectedShipping)?.rate || 0) : 0)).toFixed(2)}`
+            `${t('checkout.placeOrder')} - €${(totalPrice + (selectedShipping ? (shippingRates.find(rate => rate.method === selectedShipping)?.rate || 0) : 0) - promoDiscount).toFixed(2)}`
           )}
-        </button>
-      </div>
-    </form>
+        </motion.button>
+      </motion.div>
+    </motion.form>
   )
 }
 
@@ -478,6 +742,34 @@ export default function CheckoutPage() {
   const pathname = usePathname()
   const locale = pathname.split('/')[1]
   const { items } = useCart()
+  
+  // Animations for page load and scroll
+  const pageRef = useRef(null)
+  const isInView = useInView(pageRef, { once: false, amount: 0.3 })
+  const { scrollYProgress } = useScroll()
+  
+  const headerY = useTransform(scrollYProgress, [0, 0.3], [0, -20])
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.8])
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        duration: 0.6,
+        staggerChildren: 0.2
+      }
+    }
+  }
+  
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { duration: 0.5, ease: "easeOut" }
+    }
+  }
 
   useEffect(() => {
     if (items.length === 0) {
@@ -490,24 +782,35 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-6">
+    <motion.div
+      ref={pageRef}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      variants={containerVariants}
+      className="max-w-6xl mx-auto"
+    >
+      <motion.div className="mb-6">
         <Link href={`/${locale}/cart`}>
           <AnimatedButton 
             title={t('buttons.backToCart')}
             direction="left"
-            className="text-gray-600 dark:text-gray-400" 
+            className="text-neutral-600 dark:text-neutral-400" 
           />
         </Link>
-      </div>
+      </motion.div>
       
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+      <motion.h1
+        style={{ y: headerY, opacity: headerOpacity }}
+        className="text-3xl font-bold text-neutral-900 dark:text-white mb-8"
+      >
         {t('checkout.title')}
-      </h1>
+      </motion.h1>
 
-      <Elements stripe={stripePromise}>
-        <CheckoutForm />
-      </Elements>
-    </div>
+      <motion.div variants={itemVariants}>
+        <Elements stripe={stripePromise}>
+          <CheckoutForm />
+        </Elements>
+      </motion.div>
+    </motion.div>
   )
 }

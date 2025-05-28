@@ -1,48 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prismaService'
 import { authenticate } from '@/lib/middleware/authMiddleware'
-import { createUnauthorizedResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
+import { prisma } from '@/lib/prismaService'
+import { createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
 import { z } from 'zod'
-
-// Validation schema for order creation
-const orderItemSchema = z.object({
-  id: z.string(),
-  type: z.string(),
-  name: z.string(),
-  price: z.number().positive(),
-  quantity: z.number().int().positive()
-});
-
-const addressSchema = z.object({
-  fullName: z.string(),
-  address: z.string(),
-  city: z.string(),
-  postalCode: z.string(),
-  country: z.string(),
-  phone: z.string(),
-  email: z.string().email()
-});
+import { OrderStatus, ProductType } from '@prisma/client'
+import Stripe from 'stripe'
 
 const createOrderSchema = z.object({
-  items: z.array(orderItemSchema),
-  shippingAddress: addressSchema,
-  paymentMethod: z.string(),
+  items: z.array(z.object({
+    id: z.string(),
+    type: z.string(),
+    name: z.string(),
+    price: z.number(),
+    quantity: z.number()
+  })),
+  shippingAddress: z.object({
+    fullName: z.string(),
+    email: z.string().email(),
+    phone: z.string(),
+    address: z.string(),
+    city: z.string(),
+    postalCode: z.string(),
+    country: z.string()
+  }),
+  paymentMethod: z.enum(['card', 'cash']),
   shippingMethod: z.string(),
   promoCode: z.string().optional(),
-  subtotal: z.number().positive(),
-  discount: z.number().min(0),
-  shippingCost: z.number().min(0),
-  taxAmount: z.number().min(0),
-  total: z.number().positive()
-});
+  subtotal: z.number(),
+  discount: z.number(),
+  shippingCost: z.number(),
+  taxAmount: z.number(),
+  total: z.number()
+})
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate user
+    // Try to authenticate, but proceed with guest checkout if not authenticated
     const authResult = await authenticate(request);
-    if (authResult instanceof Response) {
-      return authResult;
-    }
+    const userData = authResult instanceof Response ? null : authResult;
+    const isGuest = !userData;
 
     // Validate request body
     const body = await request.json();
@@ -75,101 +71,63 @@ export async function POST(request: NextRequest) {
         if (!component) {
           return createBadRequestResponse(`Product with ID ${item.id} not found`);
         }
-        
+
         if (component.stock < item.quantity) {
-          return createBadRequestResponse(`Not enough stock for ${item.name}. Available: ${component.stock}`);
+          return createBadRequestResponse(`Insufficient stock for ${item.name}`);
+        }
+      } else if (item.type.toUpperCase() === 'CONFIGURATION') {
+        const config = await prisma.configuration.findUnique({
+          where: { id: item.id }
+        });
+
+        if (!config) {
+          return createBadRequestResponse(`Configuration with ID ${item.id} not found`);
         }
       }
     }
 
-    // Format shipping address
-    const formattedAddress = `${shippingAddress.fullName}
-${shippingAddress.address}
-${shippingAddress.city}, ${shippingAddress.postalCode}
-${shippingAddress.country}
-Phone: ${shippingAddress.phone}
-Email: ${shippingAddress.email}`;
-
-    // Use a transaction to ensure atomicity of the order creation
-    const createdOrder = await prisma.$transaction(async (tx) => {
-      // Create the order
-      const newOrder = await tx.order.create({
-        data: {
-          userId: authResult.userId,
-          status: 'PENDING',
-          totalAmount: total,
-          shippingAddress: formattedAddress,
-          paymentMethod,
-          orderItems: {
-            create: items.map(item => ({
-              productId: item.id,
-              productType: item.type.toUpperCase() as 'CONFIGURATION' | 'COMPONENT' | 'PERIPHERAL',
-              quantity: item.quantity,
-              price: item.price,
-              name: item.name,
-            })),
-          },
-        },
-        include: {
-          orderItems: true,
-        },
-      });
-      
-      // Update stock for component items
-      for (const item of items) {
-        if (item.type.toUpperCase() === 'COMPONENT' || item.type.toUpperCase() === 'PERIPHERAL') {
-          await tx.component.update({
-            where: { id: item.id },
-            data: {
-              stock: {
-                decrement: item.quantity
-              }
-            }
-          });
+    // Create order with proper types
+    const order = await prisma.order.create({
+      data: {
+        totalAmount: total,
+        status: OrderStatus.PENDING,
+        shippingAddress: `${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.country}, ${shippingAddress.postalCode}`,
+        shippingEmail: shippingAddress.email,
+        shippingPhone: shippingAddress.phone,
+        shippingName: shippingAddress.fullName,
+        paymentMethod: paymentMethod.toUpperCase(),
+        shippingMethod: shippingMethod.toUpperCase(),
+        isGuestOrder: isGuest,
+        userId: userData?.userId || null,
+        orderItems: {
+          create: items.map((item) => ({
+            productId: item.id,
+            productType: item.type.toUpperCase() as ProductType,
+            quantity: item.quantity,
+            price: item.price,
+            name: item.name
+          }))
         }
       }
-      
-      // Update promo code usage if provided
-      if (promoCode) {
-        await tx.promoCode.update({
-          where: { code: promoCode },
-          data: { usageCount: { increment: 1 } },
+    });
+
+    // Update stock for components and peripherals
+    for (const item of items) {
+      if (item.type.toUpperCase() === 'COMPONENT' || item.type.toUpperCase() === 'PERIPHERAL') {
+        await prisma.component.update({
+          where: { id: item.id },
+          data: {
+            stock: {
+              decrement: item.quantity
+            }
+          }
         });
       }
-      
-      return newOrder;
+    }    // For all orders, return the order ID
+    return NextResponse.json({ 
+      id: order.id,
+      paymentMethod: 'cash'
     });
-
-    // Create an audit log for the order creation
-    await prisma.auditLog.create({
-      data: {
-        userId: authResult.userId,
-        action: 'CREATE',
-        entityType: 'ORDER',
-        entityId: createdOrder.id,
-        details: JSON.stringify({
-          totalAmount: total,
-          itemCount: items.length,
-          promoCode: promoCode || null
-        }),
-        ipAddress: request.headers.get('x-forwarded-for') || '',
-        userAgent: request.headers.get('user-agent') || ''
-      }
-    });
-
-    return NextResponse.json({
-      id: createdOrder.id,
-      status: createdOrder.status,
-      totalAmount: createdOrder.totalAmount,
-      createdAt: createdOrder.createdAt.toISOString(),
-      items: createdOrder.orderItems.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        productType: item.productType
-      }))
-    }, { status: 201 });
   } catch (error) {
     console.error('Error creating order:', error);
     return createServerErrorResponse('Failed to create order');

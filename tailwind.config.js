@@ -5,6 +5,9 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  plugins: [
+    require('tailwind-scrollbar-hide')
+  ],
   darkMode: 'class',
   theme: {
     extend: {

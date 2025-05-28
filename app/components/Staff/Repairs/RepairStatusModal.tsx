@@ -53,7 +53,7 @@ export function RepairStatusModal({ repair, onClose, onUpdate }: RepairStatusMod
       <div className="bg-white dark:bg-stone-950 rounded-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">{t('repairs.updateStatus')}</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700">
             <X size={20} />
           </button>
         </div>
@@ -63,7 +63,7 @@ export function RepairStatusModal({ repair, onClose, onUpdate }: RepairStatusMod
             <label className="block text-sm font-medium mb-1">
               {t('repairs.currentStatus')}
             </label>
-            <p className="text-gray-600 dark:text-gray-400">{t(`repairs.status.${repair.status.toLowerCase()}`)}</p>
+            <p className="text-neutral-600 dark:text-neutral-400">{t(`repairs.status.${repair.status.toLowerCase()}`)}</p>
           </div>
 
           <div>
@@ -73,7 +73,7 @@ export function RepairStatusModal({ repair, onClose, onUpdate }: RepairStatusMod
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value as RepairStatus)}
-              className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+              className="w-full border rounded-lg px-3 py-2 dark:bg-neutral-700 dark:border-neutral-600"
               required
             >
               {Object.values(RepairStatus).map(status => (
@@ -91,7 +91,7 @@ export function RepairStatusModal({ repair, onClose, onUpdate }: RepairStatusMod
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+              className="w-full border rounded-lg px-3 py-2 dark:bg-neutral-700 dark:border-neutral-600"
               rows={3}
               placeholder={t('repairs.notesPlaceholder')}
             />

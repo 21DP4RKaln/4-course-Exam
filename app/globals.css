@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom scrollbar styles for webkit browsers */
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
 @layer base {
   :root {
     --background: #ffffff;
@@ -46,10 +60,10 @@
 
 @layer base {
   * {
-    @apply border-gray-200 dark:border-gray-700;
+    @apply border-neutral-200 dark:border-neutral-700;
   }
   body {
-    @apply bg-white dark:bg-dark-background text-gray-900 dark:text-white font-sans antialiased;
+    @apply bg-white dark:bg-dark-background text-neutral-900 dark:text-white font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   
@@ -73,33 +87,33 @@
 @layer components {
   /* Modern form styles */
   .form-label {
-    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5;
+    @apply block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5;
   }
 
   .form-input {
     @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
-    border border-gray-300 dark:border-gray-700 
-    text-gray-900 dark:text-white shadow-inner-soft 
+    border border-neutral-300 dark:border-neutral-700 
+    text-neutral-900 dark:text-white shadow-inner-soft 
     focus:ring-2 focus:ring-primary focus:border-transparent 
-    placeholder:text-gray-400 dark:placeholder:text-gray-500 
+    placeholder:text-neutral-400 dark:placeholder:text-neutral-500 
     transition-all duration-200;
   }
 
   .form-select {
     @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
-    border border-gray-300 dark:border-gray-700 
-    text-gray-900 dark:text-white shadow-inner-soft 
+    border border-neutral-300 dark:border-neutral-700 
+    text-neutral-900 dark:text-white shadow-inner-soft 
     cursor-pointer appearance-none
     focus:ring-2 focus:ring-primary focus:border-transparent 
     transition-all duration-200;
   }
 
   .form-select option {
-    @apply bg-white dark:bg-stone-950 text-gray-900 dark:text-white;
+    @apply bg-white dark:bg-stone-950 text-neutral-900 dark:text-white;
   }
 
   .form-checkbox {
-    @apply rounded border-gray-300 dark:border-gray-600 
+    @apply rounded border-neutral-300 dark:border-neutral-600 
     text-primary dark:text-red-500 
     focus:ring-2 focus:ring-primary 
     bg-white dark:bg-stone-950 transition-colors;
@@ -121,7 +135,7 @@
   }
 
   .btn-secondary {
-    @apply btn bg-secondary text-gray-900 dark:text-white hover:bg-secondary hover:opacity-80;
+    @apply btn bg-secondary text-neutral-900 dark:text-white hover:bg-secondary hover:opacity-80;
   }
 
   .btn-destructive {
@@ -129,11 +143,11 @@
   }
 
   .btn-outline {
-    @apply btn border border-input bg-white dark:bg-dark-background hover:bg-accent hover:text-gray-900 dark:hover:text-white;
+    @apply btn border border-input bg-white dark:bg-dark-background hover:bg-accent hover:text-neutral-900 dark:hover:text-white;
   }
 
   .btn-ghost {
-    @apply btn hover:bg-accent hover:text-gray-900 dark:hover:text-white;
+    @apply btn hover:bg-accent hover:text-neutral-900 dark:hover:text-white;
   }
 
   .btn-link {
@@ -142,7 +156,7 @@
 
   /* Card styles */
   .card {
-    @apply rounded-xl border bg-white dark:bg-dark-card text-gray-900 dark:text-white shadow-soft overflow-hidden;
+    @apply rounded-xl border bg-white dark:bg-dark-card text-neutral-900 dark:text-white shadow-soft overflow-hidden;
   }
 
   .card-header {
@@ -154,7 +168,7 @@
   }
 
   .card-description {
-    @apply text-sm text-gray-500 dark:text-gray-400;
+    @apply text-sm text-neutral-500 dark:text-neutral-400;
   }
 
   .card-content {
@@ -176,11 +190,11 @@
   }
 
   .badge-secondary {
-    @apply badge bg-secondary text-gray-900 dark:text-white hover:bg-secondary hover:opacity-80;
+    @apply badge bg-secondary text-neutral-900 dark:text-white hover:bg-secondary hover:opacity-80;
   }
 
   .badge-outline {
-    @apply badge bg-transparent text-gray-900 dark:text-white hover:bg-muted;
+    @apply badge bg-transparent text-neutral-900 dark:text-white hover:bg-muted;
   }
 
   .badge-destructive {
@@ -197,7 +211,7 @@
   }
 
   .table-head {
-    @apply border-b px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 [&:has([role=checkbox])]:pr-0;
+    @apply border-b px-4 py-3 text-left font-medium text-neutral-500 dark:text-neutral-400 [&:has([role=checkbox])]:pr-0;
   }
 
   .table-cell {
@@ -205,16 +219,16 @@
   }
 
   .table-footer {
-    @apply border-t bg-gray-100 dark:bg-stone-950 font-medium [&>tr]:last:border-b-0;
+    @apply border-t bg-neutral-100 dark:bg-stone-950 font-medium [&>tr]:last:border-b-0;
   }
 
   .table-row {
-    @apply border-b transition-colors hover:bg-gray-50 dark:hover:bg-stone-950 data-[state=selected]:bg-gray-100 dark:data-[state=selected]:bg-stone-950;
+    @apply border-b transition-colors hover:bg-neutral-50 dark:hover:bg-stone-950 data-[state=selected]:bg-neutral-100 dark:data-[state=selected]:bg-stone-950;
   }
 
   /* Navbar styles */
   .navbar {
-    @apply fixed top-0 left-0 right-0 z-50 flex h-16 items-center border-b border-gray-200 dark:border-gray-700 
+    @apply fixed top-0 left-0 right-0 z-50 flex h-16 items-center border-b border-neutral-200 dark:border-neutral-700 
     bg-white/80 dark:bg-dark-background/80 backdrop-blur-sm transition-all;
   }
 
@@ -254,12 +268,12 @@
 
   /* Product specific styles */
   .product-card {
-    @apply bg-white dark:bg-stone-950 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm 
+    @apply bg-white dark:bg-stone-950 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-sm 
     hover:shadow-md dark:hover:shadow-lg transition-all duration-200;
   }
 
   .product-image-container {
-    @apply relative bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden;
+    @apply relative bg-neutral-100 dark:bg-neutral-900 rounded-lg overflow-hidden;
     padding-bottom: 100%; /* This creates a 1:1 aspect ratio */
   }
 
@@ -277,24 +291,24 @@
   }
 
   .product-specs-row {
-    @apply border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors;
+    @apply border-b border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors;
   }
 
   .product-specs-label {
-    @apply px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 w-1/3;
+    @apply px-4 py-3 text-sm font-medium text-neutral-500 dark:text-neutral-400 w-1/3;
   }
 
   .product-specs-value {
-    @apply px-4 py-3 text-sm text-gray-900 dark:text-white;
+    @apply px-4 py-3 text-sm text-neutral-900 dark:text-white;
   }
 
   .product-quantity-btn {
-    @apply px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+    @apply px-3 py-1 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 
     disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
   }
 
   .product-tab {
-    @apply py-4 px-6 text-sm font-medium border-b-2 transition-colors hover:text-gray-900 dark:hover:text-white;
+    @apply py-4 px-6 text-sm font-medium border-b-2 transition-colors hover:text-neutral-900 dark:hover:text-white;
   }
 
   .product-tab-active {
@@ -302,11 +316,11 @@
   }
 
   .product-tab-inactive {
-    @apply border-transparent text-gray-600 dark:text-gray-400;
+    @apply border-transparent text-neutral-600 dark:text-neutral-400;
   }
 
   .product-info-icon {
-    @apply inline-flex items-center text-sm text-gray-600 dark:text-gray-400;
+    @apply inline-flex items-center text-sm text-neutral-600 dark:text-neutral-400;
   }
 
   .product-stock-badge {
@@ -326,11 +340,11 @@
   }
 
   .product-price-display {
-    @apply text-3xl font-bold text-gray-900 dark:text-white;
+    @apply text-3xl font-bold text-neutral-900 dark:text-white;
   }
 
   .product-price-original {
-    @apply ml-2 text-lg text-gray-500 dark:text-gray-400 line-through;
+    @apply ml-2 text-lg text-neutral-500 dark:text-neutral-400 line-through;
   }
 
   .product-discount-badge {
@@ -348,16 +362,26 @@
   }
 
   .wishlist-button-inactive {
-    @apply border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 
-    bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-700;
+    @apply border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 
+    bg-white dark:bg-stone-950 hover:bg-neutral-50 dark:hover:bg-neutral-700;
   }
 
   .action-button {
-    @apply flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 
+    @apply flex items-center text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400 
     transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .product-description {
-    @apply prose dark:prose-invert max-w-none whitespace-pre-line text-gray-700 dark:text-gray-300;
+    @apply prose dark:prose-invert max-w-none whitespace-pre-line text-neutral-700 dark:text-neutral-300;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* Internet Explorer and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari and Opera */
   }
 }

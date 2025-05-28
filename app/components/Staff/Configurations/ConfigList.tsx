@@ -103,7 +103,7 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'DRAFT':
-        return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center gap-1">
+        return <span className="px-2 py-1 text-xs rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 flex items-center gap-1">
           <Clock size={12} /> Draft
         </span>
       case 'SUBMITTED':
@@ -136,20 +136,20 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
       {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
           <input
             type="text"
             placeholder="Search configurations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-gray-700"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-neutral-700"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={filters.status}
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-gray-700"
+            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-neutral-700"
           >
             <option value="">All Status</option>
             <option value="DRAFT">Draft</option>
@@ -160,7 +160,7 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
           <select
             value={filters.sortBy}
             onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
-            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-gray-700"
+            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-neutral-700"
           >
             <option value="createdAt">Date</option>
             <option value="totalPrice">Price</option>
@@ -171,7 +171,7 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
               ...prev, 
               sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc' 
             }))}
-            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-gray-700"
+            className="px-4 py-2 border rounded-lg dark:bg-stone-950 dark:border-neutral-700"
           >
             {filters.sortOrder === 'asc' ? '↑' : '↓'}
           </button>
@@ -182,44 +182,44 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-neutral-50 dark:bg-neutral-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Configuration
                 </th>
                 {showUserInfo && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                     User
                   </th>
                 )}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Price
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Components
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
               {filteredConfigurations.map((config) => (
-                <tr key={config.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr key={config.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Monitor className="h-5 w-5 text-gray-400 mr-3" />
+                      <Monitor className="h-5 w-5 text-neutral-400 mr-3" />
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-sm font-medium text-neutral-900 dark:text-white">
                           {config.name}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-neutral-500 dark:text-neutral-400">
                           ID: {config.id.substring(0, 8)}...
                         </div>
                       </div>
@@ -227,10 +227,10 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
                   </td>
                   {showUserInfo && (
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 dark:text-white">
+                      <div className="text-sm text-neutral-900 dark:text-white">
                         {config.userName}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         {config.userEmail}
                       </div>
                     </td>
@@ -238,13 +238,13 @@ export function ConfigList({ type = 'all', showUserInfo = false }: ConfigListPro
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(config.status)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                     €{config.totalPrice.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
                     {config.components.length} items
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
                     {new Date(config.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

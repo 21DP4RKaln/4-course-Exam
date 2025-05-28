@@ -12,15 +12,15 @@ export default function UnauthorizedPage() {
   const locale = pathname.split('/')[1]
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-900">
       <div className="max-w-md w-full mx-auto p-8 bg-white dark:bg-stone-950 rounded-lg shadow-lg text-center">
         <div className="mb-6 flex justify-center">
           <ShieldAlert className="h-16 w-16 text-red-500" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
           {t('errors.unauthorized.title', { fallback: 'Access Denied' })}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
+        <p className="text-neutral-600 dark:text-neutral-400 mb-8">
           {t('errors.unauthorized.message', { 
             fallback: 'You do not have permission to access this page.' 
           })}
@@ -34,7 +34,7 @@ export default function UnauthorizedPage() {
           </button>
           <button
             onClick={() => router.push(`/${locale}/auth/login`)}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
           >
             {t('buttons.login', { fallback: 'Login' })}
           </button>

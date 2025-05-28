@@ -1,0 +1,7 @@
+<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f0f0f0"/>
+  <rect x="75" y="75" width="150" height="150" fill="#e0e0e0" stroke="#ccc" stroke-width="2"/>
+  <path d="M75 75L225 225M75 225L225 75" stroke="#ccc" stroke-width="2"/>
+  <text x="150" y="150" font-family="Arial" font-size="16" text-anchor="middle" dominant-baseline="middle" fill="#999">No Image</text>
+  <text x="150" y="170" font-family="Arial" font-size="12" text-anchor="middle" dominant-baseline="middle" fill="#999">PC Configuration</text>
+</svg>

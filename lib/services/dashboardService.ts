@@ -16,7 +16,7 @@ export interface UserOrder {
   totalAmount: number;
   createdAt: string;
   configurationName?: string;
-  items?: any[];
+  items: any[]; // Make items required and initialized as an empty array if undefined
 }
 
 /**
@@ -71,11 +71,26 @@ export async function getUserConfigurations(userId: string): Promise<UserConfigu
  */
 export async function getUserOrders(userId: string): Promise<UserOrder[]> {
   try {
+    // First, get the user's email to match with guest orders
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true }
+    });
+
+    // Find both authenticated user orders and any guest orders that match the user's email
     const orders = await prisma.order.findMany({
       where: {
-        userId: userId,
+        OR: [
+          { userId: userId }, // Regular user orders
+          {
+            // Guest orders matching the user's email
+            isGuestOrder: true,
+            shippingEmail: user?.email,
+          }
+        ]
       },
       include: {
+        orderItems: true,
         configuration: {
           include: {
             components: {
@@ -97,12 +112,23 @@ export async function getUserOrders(userId: string): Promise<UserOrder[]> {
       totalAmount: order.totalAmount,
       createdAt: order.createdAt.toISOString(),
       configurationName: order.configuration?.name,
-      items: order.configuration?.components.map(item => ({
-        id: item.component.id,
-        name: item.component.name,
-        price: item.component.price,
-        quantity: item.quantity,
-      })) || [],
+      // Make sure to include all order items, not just the ones from configurations
+      items: order.orderItems.length > 0 ? 
+        order.orderItems.map(item => ({
+          id: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          productType: item.productType
+        })) : 
+        // Fallback to configuration components if no orderItems exist
+        (order.configuration?.components.map(item => ({
+          id: item.component.id,
+          name: item.component.name,
+          price: item.component.price,
+          quantity: item.quantity,
+          productType: 'COMPONENT' as any,
+        })) || []),
     }));
   } catch (error) {
     console.error('Error fetching user orders:', error);
@@ -163,12 +189,26 @@ export async function getConfigurationById(configId: string, userId: string): Pr
  */
 export async function getOrderById(orderId: string, userId: string): Promise<UserOrder | null> {
   try {
+    // Get the user's email to match with guest orders
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true }
+    });
+
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,
-        userId: userId,
+        OR: [
+          { userId: userId },
+          {
+            // Guest orders matching the user's email
+            isGuestOrder: true,
+            shippingEmail: user?.email,
+          }
+        ]
       },
       include: {
+        orderItems: true,
         configuration: {
           include: {
             components: {
@@ -183,20 +223,27 @@ export async function getOrderById(orderId: string, userId: string): Promise<Use
 
     if (!order) {
       return null;
-    }
-
-    return {
+    }    return {
       id: order.id,
       status: order.status,
       totalAmount: order.totalAmount,
       createdAt: order.createdAt.toISOString(),
       configurationName: order.configuration?.name,
-      items: order.configuration?.components.map(item => ({
-        id: item.component.id,
-        name: item.component.name,
-        price: item.component.price,
-        quantity: item.quantity,
-      })) || [],
+      // Include both order items and configuration components
+      items: order.orderItems?.length > 0 ?
+        order.orderItems.map(item => ({
+          id: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          productType: item.productType
+        })) :
+        order.configuration?.components.map(item => ({
+          id: item.component.id,
+          name: item.component.name,
+          price: item.component.price,
+          quantity: item.quantity,
+        })) || [],
     };
   } catch (error) {
     console.error(`Error fetching order with ID ${orderId}:`, error);

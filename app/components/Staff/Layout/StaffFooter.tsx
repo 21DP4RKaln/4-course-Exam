@@ -8,11 +8,11 @@ export function StaffFooter() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="h-12 bg-white dark:bg-stone-950 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
-      <div className="text-sm text-gray-500 dark:text-gray-400">
+    <footer className="h-12 bg-white dark:bg-stone-950 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-between px-6">
+      <div className="text-sm text-neutral-500 dark:text-neutral-400">
         © {currentYear} IvaPro. {t('footer.allRightsReserved')}.
       </div>
-      <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400">
         <span>{t('staff.version')} 1.0.0</span>
         <span>•</span>
         <a 

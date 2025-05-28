@@ -85,9 +85,9 @@ export default function ProductsPage() {
     const fetchProducts = async () => {
       setLoading(true)
       try {
-        const url = filters.category === 'all' 
-          ? '/api/products'
-          : `/api/products?category=${filters.category}`
+        const url = filters.category === 'all'
+          ? '/api/shop/product'
+          : `/api/shop/product?category=${filters.category}`
         
         const response = await fetch(url)
         
@@ -271,7 +271,7 @@ export default function ProductsPage() {
     return (
       <div className="max-w-7xl mx-auto text-center py-16">
         <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           {error}
         </h2>
         <button
@@ -287,7 +287,7 @@ export default function ProductsPage() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-wrap items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0">
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4 md:mb-0">
           {filters.category === 'all' ? 'All Products' : 
             categories.find(c => c.id === filters.category)?.name || 'Products'}
         </h1>
@@ -296,7 +296,7 @@ export default function ProductsPage() {
         <div className="hidden md:flex w-full md:w-auto">
           <div className="relative w-64">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={18} className="text-gray-500 dark:text-gray-400" />
+              <Search size={18} className="text-neutral-500 dark:text-neutral-400" />
             </div>
             <input
               type="text"
@@ -313,7 +313,7 @@ export default function ProductsPage() {
                 window.history.pushState({}, '', `${pathname}?${params.toString()}`)
               }}
               placeholder="Search products..."
-              className="block w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="block w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             {filters.search && (
               <button
@@ -324,7 +324,7 @@ export default function ProductsPage() {
                   params.delete('search')
                   window.history.pushState({}, '', `${pathname}?${params.toString()}`)
                 }}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
               >
                 <X size={16} />
               </button>
@@ -342,7 +342,7 @@ export default function ProductsPage() {
               className={`px-4 py-2 rounded-md whitespace-nowrap flex items-center ${
                 filters.category === category.id
                   ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 dark:bg-stone-950 text-stone-950 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  : 'bg-neutral-100 dark:bg-stone-950 text-stone-950 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700'
               }`}
               onClick={() => setFilters({...filters, category: category.id})}
             >
@@ -357,7 +357,7 @@ export default function ProductsPage() {
       <div className="md:hidden mb-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-gray-500 dark:text-gray-400" />
+            <Search size={18} className="text-neutral-500 dark:text-neutral-400" />
           </div>
           <input
             type="text"
@@ -374,7 +374,7 @@ export default function ProductsPage() {
               window.history.pushState({}, '', `${pathname}?${params.toString()}`)
             }}
             placeholder="Search products..."
-            className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full pl-10 pr-10 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
           />
           {filters.search && (
             <button
@@ -385,7 +385,7 @@ export default function ProductsPage() {
                 params.delete('search')
                 window.history.pushState({}, '', `${pathname}?${params.toString()}`)
               }}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
             >
               <X size={16} />
             </button>
@@ -399,7 +399,7 @@ export default function ProductsPage() {
         <div className="hidden md:block w-64 flex-shrink-0">
           <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 sticky top-24">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white flex items-center">
                 <Filter size={18} className="mr-2" />
                 Filters
               </h2>
@@ -413,7 +413,7 @@ export default function ProductsPage() {
             
             {/* Price range filter */}
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+              <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-3">
                 Price Range
               </h3>
               <div className="flex items-center space-x-4 mb-2">
@@ -429,7 +429,7 @@ export default function ProductsPage() {
                       ...filters, 
                       priceRange: [parseInt(e.target.value), filters.priceRange[1]]
                     })}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-gray-700"
+                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-neutral-700"
                   />
                 </div>
               </div>
@@ -447,16 +447,16 @@ export default function ProductsPage() {
                       ...filters, 
                       priceRange: [filters.priceRange[0], parseInt(e.target.value)]
                     })}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-gray-700"
+                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-neutral-700"
                   />
                 </div>
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm text-neutral-600 dark:text-neutral-400">
                   €{filters.priceRange[0]}
                 </span>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm text-neutral-600 dark:text-neutral-400">
                   €{filters.priceRange[1]}
                 </span>
               </div>
@@ -464,13 +464,13 @@ export default function ProductsPage() {
             
             {/* Sort options */}
             <div>
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+              <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-3">
                 Sort By
               </h3>
               <select
                 value={filters.sort}
                 onChange={(e) => setFilters({...filters, sort: e.target.value})}
-                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
               >
                 <option value="price-asc">Price: Low to High</option>
                 <option value="price-desc">Price: High to Low</option>
@@ -486,7 +486,7 @@ export default function ProductsPage() {
         <div className="md:hidden mb-4">
           <button
             onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
-            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-stone-950 text-gray-700 dark:text-gray-300"
+            className="w-full flex items-center justify-center py-2 px-4 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-stone-950 text-neutral-700 dark:text-neutral-300"
           >
             <Filter size={18} className="mr-2" />
             Filters
@@ -498,7 +498,7 @@ export default function ProductsPage() {
         {isMobileFilterOpen && (
           <div className="md:hidden bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
                 Filters
               </h2>
               <button
@@ -513,13 +513,13 @@ export default function ProductsPage() {
             <div className="space-y-6">
               {/* Sort options */}
               <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
                   Sort By
                 </h3>
                 <select
                   value={filters.sort}
                   onChange={(e) => setFilters({...filters, sort: e.target.value})}
-                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
                   <option value="price-asc">Price: Low to High</option>
                   <option value="price-desc">Price: High to Low</option>
@@ -531,11 +531,11 @@ export default function ProductsPage() {
               
               {/* Price range filter */}
               <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
                   Price Range: €{filters.priceRange[0]} - €{filters.priceRange[1]}
                 </h3>
                 <div className="flex items-center space-x-4 mb-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">€0</span>
+                  <span className="text-sm text-neutral-600 dark:text-neutral-400">€0</span>
                   <input
                     type="range"
                     min="0"
@@ -546,9 +546,9 @@ export default function ProductsPage() {
                       ...filters, 
                       priceRange: [filters.priceRange[0], parseInt(e.target.value)]
                     })}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-gray-700"
+                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-red-600 dark:bg-neutral-700"
                   />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">€5000</span>
+                  <span className="text-sm text-neutral-600 dark:text-neutral-400">€5000</span>
                 </div>
               </div>
             </div>
@@ -556,7 +556,7 @@ export default function ProductsPage() {
             <div className="mt-6 flex space-x-4">
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="flex-1 py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="flex-1 py-2 px-4 border border-neutral-300 dark:border-neutral-600 rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
               >
                 Cancel
               </button>
@@ -574,11 +574,11 @@ export default function ProductsPage() {
         <div className="flex-1">
           {filteredProducts.length === 0 ? (
             <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8 text-center">
-              <Info size={48} className="mx-auto text-gray-400 mb-4" />
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <Info size={48} className="mx-auto text-neutral-400 mb-4" />
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                 No Products Found
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-neutral-600 dark:text-neutral-400 mb-6">
                 We couldn't find any products matching your current filters.
               </p>
               <button
@@ -598,15 +598,15 @@ export default function ProductsPage() {
                   onMouseLeave={() => setHoveredProduct(null)}
                 >
                   {/* Product image */}
-                  <div className="relative h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <div className="relative h-48 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
                     {product.imageUrl ? (
                       <img 
-                        src={(product.imageUrl || '/images/Default-image.png').trim()} 
+                        src={(product.imageUrl || '/images/product-placeholder.svg').trim()} 
                         alt={product.name}
                         className="h-full w-full object-contain" 
                       />
                     ) : (
-                      <span className="text-gray-500 dark:text-gray-400">
+                      <span className="text-neutral-500 dark:text-neutral-400">
                         {getProductTypeDisplay(product)}
                       </span>
                     )}
@@ -639,7 +639,7 @@ export default function ProductsPage() {
                             <ShoppingCart size={20} />
                           </button>
                           <button
-                            className="p-2 bg-white text-gray-900 rounded-full hover:bg-gray-100"
+                            className="p-2 bg-white text-neutral-900 rounded-full hover:bg-neutral-100"
                             aria-label="Add to wishlist"
                           >
                             <Heart size={20} />
@@ -658,20 +658,20 @@ export default function ProductsPage() {
                             size={14} 
                             className={i < Math.floor(product.ratings?.average || 0) 
                               ? "text-yellow-400 fill-yellow-400" 
-                              : "text-gray-300 dark:text-gray-600"
+                              : "text-neutral-300 dark:text-neutral-600"
                             }
                           />
                         ))}
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-1">
                         ({product.ratings?.count || 0})
                       </span>
                     </div>
                     
                     <div className="flex justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                      <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">
                         <Link 
-                          href={`/${locale}/products/${product.id}`}
+                          href={`/${locale}/shop/product/${product.id}`}
                           className="hover:text-red-600 dark:hover:text-red-400"
                         >
                           {product.name}
@@ -687,16 +687,16 @@ export default function ProductsPage() {
                       </button>
                     </div>
                     
-                    <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
+                    <p className="text-neutral-600 dark:text-neutral-400 text-sm line-clamp-2 mb-3">
                       {product.description}
                     </p>
                     
                     {/* Expanded specs */}
                     {expandedSpecs === product.id && (product.type === 'component' || product.type === 'peripheral') && (
-                      <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md mb-3">
+                      <div className="bg-neutral-50 dark:bg-neutral-900 p-3 rounded-md mb-3">
                         <ul className="text-sm space-y-1">
                           {Object.entries(product.specifications).slice(0, 4).map(([key, value]) => (
-                            <li key={key} className="flex items-start text-gray-700 dark:text-gray-300">
+                            <li key={key} className="flex items-start text-neutral-700 dark:text-neutral-300">
                               <span className="font-medium mr-1">{key}:</span> {value}
                             </li>
                           ))}
@@ -708,15 +708,15 @@ export default function ProductsPage() {
                       <div>
                         {product.discountPrice ? (
                           <div>
-                            <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            <span className="text-xl font-bold text-neutral-900 dark:text-white">
                               €{product.discountPrice.toFixed(2)}
                             </span>
-                            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
+                            <span className="ml-2 text-sm text-neutral-500 dark:text-neutral-400 line-through">
                               €{product.price.toFixed(2)}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">
+                          <span className="text-xl font-bold text-neutral-900 dark:text-white">
                             €{product.price.toFixed(2)}
                           </span>
                         )}
@@ -724,8 +724,8 @@ export default function ProductsPage() {
                       
                       <div className="flex space-x-2">
                         <Link 
-                          href={`/${locale}/products/${product.id}`}
-                          className="p-2 text-gray-700 border border-gray-300 dark:border-gray-600 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                          href={`/${locale}/shop/product/${product.id}`}
+                          className="p-2 text-neutral-700 border border-neutral-300 dark:border-neutral-600 dark:text-neutral-300 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         >
                           View
                         </Link>

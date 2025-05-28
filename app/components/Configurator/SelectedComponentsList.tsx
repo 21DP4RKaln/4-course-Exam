@@ -2,27 +2,41 @@
 
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Check, AlertTriangle, Info } from 'lucide-react'
-import { Component, Category } from './interfaces'
-import { getCategoryIcon } from './utils'
+import { Cpu, Monitor, HardDrive, Server, Zap, Fan, Box, X, AlertTriangle, Wrench, Check } from 'lucide-react'
+import { useTheme } from '@/app/contexts/ThemeContext'
 
-interface SelectedComponentsListProps {
-  selectedComponents: Record<string, Component | undefined>;
-  componentCategories: Category[];
-  configName: string;
-  setConfigName: (name: string) => void;
-  totalPrice: number;
-  compatibilityIssues: string[];
-  loading: boolean;
-  onSetActiveCategory: (categoryId: string) => void;
-  onSaveConfiguration: () => void;
-  onSubmitConfiguration: () => void;
-  onAddToCart: () => void;
-  totalPowerConsumption: number;
-  getRecommendedPsuWattage: () => string;
+interface Category {
+  id: string
+  name: string
+  slug: string
 }
 
-const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
+interface Component {
+  id: string
+  name: string
+  price: number
+  description: string
+  categoryId?: string
+  specifications?: any
+}
+
+interface Props {
+  selectedComponents: Record<string, Component>
+  componentCategories: Category[]
+  configName: string
+  setConfigName: (name: string) => void
+  totalPrice: number
+  compatibilityIssues: string[]
+  loading: boolean
+  onSetActiveCategory: (category: string) => void
+  onSaveConfiguration: () => void
+  onSubmitConfiguration: () => void
+  onAddToCart: () => void
+  totalPowerConsumption: number
+  getRecommendedPsuWattage: () => string
+}
+
+const SelectedComponentsList: React.FC<Props> = ({
   selectedComponents,
   componentCategories,
   configName,
@@ -38,185 +52,210 @@ const SelectedComponentsList: React.FC<SelectedComponentsListProps> = ({
   getRecommendedPsuWattage
 }) => {
   const t = useTranslations()
+  const { theme } = useTheme()
   
+  // Get category icon based on category id
+  const getCategoryIcon = (categoryId: string) => {
+    const iconColor = theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
+    switch (categoryId) {
+      case 'cpu':
+        return <Cpu size={20} className={iconColor} />
+      case 'gpu':
+        return <Monitor size={20} className={iconColor} />
+      case 'ram':
+        return <HardDrive size={20} className={iconColor} />
+      case 'motherboard':
+        return <Server size={20} className={iconColor} />
+      case 'psu':
+        return <Zap size={20} className={iconColor} />
+      case 'cooling':
+        return <Fan size={20} className={iconColor} />
+      case 'case':
+        return <Box size={20} className={iconColor} />
+      case 'storage':
+        return <HardDrive size={20} className={iconColor} />
+      case 'services':
+        return <Wrench size={20} className={iconColor} />
+      default:
+        return <HardDrive size={20} className={iconColor} />
+    }
+  }
+
+  const selectedCount = Object.keys(selectedComponents).length
+  const totalCategories = componentCategories.length
   return (
-    <div className="bg-white dark:bg-stone-950 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-      <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        {t('configurator.componentsList.yourConfiguration')}
-      </h2>
-      
-      {/* Configuration name field */}
-      <div className="mb-4">
-        <input
-          type="text"
-          value={configName}
-          onChange={(e) => setConfigName(e.target.value)}
-          className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-white text-sm"
-          placeholder={t('configurator.componentsList.configurationName')}
-        />
-      </div>
-      
-      {/* Selected components */}
-      <div className="mb-4">
-        <div className="grid grid-cols-1 gap-3">
-          {/* Selected components */}
-          <div className="flex flex-row flex-wrap gap-3">
-            {Object.entries(selectedComponents)
-              .filter(([_, component]) => component !== undefined)
-              .map(([categoryId, component]) => {
-                const category = componentCategories.find(cat => cat.id === categoryId);
-                return (
-                  <div 
-                    key={categoryId}
-                    className="flex-1 min-w-[200px] max-w-[300px] border border-gray-200 dark:border-gray-700 rounded-lg p-3"
-                  >
-                    <div className="flex items-start">
-                      <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mr-3 flex-shrink-0">
-                        {getCategoryIcon(categoryId)}
-                      </div>
-                      
-                      <div className="flex-grow min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                            {t(`components.${categoryId}`)}
-                          </h3>
-                          <button 
-                            onClick={() => onSetActiveCategory(categoryId)}
-                            className="ml-2 text-xs text-gray-500 hover:text-brand-blue-500 dark:text-gray-400 dark:hover:text-brand-red-500 flex-shrink-0"
-                          >
-                            {t('configurator.componentsList.change')}
-                          </button>
-                        </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-1">
-                          {component!.name}
-                        </p>
-                        <div className="mt-2">
-                          <span className="font-medium text-gray-900 dark:text-white text-sm">
-                            €{component!.price.toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+    <div className={`w-[320px] max-w-full rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${
+      theme === 'dark'
+        ? 'bg-stone-950 border border-neutral-800'
+        : 'bg-white border border-neutral-200'
+    }`}>
+      {/* Header */}
+      <div className={`p-4 border-b ${
+        theme === 'dark' ? 'border-neutral-800' : 'border-neutral-200'
+      }`}>
+        <div className="flex items-center justify-between">
+          <h3 className={theme === 'dark' ? 'text-white' : 'text-neutral-900'}>
+            {t('configurator.selectedComponents')}
+          </h3>
+          <div className="flex items-center">
+            <div className="text-sm">
+              <span className={`font-medium ${
+                theme === 'dark' ? 'text-white' : 'text-neutral-900'
+              }`}>{selectedCount}</span>
+              <span className={
+                theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'
+              }>/{totalCategories}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <div className={`h-2 rounded-full overflow-hidden ${
+            theme === 'dark' ? 'bg-stone-800' : 'bg-neutral-100'
+          }`}>
+            <div 
+              className={`h-2 rounded-full transition-all ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-brand-red-600 to-brand-red-400'
+                  : 'bg-gradient-to-r from-brand-blue-600 to-brand-blue-400'
+              }`}
+              style={{ width: `${(selectedCount / totalCategories) * 100}%` }}
+            />
+          </div>
+        </div>        {/* Configuration Name Input */}
+        <div className="mt-4">
+          <input
+            type="text"
+            value={configName || 'PC'}
+            onChange={(e) => setConfigName(e.target.value || 'PC')}
+            placeholder="PC"
+            className={`w-full p-2 rounded border text-sm transition-colors ${
+              theme === 'dark'
+                ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500 focus:border-brand-red-500'
+                : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-brand-blue-500'
+            } focus:outline-none`}
+          />                         
+        </div>
+      </div>      {/* Component List */}
+      <div className="p-4 space-y-3 max-h-[800px] overflow-y-auto">
+        {componentCategories.map(category => {
+          const component = selectedComponents[category.id]
+          const isSelected = !!component
+          
+          return (
+            <button
+              key={category.id}
+              onClick={() => onSetActiveCategory(category.id)}
+              className={`w-full flex items-center p-2 rounded-lg transition-all ${
+                theme === 'dark'
+                  ? isSelected
+                    ? 'bg-stone-900 hover:bg-stone-800'
+                    : 'border border-dashed border-neutral-800 hover:border-brand-red-500/50'
+                  : isSelected
+                    ? 'bg-neutral-50 hover:bg-neutral-100'
+                    : 'border border-dashed border-neutral-200 hover:border-brand-blue-500/50'
+              }`}
+            >
+              <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                theme === 'dark'
+                  ? 'bg-stone-800'
+                  : 'bg-neutral-100'
+              }`}>
+                {getCategoryIcon(category.id)}
+              </span>
+                <div className="flex-grow text-left min-w-0">
+                <div className={`text-sm font-medium truncate ${
+                  theme === 'dark' ? 'text-white' : 'text-neutral-900'
+                }`}>
+                  {category.name}
+                </div>
+                {component && (
+                  <div className={`text-xs truncate ${
+                    theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+                  }`}>
+                    {component.name}
                   </div>
-                );
-              })}
-              
-            {/* Empty slots */}
-            {componentCategories
-              .filter(category => !selectedComponents[category.id])
-              .map(category => (
-                <div 
-                  key={category.id}
-                  className="flex-1 min-w-[200px] max-w-[300px] border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-3 hover:border-brand-blue-500 dark:hover:border-brand-red-500 cursor-pointer"
-                  onClick={() => onSetActiveCategory(category.id)}
-                >
-                  <div className="flex items-start">
-                    <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mr-3 flex-shrink-0">
-                      {getCategoryIcon(category.id)}
-                    </div>
-                    
-                    <div className="flex-grow min-w-0">
-                      <h3 className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                        {t(`components.${category.id}`)}
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-500 italic mt-1">
-                        {t('configurator.componentsList.emptySlotPlaceholder')}
-                      </p>
-                    </div>
+                )}
+              </div>
+                {component && (
+                <div className="flex items-center ml-2 flex-shrink-0">
+                  <div className={`text-sm font-medium ${
+                    theme === 'dark'
+                      ? 'text-brand-red-400'
+                      : 'text-brand-blue-600'
+                  }`}>
+                    €{component.price.toFixed(2)}
                   </div>
                 </div>
-              ))}
-          </div>
-        </div>
-      </div>
-      
-      {/* PSU recommendation */}
-      {totalPowerConsumption > 0 && (
-        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-          <div className="flex items-start">
-            <Info size={16} className="text-brand-blue-500 dark:text-brand-red-500 mr-2 mt-0.5" />
-            <div>
-              <p className="text-xs text-gray-700 dark:text-gray-300">
-                <span className="font-medium">{t('configurator.compatibility.recommendedPsu')}:</span> {getRecommendedPsuWattage()} or higher
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t('configurator.compatibility.powerNote')} {totalPowerConsumption}W
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Compatibility warnings */}
+              )}
+            </button>
+          )
+        })}
+      </div>      {/* Compatibility Issues */}
       {compatibilityIssues.length > 0 && (
-        <div className="mb-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-          <div className="flex items-start">
-            <AlertTriangle size={20} className="text-yellow-600 dark:text-yellow-500 mt-0.5 mr-2 flex-shrink-0" />
-            <div>
-              <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-400">{t('configurator.compatibility.compatibilityIssues')}</h3>
-              <ul className="mt-1 text-sm text-yellow-700 dark:text-yellow-300 list-disc pl-5 space-y-1">
-                {compatibilityIssues.map((issue, index) => (
-                  <li key={index}>{issue}</li>
-                ))}
-              </ul>
-            </div>
+        <div className={`mx-4 mb-4 p-3 rounded-lg ${
+          theme === 'dark'
+            ? 'bg-red-900/20 border border-red-800'
+            : 'bg-red-50 border border-red-200'
+        }`}>
+          <div className={`flex items-center gap-2 text-sm font-medium mb-1 ${
+            theme === 'dark' ? 'text-red-400' : 'text-red-600'
+          }`}>
+            <AlertTriangle size={16} className="flex-shrink-0" />
+            <span className="truncate">{t('configurator.compatibility.issuesFound')}</span>
           </div>
+          <ul className={`text-xs space-y-1 max-h-20 overflow-y-auto ${
+            theme === 'dark' ? 'text-red-400' : 'text-red-600'
+          }`}>
+            {compatibilityIssues.map((issue, index) => (
+              <li key={index} className="break-words">{issue}</li>
+            ))}
+          </ul>
         </div>
       )}
-      
-      {/* Price & Actions */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-sm text-gray-600 dark:text-gray-400">{t('configurator.componentsList.totalPrice')}:</span>
-          <span className="text-xl font-bold text-gray-900 dark:text-white">
-            €{totalPrice.toFixed(2)}
-          </span>
-        </div>
-        
-        <div className="space-y-2">
-          <button
-            onClick={onAddToCart}
-            disabled={Object.keys(selectedComponents).length === 0}
-            className="w-full py-2 px-4 bg-brand-blue-600 dark:bg-brand-red-600 text-white rounded hover:bg-brand-blue-700 dark:hover:bg-brand-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
-          >
-            {t('configurator.componentsList.addToCart')}
-          </button>
-          
+
+      {/* Summary & Actions */}
+      <div className={`p-4 border-t ${
+        theme === 'dark' ? 'border-neutral-800' : 'border-neutral-200'
+      }`}>
+        <div className="space-y-4">
+          {/* Total */}
+          <div className="flex items-center justify-between">
+            <span className={
+              theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+            }>Total:</span>
+            <span className={`text-lg font-bold ${
+              theme === 'dark'
+                ? 'text-brand-red-400'
+                : 'text-brand-blue-600'
+            }`}>
+              €{totalPrice.toFixed(2)}
+            </span>
+          </div>          {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={onSaveConfiguration}
-              disabled={loading}
-              className="py-2 px-4 bg-white dark:bg-gray-700 text-stone-950 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 text-sm"
+              className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors truncate ${
+                theme === 'dark'
+                  ? 'bg-stone-900 text-white hover:bg-stone-800'
+                  : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+              }`}
             >
-              {t('configurator.componentsList.saveAsDraft')}
+              {t('configurator.actions.save')}
             </button>
-            
             <button
-              onClick={onSubmitConfiguration}
-              disabled={loading}
-              className="py-2 px-4 bg-white dark:bg-gray-700 text-stone-950 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 text-sm"
+              onClick={onAddToCart}
+              className={`px-2 py-2 rounded-lg text-sm font-medium text-white transition-colors truncate ${
+                theme === 'dark'
+                  ? 'bg-brand-red-500 hover:bg-brand-red-600'
+                  : 'bg-brand-blue-500 hover:bg-brand-blue-600'
+              } disabled:opacity-50`}
+              disabled={selectedCount === 0 || compatibilityIssues.length > 0}
             >
-              {t('configurator.componentsList.submit')}
+              {t('configurator.actions.addToCart')}
             </button>
           </div>
         </div>
-        
-        {/* Compatibility status */}
-        {Object.keys(selectedComponents).length > 0 && (
-          <div className="mt-4 text-center">
-            {compatibilityIssues.length === 0 ? (
-              <div className="flex items-center justify-center text-green-600 dark:text-green-400 text-sm">
-                <Check size={16} className="mr-1" /> 
-                {t('configurator.compatibility.allCompatible')}
-              </div>
-            ) : (
-              <div className="flex items-center justify-center text-yellow-600 dark:text-yellow-400 text-sm">
-                <AlertTriangle size={16} className="mr-1" /> 
-                {t('configurator.compatibility.compatibilityIssuesDetected')}
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   )

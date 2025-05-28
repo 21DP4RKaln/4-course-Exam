@@ -95,7 +95,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
       case 'CANCELLED':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
       default:
-        return 'bg-gray-100 text-stone-950 dark:bg-gray-700 dark:text-gray-200'
+        return 'bg-neutral-100 text-stone-950 dark:bg-neutral-700 dark:text-neutral-200'
     }
   }
 
@@ -134,7 +134,7 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
   if (!order) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">Order not found</p>
+        <p className="text-neutral-500 dark:text-neutral-400">Order not found</p>
       </div>
     )
   }
@@ -146,11 +146,11 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
         <div className="flex items-center space-x-4">
           <Link
             href={`/${locale}/admin/orders`}
-            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            className="text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
           >
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
             Order #{order.id.slice(0, 8)}
           </h1>
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
@@ -161,14 +161,14 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
         <div className="flex space-x-3">
           <button
             onClick={printInvoice}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="inline-flex items-center px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-stone-950 hover:bg-neutral-50 dark:hover:bg-neutral-700"
           >
             <Printer className="w-4 h-4 mr-2" />
             Print
           </button>
           <button
             onClick={downloadInvoice}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="inline-flex items-center px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-stone-950 hover:bg-neutral-50 dark:hover:bg-neutral-700"
           >
             <Download className="w-4 h-4 mr-2" />
             Download
@@ -188,66 +188,66 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
           <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Order Items</h3>
+            <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+              <h3 className="text-lg font-medium text-neutral-900 dark:text-white">Order Items</h3>
             </div>
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
+            <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+              <thead className="bg-neutral-50 dark:bg-neutral-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                     Product
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                     Quantity
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                     Price
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                     Total
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="bg-white dark:bg-stone-950 divide-y divide-neutral-200 dark:divide-neutral-700">
                 {order.items.map((item) => (
                   <tr key={item.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                      <div className="text-sm font-medium text-neutral-900 dark:text-white">
                         {item.name}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         {item.productType}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 dark:text-white">
+                      <div className="text-sm text-neutral-900 dark:text-white">
                         {item.quantity}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 dark:text-white">
+                      <div className="text-sm text-neutral-900 dark:text-white">
                         €{item.price.toFixed(2)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                      <div className="text-sm font-medium text-neutral-900 dark:text-white">
                         €{(item.price * item.quantity).toFixed(2)}
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="bg-gray-50 dark:bg-gray-700">
+              <tfoot className="bg-neutral-50 dark:bg-neutral-700">
                 <tr>
-                  <td colSpan={4} className="px-6 py-4 text-right text-sm font-medium text-gray-900 dark:text-white">
+                  <td colSpan={4} className="px-6 py-4 text-right text-sm font-medium text-neutral-900 dark:text-white">
                     Total:
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-neutral-900 dark:text-white">
                     €{order.totalAmount.toFixed(2)}
                   </td>
                 </tr>
@@ -257,14 +257,14 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
 
           {/* Shipping Address */}
           <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+            <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+              <h3 className="text-lg font-medium text-neutral-900 dark:text-white flex items-center">
                 <MapPin className="w-5 h-5 mr-2" />
                 Shipping Address
               </h3>
             </div>
             <div className="px-6 py-4">
-              <pre className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">
+              <pre className="text-sm text-neutral-900 dark:text-white whitespace-pre-wrap">
                 {order.shippingAddress}
               </pre>
             </div>
@@ -275,62 +275,62 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
         <div className="space-y-6">
           {/* Customer Info */}
           <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+            <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+              <h3 className="text-lg font-medium text-neutral-900 dark:text-white flex items-center">
                 <User className="w-5 h-5 mr-2" />
                 Customer
               </h3>
             </div>
             <div className="px-6 py-4 space-y-3">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Name</p>
-                <p className="text-sm text-gray-900 dark:text-white">{order.userName}</p>
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Name</p>
+                <p className="text-sm text-neutral-900 dark:text-white">{order.userName}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</p>
-                <p className="text-sm text-gray-900 dark:text-white">{order.userEmail}</p>
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Email</p>
+                <p className="text-sm text-neutral-900 dark:text-white">{order.userEmail}</p>
               </div>
             </div>
           </div>
 
           {/* Payment Info */}
           <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+            <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+              <h3 className="text-lg font-medium text-neutral-900 dark:text-white flex items-center">
                 <CreditCard className="w-5 h-5 mr-2" />
                 Payment
               </h3>
             </div>
             <div className="px-6 py-4 space-y-3">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Method</p>
-                <p className="text-sm text-gray-900 dark:text-white">{order.paymentMethod}</p>
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Method</p>
+                <p className="text-sm text-neutral-900 dark:text-white">{order.paymentMethod}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Amount</p>
-                <p className="text-sm text-gray-900 dark:text-white">€{order.totalAmount.toFixed(2)}</p>
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Amount</p>
+                <p className="text-sm text-neutral-900 dark:text-white">€{order.totalAmount.toFixed(2)}</p>
               </div>
             </div>
           </div>
 
           {/* Order Timeline */}
           <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+            <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+              <h3 className="text-lg font-medium text-neutral-900 dark:text-white flex items-center">
                 <Calendar className="w-5 h-5 mr-2" />
                 Timeline
               </h3>
             </div>
             <div className="px-6 py-4 space-y-3">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Created</p>
-                <p className="text-sm text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Created</p>
+                <p className="text-sm text-neutral-900 dark:text-white">
                   {new Date(order.createdAt).toLocaleString()}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Last Updated</p>
-                <p className="text-sm text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Last Updated</p>
+                <p className="text-sm text-neutral-900 dark:text-white">
                   {new Date(order.updatedAt).toLocaleString()}
                 </p>
               </div>
@@ -339,14 +339,14 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
 
           {/* Status Update */}
           <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Update Status</h3>
+            <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+              <h3 className="text-lg font-medium text-neutral-900 dark:text-white">Update Status</h3>
             </div>
             <div className="px-6 py-4">
               <select
                 value={order.status}
                 onChange={(e) => updateOrderStatus(e.target.value as OrderStatus)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
               >
                 <option value="PENDING">Pending</option>
                 <option value="PROCESSING">Processing</option>

@@ -36,6 +36,7 @@ interface ProductDetailProps {
   type: 'component' | 'peripheral';
 }
 
+// Updated Product interface to match the new database schema
 interface Product {
   id: string;
   name: string;
@@ -69,7 +70,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
   const [activeTab, setActiveTab] = useState('description')
   const [copied, setCopied] = useState(false)
 
-  const defaultImageUrl = '/images/Default-image.png'
+  const defaultImageUrl = '/images/product-placeholder.svg'
 
   useProductView(params.id, type)
 
@@ -91,13 +92,14 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
           productId = urlParts[urlParts.length - 1];
         }
         
-        if (!productId) {
+        if (!productId || productId === 'undefined') {
           setError(t('errors.productIdMissing'));
           setLoading(false);
           return;
         }
 
-        const apiUrl = `/api/shop/product/${productId}`;
+        // Updated API endpoint to use the new database service
+        const apiUrl = `/api/shop/product/${productId}?type=${type}`;
         const response = await fetch(apiUrl);
         
         if (!response.ok) {
@@ -121,7 +123,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
     };
     
     fetchProduct();
-  }, [params, t]);
+  }, [params, t, type]);
   
   const handleAddToCart = () => {
     if (!product) return
@@ -187,10 +189,10 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
       <div className="max-w-4xl mx-auto text-center py-12">
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8">
           <AlertTriangle size={48} className="mx-auto text-amber-500 mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
             {error || t('errors.notFound')}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-neutral-600 dark:text-neutral-400 mb-8">
             {t('errors.productNotExist')}
           </p>
           <Link 
@@ -211,14 +213,14 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
           href={`/${locale}/${type}s/${product.category || ''}`}
           title={t('categoryPage.backTo', {type: type === 'component' ? t('components.components') : t('components.peripherals')})}
           direction="left"
-          className="inline-block text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+          className="inline-block text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400"
         />
       </div>
       
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           {/* Product image */}
-          <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center relative">
+          <div className="aspect-square bg-neutral-200 dark:bg-neutral-700 rounded-lg flex items-center justify-center relative">
             {discountPercentage && (
               <div className="absolute top-3 left-3 z-10">
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border border-red-200 dark:border-red-800">
@@ -240,11 +242,11 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                 {product.category || (type === 'component' ? t('components.components') : t('components.peripherals'))}
               </span>
               
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
                 {product.name}
               </h1>
               
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
+              <p className="text-neutral-700 dark:text-neutral-300 mb-6">
                 {product.description}
               </p>
             </div>
@@ -254,17 +256,17 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                 {product && product.price !== undefined && (
                   product.discountPrice ? (
                     <>
-                      <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                      <span className="text-3xl font-bold text-neutral-900 dark:text-white">
                         €{(product.discountPrice || 0).toFixed(2)}
                       </span>
-                      <span className="ml-2 text-lg text-gray-500 dark:text-gray-400 line-through">
+                      <span className="ml-2 text-lg text-neutral-500 dark:text-neutral-400 line-through">
                         €{product.price.toFixed(2)}
                       </span>                      <span className="ml-2 px-2 py-1 bg-blue-100/80 text-blue-800 dark:bg-red-900/30 dark:text-red-300 text-xs font-medium rounded-md">
                         {t('product.saveAmount')} €{(product.price - (product.discountPrice || 0)).toFixed(2)}
                       </span>
                     </>
                   ) : (
-                    <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                    <span className="text-3xl font-bold text-neutral-900 dark:text-white">
                       €{product.price.toFixed(2)}
                     </span>
                   )
@@ -287,22 +289,22 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
             {/* Quantity selector and buttons */}
             <div className="flex flex-col space-y-4 mt-auto">
               <div className="flex items-center">
-                <span className="mr-4 text-gray-700 dark:text-gray-300">{t('product.quantity')}:</span>
-                <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
+                <span className="mr-4 text-neutral-700 dark:text-neutral-300">{t('product.quantity')}:</span>
+                <div className="flex items-center border border-neutral-300 dark:border-neutral-600 rounded-md">
                   <button 
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="px-3 py-1 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                     disabled={quantity <= 1}
                     aria-label={t('product.decreaseQuantity')}
                   >
                     -
                   </button>
-                  <span className="px-3 py-1 text-gray-900 dark:text-white min-w-[40px] text-center">
+                  <span className="px-3 py-1 text-neutral-900 dark:text-white min-w-[40px] text-center">
                     {quantity}
                   </span>
                   <button 
                     onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                    className="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="px-3 py-1 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                     disabled={quantity >= product.stock}
                     aria-label={t('product.increaseQuantity')}
                   >
@@ -322,7 +324,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                 
                 <button
                   onClick={handleBuyNow}
-                  disabled={product.stock === 0}                  className="flex items-center justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-stone-950 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-red-400 disabled:opacity-70 disabled:cursor-not-allowed transition-colors duration-200"
+                  disabled={product.stock === 0}                  className="flex items-center justify-center py-3 px-4 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm text-neutral-700 dark:text-neutral-300 bg-white dark:bg-stone-950 hover:bg-neutral-50 dark:hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-red-400 disabled:opacity-70 disabled:cursor-not-allowed transition-colors duration-200"
                 >
                   {t('product.buyNow')}
                 </button>
@@ -330,7 +332,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
               
               <div className="flex space-x-4">
                 <button 
-                  className={`flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 ${
+                  className={`flex items-center text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400 ${
                     isProductInWishlist ? 'text-red-600 dark:text-red-400' : ''
                   }`}
                   onClick={handleWishlistToggle}
@@ -345,7 +347,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                 
                 <button 
                   onClick={handleShare}
-                  className="flex items-center text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                  className="flex items-center text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400"
                 >
                   {copied ? (
                     <>
@@ -363,7 +365,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
             </div>
             
             {/* Shipping information */}
-            <div className="mt-8 space-y-3 text-sm text-gray-600 dark:text-gray-400">
+            <div className="mt-8 space-y-3 text-sm text-neutral-600 dark:text-neutral-400">
               <div className="flex items-center">
                 <Truck size={16} className="mr-2" />
                 <span>{t('product.freeShipping')}</span>
@@ -381,12 +383,12 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
         </div>
         
         {/* Tabs for more information */}
-        <div className="border-t border-gray-200 dark:border-gray-700">
-          <div className="flex border-b border-gray-200 dark:border-gray-700">
+        <div className="border-t border-neutral-200 dark:border-neutral-700">
+          <div className="flex border-b border-neutral-200 dark:border-neutral-700">
             <button              className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'description'
                   ? 'border-blue-600 text-blue-600 dark:border-red-400 dark:text-red-400'
-                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('description')}
             >
@@ -395,7 +397,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
             <button              className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'specifications'
                   ? 'border-blue-600 text-blue-600 dark:border-red-400 dark:text-red-400'
-                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('specifications')}
             >
@@ -404,7 +406,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
             <button              className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'reviews'
                   ? 'border-blue-600 text-blue-600 dark:border-red-400 dark:text-red-400'
-                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
               }`}
               onClick={() => setActiveTab('reviews')}
             >
@@ -428,7 +430,7 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
                     toggleExpand={() => {}}
                   />
                 ) : (
-                  <p className="text-center text-gray-500 dark:text-gray-400">
+                  <p className="text-center text-neutral-500 dark:text-neutral-400">
                     {t('product.noSpecifications')}
                   </p>
                 )}

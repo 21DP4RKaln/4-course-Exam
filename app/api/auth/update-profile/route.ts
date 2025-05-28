@@ -18,8 +18,7 @@ export async function PUT(request: NextRequest) {
     const payload = await verifyJWT(token)
     if (!payload) {
       return createUnauthorizedResponse('Invalid token')
-    }
-     const formData = await request.formData()
+    }     const formData = await request.formData()
     
     const email = formData.get('email') as string | null
     const phone = formData.get('phone') as string | null
@@ -27,6 +26,7 @@ export async function PUT(request: NextRequest) {
     const lastName = formData.get('lastName') as string | null
     const password = formData.get('password') as string | null
     const profileImage = formData.get('profileImage') as File | null
+    const deleteProfileImage = formData.get('deleteProfileImage') === 'true'
     const shippingAddress = formData.get('shippingAddress') as string | null
     const shippingCity = formData.get('shippingCity') as string | null
     const shippingPostalCode = formData.get('shippingPostalCode') as string | null
@@ -97,8 +97,10 @@ export async function PUT(request: NextRequest) {
       }
       updateData.password = await bcrypt.hash(password, 10)
     }
-   
-    if (profileImage) {
+     if (deleteProfileImage) {
+      // Set profile image URL to null to delete it
+      updateData.profileImageUrl = null
+    } else if (profileImage) {
       const bytes = await profileImage.arrayBuffer()
       const buffer = Buffer.from(bytes)
       

@@ -24,82 +24,82 @@ export default function TermsOfServicePage() {
       </div>
 
       <div className="bg-white dark:bg-stone-950 shadow-lg rounded-lg p-8 transition-colors duration-200">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{t('title')}</h1>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-6">{t('title')}</h1>
         
         <div className="prose prose-lg dark:prose-invert max-w-none">
-          <p className="text-gray-600 dark:text-gray-300 text-lg">
+          <p className="text-neutral-600 dark:text-neutral-300 text-lg">
             {t('lastUpdated')}: May 1, 2025
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('introduction.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('introduction.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-6">
             {t('introduction.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('registration.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('registration.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-3">
             {t('pricingPayment.priceChanges')}
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-3">
             {t('pricingPayment.paymentRequired')}
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-6">
             {t('pricingPayment.processing')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('shipping.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('shipping.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-3">
             {t('shipping.estimates')}
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-3">
             {t('shipping.responsibility')}
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-6">
             {t('shipping.accuracy')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('warranty.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('warranty.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-3">
             {t('warranty.manufacturer')}
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-3">
             {t('warranty.customPc')}
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-3">
             {t('warranty.returns')}
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-6">
             {t('warranty.condition')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('intellectual.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('intellectual.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-6">
             {t('intellectual.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('liability.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('liability.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-3">
             {t('liability.limitation')}
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-6">
             {t('liability.indirect')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('governing.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('governing.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-6">
             {t('governing.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('changes.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('changes.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-6">
             {t('changes.content')}
           </p>
 
-          <h2 className="text-2xl font-semibold text-stone-950 dark:text-gray-200 mt-8 mb-4">{t('contact.title')}</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
+          <h2 className="text-2xl font-semibold text-stone-950 dark:text-neutral-200 mt-8 mb-4">{t('contact.title')}</h2>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-4">
             {t('contact.content')}:
           </p>
-          <p className="text-gray-700 dark:text-gray-300 mb-2">
+          <p className="text-neutral-700 dark:text-neutral-300 mb-2">
             {t('contact.email')}: legal@ivapro.com<br />
             {t('contact.phone')}: +371 12345678<br />
             {t('contact.address')}: Riga, Latvia

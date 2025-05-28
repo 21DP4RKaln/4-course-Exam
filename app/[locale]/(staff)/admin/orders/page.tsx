@@ -101,7 +101,7 @@ export default function AdminOrdersPage() {
       case 'CANCELLED':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
       default:
-        return 'bg-gray-100 text-stone-950 dark:bg-gray-700 dark:text-gray-200'
+        return 'bg-neutral-100 text-stone-950 dark:bg-neutral-700 dark:text-neutral-200'
     }
   }
 
@@ -131,7 +131,7 @@ export default function AdminOrdersPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
           Order Management
         </h1>
       </div>
@@ -140,13 +140,13 @@ export default function AdminOrdersPage() {
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search orders by ID or customer..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
             />
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function AdminOrdersPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'ALL')}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
           >
             <option value="ALL">All Status</option>
             <option value="PENDING">Pending</option>
@@ -167,33 +167,33 @@ export default function AdminOrdersPage() {
 
       {/* Orders Table */}
       <div className="bg-white dark:bg-stone-950 shadow-md rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700">
+        <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+          <thead className="bg-neutral-50 dark:bg-neutral-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Order ID
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Customer
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Date
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Amount
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Payment
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-right text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-stone-950 divide-y divide-neutral-200 dark:divide-neutral-700">
             {loading ? (
               <tr>
                 <td colSpan={7} className="px-6 py-4 text-center">
@@ -204,27 +204,27 @@ export default function AdminOrdersPage() {
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={7} className="px-6 py-4 text-center text-neutral-500 dark:text-neutral-400">
                   No orders found
                 </td>
               </tr>
             ) : (
               orders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr key={order.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    <div className="text-sm font-medium text-neutral-900 dark:text-white">
                       #{order.id.slice(0, 8)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">{order.userName}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{order.userEmail}</div>
+                    <div className="text-sm text-neutral-900 dark:text-white">{order.userName}</div>
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">{order.userEmail}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">
+                    <div className="text-sm text-neutral-900 dark:text-white">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
                       {new Date(order.createdAt).toLocaleTimeString()}
                     </div>
                   </td>
@@ -235,12 +235,12 @@ export default function AdminOrdersPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    <div className="text-sm font-medium text-neutral-900 dark:text-white">
                       €{order.totalAmount.toFixed(2)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">
+                    <div className="text-sm text-neutral-900 dark:text-white">
                       {order.paymentMethod}
                     </div>
                   </td>
@@ -279,17 +279,17 @@ export default function AdminOrdersPage() {
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 rounded-md bg-white dark:bg-stone-950 border border-gray-300 dark:border-gray-600 disabled:opacity-50"
+            className="px-3 py-1 rounded-md bg-white dark:bg-stone-950 border border-neutral-300 dark:border-neutral-600 disabled:opacity-50"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <span className="text-gray-700 dark:text-gray-300">
+          <span className="text-neutral-700 dark:text-neutral-300">
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded-md bg-white dark:bg-stone-950 border border-gray-300 dark:border-gray-600 disabled:opacity-50"
+            className="px-3 py-1 rounded-md bg-white dark:bg-stone-950 border border-neutral-300 dark:border-neutral-600 disabled:opacity-50"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

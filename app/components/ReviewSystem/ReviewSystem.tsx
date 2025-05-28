@@ -242,7 +242,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
               {t('reviewComponents.customerReviews')}
             </h3>
             <div className="flex items-center mt-1">
@@ -253,12 +253,12 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                     size={18} 
                     className={i < Math.floor(averageRating) 
                       ? "text-yellow-400 fill-yellow-400" 
-                      : "text-gray-300 dark:text-gray-600"
+                      : "text-neutral-300 dark:text-neutral-600"
                     }
                   />
                 ))}
               </div>
-              <span className="ml-2 text-gray-600 dark:text-gray-400">
+              <span className="ml-2 text-neutral-600 dark:text-neutral-400">
                 {averageRating > 0 ? averageRating.toFixed(1) : '0.0'} {t('reviewComponents.outOf5')} ({t('reviewComponents.reviewCount', { count: reviewCount })})
               </span>
             </div>
@@ -274,7 +274,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                 {t('reviewComponents.writeReview')}
               </button>
             ) : (
-              <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+              <span className="text-sm text-neutral-600 dark:text-neutral-400 flex items-center">
                 <Check size={16} className="mr-1 text-green-500" />
                 {t('reviewComponents.hasReviewed')}
               </span>
@@ -282,13 +282,13 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
           )}
 
           {isAuthenticated && !canWriteReview && (
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-neutral-600 dark:text-neutral-400">
               {t('reviewErrors.requirePurchase')}
             </span>
           )}
 
           {!isAuthenticated && (
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-neutral-600 dark:text-neutral-400">
               {t('auth.loginTitle')}
             </span>
           )}
@@ -296,12 +296,12 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
 
         {/* Review Form */}
         {showReviewForm && (
-          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 mb-8 border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 mb-8 border border-neutral-200 dark:border-neutral-700">
             <div className="flex justify-between items-center mb-4">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{t('reviewComponents.writeReviewTitle')}</h4>
+              <h4 className="text-lg font-semibold text-neutral-900 dark:text-white">{t('reviewComponents.writeReviewTitle')}</h4>
               <button 
                 onClick={() => setShowReviewForm(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors duration-200"
+                className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors duration-200"
               >
                 <X size={20} />
               </button>
@@ -322,7 +322,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
             
             <form onSubmit={handleSubmitReview}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   {t('reviewComponents.ratingLabel')}
                 </label>
                 <div className="flex">
@@ -337,7 +337,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                         size={24} 
                         className={star <= newReview.rating
                           ? "text-yellow-400 fill-yellow-400 transition-all duration-200" 
-                          : "text-gray-300 dark:text-gray-600 transition-all duration-200"
+                          : "text-neutral-300 dark:text-neutral-600 transition-all duration-200"
                         }
                       />
                     </button>
@@ -346,7 +346,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
               </div>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('reviewComponents.purchaseDateLabel')}
               </label>
               <input
@@ -354,12 +354,12 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                 value={newReview.purchaseDate}
                 onChange={(e) => setNewReview({...newReview, purchaseDate: e.target.value})}
                 max={new Date().toISOString().split('T')[0]} 
-                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+                className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
               />
             </div>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('reviewComponents.reviewTextLabel')}
               </label>
               <textarea
@@ -368,7 +368,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                 onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
                 rows={4}
                 placeholder={t('reviewComponents.reviewPlaceholder')}
-                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+                className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
               />
             </div>
             
@@ -376,7 +376,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
               <button
                 type="button"
                 onClick={() => setShowReviewForm(false)}
-                className="mr-3 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                className="mr-3 px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-200"
               >
                 {t('reviewComponents.cancel')}
               </button>
@@ -394,35 +394,35 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
 
       {/* Reviews list */}
       {reviews.length === 0 ? (
-        <div className="text-center py-8 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-gray-500 dark:text-gray-400">
+        <div className="text-center py-8 border-t border-neutral-200 dark:border-neutral-700">
+          <p className="text-neutral-500 dark:text-neutral-400">
             {t('reviewComponents.noReviewsText')}
           </p>
         </div>
       ) : (
         <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review.id} className="border-t border-gray-200 dark:border-gray-700 pt-6 transition-all duration-200">
+            <div key={review.id} className="border-t border-neutral-200 dark:border-neutral-700 pt-6 transition-all duration-200">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   {review.userProfileImage ? (
                     <img 
                       src={review.userProfileImage} 
                       alt={review.username}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700 transition-all duration-200"
+                      className="w-10 h-10 rounded-full object-cover border-2 border-neutral-200 dark:border-neutral-700 transition-all duration-200"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-all duration-200">
-                      <User size={20} className="text-gray-500 dark:text-gray-400" />
+                    <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center transition-all duration-200">
+                      <User size={20} className="text-neutral-500 dark:text-neutral-400" />
                     </div>
                   )}
                 </div>
                 <div className="ml-4 flex-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    <h4 className="text-sm font-semibold text-neutral-900 dark:text-white">
                       {review.username}
                     </h4>
-                    <time className="text-xs text-gray-500 dark:text-gray-400">
+                    <time className="text-xs text-neutral-500 dark:text-neutral-400">
                       {formatDate(review.createdAt)}
                     </time>
                   </div>
@@ -435,7 +435,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                           size={14} 
                           className={i < review.rating 
                             ? "text-yellow-400 fill-yellow-400" 
-                            : "text-gray-300 dark:text-gray-600"
+                            : "text-neutral-300 dark:text-neutral-600"
                           }
                         />
                       ))}
@@ -443,20 +443,20 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                   </div>
                   
                   {review.purchaseDate && (
-                    <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                       <Calendar size={12} className="mr-1" />
                       {t('reviewComponents.purchased')} {formatDate(review.purchaseDate)}
                     </div>
                   )}
                   
-                  <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                  <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">
                     {review.comment}
                   </p>
                   
                   {/* Helpful buttons */}
                   {isAuthenticated && review.userId !== user?.id && (
                     <div className="mt-3 flex items-center space-x-4">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
                         {t('reviewComponents.helpfulVote')}
                       </span>
                       <button
@@ -464,7 +464,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                         className={`flex items-center text-xs ${
                           review.isHelpful === true
                             ? 'text-green-600 dark:text-green-400'
-                            : 'text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400'
+                            : 'text-neutral-500 dark:text-neutral-400 hover:text-green-600 dark:hover:text-green-400'
                         } transition-colors duration-200`}
                       >
                         <ThumbsUp size={14} className="mr-1" />
@@ -475,7 +475,7 @@ export default function ReviewSystem({ productId, productType }: ReviewsProps) {
                         className={`flex items-center text-xs ${
                           review.isHelpful === false
                             ? 'text-red-600 dark:text-red-400'
-                            : 'text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400'
+                            : 'text-neutral-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400'
                         } transition-colors duration-200`}
                       >
                         <ThumbsDown size={14} className="mr-1" />

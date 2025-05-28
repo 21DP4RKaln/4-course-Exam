@@ -57,7 +57,7 @@ export default function ProductCard({
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
   const router = useRouter()
 
-  const defaultImageUrl = '/images/Default-image.png'
+  const defaultImageUrl = '/images/product-placeholder.svg'
 
   const isProductInWishlist = isInWishlist(id, type.toUpperCase())
 
@@ -87,7 +87,7 @@ export default function ProductCard({
     } else if (type === 'component') {
       return `/${locale}/components/${category.toLowerCase()}/${id}`
     } else if (type === 'peripheral') {
-      return `/${locale}/peripherals/${category.toLowerCase()}/${id}`
+      return `/${locale}/peripherals/${id}`
     }
      
     return `/${locale}/shop/product/${id}`
@@ -124,7 +124,7 @@ export default function ProductCard({
       href={getProductLink()}      className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${
         theme === 'dark'
           ? 'bg-dark-card border border-stone-950 hover:border-brand-red-800'
-          : 'bg-white border border-gray-100 hover:border-brand-blue-200'
+          : 'bg-white border border-neutral-100 hover:border-brand-blue-200'
       } shadow-soft hover:shadow-medium flex flex-col h-[500px]`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -178,7 +178,7 @@ export default function ProductCard({
           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
             theme === 'dark' 
               ? 'bg-black/40 text-white border border-stone-950' 
-              : 'bg-white/40 text-gray-900 border border-gray-200'
+              : 'bg-white/40 text-neutral-900 border border-neutral-200'
           }`}>
             {t(`shop.categories.${category.toLowerCase()}`)}
           </span>
@@ -212,8 +212,8 @@ export default function ProductCard({
             disabled={stock <= 0}
             className={`p-3 rounded-full transition-colors ${
               theme === 'dark'
-                ? 'bg-brand-red-600 hover:bg-brand-red-700 text-white disabled:bg-gray-700'
-                : 'bg-brand-blue-600 hover:bg-brand-blue-700 text-white disabled:bg-gray-300'
+                ? 'bg-brand-red-600 hover:bg-brand-red-700 text-white disabled:bg-neutral-700'
+                : 'bg-brand-blue-600 hover:bg-brand-blue-700 text-white disabled:bg-neutral-300'
             } disabled:cursor-not-allowed`}
             aria-label={t('shop.product.addToCart')}
           >
@@ -229,7 +229,7 @@ export default function ProductCard({
                   : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
                 : theme === 'dark'
                   ? 'bg-white/10 hover:bg-white/20 text-white'
-                  : 'bg-white hover:bg-gray-100 text-stone-950'
+                  : 'bg-white hover:bg-neutral-100 text-stone-950'
             } backdrop-blur-sm`}
             aria-label={isProductInWishlist ? t('shop.product.removeFromWishlist') : t('shop.product.addToWishlist')}
           >
@@ -238,7 +238,7 @@ export default function ProductCard({
         </div>
       </div>      
       <div className="p-4 flex flex-col flex-grow">
-        {/* Rating display - only show if showRating is true */}
+        {/* Rating display */}
         {showRating && rating > 0 && (
           <div className="flex items-center mb-2">
             <div className="flex">
@@ -248,12 +248,12 @@ export default function ProductCard({
                   size={14} 
                   className={i < Math.floor(rating) 
                     ? (theme === 'dark' ? "text-amber-400 fill-amber-400" : "text-amber-500 fill-amber-500")
-                    : "text-gray-300 dark:text-gray-600"
+                    : "text-neutral-300 dark:text-neutral-600"
                   }
                 />
               ))}
             </div>
-            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+            <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-1">
               ({ratingCount})
             </span>
           </div>
@@ -265,7 +265,7 @@ export default function ProductCard({
           <h3 className={`font-semibold mb-2 text-lg line-clamp-2 group-hover:${
             theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
           } transition-colors ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
+            theme === 'dark' ? 'text-white' : 'text-neutral-900'
           }`}>
             {name}
           </h3>
@@ -275,17 +275,17 @@ export default function ProductCard({
             {discountPrice ? (
               <div className="flex items-center">
                 <span className={`font-bold text-xl ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  theme === 'dark' ? 'text-white' : 'text-neutral-900'
                 }`}>
                   €{discountPrice.toFixed(2)}
                 </span>
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
+                <span className="ml-2 text-sm text-neutral-500 dark:text-neutral-400 line-through">
                   €{price.toFixed(2)}
                 </span>
               </div>
             ) : (
               <span className={`font-bold text-xl ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                theme === 'dark' ? 'text-white' : 'text-neutral-900'
               }`}>
                 €{(price || 0).toFixed(2)}
               </span>
@@ -298,8 +298,8 @@ export default function ProductCard({
                 onClick={toggleSpecs}
                 className={`w-full flex items-center justify-center py-2 px-4 rounded-lg transition-all ${
                   theme === 'dark' 
-                    ? `${showSpecs ? 'bg-red-600 hover:bg-red-700' : 'bg-stone-950 hover:bg-gray-700'} text-white border ${showSpecs ? 'border-red-500' : 'border-gray-700'}` 
-                    : `${showSpecs ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-100 hover:bg-gray-200 text-stone-950'} border ${showSpecs ? 'border-blue-500' : 'border-gray-200'}`
+                    ? `${showSpecs ? 'bg-red-600 hover:bg-red-700' : 'bg-stone-950 hover:bg-neutral-700'} text-white border ${showSpecs ? 'border-red-500' : 'border-neutral-700'}` 
+                    : `${showSpecs ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-neutral-100 hover:bg-neutral-200 text-stone-950'} border ${showSpecs ? 'border-blue-500' : 'border-neutral-200'}`
                 }`}
               >
                 <Info size={16} className="mr-2" />
@@ -315,13 +315,13 @@ export default function ProductCard({
         </div>
           {/* Expandable specs section */}        {showSpecs && Object.keys(specs).length > 0 && (
           <div className={`mt-3 p-4 rounded-lg mb-1 text-xs space-y-2 overflow-y-auto max-h-[200px] scrollbar-thin ${
-            theme === 'dark' ? 'bg-gray-900 border border-stone-950' : 'bg-gray-50 border border-gray-200'
+            theme === 'dark' ? 'bg-neutral-900 border border-stone-950' : 'bg-neutral-50 border border-neutral-200'
           }`}>
             <div className="grid grid-cols-1 gap-y-2">
               {/* Group important specs first */}
               {['brand', 'manufacturer', 'model'].some(key => specs[key]) && (
                 <div className={`flex items-start ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
                 }`}>
                   <span className="font-medium mr-1 min-w-20 capitalize">Brand:</span> 
                   <span className="font-bold">{specs['brand'] || specs['manufacturer'] || specs['model']}</span>
@@ -333,7 +333,7 @@ export default function ProductCard({
                 .filter(([key]) => !['brand', 'manufacturer', 'model'].includes(key.toLowerCase()))
                 .map(([key, value]) => (
                   <div key={key} className={`flex items-start ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
                   }`}>
                     <span className="font-medium mr-1 min-w-20 capitalize">{key}:</span> 
                     <span className="font-bold">{value}</span>

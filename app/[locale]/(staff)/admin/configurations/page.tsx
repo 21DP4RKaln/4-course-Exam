@@ -47,7 +47,7 @@ export default function AdminConfigurationsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+        <div className="text-neutral-500 dark:text-neutral-400">Loading...</div>
       </div>
     )
   }
@@ -55,7 +55,7 @@ export default function AdminConfigurationsPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Configurations</h1>
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">Configurations</h1>
         <button
           onClick={() => router.push('/admin/configurations/create')}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -66,31 +66,31 @@ export default function AdminConfigurationsPage() {
       </div>
 
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700">
+        <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+          <thead className="bg-neutral-50 dark:bg-neutral-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Creator</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Public</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Creator</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Public</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Price</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Created</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-stone-950 divide-y divide-neutral-200 dark:divide-neutral-700">
             {configurations.map((config: any) => (
               <tr key={config.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   {config.name}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   {config.user?.name || 'System'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                    ${config.status === 'DRAFT' ? 'bg-gray-100 text-stone-950' : ''}
+                    ${config.status === 'DRAFT' ? 'bg-neutral-100 text-stone-950' : ''}
                     ${config.status === 'SUBMITTED' ? 'bg-yellow-100 text-yellow-800' : ''}
                     ${config.status === 'APPROVED' ? 'bg-green-100 text-green-800' : ''}
                     ${config.status === 'REJECTED' ? 'bg-red-100 text-red-800' : ''}
@@ -107,15 +107,15 @@ export default function AdminConfigurationsPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                    ${config.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-stone-950'}
+                    ${config.isPublic ? 'bg-green-100 text-green-800' : 'bg-neutral-100 text-stone-950'}
                   `}>
                     {config.isPublic ? 'Yes' : 'No'}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   €{config.totalPrice}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   {new Date(config.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

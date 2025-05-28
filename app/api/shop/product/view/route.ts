@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-  incrementProductView, 
-  resetViewCounts 
-} from '@/lib/services/unifiedProductService';
+import * as oldService from '@/lib/services/unifiedProductService';
+import * as newService from '@/lib/services/newDatabaseProductService';
 import { 
   createBadRequestResponse,
   createUnauthorizedResponse,
   createServerErrorResponse 
 } from '@/lib/apiErrors';
+import { USE_NEW_DATABASE } from '@/lib/databaseConfig';
 
 /**
  * API route to increment view count for a product
@@ -20,7 +19,12 @@ export async function POST(request: NextRequest) {
       return createBadRequestResponse('Product ID and type are required');
     }
 
-    await incrementProductView(productId, productType);
+    // Use appropriate service based on the environment flag
+    if (USE_NEW_DATABASE) {
+      await newService.incrementProductView(productId, productType.toLowerCase());
+    } else {
+      await oldService.incrementProductView(productId, productType);
+    }
     
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -41,7 +45,15 @@ export async function PUT(request: NextRequest) {
       return createUnauthorizedResponse('Unauthorized access');
     }
    
-    const result = await resetViewCounts();
+    // Use appropriate service based on environment flag
+    let result;
+    if (USE_NEW_DATABASE) {
+      // Implement resetViewCounts function in newDatabaseProductService if needed
+      // For now, using the old service
+      result = await oldService.resetViewCounts();
+    } else {
+      result = await oldService.resetViewCounts();
+    }
     
     console.log(`[CRON] Monthly view counts reset - ${new Date().toISOString()}:`, result.resetCounts);
     

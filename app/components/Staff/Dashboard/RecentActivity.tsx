@@ -89,24 +89,24 @@ export function RecentActivity({ limit = 10, showUser = false }: RecentActivityP
       case 'user':
         return 'bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400'
       default:
-        return 'bg-gray-100 text-gray-600 dark:bg-gray-900/20 dark:text-gray-400'
+        return 'bg-neutral-100 text-neutral-600 dark:bg-neutral-900/20 dark:text-neutral-400'
     }
   }
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700">
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
             {t('dashboard.recentActivity')}
           </h3>
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="flex items-start space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 animate-pulse" />
+                <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-700 animate-pulse" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-3/4" />
-                  <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-1/2" />
+                  <div className="h-4 bg-neutral-100 dark:bg-neutral-700 rounded animate-pulse w-3/4" />
+                  <div className="h-3 bg-neutral-100 dark:bg-neutral-700 rounded animate-pulse w-1/2" />
                 </div>
               </div>
             ))}
@@ -117,14 +117,14 @@ export function RecentActivity({ limit = 10, showUser = false }: RecentActivityP
   }
 
   return (
-    <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
           {t('dashboard.recentActivity')}
         </h3>
         
         {activities.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+          <p className="text-neutral-500 dark:text-neutral-400 text-center py-8">
             {t('dashboard.noRecentActivity')}
           </p>
         ) : (
@@ -140,17 +140,17 @@ export function RecentActivity({ limit = 10, showUser = false }: RecentActivityP
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    <p className="text-sm font-medium text-neutral-900 dark:text-white">
                       {activity.action}
                     </p>
                     {getStatusIcon(activity.status)}
                   </div>
                   
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
                     {activity.details}
                   </p>
                   
-                  <div className="mt-1 flex items-center space-x-2 text-xs text-gray-400 dark:text-gray-500">
+                  <div className="mt-1 flex items-center space-x-2 text-xs text-neutral-400 dark:text-neutral-500">
                     <span>
                       {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                     </span>

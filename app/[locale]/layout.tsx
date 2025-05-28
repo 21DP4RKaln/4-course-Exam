@@ -8,6 +8,7 @@ import { AuthProvider } from '@/app/contexts/AuthContext';
 import { CartProvider } from '@/app/contexts/CartContext';
 import { ThemeProvider } from '@/app/contexts/ThemeContext';
 import { WishlistProvider } from '@/app/contexts/WishlistContext';
+import SessionWrapper from '@/app/components/SessionWrapper';
 import ClientLayout from './ClientLayout';
 
 const inter = Inter({ 
@@ -45,26 +46,33 @@ type Props = {
 
 export default async function LocaleLayout({
   children,
-  params: { locale },
+  params,
 }: Props) {
-  const messages = await getMessages(locale);
-
+  // Safely extract locale and ensure it's a valid locale before fetching messages
+  const locale = params?.locale || 'en';
+  
+  // Only try to fetch messages if locale is one of our supported locales
+  const supportedLocales = ['en', 'lv', 'ru'];
+  const safeLocale = supportedLocales.includes(locale) ? locale : 'en';
+  const messages = await getMessages(safeLocale);
   return (
-    <html lang={locale} suppressHydrationWarning className="scroll-smooth">
+    <html lang={safeLocale} suppressHydrationWarning className="scroll-smooth">
       <body className={`${inter.className} antialiased`}>
-        <I18nProvider locale={locale} messages={messages}>
-          <ThemeProvider>
-            <AuthProvider>
-              <WishlistProvider>
-                <CartProvider>
-                  <ClientLayout>
-                    {children}
-                  </ClientLayout>
-                </CartProvider>
-              </WishlistProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </I18nProvider>
+        <SessionWrapper>
+          <I18nProvider locale={safeLocale} messages={messages}>
+            <ThemeProvider>
+              <AuthProvider>
+                <WishlistProvider>
+                  <CartProvider>
+                    <ClientLayout>
+                      {children}
+                    </ClientLayout>
+                  </CartProvider>
+                </WishlistProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </I18nProvider>
+        </SessionWrapper>
       </body>
     </html>
   );

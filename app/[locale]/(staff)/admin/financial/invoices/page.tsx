@@ -102,13 +102,13 @@ export default function AdminFinancialInvoicesPage() {
       case 'sent':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
       case 'draft':
-        return 'bg-gray-100 text-stone-950 dark:bg-gray-900 dark:text-gray-200'
+        return 'bg-neutral-100 text-stone-950 dark:bg-neutral-900 dark:text-neutral-200'
       case 'overdue':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
       case 'cancelled':
-        return 'bg-gray-100 text-stone-950 dark:bg-gray-900 dark:text-gray-200'
+        return 'bg-neutral-100 text-stone-950 dark:bg-neutral-900 dark:text-neutral-200'
       default:
-        return 'bg-gray-100 text-stone-950 dark:bg-gray-700 dark:text-gray-200'
+        return 'bg-neutral-100 text-stone-950 dark:bg-neutral-700 dark:text-neutral-200'
     }
   }
 
@@ -136,11 +136,11 @@ export default function AdminFinancialInvoicesPage() {
         <div className="flex items-center space-x-4">
           <Link
             href={`/${locale}/admin/financial`}
-            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            className="text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
           >
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
             Invoices
           </h1>
         </div>
@@ -156,13 +156,13 @@ export default function AdminFinancialInvoicesPage() {
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search invoices..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
             />
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function AdminFinancialInvoicesPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as InvoiceStatus | 'ALL')}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
           >
             <option value="ALL">All Status</option>
             <option value="draft">Draft</option>
@@ -184,30 +184,30 @@ export default function AdminFinancialInvoicesPage() {
 
       {/* Invoices Table */}
       <div className="bg-white dark:bg-stone-950 shadow rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700">
+        <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+          <thead className="bg-neutral-50 dark:bg-neutral-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Invoice #
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Customer
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Amount
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Due Date
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-right text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-stone-950 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-stone-950 divide-y divide-neutral-200 dark:divide-neutral-700">
             {loading ? (
               <tr>
                 <td colSpan={6} className="px-6 py-4 text-center">
@@ -218,29 +218,29 @@ export default function AdminFinancialInvoicesPage() {
               </tr>
             ) : invoices.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={6} className="px-6 py-4 text-center text-neutral-500 dark:text-neutral-400">
                   No invoices found
                 </td>
               </tr>
             ) : (
               invoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr key={invoice.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    <div className="text-sm font-medium text-neutral-900 dark:text-white">
                       {invoice.invoiceNumber}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">{invoice.customerName}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{invoice.customerEmail}</div>
+                    <div className="text-sm text-neutral-900 dark:text-white">{invoice.customerName}</div>
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">{invoice.customerEmail}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    <div className="text-sm font-medium text-neutral-900 dark:text-white">
                       €{invoice.amount.toFixed(2)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">
+                    <div className="text-sm text-neutral-900 dark:text-white">
                       {new Date(invoice.dueDate).toLocaleDateString()}
                     </div>
                   </td>
@@ -268,7 +268,7 @@ export default function AdminFinancialInvoicesPage() {
                       )}
                       <button
                         onClick={() => downloadInvoice(invoice.id)}
-                        className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300"
+                        className="text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
                       >
                         <Download className="w-5 h-5" />
                       </button>

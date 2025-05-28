@@ -106,9 +106,9 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow-xl w-full max-w-2xl">
-        <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between">
+        <div className="px-6 py-4 border-b dark:border-neutral-700 flex items-center justify-between">
           <h2 className="text-xl font-semibold dark:text-white">Publish Configuration to Shop</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
             <X size={24} />
           </button>
         </div>
@@ -122,26 +122,26 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Shop Display Name
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Category
             </label>
             <select
               value={formData.category}
               onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               required
             >
               <option value="">Select a category</option>
@@ -154,20 +154,20 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Description for Shop
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               placeholder="Describe this PC configuration for potential customers..."
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Markup Percentage
             </label>
             <div className="flex items-center gap-4">
@@ -177,17 +177,17 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
                 onChange={(e) => setFormData(prev => ({ ...prev, markup: Number(e.target.value) }))}
                 min="0"
                 max="100"
-                className="w-32 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                className="w-32 px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
-              <span className="text-gray-500 dark:text-gray-400">%</span>
+              <span className="text-neutral-500 dark:text-neutral-400">%</span>
             </div>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
               Base price: €{configuration.totalPrice.toFixed(2)} → Final price: €{finalPrice.toFixed(2)}
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Product Image (optional)
             </label>
             <div className="mt-2">
@@ -207,9 +207,9 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <ImagePlus size={40} className="text-gray-400" />
-                  <span className="mt-2 text-sm text-gray-500 dark:text-gray-400">Click to upload image</span>
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-700">
+                  <ImagePlus size={40} className="text-neutral-400" />
+                  <span className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Click to upload image</span>
                   <input
                     type="file"
                     className="hidden"
@@ -223,13 +223,13 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
 
           {/* Component Summary */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
               Components Included
             </h3>
-            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg space-y-2">
+            <div className="bg-neutral-50 dark:bg-neutral-700/50 p-4 rounded-lg space-y-2">
               {configuration.components.map((component) => (
                 <div key={component.id} className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-neutral-600 dark:text-neutral-400">
                     {component.name} ({component.category})
                   </span>
                   <span className="font-medium dark:text-white">
@@ -241,11 +241,11 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
           </div>
         </form>
 
-        <div className="px-6 py-4 border-t dark:border-gray-700 flex justify-end gap-3">
+        <div className="px-6 py-4 border-t dark:border-neutral-700 flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            className="px-4 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
           >
             Cancel
           </button>

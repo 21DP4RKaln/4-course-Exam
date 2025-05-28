@@ -3,15 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
-import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useCart } from '@/app/contexts/CartContext'
 import { useWishlist } from '@/app/contexts/WishlistContext'
 import { useAuth } from '@/app/contexts/AuthContext'
-import { useTheme } from '@/app/contexts/ThemeContext'
-import { ShoppingCart, Heart, ChevronRight, Trophy, Flame, ArrowRight, Tag } from 'lucide-react'
-import Loading from '@/app/components/ui/Loading'
-import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { ShoppingCart, Heart, ChevronRight, Trophy, Flame } from 'lucide-react'
+import { useTranslationWithFallback } from '@/app/i18n/translationUtils'
 
 interface Configuration {
   id: string
@@ -22,38 +20,57 @@ interface Configuration {
   imageUrl: string | null
   viewCount?: number
   isPopular?: boolean
+  orderCount?: number
 }
 
-export default function FeaturedConfigurations() {
+export default function FeaturedConfigurations() {  
   const t = useTranslations()
+  const tSafe = useTranslationWithFallback()
   const pathname = usePathname()
   const locale = pathname.split('/')[1]
+  const router = useRouter()
   const { addItem } = useCart()
-  const { theme } = useTheme()
-  const { isAuthenticated } = useAuth()
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
+  const { isAuthenticated, user } = useAuth()
+  
+  // Add scroll animation hooks
+  const { scrollY } = useScroll()
+  const sectionOpacity = useTransform(scrollY, [300, 600], [0, 1])
+  const sectionY = useTransform(scrollY, [300, 600], [100, 0])
+  const cardsScale = useTransform(scrollY, [400, 700], [0.9, 1])
   
   const [configurations, setConfigurations] = useState<Configuration[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-
-  const defaultImageUrl = '/images/Default-image.png'
-
+  
   useEffect(() => {
     const fetchConfigurations = async () => {
       setLoading(true)
-      try {
-        const response = await fetch('/api/configurations/popular?limit=4')
-        
+      try {        // Fetch configurations, limited to 4
+        const response = await fetch('/api/configurations/popular?limit=4&sortBy=viewCount')
         if (!response.ok) {
           throw new Error('Failed to fetch popular configurations')
         }
         
         const data = await response.json()
-        setConfigurations(data)
-      } catch (error) {
-        console.error('Error fetching popular configurations:', error)
+        
+        if (data.error) {
+          throw new Error(data.error)
+        }
+        
+        // Sort configurations by viewCount for popular items
+        const sortedConfigurations = Array.isArray(data) ? [...data].sort((a, b) => {
+          // First sort by orderCount (for top pick)
+          if ((b.orderCount || 0) - (a.orderCount || 0) !== 0) {
+            return (b.orderCount || 0) - (a.orderCount || 0);
+          }
+          // Then sort by viewCount
+          return (b.viewCount || 0) - (a.viewCount || 0);
+        }) : [];
+        
+        setConfigurations(sortedConfigurations)
+      } catch (err) {
+        console.error('Error fetching configurations:', err)
         setError('Failed to load configurations')
       } finally {
         setLoading(false)
@@ -62,61 +79,64 @@ export default function FeaturedConfigurations() {
     
     fetchConfigurations()
   }, [])
-
-  const handleAddToCart = (config: Configuration, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-    
+  const handleAddToCart = (config: Configuration) => {
     addItem({
       id: config.id,
       type: 'configuration',
       name: config.name,
       price: config.discountPrice || config.price,
-      imageUrl: config.imageUrl || defaultImageUrl
+      imageUrl: config.imageUrl || ''
     })
   }
-
-  const handleWishlistToggle = async (config: Configuration, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-
+    const handleToggleWishlist = (config: Configuration, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    
     if (!isAuthenticated) {
-      window.location.href = `/${locale}/auth/login`
+      // Redirect to login page if not authenticated
+      router.push(`/${locale}/auth/login?returnUrl=${encodeURIComponent(pathname)}`)
       return
     }
-
-    const inWishlist = isInWishlist(config.id, 'CONFIGURATION')
-    if (inWishlist) {
-      await removeFromWishlist(config.id, 'CONFIGURATION')
-    } else {
-      await addToWishlist(config.id, 'CONFIGURATION')
+    
+    const isAlreadyInWishlist = isInWishlist(config.id, 'CONFIGURATION')
+    
+    try {
+      if (isAlreadyInWishlist) {
+        removeFromWishlist(config.id, 'CONFIGURATION')
+      } else {
+        addToWishlist(config.id, 'CONFIGURATION')
+      }
+    } catch (error) {
+      console.error('Wishlist operation failed:', error)
+      // If token is expired, could redirect to login
+      if (String(error).includes('JWT') || String(error).includes('401')) {
+        router.push(`/${locale}/auth/login?returnUrl=${encodeURIComponent(pathname)}`)
+      }
     }
-  }
-
-  const getDiscountPercentage = (price: number, discountPrice?: number | null) => {
-    if (!discountPrice || discountPrice >= price) return null
-    return Math.round(((price - discountPrice) / price) * 100)
   }
 
   if (loading) {
     return (
-      <section className={`py-24 ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}>
-        <div className="container mx-auto px-4">
-          <div className="animate-pulse">
-            <div className="h-10 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-gray-100 dark:bg-stone-950 rounded-lg p-4">
-                  <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
-                  <div className="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+      <section className="py-8 md:py-12 px-4 md:px-0">
+        <div className="animate-pulse">
+          <div className="h-8 md:h-10 w-36 md:w-48 bg-neutral-200 dark:bg-neutral-700 rounded mb-6 md:mb-8"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
+                <div className="h-36 sm:h-40 md:h-48 bg-neutral-300 dark:bg-neutral-700 animate-pulse"></div>
+                <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+                  <div className="h-5 md:h-6 bg-neutral-300 dark:bg-neutral-700 rounded animate-pulse"></div>
+                  <div className="h-3 md:h-4 bg-neutral-300 dark:bg-neutral-700 rounded animate-pulse"></div>
+                  <div className="flex justify-between items-center pt-1">
+                    <div className="h-5 md:h-6 w-16 md:w-20 bg-neutral-300 dark:bg-neutral-700 rounded animate-pulse"></div>
+                    <div className="flex space-x-1 sm:space-x-2">
+                      <div className="h-7 w-7 md:h-8 md:w-8 bg-neutral-300 dark:bg-neutral-700 rounded-full animate-pulse"></div>
+                      <div className="h-7 w-7 md:h-8 md:w-8 bg-neutral-300 dark:bg-neutral-700 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -124,170 +144,157 @@ export default function FeaturedConfigurations() {
   }
 
   if (error && configurations.length === 0) {
-    return null
+    return (
+      <section className="py-8 md:py-12 px-4 md:px-0">
+        <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-4 md:p-6 text-center">
+          <h2 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-white mb-3 md:mb-4">
+            {t('error.loadingConfigs')}
+          </h2>
+          <p className="text-sm md:text-base text-neutral-600 dark:text-neutral-400">
+            {error}
+          </p>
+        </div>
+      </section>
+    )
   }
 
   return (
-    <section className={`py-24 ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}>
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between mb-12">
-          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            {t('nav.Popular')}
-          </h2>
-          <Link
-            href={`/${locale}/shop/ready-made`}
-            className={`flex items-center text-sm font-medium ${
-              theme === 'dark' 
-                ? 'text-brand-red-400 hover:text-brand-red-300' 
-                : 'text-brand-blue-600 hover:text-brand-blue-500'
-            } transition-colors group`}
-          >
-            <span>{t('buttons.viewAll')}</span> 
-            <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
-        </div>
+    <motion.section 
+      className="py-8 md:py-12 px-4 md:px-0"
+      style={{ 
+        opacity: sectionOpacity,
+        y: sectionY
+      }}
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
+    >      <motion.div 
+        className="flex items-center justify-between mb-6 md:mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">
+          {t('nav.Popular')}
+        </h2>        <Link
+          href={`/${locale}/shop/ready-made`}
+          className="flex items-center px-3 py-1.5 rounded-md bg-white dark:bg-stone-800 hover:bg-neutral-50 dark:hover:bg-stone-700 text-blue-600 dark:text-brand-red-400 shadow-sm border border-neutral-200 dark:border-stone-700 transition-colors text-sm md:text-base"
+        >
+          {t('buttons.view')} <ChevronRight size={16} className="ml-1" />
+        </Link>
+      </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {configurations.map((config) => {
-            const discountPercentage = getDiscountPercentage(config.price, config.discountPrice);
-            const isHovered = hoveredItem === config.id;
-            const inWishlist = isInWishlist(config.id, 'CONFIGURATION');
-            
-            return (
-              <Link 
-                key={config.id}
-                href={`/${locale}/shop/product/${config.id}`}
-                className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${
-                  theme === 'dark'
-                    ? 'bg-dark-card border border-stone-950 hover:border-brand-red-800'
-                    : 'bg-white border border-gray-100 hover:border-brand-blue-200'
-                } shadow-soft hover:shadow-medium`}
-                onMouseEnter={() => setHoveredItem(config.id)}
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                {/* Badges */}
-                <div className="absolute top-3 left-3 z-10 flex flex-col space-y-2">
-                  {configurations.indexOf(config) === 0 && (
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      theme === 'dark' 
-                        ? 'bg-amber-900/40 text-amber-400 border border-amber-800' 
-                        : 'bg-amber-50 text-amber-700 border border-amber-100'
-                    }`}>
-                      <Trophy size={12} className="mr-1" />
-                      {t('nav.topPick')}
-                    </span>
-                  )}
-                  
-                  {config.isPopular && (
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      theme === 'dark' 
-                        ? 'bg-brand-red-900/40 text-brand-red-400 border border-brand-red-800' 
-                        : 'bg-brand-blue-50 text-brand-blue-700 border border-brand-blue-100'
-                    }`}>
-                      <Flame size={12} className="mr-1" />
-                      {t('nav.popular')}
-                    </span>
-                  )}
-                  
-                  {discountPercentage && (
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      theme === 'dark' 
-                        ? 'bg-green-900/40 text-green-400 border border-green-800' 
-                        : 'bg-green-50 text-green-700 border border-green-100'
-                    }`}>
-                      <Tag size={12} className="mr-1" />
-                      {t('nav.discount', { percent: discountPercentage })}
-                    </span>
-                  )}
-                </div>
-                
-                {/* Product image */}
-                <div className="relative aspect-square overflow-hidden">
-                  <Image 
-                    src={(config.imageUrl || defaultImageUrl).trim()} 
+      <motion.div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+        style={{ scale: cardsScale }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, staggerChildren: 0.1 }}
+      >
+        {configurations.map((config, index) => (          <motion.div 
+            key={config.id}
+            className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1 group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            {/* Image or placeholder */}
+            <Link href={`/${locale}/shop/product/${config.id}`}>
+              <div className="h-40 sm:h-48 md:h-56 bg-gradient-to-b from-white to-neutral-50 dark:from-stone-900 dark:to-stone-950 relative overflow-hidden transition-all">
+                <div className="absolute inset-0">
+                  <img 
+                    src={config.imageUrl || '/images/product-placeholder.svg'} 
                     alt={config.name}
-                    width={300}
-                    height={300}
-                    className={`w-full h-full object-contain transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    style={{
+                      objectPosition: 'center',
+                      filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.15))'
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.src = '/images/product-placeholder.svg'
+                    }}
+                    loading="lazy"
                   />
-                  
-                  {/* Action buttons overlay */}
-                  <div className={`absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 ${
-                    isHovered ? 'opacity-100' : 'opacity-0'
-                  } bg-black/30 backdrop-blur-xs`}>
-                    <button
-                      onClick={(e) => handleAddToCart(config, e)}
-                      className={`p-3 rounded-full transition-colors ${
-                        theme === 'dark'
-                          ? 'bg-brand-red-600 hover:bg-brand-red-700 text-white'
-                          : 'bg-brand-blue-600 hover:bg-brand-blue-700 text-white'
-                      }`}
-                      aria-label={t('buttons.addToCart')}
-                    >
-                      <ShoppingCart size={18} />
-                    </button>
-                    
-                    <button
-                      onClick={(e) => handleWishlistToggle(config, e)}
-                      className={`p-3 rounded-full transition-colors ${
-                        inWishlist
-                          ? theme === 'dark'
-                            ? 'bg-brand-red-600 text-white hover:bg-brand-red-700'
-                            : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
-                          : theme === 'dark'
-                            ? 'bg-white/10 hover:bg-white/20 text-white'
-                            : 'bg-white hover:bg-gray-100 text-stone-950'
-                      } backdrop-blur-sm`}
-                      aria-label={t('buttons.addToWishlist')}
-                    >
-                      <Heart size={18} fill={inWishlist ? 'currentColor' : 'none'} />
-                    </button>
-                  </div>
                 </div>
                 
-                <div className="p-4">
-                  <h3 className={`font-medium mb-2 line-clamp-2 group-hover:${
-                    theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
-                  } transition-colors ${
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    {config.name}
-                  </h3>
-                  
-                  <p className={`text-sm line-clamp-2 mb-4 ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    {config.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between mt-2">
-                    <div>
-                      {config.discountPrice ? (
-                        <div className="flex items-center">
-                          <span className={`font-bold ${
-                            theme === 'dark' ? 'text-white' : 'text-gray-900'
-                          }`}>
-                            €{config.discountPrice.toFixed(2)}
-                          </span>
-                          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
-                            €{config.price.toFixed(2)}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className={`font-bold ${
-                          theme === 'dark' ? 'text-white' : 'text-gray-900'
-                        }`}>
-                          €{config.price.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                {/* Always show "Popular" badge */}
+                <div 
+                  className="absolute top-2 left-2 bg-gradient-to-r from-brand-blue-600 to-brand-blue-500 dark:from-red-600 dark:to-red-500 text-white px-2 py-1 rounded text-xs flex items-center shadow-md"
+                  title={`${tSafe('nav.viewedTimes', 'Viewed ' + (config.viewCount || 0) + ' times', { count: config.viewCount || 0 })}`}
+                >
+                  <Flame size={12} className="mr-1" />
+                  {tSafe('nav.popular', 'Popular')}
                 </div>
+                {/* Show "Top Pick" for the configuration with highest order count */}
+                {config.orderCount && 
+                  configurations.findIndex(c => 
+                    c.orderCount && c.orderCount === Math.max(...configurations.filter(conf => conf.orderCount).map(conf => conf.orderCount || 0))
+                  ) === configurations.indexOf(config) && (
+                  <div 
+                    className="absolute top-2 right-2 bg-gradient-to-r from-amber-500 to-amber-400 dark:from-amber-600 dark:to-amber-500 text-white px-2 py-1 rounded text-xs flex items-center shadow-md"
+                    title={`${t('nav.orderedTimes', { count: config.orderCount })}`}
+                  >
+                    <Trophy size={12} className="mr-1" />
+                    {t('nav.topPick')}
+                  </div>
+                )}
+              </div>
+            </Link>
+              <div className="p-3 sm:p-4">
+              <Link href={`/${locale}/shop/product/${config.id}`}>                <h3 className="font-semibold text-sm md:text-base text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-brand-red-400 transition-colors line-clamp-1">
+                  {config.name}
+                </h3>
               </Link>
-            )
-          })}
-        </div>
-      </div>
-    </section>
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 line-clamp-2 leading-relaxed">
+                {config.description}
+              </p>
+                <div className="mt-3 md:mt-4 flex items-center justify-between">
+                <div>                  {config.discountPrice ? (
+                    <div className="flex flex-col">
+                      <span className="text-base md:text-lg font-bold text-blue-600 dark:text-brand-red-400">
+                        €{config.discountPrice.toFixed(2)}
+                      </span>
+                      <span className="text-xs md:text-sm text-neutral-500 line-through">
+                        €{config.price.toFixed(2)}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-base md:text-lg font-bold text-blue-600 dark:text-white">
+                      €{config.price.toFixed(2)}
+                    </span>
+                  )}
+                </div>
+                  <div className="flex space-x-1 sm:space-x-2">
+                  <button 
+                    onClick={() => handleAddToCart(config)}
+                    className="p-1.5 sm:p-2 bg-blue-600 dark:bg-brand-red-500 hover:bg-blue-700 dark:hover:bg-brand-red-600 text-white rounded-full shadow-sm transform transition-transform hover:scale-110"
+                    title={t('buttons.addToCart')}
+                  >
+                    <ShoppingCart size={14} strokeWidth={2.5} />
+                  </button>
+                  <button 
+                    onClick={(e) => handleToggleWishlist(config, e)}
+                    className={`p-1.5 sm:p-2 rounded-full shadow-sm transform transition-transform hover:scale-110 ${
+                      isInWishlist(config.id, 'CONFIGURATION') 
+                      ? 'bg-blue-600 dark:bg-brand-red-500 text-white' 
+                      : 'bg-white dark:bg-stone-800 hover:bg-neutral-100 dark:hover:bg-stone-700 text-blue-600 dark:text-neutral-300 border border-neutral-200 dark:border-stone-700'
+                    }`}
+                    title={isInWishlist(config.id, 'CONFIGURATION') 
+                      ? t('buttons.removeFromWishlist') 
+                      : t('buttons.addToWishlist')}
+                  >
+                    <Heart size={14} strokeWidth={2.5} className={isInWishlist(config.id, 'CONFIGURATION') ? 'fill-white' : ''} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.section>
   )
 }

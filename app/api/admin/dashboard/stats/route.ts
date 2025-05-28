@@ -18,7 +18,11 @@ export async function GET(request: NextRequest) {
 
     if (payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin access required')
-    }
+    }    // Define date ranges for comparison
+    const now = new Date()
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
 
     // Fetch all required stats in parallel
     const [
@@ -30,7 +34,13 @@ export async function GET(request: NextRequest) {
       activeRepairs,
       lowStockComponents,
       lastMonthOrders,
-      thisMonthOrders
+      thisMonthOrders,
+      lastMonthUsers,
+      thisMonthUsers,
+      lastMonthRevenue,
+      thisMonthRevenue,
+      lastMonthRepairs,
+      thisMonthRepairs
     ] = await prisma.$transaction([
       // Total users
       prisma.user.count(),
@@ -61,8 +71,8 @@ export async function GET(request: NextRequest) {
       prisma.order.count({
         where: {
           createdAt: {
-            gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-            lt: new Date()
+            gte: lastMonthStart,
+            lte: lastMonthEnd
           }
         }
       }),
@@ -70,16 +80,78 @@ export async function GET(request: NextRequest) {
       prisma.order.count({
         where: {
           createdAt: {
-            gte: new Date(new Date().setDate(1))
+            gte: thisMonthStart
+          }
+        }
+      }),
+      // Last month users count
+      prisma.user.count({
+        where: {
+          createdAt: {
+            gte: lastMonthStart,
+            lte: lastMonthEnd
+          }
+        }
+      }),
+      // This month users count
+      prisma.user.count({
+        where: {
+          createdAt: {
+            gte: thisMonthStart
+          }
+        }
+      }),
+      // Last month revenue
+      prisma.order.aggregate({
+        where: { 
+          status: 'COMPLETED',
+          createdAt: {
+            gte: lastMonthStart,
+            lte: lastMonthEnd
+          }
+        },
+        _sum: { totalAmount: true }
+      }),
+      // This month revenue
+      prisma.order.aggregate({
+        where: { 
+          status: 'COMPLETED',
+          createdAt: {
+            gte: thisMonthStart
+          }
+        },
+        _sum: { totalAmount: true }
+      }),
+      // Last month repairs count
+      prisma.repair.count({
+        where: {
+          createdAt: {
+            gte: lastMonthStart,
+            lte: lastMonthEnd
+          }
+        }
+      }),
+      // This month repairs count
+      prisma.repair.count({
+        where: {
+          createdAt: {
+            gte: thisMonthStart
           }
         }
       })
-    ])
+    ])    // Calculate growth percentages
+    const calculateGrowth = (current: number, previous: number): number => {
+      if (previous === 0) return current > 0 ? 100 : 0
+      return Math.round(((current - previous) / previous) * 100 * 10) / 10
+    }
 
-    // Calculate monthly growth percentage
-    const monthlyGrowth = lastMonthOrders === 0 
-      ? thisMonthOrders * 100 
-      : ((thisMonthOrders - lastMonthOrders) / lastMonthOrders) * 100
+    const userGrowth = calculateGrowth(thisMonthUsers, lastMonthUsers)
+    const orderGrowth = calculateGrowth(thisMonthOrders, lastMonthOrders)
+    const revenueGrowth = calculateGrowth(
+      thisMonthRevenue._sum.totalAmount || 0, 
+      lastMonthRevenue._sum.totalAmount || 0
+    )
+    const repairGrowth = calculateGrowth(thisMonthRepairs, lastMonthRepairs)
 
     return NextResponse.json({
       totalUsers,
@@ -89,7 +161,13 @@ export async function GET(request: NextRequest) {
       pendingConfigurations,
       activeRepairs,
       lowStockItems: lowStockComponents,
-      monthlyGrowth: Math.round(monthlyGrowth * 10) / 10 // Round to 1 decimal place
+      monthlyGrowth: orderGrowth,
+      trends: {
+        users: userGrowth,
+        orders: orderGrowth,
+        revenue: revenueGrowth,
+        repairs: repairGrowth
+      }
     })
   } catch (error) {
     console.error('Error fetching admin dashboard stats:', error)
