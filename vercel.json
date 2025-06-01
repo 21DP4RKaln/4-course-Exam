@@ -5,8 +5,14 @@
         "schedule": "0 0 1 * *"
       }
     ],
-    "env": {
-      "RESET_VIEWS_API_KEY": "@reset_views_api_key",
-      "CRON_SECRET": "@cron_secret"
+    "build": {
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+      }
+    },
+    "functions": {
+      "app/api/**": {
+        "maxDuration": 30
+      }
     }
   }

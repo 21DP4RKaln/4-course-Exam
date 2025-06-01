@@ -34,34 +34,11 @@ A full-stack web application for browsing computer components, creating custom P
 
 ## Project Structure
 
-### Core Directories
 - `/app` - Main application code (Next.js App Router)
 - `/lib` - Utility functions, services, and shared code
 - `/prisma` - Database schema and migrations
 - `/public` - Static assets
 - `/scripts` - Utility scripts for development and maintenance
-
-### Key Components
-
-#### Shop Components
-- `AdvancedFilter.tsx` - Advanced filtering for shop products
-- `ProductCard.tsx` - Product display card component
-- `ProductDetail.tsx` - Detailed product view
-- `SpecificationsTable.tsx` - Technical specifications display
-
-#### Context Providers
-- `app/contexts/AuthContext.tsx` - Authentication state management
-- `app/contexts/CartContext.tsx` - Shopping cart state management
-- `app/contexts/ThemeContext.tsx` - Theme (light/dark) state management
-- `app/contexts/WishlistContext.tsx` - User wishlist state management
-- `app/contexts/ConfiguratorCartContext.tsx` - PC configurator cart management
-
-#### Localized Routes
-- `app/[locale]/layout.tsx` - Main layout with header and footer
-- `app/[locale]/(home)/page.tsx` - Home page
-- `app/[locale]/configurator/` - PC configurator tool
-- `app/[locale]/auth/` - Authentication pages (login, register)
-- `app/[locale]/(staff)/` - Admin and staff panels
 
 ## Getting Started
 
@@ -70,43 +47,67 @@ A full-stack web application for browsing computer components, creating custom P
 - MySQL database
 - Stripe account (for payment processing)
 
-### Installation
+### Installation & Setup
 
-1. Clone the repository
-```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
-```
-
-2. Install dependencies
-```bash
-npm install
-```
-
-3. Set up environment variables
-Create a `.env` file based on `.env.example` with your database connection string and other configuration.
-
-4. Initialize the database
-```bash
-npm run prisma:generate
-npm run prisma:migrate
-```
-
-5. Seed the database with initial data
-```bash
-npm run seed
-```
-
-6. Start the development server
-```bash
-npm run dev
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/your-repo-name.git
+   cd your-repo-name
+   ```
+2. **Install dependencies**
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+   
+   **Note**: If you encounter build errors about missing modules (`@radix-ui/react-select`, `fs-extra`, `pdfkit`), install them separately:
+   ```bash
+   npm install @radix-ui/react-select fs-extra pdfkit --legacy-peer-deps
+   ```
+3. **Set up environment variables**
+   - Create a `.env` file based on `.env.example` and fill in your database connection string and other configuration.
+4. **Initialize the database**
+   ```bash
+   npx prisma migrate dev
+   ```
+5. **Seed the database with initial data**
+   ```bash
+   npm run seed
+   ```
+6. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
 ### Build for Production
 ```bash
 npm run build
 npm run start
 ```
+
+### Memory-Optimized Development
+
+Ja rodas atmiņas problēmas izstrādes laikā, izmanto šīs komandas:
+
+```bash
+npm run dev:high-memory      # 8GB RAM
+npm run dev:simple           # 4GB RAM
+npm run dev:clean            # Pēc kešu iztīrīšanas
+npm run dev:reduced          # Samazināts maršrutu skaits
+```
+
+### Memory-Optimized Build
+
+```bash
+npm run build:high-memory    # 8GB RAM
+npm run build:low-memory     # 4GB RAM, viens pavediens
+npm run build:clean          # Pēc kešu iztīrīšanas
+```
+
+## Default Accounts
+
+- Admin: admin@ivapro.com / admin123
+- Specialist: specialist@ivapro.com / admin123
+- User: user@ivapro.com / admin123
 
 ## Development Scripts
 
@@ -120,65 +121,37 @@ npm run start
 ## Notes for Developers
 
 - The project uses Next.js App Router with route groups and internationalized routing
-- Ensure you run prisma:generate after schema changes
+- Ensure you run `prisma:generate` after schema changes
 - Use the appropriate locale prefix for all internal links
-  - `ServicesSection.tsx`
+- Shared UI components are in `app/components/ui/`
 
-- `app/components/ui/` - Shared UI components
-  - `tabs.tsx`
+## API Routes
 
-#### API Routes
 - `app/api/admin/` - Admin API routes
-  - `route.ts`
-  - `components/[id]/route.ts`
-  - `components/route.ts`
-  - `configurations/[id]/route.ts`
-  - `configurations/route.ts`
-  - `orders/[id]/route.ts`
-  - `orders/route.ts`
-  - `users/[id]/route.ts`
-  - `users/route.ts`
-
 - `app/api/auth/` - Authentication API routes
-  - `login/route.ts`
-  - `logout/route.ts`
-  - `me/route.ts`
-  - `register/route.ts`
-  - `update-profile/route.ts`
-
 - `app/api/components/route.ts` - Component data API
 - `app/api/dashboard/` - Dashboard data API
-  - `configurations/[id]/route.ts`
-  - `configurations/route.ts`
-  - `orders/[id]/route.ts`
-  - `orders/route.ts`
 - `app/api/shop/product/[id]/route.ts` - Shop product data API
 
-### Lib Directory
+## Lib Directory
+
 - `lib/apiErrors.ts` - API error handling utilities
 - `lib/jwt.ts` - JWT authentication functions
 - `lib/messages/` - Internationalization message files
-  - `en.json` - English translations
-  - `lv.json` - Latvian translations
-  - `ru.json` - Russian translations
 - `lib/prismaService.ts` - Prisma client setup
 - `lib/seeder.ts` - Database seeding script
 - `lib/utils.ts` - General utility functions
-- `lib/utils/adminHelpers.tsx` - Admin panel utilities
+- `lib/services/` - Business logic services
 
-**Service Files:**
-- `lib/services/configuratorService.ts` - Configurator business logic
-- `lib/services/dashboardService.ts` - Dashboard data functions
-- `lib/services/shopService.ts` - Shop functionality
-- `lib/services/specialistService.ts` - Specialist panel functions
+## Database (Prisma)
 
-### Database (Prisma)
 - `prisma/schema.prisma` - Database schema
 - `prisma/migrations/` - Database migrations
 
-### Public Directory
+## Public Directory
+
 - `public/uploads/profiles/` - User profile images
-- `public/file.svg`, `public/globe.svg`, etc. - Static SVG assets
+- `public/*.svg` - Static SVG assets
 
 ## Key Features
 
@@ -199,77 +172,6 @@ npm run start
 - Implemented profile management in dashboard
 - Added the ability to update contact information
 - Added dual authentication with either email or phone
-
-## Setup Instructions
-
-1. Install dependencies:
-```bash
-npm install --legacy-peer-deps
-```
-
-2. Set up the database:
-```bash
-npx prisma migrate dev
-```
-
-3. Seed the database with initial data:
-```bash
-npm run seed
-```
-
-4. Run the development server:
-```bash
-npm run dev
-```
-
-### Memory-Optimized Development
-
-If you encounter memory issues during development, you can use these commands:
-
-```bash
-# Development with increased memory (8GB)
-npm run dev:high-memory
-
-# Development with optimized memory settings (4GB)
-npm run dev:simple
-
-# Development after cleaning caches
-npm run dev:clean
-
-# Development with reduced routes
-npm run dev:reduced
-```
-
-## Deployment
-
-Build the application for production:
-```bash
-npm run build
-```
-
-If you encounter memory issues during build, try one of these alternatives:
-
-```bash
-# High memory build (8GB)
-npm run build:high-memory
-
-# Low memory build (4GB, single thread)
-npm run build:low-memory
-
-# Clean build (removes caches first)
-npm run build:clean
-```
-
-Start the production server:
-```bash
-npm start
-```
-
-## Default Accounts
-
-- Admin: admin@ivapro.com / admin123
-- Specialist: specialist@ivapro.com / admin123
-- User: user@ivapro.com / admin123
 
 ## Technologies Used
 
