@@ -65,7 +65,6 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
       setLoading(false)
     }
   }
-
   const updateOrderStatus = async (newStatus: OrderStatus) => {
     try {
       const response = await fetch(`/api/admin/orders/${params.id}`, {
@@ -77,7 +76,18 @@ export default function AdminOrderDetailsPage({ params }: { params: { id: string
       })
       
       if (response.ok) {
+        const result = await response.json()
+        console.log('Order status updated:', result.message)
+        
+        // If status changed to PROCESSING, show a notification about approval email
+        if (newStatus === 'PROCESSING') {
+          console.log('Order moved to processing - approval email will be sent')
+        }
+        
         fetchOrderDetails()
+      } else {
+        const error = await response.json()
+        console.error('Error updating order status:', error)
       }
     } catch (error) {
       console.error('Error updating order status:', error)

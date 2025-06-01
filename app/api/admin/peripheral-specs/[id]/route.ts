@@ -19,22 +19,37 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     if (!payload || payload.role !== 'ADMIN') {
       return createForbiddenResponse();
     }
-
-    const peripheralSpec = await prisma.peripheralSpec.findUnique({
+    
+    const peripheral = await prisma.peripheral.findUnique({
       where: { id: params.id },
-      include: {
-        peripheral: {
-          select: { id: true, name: true, categoryId: true }
-        },
-        specKey: true
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        categoryId: true,
+        category: {
+          select: { id: true, name: true }
+        }
       }
-    });
-
-    if (!peripheralSpec) {
-      return NextResponse.json({ error: 'Peripheral specification not found' }, { status: 404 });
+    });    if (!peripheral) {
+      return NextResponse.json({ error: 'Peripheral not found' }, { status: 404 });
     }
 
-    return NextResponse.json(peripheralSpec);
+    const formattedResponse = {
+      id: peripheral.id,
+      value: peripheral.description || '',
+      peripheral: {
+        id: peripheral.id,
+        name: peripheral.name,
+        categoryId: peripheral.categoryId
+      },
+      specKey: {
+        name: 'description',
+        displayName: 'Description'
+      }
+    };
+
+    return NextResponse.json(formattedResponse);
   } catch (error) {
     console.error('Error fetching peripheral specification:', error);
     return NextResponse.json({ error: 'Failed to fetch peripheral specification' }, { status: 500 });
@@ -62,29 +77,42 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     const data = validationResult.data;
     
-    // Check if spec exists
-    const existingSpec = await prisma.peripheralSpec.findUnique({
+    // Check if peripheral exists
+    const existingPeripheral = await prisma.peripheral.findUnique({
       where: { id: params.id }
     });
     
-    if (!existingSpec) {
-      return NextResponse.json({ error: 'Peripheral specification not found' }, { status: 404 });
+    if (!existingPeripheral) {
+      return NextResponse.json({ error: 'Peripheral not found' }, { status: 404 });
     }
     
-    const peripheralSpec = await prisma.peripheralSpec.update({
+    const updatedPeripheral = await prisma.peripheral.update({
       where: { id: params.id },
       data: {
-        value: data.value
+        description: data.value
       },
-      include: {
-        peripheral: {
-          select: { id: true, name: true }
-        },
-        specKey: true
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        categoryId: true
       }
     });
 
-    return NextResponse.json(peripheralSpec);
+    const formattedResponse = {
+      id: updatedPeripheral.id,
+      value: updatedPeripheral.description || '',
+      peripheral: {
+        id: updatedPeripheral.id,
+        name: updatedPeripheral.name
+      },
+      specKey: {
+        name: 'description',
+        displayName: 'Description'
+      }
+    };
+
+    return NextResponse.json(formattedResponse);
   } catch (error) {
     console.error('Error updating peripheral specification:', error);
     return NextResponse.json({ error: 'Failed to update peripheral specification' }, { status: 500 });
@@ -103,22 +131,15 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       return createForbiddenResponse();
     }
 
-    // Check if spec exists
-    const existingSpec = await prisma.peripheralSpec.findUnique({
-      where: { id: params.id }
-    });
-    
-    if (!existingSpec) {
-      return NextResponse.json({ error: 'Peripheral specification not found' }, { status: 404 });
-    }
-
-    await prisma.peripheralSpec.delete({
-      where: { id: params.id }
-    });
-
-    return NextResponse.json({ message: 'Peripheral specification deleted successfully' });
+    return NextResponse.json(
+      { 
+        message: 'Deleting peripheral specifications is not supported in this version. ' +
+                 'To modify peripheral details, please use the peripheral management interface.' 
+      }, 
+      { status: 400 }
+    );
   } catch (error) {
-    console.error('Error deleting peripheral specification:', error);
-    return NextResponse.json({ error: 'Failed to delete peripheral specification' }, { status: 500 });
+    console.error('Error handling peripheral specification delete request:', error);
+    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
   }
 }

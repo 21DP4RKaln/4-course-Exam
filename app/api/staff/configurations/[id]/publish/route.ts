@@ -40,7 +40,6 @@ export async function POST(
 
     const { name, description, price, category, imageUrl } = validationResult.data
 
-    // Find the configuration
     const configuration = await prisma.configuration.findUnique({
       where: { id: params.id },
       include: {
@@ -56,12 +55,10 @@ export async function POST(
       return createNotFoundResponse('Configuration not found')
     }
 
-    // Check if configuration is already published
     if (configuration.isTemplate && configuration.isPublic) {
       return createBadRequestResponse('Configuration is already published')
     }
 
-    // Update configuration to make it public
     const updatedConfiguration = await prisma.configuration.update({
       where: { id: params.id },
       data: {

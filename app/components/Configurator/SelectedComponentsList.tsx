@@ -21,7 +21,7 @@ interface Component {
 }
 
 interface Props {
-  selectedComponents: Record<string, Component>
+  selectedComponents: Record<string, Component | Component[]>
   componentCategories: Category[]
   configName: string
   setConfigName: (name: string) => void
@@ -53,7 +53,6 @@ const SelectedComponentsList: React.FC<Props> = ({
 }) => {
   const t = useTranslations()
   const { theme } = useTheme()
-  
   // Get category icon based on category id
   const getCategoryIcon = (categoryId: string) => {
     const iconColor = theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
@@ -80,9 +79,20 @@ const SelectedComponentsList: React.FC<Props> = ({
         return <HardDrive size={20} className={iconColor} />
     }
   }
-
-  const selectedCount = Object.keys(selectedComponents).length
-  const totalCategories = componentCategories.length
+  // Only show relevant categories: exclude Optical and Network, and show Services only if selected
+  const visibleCategories = componentCategories.filter(cat => 
+    cat.id !== 'optical' && cat.id !== 'network' && 
+    (cat.id !== 'services' || (Array.isArray(selectedComponents.services) ? selectedComponents.services.length > 0 : !!selectedComponents.services))
+  )
+  
+  // Count selected across visible categories
+  const selectedCount = Object.keys(selectedComponents).reduce((count, key) => {
+    if (key === 'services' && Array.isArray(selectedComponents.services)) {
+      return count + selectedComponents.services.length
+    }
+    return count + (selectedComponents[key] ? 1 : 0)
+  }, 0)
+  const totalCategories = visibleCategories.length
   return (
     <div className={`w-[320px] max-w-full rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${
       theme === 'dark'
@@ -138,9 +148,11 @@ const SelectedComponentsList: React.FC<Props> = ({
         </div>
       </div>      {/* Component List */}
       <div className="p-4 space-y-3 max-h-[800px] overflow-y-auto">
-        {componentCategories.map(category => {
-          const component = selectedComponents[category.id]
-          const isSelected = !!component
+        {visibleCategories.map(category => {
+          const selected = selectedComponents[category.id]
+          const isSelected = category.id === 'services'
+            ? (Array.isArray(selected) ? selected.length > 0 : !!selected)
+            : !!selected
           
           return (
             <button
@@ -169,28 +181,46 @@ const SelectedComponentsList: React.FC<Props> = ({
                 }`}>
                   {category.name}
                 </div>
-                {component && (
+                {isSelected && category.id !== 'services' && (
                   <div className={`text-xs truncate ${
                     theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
                   }`}>
-                    {component.name}
+                    {(selected as Component).name}
+                  </div>
+                )}
+                {isSelected && category.id === 'services' && Array.isArray(selected) && (
+                  <div className={`text-xs truncate ${
+                    theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+                  }`}>
+                    {selected.map((c: Component) => c.name).join(', ')}
                   </div>
                 )}
               </div>
-                {component && (
+                {isSelected && category.id !== 'services' && (
                 <div className="flex items-center ml-2 flex-shrink-0">
                   <div className={`text-sm font-medium ${
                     theme === 'dark'
                       ? 'text-brand-red-400'
                       : 'text-brand-blue-600'
                   }`}>
-                    €{component.price.toFixed(2)}
+                    €{(selected as Component).price.toFixed(2)}
                   </div>
                 </div>
-              )}
-            </button>
-          )
-        })}
+                )}
+                {isSelected && category.id === 'services' && Array.isArray(selected) && (
+                <div className="flex items-center ml-2 flex-shrink-0">
+                  <div className={`text-sm font-medium ${
+                    theme === 'dark'
+                      ? 'text-brand-red-400'
+                      : 'text-brand-blue-600'
+                  }`}>
+                    €{selected.reduce((sum: number, c: Component) => sum + c.price, 0).toFixed(2)}
+                  </div>
+                </div>
+                )}
+             </button>
+           )
+         })}
       </div>      {/* Compatibility Issues */}
       {compatibilityIssues.length > 0 && (
         <div className={`mx-4 mb-4 p-3 rounded-lg ${

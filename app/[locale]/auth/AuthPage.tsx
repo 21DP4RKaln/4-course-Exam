@@ -349,21 +349,18 @@ export default function AuthPage() {
               <div className="space-y-3 mb-4">
                 {(() => {
                   const passwordAnalysis = analyzePasswordStrength(formData.password);
-                  const strength = passwordAnalysis.score;
-                  
-                  const getStrengthText = (strength: number) => {
-                    if (strength <= 2) return 'Vāja';
-                    if (strength <= 3) return 'Vidēja';
-                    if (strength <= 4) return 'Laba';
-                    return 'Stipra';
+                  const strength = passwordAnalysis.score;                    const getStrengthText = (strength: number) => {
+                    if (strength <= 2) return t('auth.resetPassword.step3.passwordStrength.weak');
+                    if (strength <= 3) return t('auth.resetPassword.step3.passwordStrength.fair');
+                    if (strength <= 4) return t('auth.resetPassword.step3.passwordStrength.good');
+                    return t('auth.resetPassword.step3.passwordStrength.strong');
                   };
                   
                   return (
                     <>
                       <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                            Paroles stiprums
+                        <div className="flex justify-between items-center">                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                            {t('auth.passwordStrength')}
                           </span>
                           <span className={`text-xs font-bold ${
                             strength <= 2 ? 'text-red-500' : 
@@ -393,49 +390,46 @@ export default function AuthPage() {
                           ))}
                         </div>
                       </div>
-                      
-                      <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-3 space-y-2">
-                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Prasības:</p>
-                        <div className="grid grid-cols-2 gap-1">
-                          <div className={`flex items-center space-x-1 text-xs ${
+                        <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-2 space-y-1">
+                        <div className="flex flex-wrap gap-x-3 gap-y-1">
+                          <div className={`flex items-center text-xs ${
                             passwordAnalysis.requirements.minLength ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            <div className={`w-1.5 h-1.5 rounded-full ${
+                            <div className={`w-1 h-1 rounded-full mr-1 ${
                               passwordAnalysis.requirements.minLength ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-                            }`} />
-                            <span>8+ rakstzīmes</span>
+                            }`} />                            <span>{t('auth.passwordRequirements.minLength')}</span>
                           </div>
-                          <div className={`flex items-center space-x-1 text-xs ${
+                          <div className={`flex items-center text-xs ${
                             passwordAnalysis.requirements.hasLowercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            <div className={`w-1.5 h-1.5 rounded-full ${
+                            <div className={`w-1 h-1 rounded-full mr-1 ${
                               passwordAnalysis.requirements.hasLowercase ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
                             }`} />
-                            <span>Mazais burts</span>
+                            <span>{t('auth.passwordRequirements.lowercase')}</span>
                           </div>
-                          <div className={`flex items-center space-x-1 text-xs ${
+                          <div className={`flex items-center text-xs ${
                             passwordAnalysis.requirements.hasUppercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            <div className={`w-1.5 h-1.5 rounded-full ${
+                            <div className={`w-1 h-1 rounded-full mr-1 ${
                               passwordAnalysis.requirements.hasUppercase ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
                             }`} />
-                            <span>Lielais burts</span>
+                            <span>{t('auth.passwordRequirements.uppercase')}</span>
                           </div>
-                          <div className={`flex items-center space-x-1 text-xs ${
+                          <div className={`flex items-center text-xs ${
                             passwordAnalysis.requirements.hasNumber ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            <div className={`w-1.5 h-1.5 rounded-full ${
+                            <div className={`w-1 h-1 rounded-full mr-1 ${
                               passwordAnalysis.requirements.hasNumber ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
                             }`} />
-                            <span>Cipars</span>
+                            <span>{t('auth.passwordRequirements.numbers')}</span>
                           </div>
-                          <div className={`flex items-center space-x-1 text-xs ${
+                          <div className={`flex items-center text-xs ${
                             passwordAnalysis.requirements.hasSpecialChar ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            <div className={`w-1.5 h-1.5 rounded-full ${
+                            <div className={`w-1 h-1 rounded-full mr-1 ${
                               passwordAnalysis.requirements.hasSpecialChar ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
                             }`} />
-                            <span>Speciālā rakstzīme</span>
+                            <span>{t('auth.passwordRequirements.special')}</span>
                           </div>
                         </div>
                       </div>
@@ -613,12 +607,11 @@ export const Container = styled.div`
   background-color: ${props => props.theme === 'dark' ? '#1c1c1e' : '#fff'};
   border-radius: 10px;
   box-shadow: 0 14px 28px ${props => props.theme === 'dark' ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.25)'}, 
-      0 10px 10px ${props => props.theme === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.22)'};
-  position: relative;
+      0 10px 10px ${props => props.theme === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.22)'};  position: relative;
   overflow: hidden;
-  width: 900px;
+  width: 1100px;
   max-width: 95%;
-  min-height: 650px;
+  min-height: 750px;
   z-index: 1;
 
   &.right-panel-active .sign-in-container {
@@ -708,7 +701,7 @@ export const Form = styled.form`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 30px 50px;
+  padding: 40px 60px;
   height: 100%;
   text-align: center;
 
@@ -726,9 +719,9 @@ export const Title = styled.h1`
 export const FormGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 15px;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 `
 
 export const InputGroup = styled.div<{ $fullWidth?: boolean }>`
@@ -902,7 +895,7 @@ export const StyledInput = styled.div`
     border: none;
     outline: none;
     border-radius: 15px;
-    padding: 1em;
+    padding: 1.1em;
     background-color: ${props => props.theme === 'dark' ? '#2d2d2d' : '#f3f4f6'};
     box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
     transition: 300ms ease-in-out;

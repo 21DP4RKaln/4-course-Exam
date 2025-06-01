@@ -10,10 +10,11 @@ const componentSchema = z.object({
   price: z.number().min(0),
   discountPrice: z.number().min(0).optional().nullable(),
   discountExpiresAt: z.string().datetime().optional().nullable(),
-  stock: z.number().int().min(0),
-  imageUrl: z.string().optional().nullable(),
+  quantity: z.number().int().min(0),
+  imagesUrl: z.string().optional().nullable(),
   categoryId: z.string().uuid(),
   sku: z.string().min(1),
+  subType: z.string().min(1),
 });
 
 export async function GET(request: NextRequest) {
@@ -29,19 +30,11 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (id) {
-      // Get a specific component
+    const id = searchParams.get('id');    if (id) {
       const component = await prisma.component.findUnique({
         where: { id },
         include: {
-          category: true,
-          specValues: {
-            include: {
-              specKey: true
-            }
-          }
+          category: true
         }
       });
 
@@ -52,7 +45,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(component);
     }
 
-    // Get all components
     const components = await prisma.component.findMany({
       include: {
         category: true
@@ -84,19 +76,18 @@ export async function POST(request: NextRequest) {
       return createBadRequestResponse('Validation failed', { errors: validationResult.error.errors });
     }
 
-    const data = validationResult.data;
-    
-    const component = await prisma.component.create({
+    const data = validationResult.data;    const component = await prisma.component.create({
       data: {
         name: data.name,
         description: data.description,
         price: data.price,
         discountPrice: data.discountPrice,
         discountExpiresAt: data.discountExpiresAt ? new Date(data.discountExpiresAt) : null,
-        stock: data.stock,
-        imageUrl: data.imageUrl || null,
+        quantity: data.quantity,
+        imagesUrl: data.imagesUrl || null,
         categoryId: data.categoryId,
         sku: data.sku,
+        subType: data.subType,
       }
     });
 

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticate } from '@/lib/middleware/authMiddleware'
 import { createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
-import { saveConfiguration } from '@/lib/services/newConfiguratorService'
+import { saveConfiguration } from '@/lib/services/configuratorService'
 import { z } from 'zod'
 
-// Validate configuration input
 const configurationSchema = z.object({
   name: z.string().min(1, 'Configuration name is required'),
   description: z.string().optional(),
@@ -21,7 +20,6 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🔍 Configuration save API called');
     
-    // Authenticate user
     const authResult = await authenticate(request)
     if (authResult instanceof Response) {
       console.log('❌ Authentication failed');
@@ -30,7 +28,6 @@ export async function POST(request: NextRequest) {
     
     console.log('✅ User authenticated:', { userId: authResult.userId, email: authResult.email });
     
-    // Parse and validate request body
     const body = await request.json()
     console.log('📝 Request body received:', body);
     
@@ -47,7 +44,6 @@ export async function POST(request: NextRequest) {
     const data = validationResult.data
     console.log('✅ Data validated successfully:', data);
     
-    // Save configuration
     const configuration = await saveConfiguration(authResult.userId, {
       name: data.name,
       description: data.description,

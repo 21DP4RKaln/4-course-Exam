@@ -43,11 +43,9 @@ export default function ComponentsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  // Ref for scroll animation
   const ctaRef = useRef(null)
   const ctaInView = useInView(ctaRef, { once: true, amount: 0.3 })
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -178,7 +176,6 @@ export default function ComponentsPage() {
                 <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                   {(() => {
                     try {
-                      // Mēģinām atrast tulkojumu no kategroijas, ja neatrod, izmanto datubāzes nosaukumu
                       return t(`categories.${category.slug}`)
                     } catch (e) {
                       return category.name
@@ -188,10 +185,8 @@ export default function ComponentsPage() {
                 <p className="text-neutral-600 dark:text-neutral-400 mb-3">
                   {(() => {
                     try {
-                      // Mēģinām atrast apraksta tulkojumu, ja tāds ir pieejams
                       return t(`categoryDescriptions.${category.slug}`)
                     } catch (e) {
-                      // Ja tulkojums nav pieejams, izmantojam datubāzes aprakstu vai noklusējuma aprakstu
                       return category.description || t('components.description')
                     }
                   })()}

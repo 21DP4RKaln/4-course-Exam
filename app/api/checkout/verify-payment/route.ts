@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
     
     if (paymentIntent.status === 'succeeded' && paymentIntent.metadata?.orderId) {
-      // Update order status to processing when payment is successful
       await prisma.order.update({
         where: { id: paymentIntent.metadata.orderId },
         data: { 

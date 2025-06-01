@@ -1,136 +1,88 @@
-// MousePad-specific filter groups
-import { Component } from '../types';
-import { FilterOption, FilterGroup, extractBrandOptions } from '../filterInterfaces';
-
-// Helper function to create filter option with translation key
-const createFilterOption = (id: string, name: string, category?: string): FilterOption => {
-  return {
-    id,
-    name,
-    ...(category && { translationKey: `filterGroups.${category}` })
-  };
-};
-
-// Helper function to create filter options for brands
-const createBrandOptions = (brandMap: Map<string, string>): FilterOption[] => {
-  return Array.from(brandMap.entries()).map(([brand, name]) => {
-    const id = brand.startsWith('brand=') ? brand : `brand=${brand}`;
-    return createFilterOption(id, name, 'brands');
-  });
-};
+import { Component } from '../types'
+import { FilterGroup, FilterOption, extractBrandOptions } from '../filterInterfaces'
 
 export const createMousePadFilterGroups = (components: Component[]): FilterGroup[] => {
-  console.log("Creating MousePad filter groups directly from components");
-  
-  // Initialize MousePad filter groups
-  const filterGroups: FilterGroup[] = [];
-  
-  // Create maps to collect filter options
-  const brandOptions = extractBrandOptions(components);
-  const sizeOptions = new Map<string, string>();
-  const materialOptions = new Map<string, string>();
-  const surfaceOptions = new Map<string, string>();
-  const thicknessOptions = new Map<string, string>();
-  const rgbOptions = new Map<string, string>();
-  
-  // Process components to extract MousePad specs
-  components.forEach(component => {
-    if (!component.specifications) return;
-    
-    // Extract specs from component properties
-    Object.entries(component.specifications).forEach(([key, value]) => {
-      if (!value || value === '') return;
-      
-      const keyLower = key.toLowerCase();
-      const valueStr = String(value).trim();
+  const brandMap = extractBrandOptions(components)
+  const brandOptions: FilterOption[] = Array.from(brandMap.entries()).map(([value, label]) => ({
+    id: `manufacturer=${value}`,
+    name: label
+  }))
 
-      // Extract size information
-      if (keyLower.includes('size') || keyLower.includes('dimension') || keyLower.includes('width') || keyLower.includes('height')) {
-        sizeOptions.set(valueStr, valueStr);
-      }
-      
-      // Extract material information
-      else if (keyLower.includes('material') || keyLower.includes('fabric') || keyLower.includes('cloth') || keyLower.includes('rubber')) {
-        materialOptions.set(valueStr, valueStr);
-      }
-      
-      // Extract surface type information
-      else if (keyLower.includes('surface') || keyLower.includes('texture') || keyLower.includes('finish')) {
-        surfaceOptions.set(valueStr, valueStr);
-      }
-      
-      // Extract thickness information
-      else if (keyLower.includes('thickness') || keyLower.includes('thick') || keyLower.includes('mm')) {
-        thicknessOptions.set(valueStr, valueStr);
-      }
-      
-      // Extract RGB/lighting information
-      else if (keyLower.includes('rgb') || keyLower.includes('lighting') || keyLower.includes('led')) {
-        rgbOptions.set(valueStr, valueStr);
-      }
-    });
-  });
-  
-  // Add brand/manufacturer filter group
-  if (brandOptions.size > 0) {
-    filterGroups.push({
-      title: 'Brands',
-      titleTranslationKey: 'brands',
-      type: 'manufacturer',
-      options: createBrandOptions(brandOptions)
-    });
+  // Surface type options (cloth, hard, hybrid, etc.)
+  const surfaceSet = new Set<string>()
+  components.forEach(c => {
+    const surface = c.specifications['surface'] || c.specifications['surfaceType'] || c.specifications['material']
+    if (surface) surfaceSet.add(surface)
+  })
+  const surfaceOptions: FilterOption[] = Array.from(surfaceSet).map(v => ({ id: `surface=${v}`, name: v }))
+
+  // Size options (small, medium, large, XL, etc.)
+  const sizeSet = new Set<string>()
+  components.forEach(c => {
+    const size = c.specifications['size'] || c.specifications['dimensions'] || c.specifications['padSize']
+    if (size) sizeSet.add(size)
+  })
+  const sizeOptions: FilterOption[] = Array.from(sizeSet).map(v => ({ id: `size=${v}`, name: v }))
+
+  // Thickness options
+  const thicknessSet = new Set<string>()
+  components.forEach(c => {
+    const thickness = c.specifications['thickness'] || c.specifications['height'] || c.specifications['depth']
+    if (thickness) thicknessSet.add(thickness)
+  })
+  const thicknessOptions: FilterOption[] = Array.from(thicknessSet).map(v => ({ id: `thickness=${v}`, name: v }))
+
+  // RGB/Lighting options
+  const rgbSet = new Set<string>()
+  components.forEach(c => {
+    const rgb = c.specifications['rgb'] || c.specifications['lighting'] || c.specifications['led']
+    if (rgb) rgbSet.add(rgb)
+  })
+  const rgbOptions: FilterOption[] = Array.from(rgbSet).map(v => ({ id: `rgb=${v}`, name: v }))
+
+  // Edge type options (stitched, molded, etc.)
+  const edgeSet = new Set<string>()
+  components.forEach(c => {
+    const edge = c.specifications['edge'] || c.specifications['edgeType'] || c.specifications['border']
+    if (edge) edgeSet.add(edge)
+  })
+  const edgeOptions: FilterOption[] = Array.from(edgeSet).map(v => ({ id: `edge=${v}`, name: v }))
+
+  // Base material options (rubber, foam, etc.)
+  const baseSet = new Set<string>()
+  components.forEach(c => {
+    const base = c.specifications['base'] || c.specifications['baseType'] || c.specifications['backing']
+    if (base) baseSet.add(base)
+  })
+  const baseOptions: FilterOption[] = Array.from(baseSet).map(v => ({ id: `base=${v}`, name: v }))
+
+  const filterGroups: FilterGroup[] = [
+    { title: 'Brand', type: 'manufacturer', options: brandOptions }
+  ]
+
+  if (surfaceOptions.length > 0) {
+    filterGroups.push({ title: 'Surface Type', type: 'surface', options: surfaceOptions })
   }
-  
-  // Add size filter group
-  if (sizeOptions.size > 0) {
-    filterGroups.push({
-      title: 'Size',
-      titleTranslationKey: 'filterGroups.size',
-      type: 'size',
-      options: Array.from(sizeOptions.entries()).map(([id, name]) => createFilterOption(`size=${id}`, name, 'size'))
-    });
+
+  if (sizeOptions.length > 0) {
+    filterGroups.push({ title: 'Size', type: 'size', options: sizeOptions })
   }
-  
-  // Add material filter group
-  if (materialOptions.size > 0) {
-    filterGroups.push({
-      title: 'Material',
-      titleTranslationKey: 'filterGroups.material',
-      type: 'material',
-      options: Array.from(materialOptions.entries()).map(([id, name]) => createFilterOption(`material=${id}`, name, 'materials'))
-    });
+
+  if (thicknessOptions.length > 0) {
+    filterGroups.push({ title: 'Thickness', type: 'thickness', options: thicknessOptions })
   }
-  
-  // Add surface filter group
-  if (surfaceOptions.size > 0) {
-    filterGroups.push({
-      title: 'Surface Type',
-      titleTranslationKey: 'filterGroups.surfaceType',
-      type: 'surface',
-      options: Array.from(surfaceOptions.entries()).map(([id, name]) => createFilterOption(`surface=${id}`, name, 'surfaceTypes'))
-    });
+
+  if (rgbOptions.length > 0) {
+    filterGroups.push({ title: 'RGB Lighting', type: 'rgb', options: rgbOptions })
   }
-  
-  // Add thickness filter group
-  if (thicknessOptions.size > 0) {
-    filterGroups.push({
-      title: 'Thickness',
-      titleTranslationKey: 'filterGroups.thickness',
-      type: 'thickness',
-      options: Array.from(thicknessOptions.entries()).map(([id, name]) => createFilterOption(`thickness=${id}`, name, 'thickness'))
-    });
+
+  if (edgeOptions.length > 0) {
+    filterGroups.push({ title: 'Edge Type', type: 'edge', options: edgeOptions })
   }
-  
-  // Add RGB/lighting filter group
-  if (rgbOptions.size > 0) {
-    filterGroups.push({
-      title: 'RGB Lighting',
-      titleTranslationKey: 'filterGroups.rgbLighting',
-      type: 'rgb',
-      options: Array.from(rgbOptions.entries()).map(([id, name]) => createFilterOption(`rgb=${id}`, name, 'rgbLighting'))
-    });
+
+  if (baseOptions.length > 0) {
+    filterGroups.push({ title: 'Base Material', type: 'base', options: baseOptions })
   }
-  
-  console.log("Created MousePad filter groups:", filterGroups);
-  return filterGroups;
-};
+
+  return filterGroups
+}

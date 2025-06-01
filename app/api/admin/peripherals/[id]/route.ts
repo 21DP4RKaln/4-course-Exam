@@ -10,10 +10,11 @@ const peripheralSchema = z.object({
   price: z.number().min(0),
   discountPrice: z.number().min(0).optional().nullable(),
   discountExpiresAt: z.string().datetime().optional().nullable(),
-  stock: z.number().int().min(0),
-  imageUrl: z.string().optional().nullable(),
+  quantity: z.number().int().min(0),
+  imagesUrl: z.string().optional().nullable(),
   categoryId: z.string().uuid(),
   sku: z.string().min(1),
+  subType: z.string().min(1),
 });
 
 export async function GET(request: NextRequest, context: { params: { id: string } }) {
@@ -27,17 +28,10 @@ export async function GET(request: NextRequest, context: { params: { id: string 
     const payload = await verifyJWT(token);
     if (!payload || payload.role !== 'ADMIN') {
       return createForbiddenResponse();
-    }
-
-    const peripheral = await prisma.peripheral.findUnique({
+    }    const peripheral = await prisma.peripheral.findUnique({
       where: { id: params.id },
       include: {
-        category: true,
-        specValues: {
-          include: {
-            specKey: true
-          }
-        }
+        category: true
       }
     });
 
@@ -74,7 +68,6 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
 
     const data = validationResult.data;
     
-    // Check if sku already exists but belongs to a different peripheral
     if (data.sku) {
       const existingPeripheral = await prisma.peripheral.findUnique({
         where: { sku: data.sku }
@@ -84,8 +77,7 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
         return createBadRequestResponse('Another peripheral with this SKU already exists');
       }
     }
-    
-    const peripheral = await prisma.peripheral.update({
+      const peripheral = await prisma.peripheral.update({
       where: { id: params.id },
       data: {
         name: data.name,
@@ -93,10 +85,11 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
         price: data.price,
         discountPrice: data.discountPrice,
         discountExpiresAt: data.discountExpiresAt ? new Date(data.discountExpiresAt) : null,
-        stock: data.stock,
-        imageUrl: data.imageUrl || null,
+        quantity: data.quantity,
+        imagesUrl: data.imagesUrl || null,
         categoryId: data.categoryId,
         sku: data.sku,
+        subType: data.subType,
       }
     });
 
@@ -121,7 +114,6 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     const body = await request.json();
     
-    // Allow partial updates with PATCH
     const partialSchema = peripheralSchema.partial();
     const validationResult = partialSchema.safeParse(body);
     if (!validationResult.success) {
@@ -131,7 +123,6 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     const data = validationResult.data;
     const updateData: any = {};
     
-    // Check if updating SKU and if it's unique
     if (data.sku !== undefined) {
       const existingPeripheral = await prisma.peripheral.findUnique({
         where: { sku: data.sku }
@@ -141,29 +132,22 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         return createBadRequestResponse('Another peripheral with this SKU already exists');
       }
     }
-    
-    // Only update fields that were provided
     if (data.name !== undefined) updateData.name = data.name;
     if (data.description !== undefined) updateData.description = data.description;
     if (data.price !== undefined) updateData.price = data.price;
     if (data.discountPrice !== undefined) updateData.discountPrice = data.discountPrice;
     if (data.discountExpiresAt !== undefined) 
       updateData.discountExpiresAt = data.discountExpiresAt ? new Date(data.discountExpiresAt) : null;
-    if (data.stock !== undefined) updateData.stock = data.stock;
-    if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
+    if (data.quantity !== undefined) updateData.quantity = data.quantity;
+    if (data.imagesUrl !== undefined) updateData.imagesUrl = data.imagesUrl;
     if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
     if (data.sku !== undefined) updateData.sku = data.sku;
-    
-    const peripheral = await prisma.peripheral.update({
+    if (data.subType !== undefined) updateData.subType = data.subType;
+      const peripheral = await prisma.peripheral.update({
       where: { id: params.id },
       data: updateData,
       include: {
-        category: true,
-        specValues: {
-          include: {
-            specKey: true
-          }
-        }
+        category: true
       }
     });
 
@@ -187,7 +171,6 @@ export async function DELETE(request: NextRequest, context: { params: { id: stri
       return createForbiddenResponse();
     }
 
-    // Check if peripheral is used in any repairs
     const repairCount = await prisma.repair.count({
       where: { peripheralId: params.id }
     });

@@ -62,7 +62,6 @@ export async function GET(request: NextRequest) {
     })
 
     const formattedPCs = readyMadePCs.map(config => {
-      // Extract key components for display
       const cpu = config.components.find(item => 
         item.component.category.name.toLowerCase().includes('cpu')
       )?.component
@@ -111,7 +110,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Get PC categories
     const categories = [
       { id: 'gaming', name: 'Gaming PC', description: 'High-performance gaming computers' },
       { id: 'workstation', name: 'Workstation', description: 'Professional workstations' },

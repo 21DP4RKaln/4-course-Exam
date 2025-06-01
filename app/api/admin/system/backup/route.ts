@@ -6,10 +6,6 @@ import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import { join } from 'path'
 
-/**
- * Creates a database backup
- * Only accessible by ADMIN users
- */
 export async function POST(request: NextRequest) {
   try {
     const token = getJWTFromRequest(request)
@@ -22,7 +18,6 @@ export async function POST(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Check if user is admin
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { role: true }
@@ -32,17 +27,11 @@ export async function POST(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get backup note from the request
     const { note } = await request.json()
 
-    // Create timestamp for the backup
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
     const backupName = `backup-${timestamp}`
 
-    // In a production app, you would use a database backup tool
-    // For this example, we'll create a JSON export of key tables
-
-    // Get data from database
     const [users, components, configurations, orders, repairs] = await Promise.all([
       prisma.user.findMany({
         select: {
@@ -55,7 +44,6 @@ export async function POST(request: NextRequest) {
           phone: true,
           profileImageUrl: true,
           createdAt: true,
-          // Exclude password and sensitive fields
         }
       }),
       prisma.component.findMany(),
@@ -82,7 +70,6 @@ export async function POST(request: NextRequest) {
       prisma.repair.findMany()
     ])
 
-    // Create backup object
     const backupData = {
       metadata: {
         timestamp: new Date().toISOString(),
@@ -99,14 +86,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // In a production environment, you would:
-    // 1. Store this in cloud storage (S3, Google Cloud Storage, etc.)
-    // 2. Or use a database backup tool
-    
-    // For this example, we'll save it as a JSON file
     const backupDir = join(process.cwd(), 'backups')
     
-    // Ensure backup directory exists
     if (!existsSync(backupDir)) {
       await mkdir(backupDir, { recursive: true })
     }
@@ -114,7 +95,6 @@ export async function POST(request: NextRequest) {
     const backupPath = join(backupDir, `${backupName}.json`)
     await writeFile(backupPath, JSON.stringify(backupData, null, 2))
 
-    // Log backup creation
     console.log(`Backup created: ${backupPath}`)
 
     // Record backup in the database (in a real app)
@@ -141,10 +121,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Lists available backups
- * Only accessible by ADMIN users
- */
 export async function GET(request: NextRequest) {
   try {
     const token = getJWTFromRequest(request)
@@ -157,7 +133,6 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Check if user is admin
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { role: true }
@@ -167,8 +142,6 @@ export async function GET(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // In a production app, you would fetch this from a backups table
-    // For this example, we'll return mock data
     const backups = [
       {
         id: '1',

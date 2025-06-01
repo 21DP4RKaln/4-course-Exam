@@ -1,4 +1,3 @@
-// filepath: app/[locale]/(main)/components/[slug]/[id]/page.tsx
 import UniversalProductPage from '@/app/components/Products/UniversalProductPage'
 
 export default function Page({ params }: { params: { slug: string; id: string } }) {

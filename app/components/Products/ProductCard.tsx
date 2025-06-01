@@ -11,7 +11,7 @@ interface ProductCardProps {
   name: string
   price: number
   imageUrl: string | null
-  type: 'component' | 'configuration'
+  type: 'component' | 'configuration' | 'peripheral'
   category: string
   stock: number
   specs?: Record<string, string>

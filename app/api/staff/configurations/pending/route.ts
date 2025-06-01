@@ -59,14 +59,13 @@ export async function GET(request: NextRequest) {
         name: config.user?.name || 'Anonymous',
         email: config.user?.email,
         phone: config.user?.phone
-      },
-      components: config.components.map(item => ({
+      },      components: config.components.map(item => ({
         id: item.component.id,
         name: item.component.name,
         category: item.component.category.name,
         quantity: item.quantity,
         price: item.component.price,
-        stock: item.component.stock
+        stock: item.component.quantity
       })),
       createdAt: config.createdAt.toISOString(),
       updatedAt: config.updatedAt.toISOString()

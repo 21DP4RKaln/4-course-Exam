@@ -1,4 +1,3 @@
-// filepath: app/[locale]/(main)/peripherals/[slug]/[id]/page.tsx
 import UniversalProductPage from '@/app/components/Products/UniversalProductPage'
 
 interface PeripheralDetailPageProps {

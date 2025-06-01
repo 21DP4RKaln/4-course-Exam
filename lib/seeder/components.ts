@@ -1,117 +1,2705 @@
 import { PrismaClient } from '@prisma/client';
-
-export async function seedComponents(prisma: PrismaClient) {
-  // Get component categories
+import { priceWith99 } from './utils';
+export async function seedComponents(prisma: PrismaClient): Promise<void> {
   const categories = await prisma.componentCategory.findMany();
-  const cpuCategory = categories.find(c => c.slug === 'cpu');
-  const gpuCategory = categories.find(c => c.slug === 'gpu');
-  const motherboardCategory = categories.find(c => c.slug === 'motherboard');
-  const ramCategory = categories.find(c => c.slug === 'ram');
-  const storageCategory = categories.find(c => c.slug === 'storage');
-  const psuCategory = categories.find(c => c.slug === 'psu');
-  const caseCategory = categories.find(c => c.slug === 'case');
-  const coolingCategory = categories.find(c => c.slug === 'cooling');
-  
-  if (!cpuCategory || !gpuCategory || !motherboardCategory || !ramCategory || 
-      !storageCategory || !psuCategory || !caseCategory || !coolingCategory) {
-    throw new Error('Required component categories not found');
-  }
-
-  // CPU Components (10 entries)
+  const cpuCategory = categories.find(c => c.slug === 'cpu')!;
+  const gpuCategory = categories.find(c => c.slug === 'gpu')!;
+  const motherboardCategory = categories.find(c => c.slug === 'motherboard')!;
+  const ramCategory = categories.find(c => c.slug === 'ram')!;
+  const storageCategory = categories.find(c => c.slug === 'storage')!;
+  const psuCategory = categories.find(c => c.slug === 'psu')!;
+  const caseCategory = categories.find(c => c.slug === 'case')!;
+  const coolingCategory = categories.find(c => c.slug === 'cooling')!;
+  const servicesCategory = categories.find(c => c.slug === 'services')!;
+  // CPU Components
   const cpuComponents = [
     {
-      name: 'Intel Core i9-13900K',
-      description: 'Intel\'s flagship 13th gen processor with 24 cores and 32 threads',
-      price: 589.99,
-      stock: 15,
-      imageUrl: '/products/cpu/intel-i9-13900k.jpg',
+      name: 'AMD Ryzen 9 7950X',
+      description: 'High-performance 16-core processor with exceptional multi-threading capabilities',
+      price: priceWith99(600, 800),
+      quantity: 15,
+      imagesUrl: '/products/cpu/amd-7950x.jpg',
+      sku: 'CPU-AMD-7950X',
+      subType: 'desktop',
       categoryId: cpuCategory.id,
-      sku: 'CPU-INTEL-13900K',
-      viewCount: 1245,
-      discountPrice: 549.99,
-      discountExpiresAt: new Date('2025-06-15'),
-      subType: 'cpu',
-      specifications: JSON.stringify({
-        manufacturer: 'Intel',
-        socket: 'LGA1700',
-        cores: 24,
-        threads: 32
-      })
+      cpu: {
+        brand: 'AMD',
+        series: 'Ryzen 9',
+        cores: 16,
+        multithreading: true,
+        socket: 'AM5',
+        frequency: 4.5,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5200,
+        integratedGpu: true,
+      }
     },
     {
-      name: 'AMD Ryzen 9 7950X',
-      description: 'AMD\'s top-tier processor with 16 cores and 32 threads',
-      price: 549.99,
-      stock: 12,
-      imageUrl: '/products/cpu/amd-7950x.jpg',
+      name: 'AMD Ryzen 9 9950X',
+      description: 'Next-generation 16-core processor with improved efficiency',
+      price: priceWith99(650, 850),
+      quantity: 12,
+      imagesUrl: '/products/cpu/amd-9950x.jpg',
+      sku: 'CPU-AMD-9950X',
+      subType: 'desktop',
       categoryId: cpuCategory.id,
-      sku: 'CPU-AMD-7950X',
-      viewCount: 1120,
-      subType: 'cpu',
-      specifications: JSON.stringify({
-        manufacturer: 'AMD',
-        socket: 'AM5',
+      cpu: {
+        brand: 'AMD',
+        series: 'Ryzen 9',
         cores: 16,
-        threads: 32
-      })
+        multithreading: true,
+        socket: 'AM5',
+        frequency: 4.3,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5600,
+        integratedGpu: true,
+      }
     },
-    // Add 8 more CPUs
-  ];
-
-  // GPU Components (10 entries)
+    {
+      name: 'AMD Ryzen 7 9800X3D',
+      description: 'Gaming-focused processor with 3D V-Cache technology',
+      price: priceWith99(450, 550),
+      quantity: 18,
+      imagesUrl: '/products/cpu/amd-9800x3d.jpg',
+      sku: 'CPU-AMD-9800X3D',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'AMD',
+        series: 'Ryzen 7',
+        cores: 8,
+        multithreading: true,
+        socket: 'AM5',
+        frequency: 4.2,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5200,
+        integratedGpu: true,
+      }
+    },
+    {
+      name: 'AMD Ryzen 7 9700X',
+      description: 'High-performance 8-core processor for content creation',
+      price: priceWith99(350, 450),
+      quantity: 22,
+      imagesUrl: '/products/cpu/amd-9700x.jpg',
+      sku: 'CPU-AMD-9700X',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'AMD',
+        series: 'Ryzen 7',
+        cores: 8,
+        multithreading: true,
+        socket: 'AM5',
+        frequency: 3.8,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5600,
+        integratedGpu: true,
+      }
+    },
+    {
+      name: 'AMD Ryzen 5 9500',
+      description: 'Balanced performance processor for gaming and productivity',
+      price: priceWith99(250, 350),
+      quantity: 25,
+      imagesUrl: '/products/cpu/amd-9500.jpg',
+      sku: 'CPU-AMD-9500',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'AMD',
+        series: 'Ryzen 5',
+        cores: 6,
+        multithreading: true,
+        socket: 'AM5',
+        frequency: 3.6,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5200,
+        integratedGpu: true,
+      }
+    },
+    {
+      name: 'AMD Ryzen 5 9600X',
+      description: 'Enhanced performance for gaming enthusiasts',
+      price: priceWith99(300, 400),
+      quantity: 20,
+      imagesUrl: '/products/cpu/amd-9600x.jpg',
+      sku: 'CPU-AMD-9600X',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'AMD',
+        series: 'Ryzen 5',
+        cores: 6,
+        multithreading: true,
+        socket: 'AM5',
+        frequency: 3.9,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5600,
+        integratedGpu: true,
+      }
+    },
+    {
+      name: 'Intel Core i9-14900K',
+      description: 'Flagship processor for ultimate performance',
+      price: priceWith99(550, 650),
+      quantity: 12,
+      imagesUrl: '/products/cpu/intel-14900k.jpg',
+      sku: 'CPU-INTEL-14900K',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'Intel',
+        series: 'Core i9',
+        cores: 24,
+        multithreading: true,
+        socket: 'LGA1700',
+        frequency: 3.2,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5600,
+        integratedGpu: true,
+      }
+    },
+    {
+      name: 'Intel Core i9-13900K',
+      description: 'Previous generation flagship with proven performance',
+      price: priceWith99(500, 600),
+      quantity: 15,
+      imagesUrl: '/products/cpu/intel-i9-13900k.jpg',
+      sku: 'CPU-INTEL-13900K',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'Intel',
+        series: 'Core i9',
+        cores: 24,
+        multithreading: true,
+        socket: 'LGA1700',
+        frequency: 3.0,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5600,
+        integratedGpu: true,
+      }
+    },
+    {
+      name: 'Intel Core i7-14700K',
+      description: 'High-performance processor for demanding applications',
+      price: priceWith99(400, 500),
+      quantity: 18,
+      imagesUrl: '/products/cpu/intel-14700k.jpg',
+      sku: 'CPU-INTEL-14700K',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'Intel',
+        series: 'Core i7',
+        cores: 20,
+        multithreading: true,
+        socket: 'LGA1700',
+        frequency: 3.4,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5600,
+        integratedGpu: true,
+      }
+    },
+    {
+      name: 'Intel Core i5-14600K',
+      description: 'Powerful mid-range processor with overclocking capabilities',
+      price: priceWith99(320, 400),
+      quantity: 25,
+      imagesUrl: '/products/cpu/intel-14600k.jpg',
+      sku: 'CPU-INTEL-14600K',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'Intel',
+        series: 'Core i5',
+        cores: 14,
+        multithreading: true,
+        socket: 'LGA1700',
+        frequency: 3.5,
+        maxRamCapacity: 128,
+        maxRamFrequency: 5600,
+        integratedGpu: true,
+      }
+    },
+    {
+      name: 'Intel Core i5-14400F',
+      description: 'Excellent mid-range processor for gaming and content creation',
+      price: priceWith99(200, 280),
+      quantity: 30,
+      imagesUrl: '/products/cpu/intel-14400f.jpg',
+      sku: 'CPU-INTEL-14400F',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'Intel',
+        series: 'Core i5',
+        cores: 10,
+        multithreading: true,
+        socket: 'LGA1700',
+        frequency: 2.5,
+        maxRamCapacity: 128,
+        maxRamFrequency: 4800,
+        integratedGpu: false,
+      }
+    },
+    {
+      name: 'Intel Core i3-14100F',
+      description: 'Budget-friendly processor for entry-level builds',
+      price: priceWith99(100, 150),
+      quantity: 40,
+      imagesUrl: '/products/cpu/intel-14100f.jpg',
+      sku: 'CPU-INTEL-14100F',
+      subType: 'desktop',
+      categoryId: cpuCategory.id,
+      cpu: {
+        brand: 'Intel',
+        series: 'Core i3',
+        cores: 4,
+        multithreading: true,
+        socket: 'LGA1700',
+        frequency: 3.5,
+        maxRamCapacity: 128,
+        maxRamFrequency: 4800,
+        integratedGpu: false,
+      }
+    }
+  ];  // GPU Components
   const gpuComponents = [
     {
-      name: 'NVIDIA GeForce RTX 4090',
-      description: 'NVIDIA\'s flagship graphics card with 24GB GDDR6X memory',
-      price: 1599.99,
-      stock: 8,
-      imageUrl: '/products/gpu/rtx-4090.jpg',
-      categoryId: gpuCategory.id,
-      sku: 'GPU-NVIDIA-4090',
-      viewCount: 2245,
-      subType: 'gpu',
-      specifications: JSON.stringify({
-        manufacturer: 'NVIDIA',
-        memory: '24GB GDDR6X',
-        boost_clock: '2.52 GHz'
-      })
+      name: 'ASUS ROG Strix RTX 4090',
+      description: 'Ultimate ASUS graphics card for 4K gaming and content creation',
+      price: priceWith99(1500, 1800),
+      quantity: 8,
+      imagesUrl: '/products/gpu/rtx-4090.jpg',
+      sku: 'GPU-ASUS-RTX-4090',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'ASUS',
+        subBrand: 'NVIDIA',
+        videoMemoryCapacity: 24,
+        memoryType: 'GDDR6X',
+        fanCount: 3,
+        chipType: 'AD102',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RTX 4090',
+      }
     },
     {
-      name: 'AMD Radeon RX 7900 XTX',
-      description: 'AMD\'s high-end graphics card with 24GB GDDR6 memory',
-      price: 999.99,
-      stock: 10,
-      imageUrl: '/products/gpu/rx-7900-xtx.jpg',
-      categoryId: gpuCategory.id,
-      sku: 'GPU-AMD-7900XTX',
-      viewCount: 1845,
-      discountPrice: 949.99,
-      discountExpiresAt: new Date('2025-06-01'),
-      subType: 'gpu',
-      specifications: JSON.stringify({
-        manufacturer: 'AMD',
-        memory: '24GB GDDR6',
-        boost_clock: '2.5 GHz'
-      })
+      name: 'MSI Gaming X Trio RTX 4090 Ti',
+      description: 'Enhanced flagship graphics card with improved performance',
+      price: priceWith99(1700, 2000),
+      quantity: 6,
+      imagesUrl: '/products/gpu/nvidia-geforce rtx 4090 ti.jpg',
+      sku: 'GPU-MSI-RTX-4090TI',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'MSI',
+        subBrand: 'NVIDIA',
+        videoMemoryCapacity: 24,
+        memoryType: 'GDDR6X',
+        fanCount: 3,
+        chipType: 'AD102',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RTX 4090 Ti',
+      }
     },
-    // Add 8 more GPUs
+    {
+      name: 'Gigabyte Windforce RTX 4080 Super',
+      description: 'High-end graphics card for demanding 4K gaming',
+      price: priceWith99(1000, 1200),
+      quantity: 12,
+      imagesUrl: '/products/gpu/nvidia-geforce rtx 4080 super.jpg',
+      sku: 'GPU-GIGABYTE-RTX-4080SUPER',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'Gigabyte',
+        subBrand: 'NVIDIA',
+        videoMemoryCapacity: 16,
+        memoryType: 'GDDR6X',
+        fanCount: 3,
+        chipType: 'AD103',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RTX 4080 Super',
+      }
+    },
+    {
+      name: 'EVGA FTW3 Ultra RTX 4070 Ti',
+      description: 'High-performance graphics card for 1440p gaming',
+      price: priceWith99(700, 850),
+      quantity: 15,
+      imagesUrl: '/products/gpu/nvidia-geforce rtx 4070 ti.jpg',
+      sku: 'GPU-EVGA-RTX-4070TI',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'EVGA',
+        subBrand: 'NVIDIA',
+        videoMemoryCapacity: 12,
+        memoryType: 'GDDR6X',
+        fanCount: 3,
+        chipType: 'AD104',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RTX 4070 Ti',
+      }
+    },
+    {
+      name: 'Zotac Twin Edge RTX 4060 Ti',
+      description: 'Excellent 1080p and 1440p gaming performance',
+      price: priceWith99(400, 500),
+      quantity: 20,
+      imagesUrl: '/products/gpu/nvidia-geforce rtx 4060 ti.jpg',
+      sku: 'GPU-ZOTAC-RTX-4060TI',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'Zotac',
+        subBrand: 'NVIDIA',
+        videoMemoryCapacity: 16,
+        memoryType: 'GDDR6',
+        fanCount: 2,
+        chipType: 'AD106',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RTX 4060 Ti',
+      }
+    },
+    {
+      name: 'PNY Verto RTX 4060',
+      description: 'Great entry-level graphics card for 1080p gaming',
+      price: priceWith99(300, 400),
+      quantity: 25,
+      imagesUrl: '/products/gpu/nvidia-geforce rtx 4060.jpg',
+      sku: 'GPU-PNY-RTX-4060',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'PNY',
+        subBrand: 'NVIDIA',
+        videoMemoryCapacity: 8,
+        memoryType: 'GDDR6',
+        fanCount: 2,
+        chipType: 'AD107',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RTX 4060',
+      }
+    },
+    {
+      name: 'Sapphire Nitro+ RX 7900 XTX',
+      description: 'High-end graphics card for 4K gaming',
+      price: priceWith99(900, 1100),
+      quantity: 10,
+      imagesUrl: '/products/gpu/rx-7900-xtx.jpg',
+      sku: 'GPU-SAPPHIRE-RX-7900XTX',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'Sapphire',
+        subBrand: 'AMD',
+        videoMemoryCapacity: 24,
+        memoryType: 'GDDR6',
+        fanCount: 3,
+        chipType: 'Navi 31',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RX 7900 XTX',
+      }
+    },
+    {
+      name: 'PowerColor Red Devil RX 7900 XT',
+      description: 'Premium graphics card for enthusiast gaming',
+      price: priceWith99(750, 900),
+      quantity: 12,
+      imagesUrl: '/products/gpu/amd-radeon rx 7900 xt.jpg',
+      sku: 'GPU-POWERCOLOR-RX-7900XT',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'PowerColor',
+        subBrand: 'AMD',
+        videoMemoryCapacity: 20,
+        memoryType: 'GDDR6',
+        fanCount: 3,
+        chipType: 'Navi 31',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RX 7900 XT',
+      }
+    },
+    {
+      name: 'ASRock Phantom Gaming RX 7800 XT',
+      description: 'Excellent 1440p gaming performance with great value',
+      price: priceWith99(500, 600),
+      quantity: 18,
+      imagesUrl: '/products/gpu/amd-radeon rx 7800 xt.jpg',
+      sku: 'GPU-ASROCK-RX-7800XT',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'ASRock',
+        subBrand: 'AMD',
+        videoMemoryCapacity: 16,
+        memoryType: 'GDDR6',
+        fanCount: 3,
+        chipType: 'Navi 32',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RX 7800 XT',
+      }
+    },
+    {
+      name: 'XFX Speedster MERC RX 7700 XT',
+      description: 'Solid 1440p gaming performance with efficient design',
+      price: priceWith99(400, 500),
+      quantity: 22,
+      imagesUrl: '/products/gpu/amd-radeon rx 7700 xt.jpg',
+      sku: 'GPU-XFX-RX-7700XT',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'XFX',
+        subBrand: 'AMD',
+        videoMemoryCapacity: 12,
+        memoryType: 'GDDR6',
+        fanCount: 2,
+        chipType: 'Navi 32',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RX 7700 XT',
+      }
+    },
+    {
+      name: 'ASUS TUF Gaming RX 7600 XT',
+      description: 'Competitive mid-range graphics card for 1080p gaming',
+      price: priceWith99(300, 400),
+      quantity: 20,
+      imagesUrl: '/products/gpu/amd-radeon rx 7600 xt.jpg',
+      sku: 'GPU-ASUS-RX-7600XT',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'ASUS',
+        subBrand: 'AMD',
+        videoMemoryCapacity: 16,
+        memoryType: 'GDDR6',
+        fanCount: 2,
+        chipType: 'Navi 33',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RX 7600 XT',
+      }
+    },    {
+      name: 'MSI Gaming X RX 8000 XT',
+      description: 'Next-generation AMD graphics card with advanced features',
+      price: priceWith99(600, 750),
+      quantity: 15,
+      imagesUrl: '/products/gpu/amd-radeon rx 8000 xt.jpg',
+      sku: 'GPU-MSI-RX-8000XT',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'MSI',
+        subBrand: 'AMD',
+        videoMemoryCapacity: 16,
+        memoryType: 'GDDR6',
+        fanCount: 3,
+        chipType: 'RDNA 4',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RDNA 4',
+      }
+    },
+    {
+      name: 'Gigabyte Aorus RTX 4070',
+      description: 'Premium 1440p gaming graphics card with RGB lighting',
+      price: priceWith99(550, 650),
+      quantity: 18,
+      imagesUrl: '/products/gpu/nvidia-geforce rtx 4070.jpg',
+      sku: 'GPU-GIGABYTE-RTX-4070',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'Gigabyte',
+        subBrand: 'NVIDIA',
+        videoMemoryCapacity: 12,
+        memoryType: 'GDDR6X',
+        fanCount: 3,
+        chipType: 'AD104',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RTX 4070',
+      }
+    },
+    {
+      name: 'EVGA Black Edition RTX 4050',
+      description: 'Budget-friendly entry-level graphics card for casual gaming',
+      price: priceWith99(200, 280),
+      quantity: 30,
+      imagesUrl: '/products/gpu/nvidia-geforce rtx 4050.jpg',
+      sku: 'GPU-EVGA-RTX-4050',
+      subType: 'discrete',
+      categoryId: gpuCategory.id,      gpu: {
+        brand: 'EVGA',
+        subBrand: 'NVIDIA',
+        videoMemoryCapacity: 6,
+        memoryType: 'GDDR6',
+        fanCount: 2,
+        chipType: 'AD107',
+        hasDVI: false,
+        hasVGA: false,
+        hasDisplayPort: true,
+        hasHDMI: true,
+        architecture: 'RTX 4050',
+      }
+    }
   ];
-
-  // Add more component types...
-
-  // Combine all components
-  const allComponents = [
-    ...cpuComponents,
-    ...gpuComponents,
-    // Add more component arrays
+  // RAM Components
+  const ramComponents = [
+    {
+      name: 'G.Skill Trident Z RGB 32GB DDR4-3600',
+      description: 'Premium RGB memory kit for enthusiast builds',
+      price: priceWith99(120, 160),
+      quantity: 30,
+      imagesUrl: '/products/ram/gskill-ddr4-rgb.jpg',
+      sku: 'RAM-GSKILL-32GB-3600',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'G.Skill',
+        moduleCount: 2,
+        memoryType: 'DDR4',
+        maxFrequency: 3600,
+        backlighting: true,
+        voltage: 1.35,
+        gb: 32,
+      }
+    },
+    {
+      name: 'G.Skill Trident Z RGB 32GB DDR5-6000',
+      description: 'High-performance DDR5 RGB memory for modern platforms',
+      price: priceWith99(180, 220),
+      quantity: 25,
+      imagesUrl: '/products/ram/gskill-ddr5-rgb.jpg',
+      sku: 'RAM-GSKILL-32GB-6000',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'G.Skill',
+        moduleCount: 2,
+        memoryType: 'DDR5',
+        maxFrequency: 6000,
+        backlighting: true,
+        voltage: 1.35,
+        gb: 32,
+      }
+    },
+    {
+      name: 'Corsair Vengeance RGB Pro 32GB DDR4-3200',
+      description: 'High-performance RGB memory with dynamic lighting',
+      price: priceWith99(110, 150),
+      quantity: 35,
+      imagesUrl: '/products/ram/corsair-ddr4-rgb.jpg',
+      sku: 'RAM-CORSAIR-32GB-3200',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Corsair',
+        moduleCount: 2,
+        memoryType: 'DDR4',
+        maxFrequency: 3200,
+        backlighting: true,
+        voltage: 1.35,
+        gb: 32,
+      }
+    },
+    {
+      name: 'Corsair Dominator Platinum RGB 32GB DDR5-5600',
+      description: 'Premium DDR5 memory with advanced overclocking capabilities',
+      price: priceWith99(200, 250),
+      quantity: 20,
+      imagesUrl: '/products/ram/corsair-ddr5-rgb.jpg',
+      sku: 'RAM-CORSAIR-32GB-5600',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Corsair',
+        moduleCount: 2,
+        memoryType: 'DDR5',
+        maxFrequency: 5600,
+        backlighting: true,
+        voltage: 1.1,
+        gb: 32,
+      }
+    },
+    {
+      name: 'Kingston Fury Beast 16GB DDR5-5600',
+      description: 'Next-generation DDR5 memory for modern platforms',
+      price: priceWith99(80, 120),
+      quantity: 40,
+      imagesUrl: '/products/ram/kingston-ddr5-standard.jpg',
+      sku: 'RAM-KINGSTON-16GB-5600',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Kingston',
+        moduleCount: 2,
+        memoryType: 'DDR5',
+        maxFrequency: 5600,
+        backlighting: false,
+        voltage: 1.1,
+        gb: 16,
+      }
+    },
+    {
+      name: 'Kingston Fury Beast 16GB DDR4-3200',
+      description: 'Reliable DDR4 memory for mainstream gaming builds',
+      price: priceWith99(60, 90),
+      quantity: 45,
+      imagesUrl: '/products/ram/kingston-ddr4-standard.jpg',
+      sku: 'RAM-KINGSTON-16GB-3200',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Kingston',
+        moduleCount: 2,
+        memoryType: 'DDR4',
+        maxFrequency: 3200,
+        backlighting: false,
+        voltage: 1.2,
+        gb: 16,
+      }
+    },
+    {
+      name: 'Crucial Ballistix 16GB DDR4-3200',
+      description: 'Affordable high-performance memory for gaming',
+      price: priceWith99(55, 85),
+      quantity: 50,
+      imagesUrl: '/products/ram/crucial-ddr4-standard.jpg',
+      sku: 'RAM-CRUCIAL-16GB-3200',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Crucial',
+        moduleCount: 2,
+        memoryType: 'DDR4',
+        maxFrequency: 3200,
+        backlighting: false,
+        voltage: 1.2,
+        gb: 16,
+      }
+    },
+    {
+      name: 'Crucial Pro 32GB DDR5-5600',
+      description: 'Professional-grade DDR5 memory for workstations',
+      price: priceWith99(150, 190),
+      quantity: 30,
+      imagesUrl: '/products/ram/crucial-ddr5-standard.jpg',
+      sku: 'RAM-CRUCIAL-32GB-5600',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Crucial',
+        moduleCount: 2,
+        memoryType: 'DDR5',
+        maxFrequency: 5600,
+        backlighting: false,
+        voltage: 1.1,
+        gb: 32,
+      }
+    },
+    {
+      name: 'Patriot Viper Steel 16GB DDR4-3600',
+      description: 'High-speed gaming memory with heat spreaders',
+      price: priceWith99(70, 100),
+      quantity: 35,
+      imagesUrl: '/products/ram/patriot-ddr4-rgb.jpg',
+      sku: 'RAM-PATRIOT-16GB-3600',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Patriot',
+        moduleCount: 2,
+        memoryType: 'DDR4',
+        maxFrequency: 3600,
+        backlighting: false,
+        voltage: 1.35,
+        gb: 16,
+      }
+    },
+    {
+      name: 'TeamGroup T-Force Delta RGB 32GB DDR5-6400',
+      description: 'Ultra-high-speed DDR5 memory with stunning RGB effects',
+      price: priceWith99(220, 280),
+      quantity: 18,
+      imagesUrl: '/products/ram/teamgroup-ddr5-rgb.jpg',
+      sku: 'RAM-TEAMGROUP-32GB-6400',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'TeamGroup',
+        moduleCount: 2,
+        memoryType: 'DDR5',
+        maxFrequency: 6400,
+        backlighting: true,
+        voltage: 1.4,
+        gb: 32,
+      }
+    },
+    {
+      name: 'G.Skill Ripjaws V 16GB DDR4-3200',
+      description: 'Classic gaming memory with excellent compatibility',
+      price: priceWith99(50, 80),
+      quantity: 40,
+      imagesUrl: '/products/ram/gskill-ddr4-rgb.jpg',
+      sku: 'RAM-GSKILL-16GB-3200',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'G.Skill',
+        moduleCount: 2,
+        memoryType: 'DDR4',
+        maxFrequency: 3200,
+        backlighting: false,
+        voltage: 1.35,
+        gb: 16,
+      }
+    },
+    {
+      name: 'Corsair Vengeance LPX 64GB DDR4-3200',
+      description: 'High-capacity memory kit for professional workloads',
+      price: priceWith99(200, 280),
+      quantity: 15,
+      imagesUrl: '/products/ram/corsair-ddr4-rgb.jpg',
+      sku: 'RAM-CORSAIR-64GB-3200',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Corsair',
+        moduleCount: 4,
+        memoryType: 'DDR4',
+        maxFrequency: 3200,
+        backlighting: false,
+        voltage: 1.35,
+        gb: 64,
+      }
+    },
+    {
+      name: 'Kingston Fury Renegade 64GB DDR5-6000',
+      description: 'Extreme capacity DDR5 memory for content creators',
+      price: priceWith99(350, 450),
+      quantity: 10,
+      imagesUrl: '/products/ram/kingston-ddr5-standard.jpg',
+      sku: 'RAM-KINGSTON-64GB-6000',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Kingston',
+        moduleCount: 4,
+        memoryType: 'DDR5',
+        maxFrequency: 6000,
+        backlighting: false,
+        voltage: 1.35,
+        gb: 64,
+      }
+    },
+    {
+      name: 'Crucial Ballistix MAX 32GB DDR4-4000',
+      description: 'Overclocking memory for extreme performance enthusiasts',
+      price: priceWith99(180, 230),
+      quantity: 20,
+      imagesUrl: '/products/ram/crucial-ddr4-standard.jpg',
+      sku: 'RAM-CRUCIAL-32GB-4000',
+      subType: 'desktop',
+      categoryId: ramCategory.id,      ram: {
+        brand: 'Crucial',
+        moduleCount: 2,
+        memoryType: 'DDR4',
+        maxFrequency: 4000,
+        backlighting: false,
+        voltage: 1.4,
+        gb: 32,
+      }
+    }
   ];
-
-  // Insert components
-  for (const component of allComponents) {
-    await prisma.component.upsert({
-      where: { sku: component.sku },
-      update: {},
-      create: component
-    });
+  // Storage Components
+  const storageComponents = [
+    {
+      name: 'Samsung 980 PRO 1TB NVMe SSD',
+      description: 'Ultra-fast PCIe 4.0 SSD for demanding applications',
+      price: priceWith99(100, 140),
+      quantity: 35,
+      imagesUrl: '/products/storage/samsung-nvme-ssd.jpg',
+      sku: 'STORAGE-SAMSUNG-980PRO-1TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Samsung',
+        volume: 1000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 4.0',
+        writeSpeed: 6900,
+        readSpeed: 7000,
+        powerConsumption: 6.8
+      }
+    },
+    {
+      name: 'Samsung 980 PRO 2TB NVMe SSD',
+      description: 'High-capacity ultra-fast PCIe 4.0 SSD',
+      price: priceWith99(180, 240),
+      quantity: 25,
+      imagesUrl: '/products/storage/samsung-nvme-ssd.jpg',
+      sku: 'STORAGE-SAMSUNG-980PRO-2TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Samsung',
+        volume: 2000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 4.0',
+        writeSpeed: 6900,
+        readSpeed: 7000,
+        powerConsumption: 6.8
+      }
+    },
+    {
+      name: 'Western Digital Black SN850X 1TB',
+      description: 'High-performance gaming SSD with excellent endurance',
+      price: priceWith99(120, 160),
+      quantity: 30,
+      imagesUrl: '/products/storage/western-digital-nvme-ssd.jpg',
+      sku: 'STORAGE-WD-SN850X-1TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Western Digital',
+        volume: 1000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 4.0',
+        writeSpeed: 6600,
+        readSpeed: 7300,
+        powerConsumption: 5.8
+      }
+    },
+    {
+      name: 'Western Digital Black SN850X 2TB',
+      description: 'High-capacity gaming SSD with exceptional performance',
+      price: priceWith99(200, 260),
+      quantity: 20,
+      imagesUrl: '/products/storage/western-digital-nvme-ssd.jpg',
+      sku: 'STORAGE-WD-SN850X-2TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Western Digital',
+        volume: 2000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 4.0',
+        writeSpeed: 6600,
+        readSpeed: 7300,
+        powerConsumption: 5.8
+      }
+    },
+    {
+      name: 'Crucial P5 Plus 1TB NVMe SSD',
+      description: 'Affordable PCIe 4.0 SSD with solid performance',
+      price: priceWith99(80, 120),
+      quantity: 40,
+      imagesUrl: '/products/storage/crucial-nvme-ssd.jpg',
+      sku: 'STORAGE-CRUCIAL-P5PLUS-1TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Crucial',
+        volume: 1000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 4.0',
+        writeSpeed: 5000,
+        readSpeed: 6600,
+        powerConsumption: 7.5
+      }
+    },
+    {
+      name: 'Corsair MP600 PRO 2TB NVMe SSD',
+      description: 'Premium NVMe SSD with aluminum heat spreader',
+      price: priceWith99(170, 220),
+      quantity: 25,
+      imagesUrl: '/products/storage/corsair-nvme-ssd.jpg',
+      sku: 'STORAGE-CORSAIR-MP600-2TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Corsair',
+        volume: 2000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 4.0',
+        writeSpeed: 6500,
+        readSpeed: 7000,
+        powerConsumption: 6.0
+      }
+    },
+    {
+      name: 'Sabrent Rocket 4.0 1TB NVMe SSD',
+      description: 'High-speed NVMe SSD for enthusiast builds',
+      price: priceWith99(90, 130),
+      quantity: 35,
+      imagesUrl: '/products/storage/sabrent-nvme-ssd.jpg',
+      sku: 'STORAGE-SABRENT-ROCKET-1TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Sabrent',
+        volume: 1000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 4.0',
+        writeSpeed: 6000,
+        readSpeed: 5000,
+        powerConsumption: 6.2
+      }
+    },
+    {
+      name: 'Kioxia Exceria Pro 1TB NVMe SSD',
+      description: 'Professional-grade SSD with excellent reliability',
+      price: priceWith99(110, 150),
+      quantity: 30,
+      imagesUrl: '/products/storage/kioxia-nvme-ssd.jpg',
+      sku: 'STORAGE-KIOXIA-EXCERIA-1TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Kioxia',
+        volume: 1000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 4.0',
+        writeSpeed: 6400,
+        readSpeed: 7300,
+        powerConsumption: 5.9
+      }
+    },
+    {
+      name: 'Kingston NV2 1TB NVMe SSD',
+      description: 'Budget-friendly NVMe SSD for everyday computing',
+      price: priceWith99(60, 90),
+      quantity: 50,
+      imagesUrl: '/products/storage/kingston-sata-ssd.jpg',
+      sku: 'STORAGE-KINGSTON-NV2-1TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Kingston',
+        volume: 1000,
+        type: 'NVMe SSD',
+        nvme: true,
+        size: 'M.2',
+        compatibility: 'PCIe 3.0',
+        writeSpeed: 1700,
+        readSpeed: 3500,
+        powerConsumption: 3.5
+      }
+    },
+    {
+      name: 'Seagate Barracuda 2TB HDD',
+      description: 'Reliable mass storage solution for data archiving',
+      price: priceWith99(50, 70),
+      quantity: 40,
+      imagesUrl: '/products/storage/seagate-hdd.jpg',
+      sku: 'STORAGE-SEAGATE-2TB-HDD',
+      subType: 'hdd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Seagate',
+        volume: 2000,
+        type: 'HDD',
+        nvme: false,
+        size: '3.5"',
+        compatibility: 'SATA 6Gb/s',
+        writeSpeed: 190,
+        readSpeed: 220,
+        powerConsumption: 4.5
+      }
+    },
+    {
+      name: 'Seagate Barracuda 4TB HDD',
+      description: 'High-capacity storage for content creators',
+      price: priceWith99(80, 110),
+      quantity: 30,
+      imagesUrl: '/products/storage/seagate-hdd.jpg',
+      sku: 'STORAGE-SEAGATE-4TB-HDD',
+      subType: 'hdd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Seagate',
+        volume: 4000,
+        type: 'HDD',
+        nvme: false,
+        size: '3.5"',
+        compatibility: 'SATA 6Gb/s',
+        writeSpeed: 190,
+        readSpeed: 220,
+        powerConsumption: 5.3
+      }
+    },
+    {
+      name: 'Western Digital Blue 1TB HDD',
+      description: 'Dependable storage for everyday computing',
+      price: priceWith99(35, 55),
+      quantity: 45,
+      imagesUrl: '/products/storage/western-digital-hdd.jpg',
+      sku: 'STORAGE-WD-BLUE-1TB',
+      subType: 'hdd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Western Digital',
+        volume: 1000,
+        type: 'HDD',
+        nvme: false,
+        size: '3.5"',
+        compatibility: 'SATA 6Gb/s',
+        writeSpeed: 150,
+        readSpeed: 150,
+        powerConsumption: 3.8
+      }
+    },
+    {
+      name: 'Toshiba X300 6TB HDD',
+      description: 'High-performance desktop hard drive for power users',
+      price: priceWith99(140, 180),
+      quantity: 20,
+      imagesUrl: '/products/storage/toshiba-hdd.jpg',
+      sku: 'STORAGE-TOSHIBA-X300-6TB',
+      subType: 'hdd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Toshiba',
+        volume: 6000,
+        type: 'HDD',
+        nvme: false,
+        size: '3.5"',
+        compatibility: 'SATA 6Gb/s',
+        writeSpeed: 180,
+        readSpeed: 220,
+        powerConsumption: 6.4
+      }
+    },
+    {
+      name: 'Samsung 870 EVO 1TB SATA SSD',
+      description: 'Reliable SATA SSD with proven performance',
+      price: priceWith99(80, 110),
+      quantity: 35,
+      imagesUrl: '/products/storage/samsung-nvme-ssd.jpg',
+      sku: 'STORAGE-SAMSUNG-870EVO-1TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Samsung',
+        volume: 1000,
+        type: 'SATA',
+        nvme: false,
+        size: '2.5"',
+        compatibility: 'SATA 6Gb/s',
+        writeSpeed: 530,
+        readSpeed: 560,
+        powerConsumption: 2.1
+      }
+    },
+    {
+      name: 'Crucial MX4 2TB SATA SSD',
+      description: 'High-capacity SATA SSD for budget-conscious builds',
+      price: priceWith99(150, 190),
+      quantity: 25,
+      imagesUrl: '/products/storage/crucial-nvme-ssd.jpg',
+      sku: 'STORAGE-CRUCIAL-MX4-2TB',
+      subType: 'ssd',
+      categoryId: storageCategory.id,
+      storage: {
+        brand: 'Crucial',
+        volume: 2000,
+        type: 'SATA',
+        nvme: false,
+        size: '2.5"',
+        compatibility: 'SATA 6Gb/s',
+        writeSpeed: 510,
+        readSpeed: 560,
+        powerConsumption: 2.5
+      }
+    }
+  ];
+  // PSU Components
+  const psuComponents = [
+    {
+      name: 'Corsair RM850x 850W 80+ Gold',
+      description: 'Fully modular power supply with excellent efficiency',
+      price: priceWith99(120, 160),
+      quantity: 30,
+      imagesUrl: '/products/psu/corsair-1600.jpg',
+      sku: 'PSU-CORSAIR-RM850X',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'Corsair',
+        power: 850,
+        sataConnections: 8,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 4,
+        energyEfficiency: '80+ Gold',
+      }
+    },
+    {
+      name: 'Corsair HX1600i 1600W 80+ Platinum',
+      description: 'Ultra-high wattage modular PSU for extreme builds',
+      price: priceWith99(400, 500),
+      quantity: 10,
+      imagesUrl: '/products/psu/corsair-1600.jpg',
+      sku: 'PSU-CORSAIR-HX1600I',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'Corsair',
+        power: 1600,
+        sataConnections: 12,
+        pciEConnections: 8,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 6,
+        energyEfficiency: '80+ Platinum',
+      }
+    },
+    {
+      name: 'EVGA SuperNOVA 750W 80+ Platinum',
+      description: 'High-efficiency power supply for premium builds',
+      price: priceWith99(130, 170),
+      quantity: 25,
+      imagesUrl: '/products/psu/evga-1300.jpg',
+      sku: 'PSU-EVGA-750W-PLAT',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'EVGA',
+        power: 750,
+        sataConnections: 6,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 3,
+        energyEfficiency: '80+ Platinum',
+      }
+    },
+    {
+      name: 'EVGA SuperNOVA 1300W 80+ Gold',
+      description: 'High-wattage PSU for multi-GPU gaming systems',
+      price: priceWith99(220, 280),
+      quantity: 15,
+      imagesUrl: '/products/psu/evga-1300.jpg',
+      sku: 'PSU-EVGA-1300W-GOLD',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'EVGA',
+        power: 1300,
+        sataConnections: 10,
+        pciEConnections: 6,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 5,
+        energyEfficiency: '80+ Gold',
+      }
+    },
+    {
+      name: 'Seasonic Focus GX-1000 1000W 80+ Gold',
+      description: 'Premium modular PSU with 10-year warranty',
+      price: priceWith99(150, 200),
+      quantity: 20,
+      imagesUrl: '/products/psu/seasonic-1000.jpg',
+      sku: 'PSU-SEASONIC-GX1000',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'Seasonic',
+        power: 1000,
+        sataConnections: 8,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 4,
+        energyEfficiency: '80+ Gold',
+      }
+    },
+    {
+      name: 'be quiet! Straight Power 11 750W 80+ Platinum',
+      description: 'Ultra-quiet PSU with premium components',
+      price: priceWith99(140, 180),
+      quantity: 22,
+      imagesUrl: '/products/psu/be-quiet-1200.jpg',
+      sku: 'PSU-BEQUIET-SP11-750W',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'be quiet!',
+        power: 750,
+        sataConnections: 6,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 3,
+        energyEfficiency: '80+ Platinum',
+      }
+    },
+    {
+      name: 'be quiet! Dark Power Pro 12 1200W 80+ Titanium',
+      description: 'Top-tier efficiency PSU for enthusiast builds',
+      price: priceWith99(300, 380),
+      quantity: 12,
+      imagesUrl: '/products/psu/be-quiet-1200.jpg',
+      sku: 'PSU-BEQUIET-DPP12-1200W',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'be quiet!',
+        power: 1200,
+        sataConnections: 10,
+        pciEConnections: 6,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 5,
+        energyEfficiency: '80+ Titanium',
+      }
+    },
+    {
+      name: 'Thermaltake Toughpower GF1 1500W 80+ Gold',
+      description: 'High-capacity PSU for extreme gaming setups',
+      price: priceWith99(280, 350),
+      quantity: 10,
+      imagesUrl: '/products/psu/thermaltake-1500.jpg',
+      sku: 'PSU-THERMALTAKE-GF1-1500W',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'Thermaltake',
+        power: 1500,
+        sataConnections: 12,
+        pciEConnections: 8,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 6,
+        energyEfficiency: '80+ Gold',
+      }
+    },
+    {
+      name: 'MSI MPG A1000G 1000W 80+ Gold',
+      description: 'Gaming-focused PSU with RGB lighting',
+      price: priceWith99(160, 210),
+      quantity: 18,
+      imagesUrl: '/products/psu/msi-1000.jpg',
+      sku: 'PSU-MSI-A1000G',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'MSI',
+        power: 1000,
+        sataConnections: 8,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 4,
+        energyEfficiency: '80+ Gold',
+      }
+    },
+    {
+      name: 'Cooler Master V850 SFX 850W 80+ Gold',
+      description: 'Compact SFX PSU for small form factor builds',
+      price: priceWith99(180, 230),
+      quantity: 15,
+      imagesUrl: '/products/psu/cooler-master-850.jpg',
+      sku: 'PSU-CM-V850-SFX',
+      subType: 'sfx',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'Cooler Master',
+        power: 850,
+        sataConnections: 6,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 2,
+        energyEfficiency: '80+ Gold',
+      }
+    },
+    {
+      name: 'SilverStone SX700-PT 700W 80+ Platinum',
+      description: 'Premium SFX-L PSU for compact high-end builds',
+      price: priceWith99(200, 250),
+      quantity: 12,
+      imagesUrl: '/products/psu/silverstone-700.jpg',
+      sku: 'PSU-SILVERSTONE-SX700PT',
+      subType: 'sfx-l',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'SilverStone',
+        power: 700,
+        sataConnections: 6,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 2,
+        energyEfficiency: '80+ Platinum',
+      }
+    },
+    {
+      name: 'Fractal Design Ion+ 860W 80+ Platinum',
+      description: 'Minimalist design PSU with excellent efficiency',
+      price: priceWith99(140, 190),
+      quantity: 20,
+      imagesUrl: '/products/psu/fractal-design-750.jpg',
+      sku: 'PSU-FRACTAL-ION860',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'Fractal Design',
+        power: 860,
+        sataConnections: 8,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 4,
+        energyEfficiency: '80+ Platinum',
+      }
+    },
+    {
+      name: 'ASUS ROG Strix 1200W 80+ Gold',
+      description: 'Gaming-branded PSU with premium features',
+      price: priceWith99(250, 320),
+      quantity: 15,
+      imagesUrl: '/products/psu/asus-1200.jpg',
+      sku: 'PSU-ASUS-STRIX1200',
+      subType: 'modular',
+      categoryId: psuCategory.id,      psu: {
+        brand: 'ASUS',
+        power: 1200,
+        sataConnections: 10,
+        pciEConnections: 6,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 5,
+        energyEfficiency: '80+ Gold',
+      }
+    },
+    {
+      name: 'Cooler Master MWE Gold 650W 80+ Gold',
+      description: 'Budget-friendly modular PSU with solid performance',
+      price: priceWith99(80, 120),
+      quantity: 35,
+      imagesUrl: '/products/psu/cooler-master-850.jpg',      sku: 'PSU-CM-MWE650',
+      subType: 'modular',
+      categoryId: psuCategory.id,
+      psu: {
+        brand: 'Cooler Master',
+        power: 650,
+        sataConnections: 6,
+        pciEConnections: 2,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 3,
+        energyEfficiency: '80+ Gold',
+      }
+    },
+    {
+      name: 'Seasonic Prime TX-850 850W 80+ Titanium',
+      description: 'Ultra-premium PSU with industry-leading efficiency',
+      price: priceWith99(200, 260),
+      quantity: 18,
+      imagesUrl: '/products/psu/seasonic-1000.jpg',      sku: 'PSU-SEASONIC-TX850',
+      subType: 'modular',
+      categoryId: psuCategory.id,
+      psu: {
+        brand: 'Seasonic',
+        power: 850,
+        sataConnections: 8,
+        pciEConnections: 4,
+        pfc: true,
+        hasFan: true,
+        molexPataConnections: 4,
+        energyEfficiency: '80+ Titanium',
+      }
+    }
+  ];
+  // Motherboard Components
+  const motherboardComponents = [
+    {
+      name: 'ASUS ROG Strix B650-E Gaming WiFi',
+      description: 'Feature-rich gaming motherboard for AMD Ryzen processors',
+      price: priceWith99(200, 280),
+      quantity: 20,
+      imagesUrl: '/products/motherboard/asus-z790-atx.jpg',      sku: 'MB-ASUS-B650E-GAMING',
+      subType: 'atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'ASUS',
+        socket: 'AM5',
+        memorySlots: 4,
+        processorSupport: 'AMD Ryzen 7000',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 6000,
+        maxVideoCards: 2,
+        sataPorts: 6,
+        m2Slots: 3,
+        sliCrossfireSupport: true,
+        wifiBluetooth: true,
+        nvmeSupport: true,
+        form: 'ATX',
+        compatibility: 'AMD',
+      }
+    },
+    {
+      name: 'ASUS ROG Maximus Z790-E Gaming',
+      description: 'Premium Intel Z790 motherboard with extreme overclocking features',
+      price: priceWith99(350, 450),
+      quantity: 15,
+      imagesUrl: '/products/motherboard/asus-z790-e-atx.jpg',      sku: 'MB-ASUS-Z790E-MAXIMUS',
+      subType: 'e-atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'ASUS',
+        socket: 'LGA1700',
+        memorySlots: 4,
+        processorSupport: 'Intel 12th/13th/14th Gen',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 7200,
+        maxVideoCards: 4,
+        sataPorts: 8,
+        m2Slots: 5,
+        sliCrossfireSupport: true,
+        wifiBluetooth: true,
+        nvmeSupport: true,
+        form: 'E-ATX',
+        compatibility: 'Intel',
+      }
+    },
+    {
+      name: 'MSI Z790 Gaming Pro WiFi',
+      description: 'Intel Z790 motherboard with advanced gaming features',
+      price: priceWith99(180, 250),
+      quantity: 22,
+      imagesUrl: '/products/motherboard/msi-z790-itx.jpg',      sku: 'MB-MSI-Z790-GAMING',
+      subType: 'atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'MSI',
+        socket: 'LGA1700',
+        memorySlots: 4,
+        processorSupport: 'Intel 12th/13th/14th Gen',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 5600,
+        maxVideoCards: 2,
+        sataPorts: 6,
+        m2Slots: 4,
+        sliCrossfireSupport: true,
+        wifiBluetooth: true,
+        nvmeSupport: true,
+        form: 'ATX',
+        compatibility: 'Intel',
+      }
+    },
+    {
+      name: 'MSI B760M Pro-B',
+      description: 'Compact micro-ATX motherboard for budget builds',
+      price: priceWith99(90, 130),
+      quantity: 30,
+      imagesUrl: '/products/motherboard/msi-b760-matx.jpg',      sku: 'MB-MSI-B760M-PRO',
+      subType: 'micro-atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'MSI',
+        socket: 'LGA1700',
+        memorySlots: 2,
+        processorSupport: 'Intel 12th/13th/14th Gen',
+        memoryTypeSupported: 'DDR4',
+        maxRamCapacity: 64,
+        maxMemoryFrequency: 4800,
+        maxVideoCards: 1,
+        sataPorts: 4,
+        m2Slots: 2,
+        sliCrossfireSupport: false,
+        wifiBluetooth: false,
+        nvmeSupport: true,
+        form: 'Micro-ATX',
+        compatibility: 'Intel',
+      }
+    },
+    {
+      name: 'Gigabyte B650I Aorus Ultra',
+      description: 'Compact mini-ITX motherboard for small form factor builds',
+      price: priceWith99(220, 280),
+      quantity: 18,
+      imagesUrl: '/products/motherboard/gigabyte-b650i-itx.jpg',      sku: 'MB-GIGABYTE-B650I-AORUS',
+      subType: 'mini-itx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'Gigabyte',
+        socket: 'AM5',
+        memorySlots: 2,
+        processorSupport: 'AMD Ryzen 7000',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 64,
+        maxMemoryFrequency: 6000,
+        maxVideoCards: 1,
+        sataPorts: 4,
+        m2Slots: 2,
+        sliCrossfireSupport: false,
+        wifiBluetooth: true,
+        nvmeSupport: true,      
+        form: 'Mini-ITX',
+        compatibility: 'AMD',
+      }
+    },
+    {
+      name: 'Gigabyte X670E Aorus Master',
+      description: 'High-end AMD motherboard with extensive connectivity',
+      price: priceWith99(300, 400),
+      quantity: 12,
+      imagesUrl: '/products/motherboard/gigabyte-x670e-atx.jpg',      sku: 'MB-GIGABYTE-X670E-MASTER',
+      subType: 'atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'Gigabyte',
+        socket: 'AM5',
+        memorySlots: 4,
+        processorSupport: 'AMD Ryzen 7000',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 6400,
+        maxVideoCards: 3,
+        sataPorts: 8,
+        m2Slots: 4,
+        sliCrossfireSupport: true,
+        wifiBluetooth: true,
+        nvmeSupport: true,
+        form: 'ATX',
+        compatibility: 'AMD',
+      }
+    },
+    {
+      name: 'ASRock B650M Pro4',
+      description: 'Value-oriented micro-ATX motherboard for AMD Ryzen',
+      price: priceWith99(100, 140),
+      quantity: 25,
+      imagesUrl: '/products/motherboard/asrock-b650-matx.jpg',      sku: 'MB-ASROCK-B650M-PRO4',
+      subType: 'micro-atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'ASRock',
+        socket: 'AM5',
+        memorySlots: 4,
+        processorSupport: 'AMD Ryzen 7000',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 5200,
+        maxVideoCards: 2,
+        sataPorts: 6,
+        m2Slots: 2,
+        sliCrossfireSupport: false,
+        wifiBluetooth: false,       
+        nvmeSupport: true,
+        form: 'Micro-ATX',
+        compatibility: 'AMD',
+      }
+    },
+    {
+      name: 'ASRock H770 Pro RS',
+      description: 'Solid Intel H770 motherboard for mainstream builds',
+      price: priceWith99(120, 160),
+      quantity: 28,
+      imagesUrl: '/products/motherboard/asrock-h770-atx.jpg',      sku: 'MB-ASROCK-H770-PRORS',
+      subType: 'atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'ASRock',
+        socket: 'LGA1700',
+        memorySlots: 4,
+        processorSupport: 'Intel 12th/13th/14th Gen',
+        memoryTypeSupported: 'DDR4',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 4800,
+        maxVideoCards: 2,
+        sataPorts: 6,
+        m2Slots: 3,
+        sliCrossfireSupport: false,
+        wifiBluetooth: false,       
+        nvmeSupport: true,
+        form: 'ATX',
+        compatibility: 'Intel',
+      }
+    },
+    {
+      name: 'ASUS Prime X570-P',
+      description: 'Reliable AMD X570 motherboard with PCIe 4.0 support',
+      price: priceWith99(140, 180),
+      quantity: 20,
+      imagesUrl: '/products/motherboard/asus-x570-atx.jpg',      sku: 'MB-ASUS-X570-PRIME',
+      subType: 'atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'ASUS',
+        socket: 'AM4',
+        memorySlots: 4,
+        processorSupport: 'AMD Ryzen 3000/5000',
+        memoryTypeSupported: 'DDR4',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 4400,
+        maxVideoCards: 2,
+        sataPorts: 8,
+        m2Slots: 2,
+        sliCrossfireSupport: true,
+        wifiBluetooth: false,        
+        nvmeSupport: true,
+        form: 'ATX',
+        compatibility: 'AMD',
+      }
+    },
+    {
+      name: 'EVGA Z690 Classified',
+      description: 'Extreme overclocking motherboard for enthusiasts',
+      price: priceWith99(400, 500),
+      quantity: 8,
+      imagesUrl: '/products/motherboard/evga-z690-atx.jpg',
+      sku: 'MB-EVGA-Z690-CLASSIFIED',
+      subType: 'e-atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'EVGA',
+        socket: 'LGA1700',
+        memorySlots: 4,
+        processorSupport: 'Intel 12th/13th Gen',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 6400,
+        maxVideoCards: 4,
+        sataPorts: 8,
+        m2Slots: 5,
+        sliCrossfireSupport: true,
+        wifiBluetooth: true,
+        nvmeSupport: true,        
+        form: 'E-ATX',
+        compatibility: 'Intel',
+      }
+    },
+    {
+      name: 'ASRock B650M Pro RS WiFi',
+      description: 'Micro-ATX motherboard for compact AMD builds',
+      price: priceWith99(100, 150),
+      quantity: 25,
+      imagesUrl: '/products/motherboard/asrock-b650m-micro.jpg',
+      sku: 'MB-ASROCK-B650M-PRO',
+      subType: 'micro-atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'ASRock',
+        socket: 'AM5',
+        memorySlots: 4,
+        processorSupport: 'AMD Ryzen 7000',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 5200,
+        maxVideoCards: 2,
+        sataPorts: 4,
+        m2Slots: 2,
+        sliCrossfireSupport: false,
+        wifiBluetooth: true,        
+        nvmeSupport: true,        
+        form: 'Micro-ATX',
+        compatibility: 'AMD',
+      }
+    },
+    {
+      name: 'ASUS ROG Strix Z790-I Gaming WiFi',
+      description: 'Premium Mini-ITX motherboard with high-end features',
+      price: priceWith99(250, 320),
+      quantity: 15,
+      imagesUrl: '/products/motherboard/asus-z790-itx.jpg',
+      sku: 'MB-ASUS-Z790I-GAMING',
+      subType: 'mini-itx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'ASUS',
+        socket: 'LGA1700',
+        memorySlots: 2,
+        processorSupport: 'Intel 12th/13th/14th Gen',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 64,
+        maxMemoryFrequency: 6400,
+        maxVideoCards: 1,
+        sataPorts: 4,
+        m2Slots: 2,
+        sliCrossfireSupport: false,
+        wifiBluetooth: true,        
+        nvmeSupport: true,        
+        form: 'Mini-ITX',
+        compatibility: 'Intel',
+      }
+    },
+    {
+      name: 'MSI MAG B550 Tomahawk',
+      description: 'Solid mid-range motherboard for AMD Ryzen processors',
+      price: priceWith99(120, 170),
+      quantity: 20,
+      imagesUrl: '/products/motherboard/msi-b550-atx.jpg',
+      sku: 'MB-MSI-B550-TOMAHAWK',
+      subType: 'atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'MSI',
+        socket: 'AM4',
+        memorySlots: 4,
+        processorSupport: 'AMD Ryzen 3000/5000',
+        memoryTypeSupported: 'DDR4',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 4400,
+        maxVideoCards: 2,
+        sataPorts: 6,
+        m2Slots: 2,
+        sliCrossfireSupport: true,
+        wifiBluetooth: false,        
+        nvmeSupport: true,        
+        form: 'ATX',
+        compatibility: 'AMD',
+      }
+    },
+    {
+      name: 'Gigabyte X670E Aorus Master',
+      description: 'High-end motherboard with premium features for AMD Ryzen 7000',
+      price: priceWith99(300, 400),
+      quantity: 12,
+      imagesUrl: '/products/motherboard/gigabyte-x670-atx.jpg',
+      sku: 'MB-GIGABYTE-X670E-MASTER',
+      subType: 'e-atx',
+      categoryId: motherboardCategory.id,
+      motherboard: {
+        brand: 'Gigabyte',
+        socket: 'AM5',
+        memorySlots: 4,
+        processorSupport: 'AMD Ryzen 7000',
+        memoryTypeSupported: 'DDR5',
+        maxRamCapacity: 128,
+        maxMemoryFrequency: 6400,
+        maxVideoCards: 4,
+        sataPorts: 8,
+        m2Slots: 4,
+        sliCrossfireSupport: true,        
+        wifiBluetooth: true,
+        nvmeSupport: true,
+        form: 'E-ATX',
+        compatibility: 'AMD',
+      }
+    }
+  ];
+  // Cooling Components
+  const coolingComponents = [
+    {
+      name: 'Noctua NH-D15 Chromax Black',
+      description: 'Premium air cooler with exceptional performance and all-black design',
+      price: priceWith99(90, 120),
+      quantity: 25,
+      imagesUrl: '/products/cooling/noctua-nh-d15 chromax.black.jpg',
+      sku: 'COOL-NOCTUA-NHD15',
+      subType: 'air',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'Noctua',
+        socket: 'Universal',
+        fanDiameter: 140,
+        fanSpeed: 1500,
+        category: 'Air Cooler',
+        subCategory: 'Tower Cooler',
+        radiatorSize: '140mm',
+      }
+    },
+    {
+      name: 'Corsair iCUE H150i RGB Elite',
+      description: '360mm all-in-one liquid cooler with RGB lighting',
+      price: priceWith99(150, 180),
+      quantity: 20,
+      imagesUrl: '/products/cooling/corsair-icue h150i rgb elite.jpg',
+      sku: 'COOL-CORSAIR-H150I',
+      subType: 'liquid',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'Corsair',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 2400,
+        category: 'Liquid Cooler',
+        subCategory: 'AIO Liquid Cooler',
+        radiatorSize: '360mm',
+      }
+    },
+    {
+      name: 'Arctic Freezer 34 eSports DUO',
+      description: 'Efficient dual-fan tower cooler with excellent price-to-performance ratio',
+      price: priceWith99(35, 50),
+      quantity: 30,
+      imagesUrl: '/products/cooling/arctic-freezer 34 esports duo.jpg',
+      sku: 'COOL-ARCTIC-F34DUO',
+      subType: 'air',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'Arctic',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 2100,
+        category: 'Air Cooler',
+        subCategory: 'Tower Cooler',
+        radiatorSize: '120mm',
+      }
+    },
+    {
+      name: 'be quiet! Shadow Rock Slim 2',
+      description: 'Compact silent air cooler for space-constrained builds',
+      price: priceWith99(45, 65),
+      quantity: 25,
+      imagesUrl: '/products/cooling/be-quiet-shadow rock slim 2.jpg',
+      sku: 'COOL-BEQUIET-SRS2',
+      subType: 'air',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'be quiet!',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 1600,
+        category: 'Air Cooler',
+        subCategory: 'Tower Cooler',
+        radiatorSize: '120mm',
+      }
+    },
+    {
+      name: 'DeepCool AK620',
+      description: 'High-performance dual-tower air cooler with white design',
+      price: priceWith99(60, 80),
+      quantity: 22,
+      imagesUrl: '/products/cooling/deepcool-ak620.jpg',
+      sku: 'COOL-DEEPCOOL-AK620',
+      subType: 'air',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'DeepCool',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 1850,
+        category: 'Air Cooler',
+        subCategory: ' Tower Cooler',
+        radiatorSize: '120mm',
+      }
+    },
+    {
+      name: 'EK-AIO Basic 240',
+      description: 'Simple and efficient 240mm AIO liquid cooler',
+      price: priceWith99(80, 110),
+      quantity: 18,
+      imagesUrl: '/products/cooling/ek-ek-aio basic 240.jpg',
+      sku: 'COOL-EK-AIO240',
+      subType: 'liquid',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'EK Water Blocks',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 2200,
+        category: 'Liquid Cooler',
+        subCategory: 'AIO Liquid Cooler',
+        radiatorSize: '240mm',
+      }
+    },
+    {
+      name: 'Lian Li Galahad 360 SL',
+      description: '360mm AIO with stylish SL-series fans and RGB lighting',
+      price: priceWith99(180, 220),
+      quantity: 15,
+      imagesUrl: '/products/cooling/lian-li-galahad 360 sl.jpg',
+      sku: 'COOL-LIANLI-GAL360',
+      subType: 'liquid',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'Lian Li',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 2000,
+        category: 'Liquid Cooler',
+        subCategory: 'AIO Liquid Cooler',
+        radiatorSize: '360mm',
+      }
+    },
+    {
+      name: 'NZXT Kraken X63 RGB',
+      description: '280mm AIO liquid cooler with customizable RGB lighting',
+      price: priceWith99(130, 160),
+      quantity: 20,
+      imagesUrl: '/products/cooling/nzxt-kraken x63 rgb.jpg',
+      sku: 'COOL-NZXT-X63RGB',
+      subType: 'liquid',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'NZXT',
+        socket: 'Universal',
+        fanDiameter: 140,
+        fanSpeed: 1800,
+        category: 'Liquid Cooler',
+        subCategory: 'AIO Liquid Cooler',
+        radiatorSize: '280mm',
+      }
+    },
+    {
+      name: 'Scythe Fuma 2',
+      description: 'High-performance dual-tower air cooler with asymmetrical design',
+      price: priceWith99(55, 75),
+      quantity: 28,
+      imagesUrl: '/products/cooling/scythe-fuma 2.jpg',
+      sku: 'COOL-SCYTHE-FUMA2',
+      subType: 'air',
+      categoryId: coolingCategory.id,      cooling: {
+        brand: 'Scythe',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 1200,
+        category: 'Air Cooler',
+        subCategory: 'Tower Cooler',
+        radiatorSize: '120mm',
+      }
+    },    {
+      name: 'Thermalright Peerless Assassin 120',
+      description: 'Budget-friendly dual-tower cooler with excellent cooling performance',
+      price: priceWith99(30, 45),
+      quantity: 35,
+      imagesUrl: '/products/cooling/thermalright-peerless assassin 120.jpg',
+      sku: 'COOL-TR-PA120',
+      subType: 'air',
+      categoryId: coolingCategory.id,
+      cooling: {
+        brand: 'Thermalright',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 1550,
+        category: 'Air Cooler',
+        subCategory: 'Tower Cooler',
+        radiatorSize: '120mm',
+      }
+    },    {
+      name: 'Corsair iCUE H100i RGB Elite',
+      description: '240mm all-in-one liquid cooler with RGB lighting',
+      price: priceWith99(100, 140),
+      quantity: 20,
+      imagesUrl: '/products/cooling/corsair-icue h150i rgb elite.jpg',
+      sku: 'COOL-CORSAIR-H100I',
+      subType: 'liquid',
+      categoryId: coolingCategory.id,
+      cooling: {
+        brand: 'Corsair',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 2400,
+        category: 'Liquid Cooler',
+        subCategory: 'AIO Liquid Cooler',
+        radiatorSize: '240mm',
+      }
+    },    {
+      name: 'Arctic Liquid Freezer II 280',
+      description: '280mm AIO with thick radiator for maximum cooling performance',
+      price: priceWith99(90, 120),
+      quantity: 16,
+      imagesUrl: '/products/cooling/arctic-freezer 34 esports duo.jpg',
+      sku: 'COOL-ARCTIC-LF280',
+      subType: 'liquid',
+      categoryId: coolingCategory.id,
+      cooling: {
+        brand: 'Arctic',
+        socket: 'Universal',
+        fanDiameter: 140,
+        fanSpeed: 1700,
+        category: 'Liquid Cooler',
+        subCategory: 'AIO Liquid Cooler',
+        radiatorSize: '280mm',
+      }
+    },    {
+      name: 'DeepCool LT720',
+      description: '360mm AIO with infinity mirror pump cap and ARGB lighting',
+      price: priceWith99(110, 150),
+      quantity: 14,
+      imagesUrl: '/products/cooling/deepcool-ak620.jpg',
+      sku: 'COOL-DEEPCOOL-LT720',
+      subType: 'liquid',
+      categoryId: coolingCategory.id,
+      cooling: {
+        brand: 'DeepCool',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 1850,
+        category: 'Liquid Cooler',
+        subCategory: 'AIO Liquid Cooler',
+        radiatorSize: '360mm',
+      }
+    },
+    {
+      name: 'be quiet! Pure Rock 2',
+      description: 'Silent single-tower air cooler with black coating',
+      price: priceWith99(35, 50),
+      quantity: 30,
+      imagesUrl: '/products/cooling/be-quiet-shadow rock slim 2.jpg',
+      sku: 'COOL-BEQUIET-PR2',
+      subType: 'air',
+      categoryId: coolingCategory.id,
+      cooling: {
+        brand: 'be quiet!',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 1500,
+        category: 'Air Cooler',
+        subCategory: 'Tower Cooler',
+        radiatorSize: '120mm',
+      }
+    },
+    {
+      name: 'NZXT Kraken Z73',
+      description: '360mm AIO with customizable LCD display on pump',
+      price: priceWith99(250, 300),
+      quantity: 10,
+      imagesUrl: '/products/cooling/nzxt-kraken x63 rgb.jpg',
+      sku: 'COOL-NZXT-Z73',
+      subType: 'liquid',
+      categoryId: coolingCategory.id,
+      cooling: {
+        brand: 'NZXT',
+        socket: 'Universal',
+        fanDiameter: 120,
+        fanSpeed: 2000,
+        category: 'Liquid Cooler',
+        subCategory: ' AIO Liquid Cooler',
+        radiatorSize: '360mm',
+      }
+    }
+  ];
+  // Case Components
+  const caseComponents = [    {
+      name: 'Fractal Design Torrent RGB',
+      description: 'High-performance mid-tower case with RGB lighting and exceptional airflow',
+      price: priceWith99(150, 200),
+      quantity: 15,
+      imagesUrl: '/products/case/fractal-design-torrent-rgb.jpg',
+      sku: 'CASE-FRACTAL-TORRENT',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Fractal Design',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 1,
+        slots525: 2,
+        slots35: 6,
+        slots25: 8,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    },    {
+      name: 'NZXT H1 V2',
+      description: 'Compact vertical ITX case with integrated AIO and PSU',
+      price: priceWith99(300, 350),
+      quantity: 12,
+      imagesUrl: '/products/case/nzxt-h1-v2.jpg',
+      sku: 'CASE-NZXT-H1V2',
+      subType: 'mini-itx',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'NZXT',
+        powerSupplyIncluded: true,
+        color: 'Black',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 0,
+        usb3: 2,
+        usb32: 0,
+        usbTypeC: 1,
+        slots525: 0,
+        slots35: 2,
+        slots25: 2,
+        waterCoolingSupport: true,
+        form: 'Mini-ITX',
+      }
+    },    {
+      name: 'be quiet! Pure Base 500DX',
+      description: 'Silent mid-tower case with excellent cooling potential',
+      price: priceWith99(90, 130),
+      quantity: 20,
+      imagesUrl: '/products/case/be-quiet-pure-base 500dx.jpg',
+      sku: 'CASE-BEQUIET-PB500DX',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'be quiet!',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 0,
+        slots525: 2,
+        slots35: 6,
+        slots25: 7,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    },    {
+      name: 'Cooler Master MasterBox MB311L',
+      description: 'Budget-friendly micro-ATX case with good airflow',
+      price: priceWith99(40, 60),
+      quantity: 25,
+      imagesUrl: '/products/case/cooler-master-mb311l.jpg',
+      sku: 'CASE-CM-MB311L',
+      subType: 'micro-atx',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Cooler Master',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Plastic',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 1,
+        usb32: 0,
+        usbTypeC: 0,
+        slots525: 1,
+        slots35: 2,
+        slots25: 4,
+        waterCoolingSupport: false,
+        form: 'Micro-ATX',
+      }
+    },    {
+      name: 'Corsair 7000D Airflow',
+      description: 'Full-tower case with massive space and superior airflow',
+      price: priceWith99(200, 280),
+      quantity: 10,
+      imagesUrl: '/products/case/corsair-7000d-airflow.jpg',
+      sku: 'CASE-CORSAIR-7000D',
+      subType: 'full-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Corsair',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 1,
+        slots525: 3,
+        slots35: 12,
+        slots25: 18,
+        waterCoolingSupport: true,
+        form: 'E-ATX',
+      }
+    },    {
+      name: 'DeepCool CK560',
+      description: 'Modern mid-tower case with mesh front panel and RGB lighting',
+      price: priceWith99(70, 100),
+      quantity: 18,
+      imagesUrl: '/products/case/deepcool-ck560.jpg',
+      sku: 'CASE-DEEPCOOL-CK560',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'DeepCool',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 0,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 1,
+        slots525: 2,
+        slots35: 6,
+        slots25: 6,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    },    {
+      name: 'Lian Li O11 Air Mini',
+      description: 'Compact version of the popular O11 Dynamic with excellent airflow',
+      price: priceWith99(110, 150),
+      quantity: 16,
+      imagesUrl: '/products/case/lian-li-o11-air mini.jpg',
+      sku: 'CASE-LIANLI-O11MINI',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Lian Li',
+        powerSupplyIncluded: false,
+        color: 'White',
+        material: 'Aluminum/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 0,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 1,
+        slots525: 0,
+        slots35: 4,
+        slots25: 6,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    },    {
+      name: 'Phanteks Enthoo 719',
+      description: 'Luxury full-tower case with premium build quality',
+      price: priceWith99(180, 240),
+      quantity: 8,
+      imagesUrl: '/products/case/phanteks-enthoo-719.jpg',
+      sku: 'CASE-PHANTEKS-E719',
+      subType: 'full-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Phanteks',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 1,
+        slots525: 2,
+        slots35: 10,
+        slots25: 14,
+        waterCoolingSupport: true,
+        form: 'E-ATX',
+      }
+    },    {
+      name: 'SilverStone SG13',
+      description: 'Ultra-compact mini-ITX case for small form factor builds',
+      price: priceWith99(50, 70),
+      quantity: 20,
+      imagesUrl: '/products/case/silverstone-sg13.jpg',
+      sku: 'CASE-SILVERSTONE-SG13',
+      subType: 'mini-itx',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'SilverStone',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Plastic',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 0,
+        usbTypeC: 0,
+        slots525: 0,
+        slots35: 1,
+        slots25: 2,
+        waterCoolingSupport: false,
+        form: 'Mini-ITX',
+      }
+    },    {
+      name: 'Thermaltake View 37',
+      description: 'RGB gaming case with tempered glass panels and excellent cable management',
+      price: priceWith99(120, 160),
+      quantity: 14,
+      imagesUrl: '/products/case/thermaltake-view-371.jpg',
+      sku: 'CASE-TT-VIEW37',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Thermaltake',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 0,
+        slots525: 2,
+        slots35: 6,
+        slots25: 8,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    },    {
+      name: 'Fractal Design Core 1000',
+      description: 'Budget micro-ATX case with silent operation focus',
+      price: priceWith99(35, 50),
+      quantity: 22,
+      imagesUrl: '/products/case/fractal-design-torrent-rgb.jpg',
+      sku: 'CASE-FRACTAL-CORE1000',
+      subType: 'micro-atx',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Fractal Design',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 0,
+        usbTypeC: 0,
+        slots525: 2,
+        slots35: 2,
+        slots25: 4,
+        waterCoolingSupport: false,
+        form: 'Micro-ATX',
+      }
+    },    {
+      name: 'NZXT H510 Elite',
+      description: 'Premium mid-tower case with tempered glass and smart device integration',
+      price: priceWith99(140, 180),
+      quantity: 15,
+      imagesUrl: '/products/case/nzxt-h1-v2.jpg',
+      sku: 'CASE-NZXT-H510ELITE',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'NZXT',
+        powerSupplyIncluded: false,
+        color: 'White',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 0,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 1,
+        slots525: 0,
+        slots35: 4,
+        slots25: 6,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    },    {
+      name: 'Corsair iCUE 4000X RGB',
+      description: 'Mid-tower case with iCUE RGB ecosystem integration',
+      price: priceWith99(100, 140),
+      quantity: 17,
+      imagesUrl: '/products/case/corsair-7000d-airflow.jpg',
+      sku: 'CASE-CORSAIR-4000X',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Corsair',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 0,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 1,
+        slots525: 2,
+        slots35: 6,
+        slots25: 8,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    },    {
+      name: 'Phanteks Eclipse P300A',
+      description: 'Budget-friendly mid-tower case with mesh front panel',
+      price: priceWith99(55, 75),
+      quantity: 20,
+      imagesUrl: '/products/case/phanteks-enthoo-719.jpg',
+      sku: 'CASE-PHANTEKS-P300A',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Phanteks',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 0,
+        usbTypeC: 0,
+        slots525: 2,
+        slots35: 4,
+        slots25: 6,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    },    {
+      name: 'Cooler Master MasterCase H500',
+      description: 'High-airflow mid-tower case with dual 200mm intake fans',
+      price: priceWith99(90, 120),
+      quantity: 16,
+      imagesUrl: '/products/case/cooler-master-mb311l.jpg',
+      sku: 'CASE-CM-H500',
+      subType: 'mid-tower',
+      categoryId: caseCategory.id,
+      caseModel: {
+        brand: 'Cooler Master',
+        powerSupplyIncluded: false,
+        color: 'Black',
+        material: 'Steel/Glass',
+        audioIn: true,
+        audioOut: true,
+        usb2: 2,
+        usb3: 2,
+        usb32: 1,
+        usbTypeC: 0,
+        slots525: 2,
+        slots35: 6,
+        slots25: 8,
+        waterCoolingSupport: true,
+        form: 'ATX',
+      }
+    }
+  ];
+  // Services Components
+  const serviceComponents = [
+    {
+      name: 'Windows 11 Home',
+      description: 'Microsoft Windows 11 Home operating system license',
+      price: priceWith99(100, 140),
+      quantity: 999,
+      imagesUrl: '/products/services/windows-11-home.jpg',
+      sku: 'SERVICE-WIN11-HOME',
+      subType: 'operating-system',
+      categoryId: servicesCategory.id
+    },
+    {
+      name: 'Windows 11 Pro',
+      description: 'Microsoft Windows 11 Professional operating system license with advanced features',
+      price: priceWith99(180, 220),
+      quantity: 999,
+      imagesUrl: '/products/services/windows-11-pro.jpg',
+      sku: 'SERVICE-WIN11-PRO',
+      subType: 'operating-system',
+      categoryId: servicesCategory.id
+    },
+    {
+      name: 'TP-Link AC600 USB WiFi Adapter',
+      description: 'Dual-band USB 3.0 WiFi adapter for desktop computers',
+      price: priceWith99(20, 35),
+      quantity: 50,
+      imagesUrl: '/products/services/tp-link-ac600.jpg',
+      sku: 'SERVICE-WIFI-AC600',
+      subType: 'wifi-adapter',
+      categoryId: servicesCategory.id
+    },
+    {
+      name: 'ASUS PCE-AX58BT WiFi 6 Card',
+      description: 'PCIe WiFi 6 card with Bluetooth 5.0 support',
+      price: priceWith99(45, 65),
+      quantity: 30,
+      imagesUrl: '/products/services/asus-pce-ax58bt.jpg',
+      sku: 'SERVICE-WIFI-AX58BT',
+      subType: 'wifi-adapter',
+      categoryId: servicesCategory.id
+    },
+    {
+      name: 'Creative Sound Blaster Audigy FX',
+      description: 'Internal sound card for enhanced audio experience',
+      price: priceWith99(35, 50),
+      quantity: 25,
+      imagesUrl: '/products/services/sound-blaster-fx.jpg',
+      sku: 'SERVICE-SOUND-FX',
+      subType: 'sound-card',
+      categoryId: servicesCategory.id
+    },
+    {
+      name: 'ASUS Xonar SE Sound Card',
+      description: 'High-quality PCIe sound card with 5.1 channel support',
+      price: priceWith99(25, 40),
+      quantity: 20,
+      imagesUrl: '/products/services/asus-xonar-se.jpg',
+      sku: 'SERVICE-SOUND-SE',
+      subType: 'sound-card',
+      categoryId: servicesCategory.id
+    },
+    {
+      name: 'PC Assembly Service',
+      description: 'Professional PC assembly and cable management service',
+      price: priceWith99(50, 80),
+      quantity: 999,
+      imagesUrl: '/products/services/assembly-service.jpg',
+      sku: 'SERVICE-ASSEMBLY',
+      subType: 'assembly',
+      categoryId: servicesCategory.id
+    },
+    {
+      name: 'Extended 3-Year Warranty',
+      description: 'Extended warranty coverage for complete system protection',
+      price: priceWith99(80, 120),
+      quantity: 999,
+      imagesUrl: '/products/services/extended-warranty.jpg',
+      sku: 'SERVICE-WARRANTY-3Y',
+      subType: 'warranty',
+      categoryId: servicesCategory.id
+    },
+    {
+      name: 'Software Installation Service',
+      description: 'Professional installation of operating system and essential software',
+      price: priceWith99(30, 50),
+      quantity: 999,
+      imagesUrl: '/products/services/software-install.jpg',
+      sku: 'SERVICE-SOFTWARE-INSTALL',
+      subType: 'installation',
+      categoryId: servicesCategory.id
+    }
+  ];
+  // Create all components
+  for (const cpuData of cpuComponents) {
+    const { cpu, ...componentData } = cpuData;
+    try {
+      const component = await prisma.component.create({ data: componentData });
+      await prisma.cPU.create({
+        data: { ...cpu, componentId: component.id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ CPU component ${componentData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
   }
+  for (const gpuData of gpuComponents) {
+    const { gpu, ...componentData } = gpuData;
+    try {
+      const component = await prisma.component.create({ data: componentData });
+      await prisma.gPU.create({
+        data: { ...gpu, componentId: component.id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ GPU component ${componentData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
+  }
+  for (const ramData of ramComponents) {
+    const { ram, ...componentData } = ramData;
+    try {
+      const component = await prisma.component.create({ data: componentData });
+      await prisma.rAM.create({
+        data: { ...ram, componentId: component.id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ RAM component ${componentData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
+  }
+  for (const storageData of storageComponents) {
+    const { storage, ...componentData } = storageData;
+    try {
+      const component = await prisma.component.create({ data: componentData });
+      await prisma.storage.create({
+        data: { ...storage, componentId: component.id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ Storage component ${componentData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
+  }
+  for (const psuData of psuComponents) {
+    const { psu, ...componentData } = psuData;
+    try {
+      const component = await prisma.component.create({ data: componentData });
+      await prisma.pSU.create({
+        data: { ...psu, componentId: component.id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ PSU component ${componentData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
+  }
+  for (const motherboardData of motherboardComponents) {
+    const { motherboard, ...componentData } = motherboardData;
+    try {
+      const component = await prisma.component.create({ data: componentData });
+      await prisma.motherboard.create({
+        data: { ...motherboard, componentId: component.id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ Motherboard component ${componentData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
+  }
+  for (const coolingData of coolingComponents) {
+    const { cooling, ...componentData } = coolingData;
+    try {
+      const component = await prisma.component.create({ data: componentData });
+      await prisma.cooling.create({
+        data: { ...cooling, componentId: component.id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ Cooling component ${componentData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
+  }  for (const caseData of caseComponents) {
+    const { caseModel, ...componentData } = caseData;
+    try {
+      const component = await prisma.component.create({ data: componentData });
+      await prisma.case.create({
+        data: { ...caseModel, componentId: component.id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ Case component ${componentData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
+  }
+  // Create service components (no specialized table needed, just basic components)
+  for (const serviceData of serviceComponents) {
+    try {
+      await prisma.component.create({ data: serviceData });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log(`⚠️ Service component ${serviceData.sku} already exists, skipping...`);
+      } else {
+        throw error;
+      }
+    }
+  }
+  console.log('✅ Components seeded successfully');
 }

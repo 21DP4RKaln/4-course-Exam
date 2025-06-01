@@ -38,10 +38,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
 var prisma = new client_1.PrismaClient();
-/**
- * This script updates component categories to ensure peripheral categories
- * have the correct type value (peripheral).
- */
 function updatePeripheralCategories() {
     return __awaiter(this, void 0, void 0, function () {
         var peripheralCategoryNames, result, updatedCategories, error_1;

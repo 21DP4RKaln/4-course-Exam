@@ -11,7 +11,6 @@ import { User, Package, Cpu, Heart } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs'
 import { getUserConfigurations, getUserOrders, type UserConfiguration, type UserOrder } from '@/lib/services/dashboardService'
 
-// Import dashboard components
 import ProfileTab from '@/app/components/Dashboard/Dashboard'
 import WishlistTab from '@/app/components/Dashboard/WishlistTab'
 import ConfigurationsTab from '@/app/components/Dashboard/ConfigurationsTab'
@@ -45,7 +44,6 @@ export default function DashboardPage() {
     }
   }, [isAuthenticated, loading, router, locale, pathname, user?.role])
 
-  // Sync tab state with URL parameters
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab && ['configurations', 'orders', 'profile', 'wishlist'].includes(tab)) {

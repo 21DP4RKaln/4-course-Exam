@@ -2,15 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-// Directories to clean
 const cleanupPaths = [
   '.next',
   'node_modules/.cache',
 ];
 
-// Main build process
 try {
-  // Delete cache directories
   cleanupPaths.forEach(dir => {
     const fullPath = path.join(__dirname, '..', dir);
     if (fs.existsSync(fullPath)) {
@@ -19,7 +16,6 @@ try {
     }
   });
 
-  // Run npm cache clean
   console.log('Cleaning npm cache...');
   execSync('npm cache clean --force', { stdio: 'inherit' });
 

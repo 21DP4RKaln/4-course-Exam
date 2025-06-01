@@ -4,7 +4,6 @@ import { createUnauthorizedResponse, createForbiddenResponse, createBadRequestRe
 import { prisma } from '@/lib/prismaService'
 import { z } from 'zod'
 
-// Schema for creating a new promo code
 const createPromoCodeSchema = z.object({
   code: z.string().min(3).max(20),
   description: z.string().optional(),
@@ -19,7 +18,6 @@ const createPromoCodeSchema = z.object({
   isActive: z.boolean().optional()
 })
 
-// Schema for updating a promo code
 const updatePromoCodeSchema = z.object({
   id: z.string().uuid(),
   code: z.string().min(3).max(20).optional(),
@@ -35,12 +33,8 @@ const updatePromoCodeSchema = z.object({
   isActive: z.boolean().optional()
 })
 
-/**
- * GET handler - Retrieve all promo codes
- */
 export async function GET(request: NextRequest) {
   try {
-    // Get auth token and verify admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -55,12 +49,10 @@ export async function GET(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Parse query parameters
     const { searchParams } = new URL(request.url)
     const isActive = searchParams.get('isActive')
     const expired = searchParams.get('expired')
 
-    // Build filter conditions
     const whereConditions: any = {}
     
     if (isActive === 'true') {
@@ -79,7 +71,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch promo codes with products
     const promoCodes = await prisma.promoCode.findMany({
       where: whereConditions,
       include: {
@@ -90,7 +81,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Format response
     const formattedPromoCodes = promoCodes.map(promo => ({
       id: promo.id,
       code: promo.code,
@@ -118,12 +108,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST handler - Create a new promo code
- */
 export async function POST(request: NextRequest) {
   try {
-    // Get auth token and verify admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -138,7 +124,6 @@ export async function POST(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Parse and validate request body
     const body = await request.json()
     const validationResult = createPromoCodeSchema.safeParse(body)
 
@@ -160,7 +145,6 @@ export async function POST(request: NextRequest) {
       isActive = true
     } = validationResult.data
 
-    // Check if code already exists
     const existingCode = await prisma.promoCode.findUnique({
       where: { code }
     })
@@ -169,7 +153,6 @@ export async function POST(request: NextRequest) {
       return createBadRequestResponse('Promo code already exists')
     }
 
-    // Create promo code
     const promoCode = await prisma.promoCode.create({
       data: {
         code,
@@ -185,14 +168,11 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Add product associations if needed
     if (scope === 'SPECIFIC_PRODUCTS' && productIds && productIds.length > 0 && productTypes && productTypes.length > 0) {
-      // Make sure arrays are of same length
       if (productIds.length !== productTypes.length) {
         return createBadRequestResponse('Product IDs and types arrays must be the same length')
       }
 
-      // Create product associations
       const productAssociations = productIds.map((productId, index) => ({
         promoCodeId: promoCode.id,
         productId,
@@ -204,7 +184,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Fetch complete promo code with products
     const createdPromoCode = await prisma.promoCode.findUnique({
       where: { id: promoCode.id },
       include: { products: true }
@@ -222,12 +201,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * PUT handler - Update an existing promo code
- */
 export async function PUT(request: NextRequest) {
   try {
-    // Get auth token and verify admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -242,7 +217,6 @@ export async function PUT(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Parse and validate request body
     const body = await request.json()
     const validationResult = updatePromoCodeSchema.safeParse(body)
 
@@ -265,7 +239,6 @@ export async function PUT(request: NextRequest) {
       isActive
     } = validationResult.data
 
-    // Check if promo code exists
     const existingPromoCode = await prisma.promoCode.findUnique({
       where: { id }
     })
@@ -274,7 +247,6 @@ export async function PUT(request: NextRequest) {
       return createBadRequestResponse('Promo code not found')
     }
 
-    // Check if updated code conflicts with existing codes
     if (code && code !== existingPromoCode.code) {
       const codeExists = await prisma.promoCode.findUnique({
         where: { code }
@@ -285,7 +257,6 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // Build update data
     const updateData: any = {}
     
     if (code !== undefined) updateData.code = code
@@ -298,20 +269,16 @@ export async function PUT(request: NextRequest) {
     if (scope !== undefined) updateData.scope = scope
     if (isActive !== undefined) updateData.isActive = isActive
 
-    // Update promo code
     const updatedPromoCode = await prisma.promoCode.update({
       where: { id },
       data: updateData
     })
 
-    // Update product associations if needed
     if (scope === 'SPECIFIC_PRODUCTS' && productIds && productTypes && productIds.length === productTypes.length) {
-      // Remove existing associations
       await prisma.promoProduct.deleteMany({
         where: { promoCodeId: id }
       })
 
-      // Create new associations
       const productAssociations = productIds.map((productId, index) => ({
         promoCodeId: id,
         productId,
@@ -323,7 +290,6 @@ export async function PUT(request: NextRequest) {
       })
     }
 
-    // Fetch complete updated promo code with products
     const finalPromoCode = await prisma.promoCode.findUnique({
       where: { id },
       include: { products: true }
@@ -341,12 +307,8 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-/**
- * DELETE handler - Delete a promo code
- */
 export async function DELETE(request: NextRequest) {
   try {
-    // Get auth token and verify admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -361,7 +323,6 @@ export async function DELETE(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get promo code ID from search params
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
@@ -369,7 +330,6 @@ export async function DELETE(request: NextRequest) {
       return createBadRequestResponse('Promo code ID is required')
     }
 
-    // Check if promo code exists
     const existingPromoCode = await prisma.promoCode.findUnique({
       where: { id }
     })
@@ -378,7 +338,6 @@ export async function DELETE(request: NextRequest) {
       return createBadRequestResponse('Promo code not found')
     }
 
-    // Delete promo code (this will cascade delete the product associations)
     await prisma.promoCode.delete({
       where: { id }
     })

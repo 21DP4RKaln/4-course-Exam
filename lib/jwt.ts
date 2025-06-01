@@ -1,13 +1,11 @@
 import { NextRequest } from 'next/server'
 import * as jose from 'jose'
 
-// Constants
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || '7w4U4zcoBQgN9OEcAJDF8gNNc5B7h7du')
 const REFRESH_TOKEN_SECRET = new TextEncoder().encode(process.env.REFRESH_TOKEN_SECRET || 'refresh-token-secret')
 const ACCESS_TOKEN_EXPIRES_IN = '1h'
 const REFRESH_TOKEN_EXPIRES_IN = '7d'
 
-// Types
 export interface JWTPayload {
   userId: string
   email: string
@@ -27,7 +25,6 @@ export class JWTError extends Error {
   }
 }
 
-// Sign JWT token
 export async function signJWT(
   payload: JWTPayload,
   type: 'access' | 'refresh' = 'access'
@@ -49,7 +46,6 @@ export async function signJWT(
   }
 }
 
-// Generate both access and refresh tokens
 export async function generateTokenPair(payload: Omit<JWTPayload, 'tokenType'>): Promise<TokenPair> {
   try {
     const [accessToken, refreshToken] = await Promise.all([
@@ -62,7 +58,6 @@ export async function generateTokenPair(payload: Omit<JWTPayload, 'tokenType'>):
   }
 }
 
-// Verify JWT token
 export async function verifyJWT(token: string, type: 'access' | 'refresh' = 'access'): Promise<JWTPayload | null> {
   try {
     const secret = type === 'access' ? JWT_SECRET : REFRESH_TOKEN_SECRET
@@ -73,7 +68,6 @@ export async function verifyJWT(token: string, type: 'access' | 'refresh' = 'acc
       return null
     }
 
-    // Validate payload structure
     if (
       typeof payload.userId !== 'string' ||
       typeof payload.email !== 'string' ||
@@ -98,13 +92,11 @@ export async function verifyJWT(token: string, type: 'access' | 'refresh' = 'acc
   }
 }
 
-// Get JWT from request
 export function getJWTFromRequest(request: NextRequest, type: 'access' | 'refresh' = 'access'): string | undefined {
   const cookieName = type === 'access' ? 'authToken' : 'refreshToken'
   return request.cookies.get(cookieName)?.value
 }
 
-// Refresh access token using refresh token
 export async function refreshAccessToken(refreshToken: string): Promise<string | null> {
   const payload = await verifyJWT(refreshToken, 'refresh')
   if (!payload) return null

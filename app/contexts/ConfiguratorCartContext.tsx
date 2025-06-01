@@ -26,14 +26,11 @@ const CartContext = createContext<CartContextType | null>(null)
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   
-  // Add item to cart
   const addItem = (item: CartItem) => {
     setItems(prevItems => {
-      // Check if item already exists
       const existingItemIndex = prevItems.findIndex(i => i.id === item.id)
       
       if (existingItemIndex >= 0) {
-        // Update quantity if item exists
         const updatedItems = [...prevItems]
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
@@ -41,18 +38,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
         return updatedItems
       } else {
-        // Add new item
         return [...prevItems, { ...item, quantity: item.quantity || 1 }]
       }
     })
   }
   
-  // Remove item from cart
   const removeItem = (id: string) => {
     setItems(prevItems => prevItems.filter(item => item.id !== id))
   }
   
-  // Update item quantity
   const updateQuantity = (id: string, quantity: number) => {
     if (quantity <= 0) {
       removeItem(id)
@@ -66,15 +60,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     )
   }
   
-  // Clear cart
   const clearCart = () => {
     setItems([])
   }
   
-  // Calculate total items
   const totalItems = items.reduce((total, item) => total + item.quantity, 0)
   
-  // Calculate total price
   const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0)
   
   return (
@@ -94,7 +85,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   )
 }
 
-// Custom hook for using the cart context
 export function useCart() {
   const context = useContext(CartContext)
   

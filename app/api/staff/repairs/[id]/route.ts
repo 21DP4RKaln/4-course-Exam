@@ -93,7 +93,6 @@ export async function GET(
       return createNotFoundResponse('Repair not found')
     }
 
-    // Check if specialist is assigned to this repair
     if (payload.role === 'SPECIALIST') {
       const isAssigned = repair.specialists.some(s => s.specialistId === payload.userId)
       if (!isAssigned) {
@@ -119,13 +118,12 @@ export async function GET(
         email: s.specialist.email,
         assignedAt: s.assignedAt,
         notes: s.notes
-      })),
-      product: repair.peripheral ? {
+      })),      product: repair.peripheral ? {
         type: 'peripheral',
         id: repair.peripheral.id,
         name: repair.peripheral.name,
         category: repair.peripheral.category.name,
-        imageUrl: repair.peripheral.imageUrl,
+        imageUrl: repair.peripheral.imagesUrl,
         description: repair.peripheral.description
       } : repair.configuration ? {
         type: 'configuration',
@@ -189,7 +187,6 @@ export async function PATCH(
 
     const { status, priority, estimatedCost, finalCost, diagnosticNotes, assignedTo, parts } = validationResult.data
 
-    // Check if repair exists and user has access
     const existingRepair = await prisma.repair.findUnique({
       where: { id: params.id },
       include: {
@@ -201,7 +198,6 @@ export async function PATCH(
       return createNotFoundResponse('Repair not found')
     }
 
-    // Check if specialist is assigned to this repair
     if (payload.role === 'SPECIALIST') {
       const isAssigned = existingRepair.specialists.some(s => s.specialistId === payload.userId)
       if (!isAssigned) {
@@ -209,7 +205,6 @@ export async function PATCH(
       }
     }
 
-    // Prepare update data
     const updateData: any = {
       status,
       priority,
@@ -219,19 +214,15 @@ export async function PATCH(
       updatedAt: new Date()
     }
 
-    // Set completion date if status is COMPLETED
     if (status === 'COMPLETED' && !existingRepair.completionDate) {
       updateData.completionDate = new Date()
     }
 
-    // Handle parts update if provided
     if (parts) {
-      // Remove existing parts
       await prisma.repairPart.deleteMany({
         where: { repairId: params.id }
       })
 
-      // Add new parts
       updateData.parts = {
         create: parts.map(part => ({
           componentId: part.componentId,
@@ -241,7 +232,6 @@ export async function PATCH(
       }
     }
 
-    // Handle specialist assignment (admin only)
     if (payload.role === 'ADMIN' && assignedTo) {
       updateData.specialists = {
         create: {
@@ -348,7 +338,6 @@ export async function DELETE(
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Only admin can delete repairs
     if (payload.role !== 'ADMIN') {
       return createUnauthorizedResponse('Only administrators can delete repairs')
     }

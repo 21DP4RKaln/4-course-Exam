@@ -4,7 +4,6 @@ import { prisma } from '@/lib/prismaService'
 import { authenticateAdmin } from '@/lib/middleware/authMiddleware'
 import { z } from 'zod'
 
-// Schema for campaign creation
 const campaignSchema = z.object({
   name: z.string().min(3).max(100),
   description: z.string().optional(),
@@ -19,7 +18,6 @@ const campaignSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
 })
 
-// Schema for campaign update
 const updateCampaignSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(3).max(100).optional(),
@@ -35,24 +33,18 @@ const updateCampaignSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
 })
 
-/**
- * GET handler - Retrieve all marketing campaigns
- */
 export async function GET(request: NextRequest) {
   try {
-    // Authenticate admin user
     const authResult = await authenticateAdmin(request);
     if (authResult instanceof Response) {
       return authResult;
     }
 
-    // Parse query parameters
     const { searchParams } = new URL(request.url)
     const statusFilter = searchParams.get('status')
     const typeFilter = searchParams.get('type')
     const campaignId = searchParams.get('id')
 
-    // If single campaign is requested
     if (campaignId) {
       const campaign = await prisma.marketingCampaign.findUnique({
         where: { id: campaignId },
@@ -75,7 +67,6 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Build where conditions
     const whereConditions: any = {}
 
     if (statusFilter) {
@@ -86,7 +77,6 @@ export async function GET(request: NextRequest) {
       whereConditions.type = typeFilter
     }
 
-    // Get campaigns from database
     const campaigns = await prisma.marketingCampaign.findMany({
       where: whereConditions,
       include: {
@@ -110,7 +100,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Format response
     const formattedCampaigns = campaigns.map(campaign => ({
       id: campaign.id,
       name: campaign.name,
@@ -144,18 +133,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST handler - Create a new marketing campaign
- */
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate admin user
     const authResult = await authenticateAdmin(request);
     if (authResult instanceof Response) {
       return authResult;
     }
 
-    // Parse request body
     const body = await request.json()
     const validationResult = campaignSchema.safeParse(body)
 
@@ -177,14 +161,11 @@ export async function POST(request: NextRequest) {
       metadata = {}
     } = validationResult.data
 
-    // Validate date range
     if (new Date(startDate) >= new Date(endDate)) {
       return createBadRequestResponse('End date must be after start date')
     }
 
-    // Use transaction to ensure all related operations succeed or fail together
     const campaign = await prisma.$transaction(async (tx) => {
-      // Check promo code if provided
       if (promoCodeId) {
         const promoCode = await tx.promoCode.findUnique({
           where: { id: promoCodeId }
@@ -194,13 +175,11 @@ export async function POST(request: NextRequest) {
           throw new Error('Promo code not found');
         }
 
-        // Check if promo code expires before campaign ends
         if (promoCode.expiresAt < new Date(endDate)) {
           throw new Error('Promo code expires before campaign end date');
         }
       }
 
-      // Create campaign
       const newCampaign = await tx.marketingCampaign.create({
         data: {
           name,
@@ -218,7 +197,6 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      // Initialize campaign metrics
       await tx.campaignMetrics.create({
         data: {
           campaignId: newCampaign.id,
@@ -240,7 +218,6 @@ export async function POST(request: NextRequest) {
       throw err;
     });
 
-    // Return created campaign
     return NextResponse.json({
       ...campaign,
       startDate: campaign.startDate.toISOString(),
@@ -263,18 +240,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * PUT handler - Update an existing marketing campaign
- */
 export async function PUT(request: NextRequest) {
   try {
-    // Authenticate admin user
     const authResult = await authenticateAdmin(request);
     if (authResult instanceof Response) {
       return authResult;
     }
 
-    // Parse request body
     const body = await request.json()
     const validationResult = updateCampaignSchema.safeParse(body)
 
@@ -297,9 +269,7 @@ export async function PUT(request: NextRequest) {
       metadata
     } = validationResult.data
 
-    // Use transaction for data integrity
     const updatedCampaign = await prisma.$transaction(async (tx) => {
-      // Check if campaign exists
       const existingCampaign = await tx.marketingCampaign.findUnique({
         where: { id }
       })
@@ -308,7 +278,6 @@ export async function PUT(request: NextRequest) {
         throw new Error('Campaign not found');
       }
 
-      // Build update data
       const updateData: any = {}
 
       if (name !== undefined) updateData.name = name
@@ -323,24 +292,20 @@ export async function PUT(request: NextRequest) {
       if (promoCodeId !== undefined) updateData.promoCodeId = promoCodeId
       if (metadata !== undefined) updateData.metadata = JSON.stringify(metadata)
 
-      // Validate date range if both dates are provided
       if (startDate && endDate) {
         if (new Date(startDate) >= new Date(endDate)) {
           throw new Error('End date must be after start date');
         }
       } else if (startDate && !endDate) {
-        // If only start date is provided, check against existing end date
         if (new Date(startDate) >= existingCampaign.endDate) {
           throw new Error('Start date must be before end date');
         }
       } else if (!startDate && endDate) {
-        // If only end date is provided, check against existing start date
         if (existingCampaign.startDate >= new Date(endDate)) {
           throw new Error('End date must be after start date');
         }
       }
 
-      // Check promo code if changed
       if (promoCodeId && promoCodeId !== existingCampaign.promoCodeId) {
         const promoCode = await tx.promoCode.findUnique({
           where: { id: promoCodeId }
@@ -350,14 +315,12 @@ export async function PUT(request: NextRequest) {
           throw new Error('Promo code not found');
         }
 
-        // Check if promo code expires before campaign ends
         const campaignEndDate = endDate ? new Date(endDate) : existingCampaign.endDate
         if (promoCode.expiresAt < campaignEndDate) {
           throw new Error('Promo code expires before campaign end date');
         }
       }
 
-      // Update campaign
       return await tx.marketingCampaign.update({
         where: { id },
         data: {
@@ -382,7 +345,6 @@ export async function PUT(request: NextRequest) {
       throw err;
     });
 
-    // Return updated campaign
     return NextResponse.json({
       ...updatedCampaign,
       startDate: updatedCampaign.startDate.toISOString(),
@@ -413,18 +375,13 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-/**
- * DELETE handler - Delete a marketing campaign
- */
 export async function DELETE(request: NextRequest) {
   try {
-    // Authenticate admin user
     const authResult = await authenticateAdmin(request);
     if (authResult instanceof Response) {
       return authResult;
     }
 
-    // Get campaign ID
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
@@ -432,9 +389,7 @@ export async function DELETE(request: NextRequest) {
       return createBadRequestResponse('Campaign ID is required')
     }
 
-    // Use transaction for deleting the campaign and its metrics
     const result = await prisma.$transaction(async (tx) => {
-      // Check if campaign exists
       const existingCampaign = await tx.marketingCampaign.findUnique({
         where: { id }
       })
@@ -443,17 +398,14 @@ export async function DELETE(request: NextRequest) {
         throw new Error('Campaign not found');
       }
 
-      // Check if campaign is active
       if (existingCampaign.status === 'ACTIVE') {
         throw new Error('Cannot delete an active campaign');
       }
 
-      // Delete campaign metrics first (to avoid foreign key constraints)
       await tx.campaignMetrics.deleteMany({
         where: { campaignId: id }
       })
 
-      // Delete campaign
       return await tx.marketingCampaign.delete({
         where: { id }
       })

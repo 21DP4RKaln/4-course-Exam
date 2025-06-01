@@ -20,7 +20,6 @@ type User = {
   shippingCountry?: string
 }
 
-// Extended type for profile updates that includes password
 type ProfileUpdateData = Partial<User> & {
   password?: string
 }
@@ -54,11 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       if (!mounted) return
 
-      try {        // If NextAuth session exists, use it
+      try {       
         if (session?.user) {
           if (!mounted) return
           
-          // Convert NextAuth user to our User type
           const userData: User = {
             id: (session.user as any).id || session.user.email || 'unknown',
             email: session.user.email || undefined,
@@ -75,7 +73,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return
         }
 
-        // Otherwise, check custom auth
         const response = await fetch('/api/auth/me')
         if (!mounted) return
 
@@ -102,7 +99,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [session, status])
 
-  // Separate effect for handling route protection
   useEffect(() => {
     if (!initialCheckDone || loading) return
 
@@ -154,19 +150,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
 
       if (!response.ok) {
-        // Parse the error message properly
         const errorData = await response.json()
         throw new Error(errorData.error?.message || 'Login failed')
       }
 
-      // Get user data from response
       const userData = await response.json()
       setUser(userData)
       
-      // Get the redirect URL if it exists
       const redirect = searchParams.get('redirect')
       
-      // Redirect based on user role
       if (userData.role === 'ADMIN') {
         router.push(`/${locale}/admin`)
       } else if (userData.role === 'SPECIALIST') {
@@ -215,7 +207,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const userData = await response.json()
-      setUser(userData)      // New users are always USER role, so redirect to dashboard
+      setUser(userData)      
       router.push(`/${locale}/dashboard`)
     } catch (error: any) {
       console.error('Registration error:', error)
@@ -236,9 +228,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (result?.error) {
         throw new Error(`${provider} authentication failed`)
       }
-      
-      // The signIn callback in NextAuth config will handle user creation/update
-      // and NextAuth will manage the session
       
     } catch (error: any) {
       console.error('Social login error:', error)
@@ -289,13 +278,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     setLoading(true)
     try {
-      // Handle both NextAuth and custom auth logout
       await signOut({ redirect: false })
       await fetch('/api/auth/logout', {
         method: 'POST',
       })
       setUser(null)
-      // Redirect to home page after logout
       router.push(`/${locale}`)
     } catch (error) {
       console.error('Logout error:', error)

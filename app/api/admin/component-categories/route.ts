@@ -27,8 +27,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
-    if (id) {
-      // Get a specific category
+    if (id) {     
       const category = await prisma.componentCategory.findUnique({
         where: { id },
         include: {
@@ -37,11 +36,11 @@ export async function GET(request: NextRequest) {
               id: true,
               name: true,
               price: true,
-              stock: true,
+              quantity: true, 
+              imagesUrl: true, 
               sku: true,
             }
-          },
-          specificationKeys: true
+          }
         }
       });
 
@@ -50,20 +49,11 @@ export async function GET(request: NextRequest) {
       }
 
       return NextResponse.json(category);
-    }
-
-    // Get all categories
+    }    
     const categories = await prisma.componentCategory.findMany({
       include: {
         _count: {
           select: { components: true }
-        },
-        specificationKeys: {
-          select: {
-            id: true,
-            name: true,
-            displayName: true
-          }
         }
       },
       orderBy: {
@@ -99,7 +89,6 @@ export async function POST(request: NextRequest) {
 
     const data = validationResult.data;
     
-    // Check if category with this name or slug already exists
     const existingCategory = await prisma.componentCategory.findFirst({
       where: {
         OR: [

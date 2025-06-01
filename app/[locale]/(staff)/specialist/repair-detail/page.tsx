@@ -284,10 +284,9 @@ export default function RepairDetailsPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="status">Status</Label>
-                      <Select
+                      <Label htmlFor="status">Status</Label>                      <Select
                         value={editData.status}
-                        onValueChange={(value) => handleSelectChange("status", value)}
+                        onValueChange={(value: RepairStatus) => handleSelectChange("status", value)}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />
@@ -304,10 +303,9 @@ export default function RepairDetailsPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="priority">Priority</Label>
-                      <Select
+                      <Label htmlFor="priority">Priority</Label>                      <Select
                         value={editData.priority}
-                        onValueChange={(value) => handleSelectChange("priority", value)}
+                        onValueChange={(value: RepairPriority) => handleSelectChange("priority", value)}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select priority" />
@@ -411,9 +409,8 @@ export default function RepairDetailsPage() {
                       <h3 className="text-sm font-medium text-neutral-500">Product</h3>
                       <div className="flex items-center gap-2 mt-1">
                         <Package className="h-4 w-4 text-neutral-500" />
-                        <span>{repair.product.name}</span>
-                        {repair.product.category && (
-                          <Badge variant="outline">{repair.product.category}</Badge>
+                        <span>{repair.product.name}</span>                        {repair.product.category && (
+                          <Badge className="border border-gray-300">{repair.product.category}</Badge>
                         )}
                       </div>
                     </div>

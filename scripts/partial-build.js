@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-// Main directories to exclude temporarily (we'll add them back later)
 const dirsToTemporarilyRename = [
   'app/(staff)',
   'app/(legal)',
@@ -14,7 +13,6 @@ const dirsToTemporarilyRename = [
 const rootDir = path.resolve(__dirname, '..');
 const tempSuffix = '.temp_build_exclude';
 
-// Function to rename directories
 function renameDirs(dirs, action) {
   dirs.forEach(dir => {
     const fullPath = path.join(rootDir, dir);
@@ -30,13 +28,10 @@ function renameDirs(dirs, action) {
   });
 }
 
-// Main build process
 try {
-  // Step 1: Temporarily rename directories to exclude them from build
   console.log('Step 1: Excluding directories...');
   renameDirs(dirsToTemporarilyRename, 'exclude');
 
-  // Step 2: Run the build with minimal settings
   console.log('Step 2: Running the partial build...');
   execSync('cross-env NODE_OPTIONS=--max-old-space-size=4096 next build', {
     stdio: 'inherit',
@@ -47,7 +42,6 @@ try {
 } catch (error) {
   console.error('Build failed:', error);
 } finally {
-  // Always restore directories to their original names
   console.log('Restoring excluded directories...');
   renameDirs(dirsToTemporarilyRename, 'include');
 }

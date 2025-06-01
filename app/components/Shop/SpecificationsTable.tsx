@@ -20,7 +20,6 @@ export default function SpecificationsTable({
   });
   
   const groupSpecifications = () => {
-    // Safety check - if specifications is null, undefined or not an object, return empty groups
     if (!specifications || typeof specifications !== 'object') {
       console.error('Invalid specifications passed to SpecificationsTable:', specifications);
       return {};
@@ -37,17 +36,14 @@ export default function SpecificationsTable({
     };
 
     const groupMapping: Record<string, string> = {
-      // Manufacturer info
       'brand': 'Manufacturer',
       'manufacturer': 'Manufacturer',
       'model': 'Manufacturer',
       
-      // General info
       'type': 'General',
       'series': 'General',
       'color': 'General',
       
-      // Performance specs
       'speed': 'Performance',
       'frequency': 'Performance',
       'clock': 'Performance',
@@ -57,7 +53,6 @@ export default function SpecificationsTable({
       'refresh': 'Performance',
       'response': 'Performance',
       
-      // Technical specs
       'interface': 'Technical',
       'socket': 'Technical',
       'chipset': 'Technical',
@@ -70,13 +65,11 @@ export default function SpecificationsTable({
       'memoryType': 'Technical',
       'storage': 'Technical',
       
-      // Physical attributes
       'dimensions': 'Physical',
       'size': 'Physical',
       'weight': 'Physical',
       'materials': 'Physical',
       
-      // Features
       'features': 'Features',
       'rgb': 'Features',
       'lighting': 'Features',

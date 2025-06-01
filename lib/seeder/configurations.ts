@@ -1,290 +1,338 @@
-import { PrismaClient, ConfigStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { priceWith99 } from './utils';
 
-export async function seedConfigurations(prisma: PrismaClient) {
-  // Get some users for assigning configurations
-  const users = await prisma.user.findMany({
-    take: 5
+export async function seedConfigurations(prisma: PrismaClient): Promise<void> {
+  const adminUser = await prisma.user.findFirst({
+    where: { role: 'ADMIN' }
   });
-  
-  // Get components by categories for creating configurations - take at least 10 of each
+
+  if (!adminUser) {
+    console.log('⚠️ No admin user found, creating configurations without user assignment');
+  }
+
   const cpus = await prisma.component.findMany({
-    where: { subType: 'cpu' },
-    take: 10
-  });
-  
-  const motherboards = await prisma.component.findMany({
-    where: { subType: 'motherboard' },
-    take: 10
+    where: { category: { slug: 'cpu' } },
+    take: 6
   });
   
   const gpus = await prisma.component.findMany({
-    where: { subType: 'gpu' },
-    take: 10
+    where: { category: { slug: 'gpu' } },
+    take: 6
+  });
+  
+  const motherboards = await prisma.component.findMany({
+    where: { category: { slug: 'motherboard' } },
+    take: 3
   });
   
   const rams = await prisma.component.findMany({
-    where: { subType: 'ram' },
-    take: 10
+    where: { category: { slug: 'ram' } },
+    take: 3
   });
   
-  const storage = await prisma.component.findMany({
-    where: { subType: 'storage' },
-    take: 10
+  const storages = await prisma.component.findMany({
+    where: { category: { slug: 'storage' } },
+    take: 3
   });
   
   const psus = await prisma.component.findMany({
-    where: { subType: 'psu' },
-    take: 10
+    where: { category: { slug: 'psu' } },
+    take: 2
   });
   
   const cases = await prisma.component.findMany({
-    where: { subType: 'case' },
-    take: 10
+    where: { category: { slug: 'case' } },
+    take: 2
   });
   
-  const cooling = await prisma.component.findMany({
-    where: { subType: 'cooling' },
-    take: 10
+  const coolings = await prisma.component.findMany({
+    where: { category: { slug: 'cooling' } },
+    take: 2
   });
-  
-  // Log component counts for debugging
-  console.log('CPUs count:', cpus.length);
-  console.log('Motherboards count:', motherboards.length);
-  console.log('GPUs count:', gpus.length);
-  console.log('RAMs count:', rams.length);
-  console.log('Storage count:', storage.length);
-  console.log('PSUs count:', psus.length);
-  console.log('Cases count:', cases.length);
-  console.log('Cooling count:', cooling.length);
-  
-  // Check if we have enough components to seed configurations
-  // We need at least 6 of each component type to create varied configurations
-  if (cpus.length < 6 || motherboards.length < 6 || gpus.length < 6 || 
-      rams.length < 6 || storage.length < 6 || psus.length < 6 || 
-      cases.length < 6 || cooling.length < 6) {
-    console.log('⚠️ Not enough components to seed configurations! Skipping configuration seeding.');
-    console.log('Please ensure you have at least 6 components of each type.');
-    return;
-  }
-  
-  // Configuration templates
-  const configTemplates = [
+
+  const calculateTotalPrice = (componentPrices: number[]): number => {
+    return Math.round(componentPrices.reduce((sum, price) => sum + price, 0) * 100) / 100;
+  };
+
+  const configurations = [
     {
-      name: "Budget Gaming PC",
-      description: "A budget-friendly gaming PC that can handle most modern games at 1080p.",
-      category: "Gaming",
-      imageUrl: "/products/configurations/budget-gaming.jpg",
+      name: 'Budget Gaming PC',
+      description: 'Perfect entry-level gaming computer for 1080p gaming at medium to high settings. Great value for money with solid performance for popular games.',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
       isTemplate: true,
       isPublic: true,
-    },
-    {
-      name: "Mid-range Gaming Beast",
-      description: "A powerful gaming PC for 1440p gaming with high refresh rates.",
-      category: "Gaming",
-      imageUrl: "/products/configurations/mid-gaming.jpg",
-      isTemplate: true,
-      isPublic: true,
-    },
-    {
-      name: "Ultimate Gaming Rig",
-      description: "No compromises gaming PC for 4K gaming and content creation.",
-      category: "Gaming",
-      imageUrl: "/products/configurations/ultimate-gaming.jpg",
-      isTemplate: true,
-      isPublic: true,
-    },
-    {
-      name: "Content Creator Workstation",
-      description: "Optimized for video editing, streaming, and creative workflows.",
-      category: "Workstation",
-      imageUrl: "/products/configurations/creator-pc.jpg",
-      isTemplate: true,
-      isPublic: true,
-    },
-    {
-      name: "Compact Gaming PC",
-      description: "Small form factor PC with powerful gaming capabilities.",
-      category: "Gaming",
-      imageUrl: "/products/configurations/compact-gaming.jpg",
-      isTemplate: true,
-      isPublic: true,
-    },
-    {
-      name: "Office Productivity PC",
-      description: "Reliable system for everyday tasks and office work.",
-      category: "Office",
-      imageUrl: "/products/configurations/office-pc.jpg",
-      isTemplate: true,
-      isPublic: true,
-    },
-    {
-      name: "Developer Workstation",
-      description: "Ideal setup for programming, compiling and development work.",
-      category: "Workstation",
-      imageUrl: "/products/configurations/dev-pc.jpg",
-      isTemplate: true,
-      isPublic: true,
-    },
-    {
-      name: "Ultimate RGB Build",
-      description: "Maximum RGB effect with high-end components.",
-      category: "Gaming",
-      imageUrl: "/products/configurations/rgb-pc.jpg",
-      isTemplate: true,
-      isPublic: true,
-    },
-  ];
-  
-  // User configurations (saved configs)
-  const userConfigs = [
-    {
-      name: "My Gaming Setup",
-      description: "My personal gaming configuration I'm saving up for.",
-      category: "Gaming",
-      isTemplate: false,
-      isPublic: false,
-    },
-    {
-      name: "Streaming PC",
-      description: "Dedicated streaming setup for my Twitch channel.",
-      category: "Streaming",
-      isTemplate: false,
-      isPublic: true,
-    },
-    {
-      name: "Home Office PC",
-      description: "Setup for remote work and occasional gaming.",
-      category: "Office",
-      isTemplate: false,
-      isPublic: false,
-    },
-  ];
-    // Create configuration entries
-  const configurations = [];
-  
-  // Log component arrays to debug
-  console.log(`CPUs count: ${cpus.length}`);
-  console.log(`Motherboards count: ${motherboards.length}`);
-  console.log(`GPUs count: ${gpus.length}`);
-  console.log(`RAMs count: ${rams.length}`);
-  console.log(`Storage count: ${storage.length}`);
-  console.log(`PSUs count: ${psus.length}`);
-  console.log(`Cases count: ${cases.length}`);
-  console.log(`Cooling count: ${cooling.length}`);
-  
-  // Add all template configurations
-  for (let i = 0; i < configTemplates.length; i++) {
-    const template = configTemplates[i];
-    
-    // Calculate which components to use based on tier/price point
-    const tierIndex = Math.min(i % 3, 2); // 0=budget, 1=mid, 2=high
-    const componentOffset = tierIndex * 2; // Skip by 2 for each tier
-    
-    // Add safety checks for each component access
-    const cpuPrice = cpus[componentOffset + (i % 2)]?.price ?? 10000;
-    const mbPrice = motherboards[componentOffset + (i % 2)]?.price ?? 15000;
-    const gpuPrice = gpus[componentOffset + (i % 2)]?.price ?? 30000;
-    const ramPrice = rams[componentOffset]?.price ?? 8000;
-    const storagePrice = storage[componentOffset]?.price ?? 10000;
-    const psuPrice = psus[componentOffset]?.price ?? 7000;
-    const casePrice = cases[i % cases.length]?.price ?? 9000;
-    const coolingPrice = cooling[componentOffset]?.price ?? 5000;
-    
-    const totalPrice = cpuPrice + mbPrice + gpuPrice + ramPrice + storagePrice + psuPrice + casePrice + coolingPrice;
-    
-    // Create config entry
-    configurations.push({      name: template.name,
-      description: template.description,
-      userId: null, // Templates don't have an owner
-      totalPrice,
-      status: ConfigStatus.APPROVED,
-      isTemplate: template.isTemplate,
-      isPublic: template.isPublic,
-      category: template.category,
-      imageUrl: template.imageUrl,
-      viewCount: 10 + Math.floor(Math.random() * 990),
-      discountPrice: i % 3 === 0 ? totalPrice * 0.9 : null,
-      discountExpiresAt: i % 3 === 0 ? new Date(Date.now() + 15 * 24 * 60 * 60 * 1000) : null,
+      category: 'Gaming',
+      imageUrl: '/products/configurations/budget-gaming.jpg',
+      viewCount: Math.floor(Math.random() * 500) + 100,
       components: [
-        { componentId: cpus[componentOffset + (i % 2)].id, quantity: 1 },
-        { componentId: motherboards[componentOffset + (i % 2)].id, quantity: 1 },
-        { componentId: gpus[componentOffset + (i % 2)].id, quantity: 1 },
-        { componentId: rams[componentOffset].id, quantity: i === 2 || i === 3 ? 2 : 1 }, // More RAM for high-end builds
-        { componentId: storage[componentOffset].id, quantity: 1 },
-        { componentId: psus[componentOffset].id, quantity: 1 },
-        { componentId: cases[i % cases.length].id, quantity: 1 },
-        { componentId: cooling[componentOffset].id, quantity: 1 }
+        { componentId: cpus[1]?.id, quantity: 1 }, // AMD Ryzen 5 9500 or similar
+        { componentId: gpus[0]?.id, quantity: 1 }, // RTX 4060 or similar
+        { componentId: motherboards[1]?.id, quantity: 1 },
+        { componentId: rams[0]?.id, quantity: 1 }, // 16GB DDR4
+        { componentId: storages[0]?.id, quantity: 1 }, // 1TB NVMe
+        { componentId: psus[0]?.id, quantity: 1 },
+        { componentId: cases[0]?.id, quantity: 1 },
+        { componentId: coolings[0]?.id, quantity: 1 }
       ]
-    });
-  }
-  
-  // Add user configurations
-  if (users.length > 0) {
-    for (let i = 0; i < userConfigs.length; i++) {
-      const userConfig = userConfigs[i];
-      const userId = users[i % users.length].id;
-      
-      // Calculate which components to use
-      const componentOffset = i % 3 * 2;
-      
-      // Calculate total price based on selected components
-      const totalPrice = 
-        cpus[componentOffset].price +
-        motherboards[componentOffset].price +
-        gpus[componentOffset].price +
-        rams[componentOffset].price +
-        storage[componentOffset].price +
-        psus[componentOffset].price +
-        cases[i].price +
-        cooling[componentOffset].price;
-      
-      // Create config entry
-      configurations.push({
-        name: userConfig.name,
-        description: userConfig.description,
-        userId,
-        totalPrice,
-        status: ConfigStatus.DRAFT,
-        isTemplate: userConfig.isTemplate,
-        isPublic: userConfig.isPublic,
-        category: userConfig.category,
-        imageUrl: null,
-        components: [
-          { componentId: cpus[componentOffset].id, quantity: 1 },
-          { componentId: motherboards[componentOffset].id, quantity: 1 },
-          { componentId: gpus[componentOffset].id, quantity: 1 },
-          { componentId: rams[componentOffset].id, quantity: 1 },
-          { componentId: storage[componentOffset].id, quantity: 1 },
-          { componentId: psus[componentOffset].id, quantity: 1 },
-          { componentId: cases[i].id, quantity: 1 },
-          { componentId: cooling[componentOffset].id, quantity: 1 }
-        ]
-      });
+    },
+    {
+      name: 'Mid-Range Gaming Build',
+      description: 'Excellent 1440p gaming performance with modern components. Perfect balance of performance and value for enthusiast gamers.',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Gaming',
+      imageUrl: '/products/configurations/mid-gaming.jpg',
+      viewCount: Math.floor(Math.random() * 400) + 150,
+      components: [
+        { componentId: cpus[2]?.id, quantity: 1 }, // AMD Ryzen 5 9600X or similar
+        { componentId: gpus[4]?.id, quantity: 1 }, // RX 7800 XT or similar
+        { componentId: motherboards[0]?.id, quantity: 1 },
+        { componentId: rams[1]?.id, quantity: 1 }, // 32GB DDR4
+        { componentId: storages[1]?.id, quantity: 1 }, // 2TB NVMe
+        { componentId: psus[1]?.id, quantity: 1 },
+        { componentId: cases[1]?.id, quantity: 1 },
+        { componentId: coolings[1]?.id, quantity: 1 }
+      ]
+    },
+    {
+      name: 'Ultimate Gaming Beast',
+      description: 'No-compromise gaming powerhouse for 4K gaming and maximum performance. Features the latest high-end components for the ultimate gaming experience.',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Gaming',
+      imageUrl: '/products/configurations/ultimate-gaming.jpg',
+      viewCount: Math.floor(Math.random() * 300) + 200,
+      components: [
+        { componentId: cpus[0]?.id, quantity: 1 }, // AMD Ryzen 9 7950X
+        { componentId: gpus[2]?.id, quantity: 1 }, // RTX 4090
+        { componentId: motherboards[0]?.id, quantity: 1 },
+        { componentId: rams[2]?.id, quantity: 2 }, // 2x 16GB DDR5 for 32GB total
+        { componentId: storages[1]?.id, quantity: 1 }, // 2TB NVMe
+        { componentId: storages[2]?.id, quantity: 1 }, // Additional 2TB HDD
+        { componentId: psus[0]?.id, quantity: 1 }, // 850W PSU
+        { componentId: cases[1]?.id, quantity: 1 },
+        { componentId: coolings[1]?.id, quantity: 1 } // Liquid cooling
+      ]
+    },
+    {
+      name: 'Content Creator Workstation',
+      description: 'Professional workstation optimized for video editing, 3D rendering, and content creation. Powerful multi-core processor with ample RAM and fast storage.',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Workstation',
+      imageUrl: '/products/configurations/creator-pc.jpg',
+      viewCount: Math.floor(Math.random() * 250) + 80,
+      components: [
+        { componentId: cpus[0]?.id, quantity: 1 }, // High-core count CPU
+        { componentId: gpus[1]?.id, quantity: 1 }, // RTX 4070 Ti for CUDA acceleration
+        { componentId: motherboards[0]?.id, quantity: 1 },
+        { componentId: rams[1]?.id, quantity: 2 }, // 64GB total RAM
+        { componentId: storages[1]?.id, quantity: 2 }, // 2x 2TB NVMe for speed
+        { componentId: psus[0]?.id, quantity: 1 },
+        { componentId: cases[0]?.id, quantity: 1 },
+        { componentId: coolings[1]?.id, quantity: 1 }
+      ]
+    },
+    {
+      name: 'Developer Machine',
+      description: 'Optimized for software development with fast compilation times, multiple VMs, and excellent multitasking performance. Perfect for programmers and developers.',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Development',
+      imageUrl: '/products/configurations/dev-pc.jpg',
+      viewCount: Math.floor(Math.random() * 200) + 60,
+      components: [
+        { componentId: cpus[4]?.id, quantity: 1 }, // Intel i7-14700K
+        { componentId: gpus[0]?.id, quantity: 1 }, // Basic graphics for development
+        { componentId: motherboards[1]?.id, quantity: 1 },
+        { componentId: rams[1]?.id, quantity: 1 }, // 32GB for VMs and IDEs
+        { componentId: storages[0]?.id, quantity: 1 }, // Fast NVMe for quick builds
+        { componentId: storages[2]?.id, quantity: 1 }, // Large HDD for data
+        { componentId: psus[1]?.id, quantity: 1 },
+        { componentId: cases[0]?.id, quantity: 1 },
+        { componentId: coolings[0]?.id, quantity: 1 }
+      ]
+    },
+    {
+      name: 'Office Productivity PC',
+      description: 'Reliable and efficient computer for office work, web browsing, and basic productivity tasks. Energy efficient with quiet operation.',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Office',
+      imageUrl: '/products/configurations/office-pc.jpg',
+      viewCount: Math.floor(Math.random() * 150) + 40,
+      components: [
+        { componentId: cpus[3]?.id, quantity: 1 }, // Intel i5-14400F
+        { componentId: motherboards[1]?.id, quantity: 1 },
+        { componentId: rams[0]?.id, quantity: 1 }, // 16GB is plenty for office work
+        { componentId: storages[0]?.id, quantity: 1 }, // 1TB NVMe
+        { componentId: psus[1]?.id, quantity: 1 }, // Efficient PSU
+        { componentId: cases[0]?.id, quantity: 1 },
+        { componentId: coolings[0]?.id, quantity: 1 }
+      ]
+    },
+    {
+      name: 'RGB Gaming Showcase',
+      description: 'Stylish gaming build with extensive RGB lighting and tempered glass. Performance meets aesthetics for the ultimate gaming setup.',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Gaming',
+      imageUrl: '/products/configurations/rgb-pc.jpg',
+      viewCount: Math.floor(Math.random() * 350) + 120,
+      components: [
+        { componentId: cpus[2]?.id, quantity: 1 }, // Ryzen 5 9600X
+        { componentId: gpus[1]?.id, quantity: 1 }, // RTX 4070 Ti
+        { componentId: motherboards[0]?.id, quantity: 1 }, // RGB motherboard
+        { componentId: rams[1]?.id, quantity: 1 }, // RGB RAM
+        { componentId: storages[1]?.id, quantity: 1 },
+        { componentId: psus[0]?.id, quantity: 1 },
+        { componentId: cases[1]?.id, quantity: 1 }, // Glass case
+        { componentId: coolings[1]?.id, quantity: 1 } // RGB liquid cooling
+      ]
+    },
+    {
+      name: 'Compact Gaming Build',
+      description: 'Small form factor gaming PC that doesn\'t compromise on performance. Perfect for limited space while maintaining excellent gaming capabilities.',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Gaming',
+      imageUrl: '/products/configurations/compact-gaming.jpg',
+      viewCount: Math.floor(Math.random() * 200) + 70,
+      components: [
+        { componentId: cpus[1]?.id, quantity: 1 }, // Efficient CPU
+        { componentId: gpus[3]?.id, quantity: 1 }, // Compact GPU
+        { componentId: motherboards[1]?.id, quantity: 1 }, // mATX board
+        { componentId: rams[2]?.id, quantity: 1 }, // High-speed DDR5
+        { componentId: storages[0]?.id, quantity: 1 }, // Single fast SSD
+        { componentId: psus[1]?.id, quantity: 1 }, // Modular PSU
+        { componentId: cases[0]?.id, quantity: 1 }, // Compact case
+        { componentId: coolings[0]?.id, quantity: 1 } // Low-profile cooling
+      ]
     }
-  }
-    // Insert configurations and their items
-  for (const config of configurations) {
-    // Extract components and create a configuration object without components
-    const { components, ...configWithoutComponents } = config;
+  ];
+
+  // Create configurations with their components
+  for (const configData of configurations) {
+    const { components: configComponents, ...configInfo } = configData;
     
+    // Filter out any undefined component IDs
+    const validComponents = configComponents.filter(comp => comp.componentId);
+    
+    if (validComponents.length === 0) {
+      console.log(`⚠️ Skipping configuration "${configInfo.name}" - no valid components found`);
+      continue;
+    }
+
+    // Calculate total price
+    let totalPrice = 0;
+    for (const comp of validComponents) {
+      const component = await prisma.component.findUnique({
+        where: { id: comp.componentId }
+      });
+      if (component) {
+        totalPrice += component.price * comp.quantity;
+      }
+    }
+
     // Create the configuration
-    const createdConfig = await prisma.configuration.upsert({
-      where: {
-        id: crypto.randomUUID()
-      },
-      update: {},
-      create: configWithoutComponents,
+    const configuration = await prisma.configuration.create({
+      data: {
+        ...configInfo,
+        totalPrice: Math.round(totalPrice * 100) / 100
+      }
     });
-    
-    // Add the components to the configuration
-    for (const component of components) {
+
+    // Create config items
+    for (const comp of validComponents) {
       await prisma.configItem.create({
         data: {
-          configurationId: createdConfig.id,
-          componentId: component.componentId,
-          quantity: component.quantity
+          configurationId: configuration.id,
+          componentId: comp.componentId,
+          quantity: comp.quantity
         }
       });
     }
   }
+
+  // Create some additional random configurations
+  const randomConfigurations = [
+    {
+      name: 'Custom Build #1',
+      description: 'User-created custom configuration with balanced performance',
+      userId: adminUser?.id,
+      status: 'DRAFT' as const,
+      isTemplate: false,
+      isPublic: false,
+      category: 'Custom'
+    },
+    {
+      name: 'Budget Workstation',
+      description: 'Cost-effective workstation for light professional tasks',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Workstation'
+    },
+    {
+      name: 'Streaming Setup',
+      description: 'Optimized for live streaming and content creation',
+      userId: adminUser?.id,
+      status: 'APPROVED' as const,
+      isTemplate: true,
+      isPublic: true,
+      category: 'Streaming'
+    }
+  ];
+
+  for (const configData of randomConfigurations) {
+    // Randomly select components for these configurations
+    const randomCpu = cpus[Math.floor(Math.random() * cpus.length)];
+    const randomGpu = gpus[Math.floor(Math.random() * gpus.length)];
+    const randomMobo = motherboards[Math.floor(Math.random() * motherboards.length)];
+    const randomRam = rams[Math.floor(Math.random() * rams.length)];
+    const randomStorage = storages[Math.floor(Math.random() * storages.length)];
+    const randomPsu = psus[Math.floor(Math.random() * psus.length)];
+    const randomCase = cases[Math.floor(Math.random() * cases.length)];
+    const randomCooling = coolings[Math.floor(Math.random() * coolings.length)];
+
+    const components = [randomCpu, randomGpu, randomMobo, randomRam, randomStorage, randomPsu, randomCase, randomCooling].filter(Boolean);
+    const totalPrice = components.reduce((sum, comp) => sum + comp.price, 0);
+
+    const configuration = await prisma.configuration.create({
+      data: {
+        ...configData,
+        totalPrice: Math.round(totalPrice * 100) / 100,
+        viewCount: Math.floor(Math.random() * 50)
+      }
+    });
+
+    // Create config items
+    for (const component of components) {
+      await prisma.configItem.create({
+        data: {
+          configurationId: configuration.id,
+          componentId: component.id,
+          quantity: 1
+        }
+      });
+    }
+  }
+
+  console.log('✅ Configurations seeded successfully');
 }

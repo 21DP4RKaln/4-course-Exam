@@ -6,16 +6,7 @@ import { Cpu, Monitor, HardDrive, Server, Zap, Fan, Box } from 'lucide-react'
 import { useTheme } from '@/app/contexts/ThemeContext'
 // import Image from 'next/image'
 import { formatPrice } from '@/lib/utils'
-
-interface Component {
-  id: string
-  name: string
-  price: number
-  description: string
-  categoryId?: string
-  specifications?: any
-  imageUrl?: string
-}
+import { Component } from './types'
 
 interface ComponentCardProps {
   component: Component
@@ -36,7 +27,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, isSelected, on
     // Show image if provided
     if (component.imageUrl) {
       return (
-        <div className={`${bgColor} h-12 w-12 rounded-lg overflow-hidden flex items-center justify-center`}>
+        <div className={`${bgColor} h-16 w-16 rounded-lg overflow-hidden flex items-center justify-center`}>
           <img
             src={component.imageUrl}
             alt={component.name}
@@ -48,7 +39,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, isSelected, on
     
     // Fallback to category icon
     return (
-      <div className={`${bgColor} h-12 w-12 rounded-lg flex items-center justify-center`}>
+      <div className={`${bgColor} h-16 w-16 rounded-lg flex items-center justify-center`}>
         {getCategoryIcon(component.categoryId || '', iconColor)}
       </div>
     )
@@ -56,7 +47,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, isSelected, on
 
   // Get category icon based on category id
   const getCategoryIcon = (categoryId: string, colorClass: string) => {
-    const size = 28
+    const size = 36
     switch (categoryId) {
       case 'cpu':
         return <Cpu size={size} className={colorClass} />
@@ -83,27 +74,39 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, isSelected, on
   if (component.categoryId === 'networking' || component.categoryId === 'sound-cards') {
     return null;
   }
-
   return (
     <div 
-      className={`rounded-lg p-2 transition-all cursor-pointer ${
+      className={`rounded-lg p-4 transition-all cursor-pointer ${
         theme === 'dark'
           ? 'bg-stone-900 border border-neutral-800 hover:border-brand-red-500/30'
           : 'bg-white border border-neutral-200 hover:border-brand-blue-500/30'
+      } hover:shadow-md focus:outline-none focus:ring-2 ${
+        theme === 'dark' 
+          ? 'focus:ring-brand-red-500/50' 
+          : 'focus:ring-brand-blue-500/50'
       }`}
       onClick={() => onSelect(component)}
+      tabIndex={0}
+      role="button"
+      aria-pressed={isSelected}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(component);
+        }
+      }}
     >
-      <div className="flex items-center w-full">
-        <div className="flex-shrink-0 mr-4">
+      <div className="flex flex-col sm:flex-row items-center w-full">
+        <div className="flex-shrink-0 mr-0 sm:mr-4 mb-3 sm:mb-0">
           {getComponentImage()}
         </div>
-        <div className="flex-grow">
-          <h3 className={`font-medium ${
+        <div className="flex-grow text-center sm:text-left">
+          <h3 className={`font-medium text-lg ${
             theme === 'dark' ? 'text-white' : 'text-neutral-900'
           }`}>
             {component.name}
           </h3>
-          <p className={`text-xs mt-1.5 flex flex-wrap gap-x-2 ${
+          <p className={`text-sm mt-2 flex flex-wrap justify-center sm:justify-start gap-x-3 gap-y-1 ${
             theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
           }`}>
             {Object.entries(component.specifications || {}).map(([key, value]) => (
@@ -112,19 +115,46 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, isSelected, on
               </span>
             ))}
           </p>
-        </div>
-        <div className="flex-shrink-0 text-right">
-          <div className={`text-lg font-bold ${
-            theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
-          }`}>
-            €{formatPrice(component.price)}
+        </div>        <div className="flex-shrink-0 text-center sm:text-right mt-3 sm:mt-0">
+          <div className="flex flex-col items-center sm:items-end">
+            {component.discountPrice && component.discountPrice < component.price ? (
+              <>
+                <div className={`text-xl font-bold ${
+                  theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
+                }`}>
+                  €{formatPrice(component.discountPrice)}
+                </div>
+                <div className={`text-base line-through ${
+                  theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'
+                }`}>
+                  €{formatPrice(component.price)}
+                </div>
+              </>
+            ) : (
+              <div className={`text-xl font-bold ${
+                theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
+              }`}>
+                €{formatPrice(component.price)}
+              </div>
+            )}
+            {component.stock !== undefined && component.stock <= 5 && (
+              <div className={`text-sm mt-1 ${
+                component.stock === 0 
+                  ? 'text-red-500' 
+                  : theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
+              }`} aria-live="polite">
+                {component.stock === 0 ? t('outOfStock') : `${component.stock} ${t('inStock')}`}
+              </div>
+            )}
           </div>
-          <div className="flex items-center mt-2 justify-end space-x-2">
+          <div className="flex flex-col sm:flex-row items-center mt-3 justify-center sm:justify-end gap-3">
             <button 
-              className={`text-xs px-2 py-1 rounded-md transition-colors ${
+              className={`text-sm px-3 py-1.5 rounded-md transition-colors w-full sm:w-auto ${
                 theme === 'dark'
                   ? 'text-neutral-400 hover:text-white hover:bg-stone-800'
                   : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+              } focus:outline-none focus:ring-1 ${
+                theme === 'dark' ? 'focus:ring-brand-red-400' : 'focus:ring-brand-blue-400'
               }`}
               onClick={(e) => {
                 e.stopPropagation()
@@ -134,7 +164,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, isSelected, on
               {t('buttons.compare')}
             </button>
             <button
-              className={`text-xs px-3 py-1 rounded-full font-medium transition-all ${
+              className={`text-sm px-4 py-1.5 rounded-full font-medium transition-all w-full sm:w-auto ${
                 isSelected 
                   ? theme === 'dark'
                     ? 'bg-brand-red-500/20 text-brand-red-400 border border-brand-red-500/30' 
@@ -142,13 +172,19 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, isSelected, on
                   : theme === 'dark'
                     ? 'bg-brand-red-500 text-white hover:bg-brand-red-600'
                     : 'bg-brand-blue-500 text-white hover:bg-brand-blue-600'
+              } ${component.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''} focus:outline-none focus:ring-2 ${
+                theme === 'dark' ? 'focus:ring-brand-red-500' : 'focus:ring-brand-blue-500'
               }`}
               onClick={(e) => {
                 e.stopPropagation()
-                onSelect(component)
+                if (component.stock !== 0) {
+                  onSelect(component)
+                }
               }}
+              disabled={component.stock === 0}
+              aria-disabled={component.stock === 0}
             >
-              {isSelected ? t('buttons.selected') : t('buttons.select')}
+              {component.stock === 0 ? t('buttons.outOfStock') : isSelected ? t('buttons.selected') : t('buttons.select')}
             </button>
           </div>
         </div>

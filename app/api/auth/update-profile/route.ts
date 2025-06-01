@@ -98,7 +98,6 @@ export async function PUT(request: NextRequest) {
       updateData.password = await bcrypt.hash(password, 10)
     }
      if (deleteProfileImage) {
-      // Set profile image URL to null to delete it
       updateData.profileImageUrl = null
     } else if (profileImage) {
       const bytes = await profileImage.arrayBuffer()

@@ -22,6 +22,8 @@ import { createCoolerFilterGroups } from './filters/coolerFilters'
 import { createCameraFilterGroups } from './filters/cameraFilters'
 import { createSpeakerFilterGroups } from './filters/speakerFilters'
 import { createMousePadFilterGroups } from './filters/mousePadFilters'
+import { createGamepadFilterGroups } from './filters/gamepadFilters'
+import { createTabletFilterGroups } from './filters/tabletFilters'
 import { 
   AlertTriangle,
   Info,
@@ -36,8 +38,8 @@ import {
 import AnimatedButton from '@/app/components/ui/animated-button'
 import ProductCard from '@/app/components/Shop/ProductCard'
 import Loading from '@/app/components/ui/Loading'
-import { useTheme } from '@/app/contexts/ThemeContext'
 import styled from 'styled-components'
+import { useTheme } from '@/app/contexts/ThemeContext'
 
 export default function CategoryPage({ params, type }: CategoryPageProps) {
   const t = useTranslations()
@@ -267,9 +269,7 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
 
         if (!data || typeof data !== 'object') {
           throw new Error('Invalid response format');
-        }
-
-        if (data.error) {
+        }        if (data.error) {
           throw new Error(data.error);
         }
 
@@ -291,14 +291,11 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
             const extractedSpecs = extractSpecificationsFromComponents(data.components);
             data.specifications = extractedSpecs;
           }
-        }
-
-        // Create filter groups based on specifications
-        if (data.specifications?.length) {
+        }        if (data.specifications?.length) {
           setSpecifications(data.specifications);
-
           // Initialize category checker with resolved values
-          const checkCategory = createCheckCategory(categorySlug, currentCategoryName);          // Define category checks
+          const checkCategory = createCheckCategory(categorySlug, currentCategoryName);
+            // Define category checks
           const categoryChecks = {
             isGpuCategory: checkCategory(['graphics-cards', 'gpu'], ['gpu', 'graphics']),
             isKeyboardCategory: checkCategory(['keyboards', 'keyboard'], ['keyboard']),
@@ -309,17 +306,21 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
             isMicrophoneCategory: checkCategory(['microphones', 'microphone', 'mics'], ['microphone', 'mic']),
             isCameraCategory: checkCategory(['cameras', 'camera', 'webcams'], ['camera', 'webcam']),
             isSpeakerCategory: checkCategory(['speakers', 'speaker'], ['speaker']),
+            isGamepadCategory: checkCategory(['gamepads', 'gamepad', 'controllers'], ['gamepad', 'controller']),
+            isTabletCategory: checkCategory(['tablets', 'tablet', 'drawing-tablets'], ['tablet', 'drawing tablet']),
             isCpuCategory: checkCategory(['processors', 'cpus', 'cpu'], ['cpu', 'processor']),
             isMotherboardCategory: checkCategory(['motherboards', 'motherboard', 'mainboards'], ['motherboard']),
             isRamCategory: checkCategory(['memory', 'ram'], ['ram', 'memory']),
             isStorageCategory: checkCategory(['storage', 'drives', 'ssd', 'hdd'], ['storage', 'drive', 'ssd', 'hdd']),
             isPsuCategory: checkCategory(['power-supplies', 'psu'], ['psu', 'power supply']),
             isCaseCategory: checkCategory(['cases', 'case', 'chassis'], ['case', 'chassis']),
-            isCoolerCategory: checkCategory(['coolers', 'cooling'], ['cooler', 'cooling'])
-          };
-
-          // Create filter groups
-          let filterGroups: FilterGroup[] = [];          if (data.components?.length) {
+            isCoolerCategory: checkCategory(['coolers', 'cooling'], ['cooler', 'cooling'])          };          // Create filter groups
+          let filterGroups: FilterGroup[] = [];          // First, check if the API provided filterGroups (preferred)
+          if (data.filterGroups && data.filterGroups.length > 0) {
+            filterGroups = data.filterGroups;
+          }
+          // Otherwise, create filter groups from components (fallback)
+          else if (data.components?.length) {
             // Use specialized filter creators based on category
             if (categoryChecks.isGpuCategory) filterGroups = createGpuFilterGroups(data.components);
             else if (categoryChecks.isKeyboardCategory) filterGroups = createKeyboardFilterGroups(data.components);
@@ -330,35 +331,33 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
             else if (categoryChecks.isMicrophoneCategory) filterGroups = createMicrophoneFilterGroups(data.components);
             else if (categoryChecks.isCameraCategory) filterGroups = createCameraFilterGroups(data.components);
             else if (categoryChecks.isSpeakerCategory) filterGroups = createSpeakerFilterGroups(data.components);
-            else if (categoryChecks.isCpuCategory) filterGroups = createCpuFilterGroups(data.components);
+            else if (categoryChecks.isGamepadCategory) filterGroups = createGamepadFilterGroups(data.components);
+            else if (categoryChecks.isTabletCategory) filterGroups = createTabletFilterGroups(data.components);            else if (categoryChecks.isCpuCategory) {
+              filterGroups = createCpuFilterGroups(data.components);
+            }
             else if (categoryChecks.isMotherboardCategory) filterGroups = createMotherboardFilterGroups(data.components);
             else if (categoryChecks.isRamCategory) filterGroups = createRamFilterGroups(data.components);
             else if (categoryChecks.isStorageCategory) filterGroups = createStorageFilterGroups(data.components);
             else if (categoryChecks.isPsuCategory) filterGroups = createPsuFilterGroups(data.components);
             else if (categoryChecks.isCaseCategory) filterGroups = createCaseFilterGroups(data.components);
-            else if (categoryChecks.isCoolerCategory) filterGroups = createCoolerFilterGroups(data.components);
-          }
-
-          // Fall back to generic filter organization if no specialized filters created
+            else if (categoryChecks.isCoolerCategory) filterGroups = createCoolerFilterGroups(data.components);          }
+          
+          // Fallback to generic filters if none created
           if (!filterGroups.length) {
             filterGroups = organizeFiltersIntoGroups(data.specifications);
           }
-
-          // Ensure we have at least an empty manufacturer filter group
+          // Ensure at least a manufacturer group
           if (!filterGroups.length) {
             filterGroups = [{
               title: t('categoryPage.filterGroups.manufacturer'),
               type: 'manufacturer',
               options: []
-            }];
-          }
+            }];          }
 
-          setFilterGroups(filterGroups);
-
-          // Initialize filter states
+          setFilterGroups(filterGroups);// Initialize filter states - expand all filter sections by default
           const initialExpandedSections = filterGroups.reduce((acc, group) => ({
             ...acc,
-            [group.type]: group.type === 'manufacturer'
+            [group.type]: true // Always expand all sections for better visibility
           }), {});
 
           const initialSelectedFilters = filterGroups.reduce((acc, group) => ({
@@ -433,29 +432,107 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
     filtered = filtered.filter(component => 
       component.price >= priceRange.min && 
       component.price <= priceRange.max
-    );
-
-    // Apply selected filters
+    );    // Apply selected filters
     const activeFilters = Object.entries(selectedFilters)
       .filter(([_, values]) => values.length > 0);
       
     if (activeFilters.length) {
       filtered = filtered.filter(component => {
-        return activeFilters.every(([type, filters]) => {
-          // Manufacturer filter: match against component.brand or component.manufacturer
+        // Get peripheral data from component (for peripheral components)
+        const peripheral = component as any;
+        
+        return activeFilters.every(([type, filters]) => {          // Manufacturer filter: match against component.brand, manufacturer, or type-specific brand
           if (type === 'manufacturer') {
-            // Determine manufacturer from component.brand/vehicle or spec entries
+            // Check main brand/manufacturer fields
             const brandField = (component.brand || component.manufacturer || '').trim();
             const specEntry = Object.entries(component.specifications || {}).find(
               ([key, val]) => val && (key.toLowerCase().includes('brand') || key.toLowerCase().includes('manufacturer') || key.toLowerCase() === 'make')
             );
             const specBrand = specEntry ? String(specEntry[1]).trim() : '';
-            const compBrand = (brandField || specBrand).toLowerCase();
+              // Debug logging for CPU filtering
+            if (component.cpu?.series) {
+              console.log(`[CPU Filter Debug] ${component.name}:`, {
+                brandField,
+                specBrand,
+                cpuSeries: component.cpu.series,
+                cpuBrand: component.cpu?.brand,
+                filters
+              });
+            }
+              // For CPUs, use the brand field if available, otherwise derive from series
+            let cpuBrand = '';
+            if (component.cpu?.brand) {
+              cpuBrand = component.cpu.brand;
+            } else if (component.cpu?.series) {
+              const series = component.cpu.series.toLowerCase();
+              if (series.includes('ryzen') || series.includes('athlon') || series.includes('fx')) {
+                cpuBrand = 'AMD';
+              } else if (series.includes('core') || series.includes('pentium') || series.includes('celeron') || series.includes('xeon')) {
+                cpuBrand = 'Intel';
+              }
+            }
+            
+            // Check type-specific brand fields (only for types that have brand)
+            const typeBrand = (component.gpu as any)?.brand || 
+                             (component.motherboard as any)?.brand || 
+                             (component.ram as any)?.brand || 
+                             (component.storage as any)?.brand || 
+                             (component.psu as any)?.brand || 
+                             (component.cooling as any)?.brand || 
+                             (component.caseModel as any)?.brand ||
+                             (peripheral.keyboard as any)?.brand ||
+                             (peripheral.mouse as any)?.brand ||
+                             (peripheral.microphone as any)?.brand ||
+                             (peripheral.camera as any)?.brand ||
+                             (peripheral.monitor as any)?.brand ||
+                             (peripheral.headphones as any)?.brand ||
+                             (peripheral.speakers as any)?.brand ||
+                             (peripheral.gamepad as any)?.brand ||
+                             (peripheral.mousePad as any)?.brand || '';
+              const compBrand = (brandField || specBrand || cpuBrand || typeBrand).toLowerCase();
+            
+            // Debug logging for final brand and matching
+            if (component.cpu?.series) {
+              console.log(`[CPU Filter Debug] ${component.name} - Final brand: "${compBrand}", CPU brand: "${cpuBrand}"`);
+            }
+              
             return filters.some(filter => {
               const [, val] = filter.split('=');
-              return compBrand === val.toLowerCase();
+              const matches = compBrand === val.toLowerCase();
+              if (component.cpu?.series) {
+                console.log(`[CPU Filter Debug] ${component.name} - Filter: ${filter}, Matches: ${matches}`);
+              }
+              return matches;
             });
           }
+          
+          // Handle type-specific filters for gamepads
+          if (peripheral.gamepad && ['connection', 'platform', 'layout', 'rgb', 'vibration', 'programmable'].includes(type)) {
+            return filters.some(filter => {
+              const [, val] = filter.split('=');
+              const gamepadValue = peripheral.gamepad![type as keyof typeof peripheral.gamepad];
+              if (typeof gamepadValue === 'boolean') {
+                return String(gamepadValue) === val;
+              }
+              return String(gamepadValue).toLowerCase() === val.toLowerCase();
+            });
+          }
+            // Handle type-specific filters for other peripherals and components
+          const getTypeSpecificValue = (key: string) => {
+            // Check all component types for the key
+            const typeData = component.cpu || component.gpu || component.motherboard || 
+                           component.ram || component.storage || component.psu || 
+                           component.cooling || component.caseModel || peripheral.keyboard || 
+                           peripheral.mouse || peripheral.microphone || peripheral.camera || 
+                           peripheral.monitor || peripheral.headphones || peripheral.speakers || 
+                           peripheral.mousePad;
+            
+            if (typeData && (key in typeData)) {
+              return (typeData as any)[key];
+            }
+            return null;
+          };
+          
           // CPU series filter: match against component name
           if (type === 'cpu_series') {
             const compName = component.name.toLowerCase();
@@ -464,6 +541,7 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
               return compName.includes(val.toLowerCase());
             });
           }
+          
           // Other filters: group filters by their base key (before the = sign)
           const filterGroups = filters.reduce((acc, filter) => {
             const [key, value] = filter.split('=');
@@ -471,8 +549,19 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
             acc[key].push(value.toLowerCase());
             return acc;
           }, {} as Record<string, string[]>);
-          // Check each filter group against specifications
+          
+          // Check each filter group against specifications and type-specific data
           return Object.entries(filterGroups).every(([key, values]) => {
+            // First check type-specific data
+            const typeSpecificValue = getTypeSpecificValue(key);
+            if (typeSpecificValue !== null) {
+              const valueStr = String(typeSpecificValue).toLowerCase();
+              return values.some(value => 
+                valueStr.includes(value) || value.includes(valueStr)
+              );
+            }
+            
+            // Then check specifications
             const matchingSpec = Object.entries(component.specifications || {}).find(
               ([specKey]) => specKey.toLowerCase().includes(key.toLowerCase())
             );
@@ -566,11 +655,10 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
         </p>
       </div>
       
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Filters */}
+      <div className="flex flex-col lg:flex-row gap-6">        {/* Filters */}
         <div className="w-full lg:w-80 shrink-0">
           <div className="sticky top-4 transition-transform duration-200">
-            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md p-6 overflow-y-auto max-h-[calc(100vh-2rem)] overflow-x-hidden scrollbar-hide">
+            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md p-6 overflow-y-auto max-h-[calc(100vh-2rem)] overflow-x-hidden">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-neutral-900 dark:text-white flex items-center">
                   <Filter size={18} className="mr-2" />
@@ -732,7 +820,7 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
                                   )} 
                                 </div>
                                 <span className="text-sm text-neutral-700 dark:text-neutral-300">
-                                  {option.name}
+                                  {option.translationKey ? t(option.translationKey) : option.name}
                                 </span>
                               </label>
                             </div>
@@ -772,8 +860,7 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
               {filteredComponents.map((component) => (
-                <div key={component.id} className="h-full flex">
-                  <ProductCard
+                <div key={component.id} className="h-full flex">                  <ProductCard
                     id={component.id}
                     name={component.name}
                     price={component.price}
@@ -783,7 +870,9 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
                     linkPrefix={`/${locale}/${type}s/${categorySlug}`}
                     stock={component.stock}
                     specs={component.specifications}
-                    showRating={false}
+                    showRating={true}
+                    rating={component.rating}
+                    ratingCount={component.ratingCount}
                   />
                 </div>
               ))}

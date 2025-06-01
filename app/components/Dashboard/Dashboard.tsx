@@ -55,17 +55,14 @@ export default function ProfileTab() {
       const { password, confirmPassword, address, profileImage, deleteProfileImage, ...basicData } = formData
       const updateData: UpdateData = { ...basicData }
 
-      // Validate required fields
       if (!updateData.email && !updateData.phone) {
         throw new Error(validationT('emailOrPhone'))
       }
 
-      // Validate email format
       if (updateData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updateData.email)) {
         throw new Error(validationT('emailInvalid'))
       }
 
-      // Validate password if provided
       if (password || confirmPassword) {
         if (password !== confirmPassword) {
           throw new Error(validationT('passwordMismatch'))
@@ -76,14 +73,12 @@ export default function ProfileTab() {
         updateData.password = password
       }
 
-      // Add address fields if provided
       if (address) {
         updateData.shippingAddress = address.street
         updateData.shippingCity = address.city
         updateData.shippingPostalCode = address.postalCode
         updateData.shippingCountry = address.country
 
-        // Validate postal code format based on country
         if (address.postalCode) {
           const postalCodePatterns: Record<CountryCode, RegExp> = {
             LV: /^LV-\d{4}$/,

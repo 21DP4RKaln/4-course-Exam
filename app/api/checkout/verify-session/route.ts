@@ -21,11 +21,9 @@ export async function GET(request: NextRequest) {
     const session = await stripe.checkout.sessions.retrieve(sessionId)
     
     if (session.payment_status === 'paid' && session.metadata?.orderId) {
-      // Get client IP
       const forwardedFor = request.headers.get('x-forwarded-for')
       const clientIp = forwardedFor ? forwardedFor.split(',')[0] : request.headers.get('x-real-ip')
 
-      // Update order status to PROCESSING when payment is successful
       const order = await prisma.order.update({
         where: { id: session.metadata.orderId },
         data: { 
@@ -34,7 +32,6 @@ export async function GET(request: NextRequest) {
         }
       })
 
-      // Create an audit log entry
       await prisma.auditLog.create({
         data: {
           action: 'UPDATE',

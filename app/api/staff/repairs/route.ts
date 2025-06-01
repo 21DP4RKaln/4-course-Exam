@@ -5,6 +5,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
 import { createUnauthorizedResponse, createServerErrorResponse } from '@/lib/apiErrors'
+import { sendRepairRequestNotification, EmailConfig } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,7 +61,6 @@ export async function POST(request: NextRequest) {
     
     const selectedService = serviceMap[serviceId] || serviceMap.custom
 
-    // Get or create user if we have email
     if (!userId && email) {
       const existingUser = await prisma.user.findUnique({
         where: { email }
@@ -69,7 +69,6 @@ export async function POST(request: NextRequest) {
       if (existingUser) {
         userId = existingUser.id;
       } else {
-        // Create a temporary user account
         const newUser = await prisma.user.create({
           data: {
             email,
@@ -77,7 +76,6 @@ export async function POST(request: NextRequest) {
             lastName,
             name: `${firstName} ${lastName}`.trim(),
             phone: phone || null,
-            // Generate a random password (would normally send reset link)
             password: Math.random().toString(36).substring(2, 15)
           }
         });
@@ -102,30 +100,47 @@ ${imageUrl ? 'Image attached: ' + imageUrl : ''}
         priority: 'NORMAL',
         estimatedCost: selectedService.price,
         userId: userId,
-        peripheralId: peripheralId, // Add peripheral ID if provided
+        peripheralId: peripheralId, 
         diagnosticNotes: `Service requested: ${serviceId}\nEstimated time: ${selectedService.time}`
       }
     })
-    
-    const emailContent = `
-New repair request submitted:
+    try {
+      const emailConfig: EmailConfig = {
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.EMAIL_PORT || '587'),
+        secure: process.env.EMAIL_SECURE === 'true',
+        auth: {
+          user: process.env.EMAIL_USER || '',
+          pass: process.env.EMAIL_PASS || ''
+        },
+        fromEmail: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+        fromName: process.env.EMAIL_FROM_NAME || 'IvaPro Support'
+      };
 
-Customer: ${firstName} ${lastName}
-Email: ${email}
-Phone: ${phone}
-Service: ${serviceId}
-Price: €${selectedService.price}
-Time: ${selectedService.time}
+      const repairRequestData = {
+        repairId: repair.id,
+        customerName: `${firstName} ${lastName}`,
+        customerEmail: email,
+        customerPhone: phone || undefined,
+        serviceType: serviceId,
+        issueDescription: issue,
+        estimatedCost: selectedService.price,
+        estimatedTime: selectedService.time,
+        hasImage: !!imageUrl,
+        imageUrl: imageUrl || undefined
+      };
 
-Issue Description:
-${issue}
-
-Repair ID: ${repair.id}
-Status: PENDING
-`
-    
-    // TODO: Implement actual email sending
-    console.log('Email notification:', emailContent)
+      const staffEmail = process.env.STAFF_NOTIFICATION_EMAIL || process.env.EMAIL_USER;
+      if (staffEmail) {
+        await sendRepairRequestNotification(
+          staffEmail,
+          repairRequestData,
+          emailConfig
+        );
+      }
+    } catch (emailError) {
+      console.error('Failed to send repair request notification:', emailError);
+    }
     
     return NextResponse.json({
       success: true,
@@ -173,7 +188,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Format repairs for response
     const formattedRepairs = repairs.map(repair => ({
       id: repair.id,
       title: repair.title,

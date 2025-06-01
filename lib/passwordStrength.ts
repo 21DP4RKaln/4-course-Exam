@@ -3,7 +3,7 @@
  */
 
 export interface PasswordStrengthResult {
-  score: number; // 0-5 scale
+  score: number; 
   level: 'weak' | 'fair' | 'good' | 'strong' | 'very-strong';
   requirements: {
     minLength: boolean;
@@ -12,7 +12,7 @@ export interface PasswordStrengthResult {
     hasNumber: boolean;
     hasSpecialChar: boolean;
   };
-  isValid: boolean; // true if meets minimum requirements (score >= 3)
+  isValid: boolean; 
 }
 
 export function analyzePasswordStrength(password: string): PasswordStrengthResult {
@@ -24,7 +24,6 @@ export function analyzePasswordStrength(password: string): PasswordStrengthResul
     hasSpecialChar: /(?=.*[@$!%*?&])/.test(password),
   };
 
-  // Calculate score based on requirements met
   let score = 0;
   if (requirements.minLength) score++;
   if (requirements.hasLowercase) score++;
@@ -32,7 +31,6 @@ export function analyzePasswordStrength(password: string): PasswordStrengthResul
   if (requirements.hasNumber) score++;
   if (requirements.hasSpecialChar) score++;
 
-  // Determine level
   let level: PasswordStrengthResult['level'];
   if (score <= 2) level = 'weak';
   else if (score === 3) level = 'fair';
@@ -43,7 +41,7 @@ export function analyzePasswordStrength(password: string): PasswordStrengthResul
     score,
     level,
     requirements,
-    isValid: score >= 3, // Require at least 3 criteria for valid password
+    isValid: score >= 3, 
   };
 }
 

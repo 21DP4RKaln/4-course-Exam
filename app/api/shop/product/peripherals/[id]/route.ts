@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
-import { parseSpecifications, withDebugInfo } from '@/lib/utils/specifications';
+import { extractPeripheralSpecifications } from '@/lib/services/unifiedProductService';
 
 export async function GET(
   request: NextRequest,
@@ -10,18 +10,21 @@ export async function GET(
     const { params } = context;
     const id = params.id;
     console.log('Fetching peripheral with ID:', id);
-    
-    const peripheral = await prisma.peripheral.findUnique({
+      const peripheral = await prisma.peripheral.findUnique({
       where: {
         id
       },
       include: {
         category: true,
-        specValues: {
-          include: {
-            specKey: true
-          }
-        }
+        keyboard: true,
+        mouse: true,
+        microphone: true,
+        camera: true,
+        monitor: true,
+        headphones: true,
+        speakers: true,
+        gamepad: true,
+        mousePad: true
       }
     });
 
@@ -30,42 +33,11 @@ export async function GET(
         { error: 'Peripheral not found' },
         { status: 404 }
       );
-    }
-    
-    // Collect all specifications
-    let specs: Record<string, string> = {};
-    
-    // 1. Parse legacy specifications from JSON field
-    if (peripheral.specifications) {
-      try {
-        const parsedSpecs = parseSpecifications(peripheral.specifications);
-        if (parsedSpecs && typeof parsedSpecs === 'object') {
-          specs = { ...specs, ...parsedSpecs };
-        }
-      } catch (error) {
-        console.error('Error parsing legacy specifications:', error);
-      }
-    }
-
-    // 2. Add specification values from the specValues relation
-    if (peripheral.specValues && Array.isArray(peripheral.specValues)) {
-      peripheral.specValues.forEach((specValue) => {
-        if (specValue.specKey?.name && specValue.value) {
-          // Use display name as the key if available, otherwise use the name
-          const key = specValue.specKey.displayName || specValue.specKey.name;
-          specs[key] = specValue.value;
-        }
-      });
-    }
-    
-    // Add debug info in development environment
-    if (process.env.NODE_ENV === 'development') {
-      specs = withDebugInfo(specs);
-    }
+    }    
+    const specs = extractPeripheralSpecifications(peripheral);
     
     console.log('Peripheral specifications:', specs);
     
-    // Calculate if discount is valid
     let discountPrice = null;
     if (peripheral.discountPrice && peripheral.discountExpiresAt) {
       const now = new Date();
@@ -74,9 +46,7 @@ export async function GET(
       }
     } else if (peripheral.discountPrice) {
       discountPrice = peripheral.discountPrice;
-    }
-
-    return NextResponse.json({
+    }    return NextResponse.json({
       id: peripheral.id,
       type: 'peripheral', 
       name: peripheral.name,
@@ -85,12 +55,13 @@ export async function GET(
       specifications: specs,
       price: peripheral.price,
       discountPrice: discountPrice,
-      discountExpiresAt: peripheral.discountExpiresAt,
-      imageUrl: peripheral.imageUrl,
-      stock: peripheral.stock,
+      discountExpiresAt: peripheral.discountExpiresAt,      imageUrl: peripheral.imagesUrl,
+      stock: peripheral.quantity, 
+      rating: peripheral.rating || 0,
+      ratingCount: peripheral.ratingCount || 0,
       ratings: {
-        average: 4.2,
-        count: 12
+        average: peripheral.rating || 0,
+        count: peripheral.ratingCount || 0
       }
     });
   } catch (error) {

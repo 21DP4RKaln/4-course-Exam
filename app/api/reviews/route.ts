@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
 import { createUnauthorizedResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
 import { prisma } from '@/lib/prismaService'
+import { updateProductRating } from '@/lib/ratingUtils'
 import { z } from 'zod'
 import { ProductType } from '@prisma/client'
 
@@ -156,8 +157,7 @@ export async function POST(request: NextRequest) {
       where: {
         userId_productId_productType: {
           userId,
-          productId,
-          productType: productType as ProductType
+          productId,        productType: productType as ProductType
         }
       }
     })
@@ -182,6 +182,8 @@ export async function POST(request: NextRequest) {
         }
       })
 
+      await updateProductRating(productId, productType as ProductType)
+
       return NextResponse.json(updatedReview)
     } else {
       const newReview = await prisma.review.create({
@@ -203,6 +205,8 @@ export async function POST(request: NextRequest) {
           }
         }
       })
+
+      await updateProductRating(productId, productType as ProductType)
 
       return NextResponse.json(newReview)
     }

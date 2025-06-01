@@ -3,12 +3,8 @@ import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
 import { createUnauthorizedResponse, createForbiddenResponse, createServerErrorResponse } from '@/lib/apiErrors'
 import { prisma } from '@/lib/prismaService'
 
-/**
- * GET - Fetch financial reports data for admin dashboard
- */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication and admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -23,19 +19,17 @@ export async function GET(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get query parameters
     const { searchParams } = new URL(request.url)
     const startDate = searchParams.get('startDate') 
       ? new Date(searchParams.get('startDate') as string) 
-      : new Date(new Date().setMonth(new Date().getMonth() - 1)) // Default to last month
+      : new Date(new Date().setMonth(new Date().getMonth() - 1)) 
     
     const endDate = searchParams.get('endDate') 
       ? new Date(searchParams.get('endDate') as string) 
-      : new Date() // Default to today
+      : new Date() 
     
     const reportType = searchParams.get('type') || 'summary'
 
-    // Fetch order data for the report
     const orders = await prisma.order.findMany({
       where: {
         createdAt: {
@@ -58,7 +52,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Calculate summary statistics
     const totalSales = orders.length
     const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0)
     const completedOrders = orders.filter(order => order.status === 'COMPLETED').length
@@ -66,14 +59,12 @@ export async function GET(request: NextRequest) {
     const processingOrders = orders.filter(order => order.status === 'PROCESSING').length
     const cancelledOrders = orders.filter(order => order.status === 'CANCELLED').length
     
-    // Calculate average order value
     const averageOrderValue = totalSales > 0 ? totalRevenue / totalSales : 0
     
-    // Calculate daily sales data for charting
     const dailySales: Record<string, { count: number, revenue: number }> = {}
     
     for (const order of orders) {
-      const dateKey = order.createdAt.toISOString().split('T')[0] // YYYY-MM-DD format
+      const dateKey = order.createdAt.toISOString().split('T')[0] 
       
       if (!dailySales[dateKey]) {
         dailySales[dateKey] = { count: 0, revenue: 0 }
@@ -83,14 +74,12 @@ export async function GET(request: NextRequest) {
       dailySales[dateKey].revenue += order.totalAmount
     }
     
-    // Convert dailySales to array format for easier consumption
     const salesByDate = Object.entries(dailySales).map(([date, data]) => ({
       date,
       count: data.count,
       revenue: data.revenue
     })).sort((a, b) => a.date.localeCompare(b.date))
 
-    // Format response based on report type
     let responseData
 
     switch (reportType) {
@@ -112,7 +101,6 @@ export async function GET(request: NextRequest) {
         break
         
       case 'detailed':
-        // Calculate product performance
         const productPerformance: Record<string, { 
           name: string, 
           quantity: number, 
@@ -140,9 +128,8 @@ export async function GET(request: NextRequest) {
             ...data
           }))
           .sort((a, b) => b.revenue - a.revenue)
-          .slice(0, 10) // Top 10 products
+          .slice(0, 10) 
           
-        // Include the detailed order data with the summary
         responseData = {
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
@@ -173,12 +160,9 @@ export async function GET(request: NextRequest) {
         break
         
       case 'export':
-        // Simple CSV export format for downloading
         const csvRows = [
-          // Header row
           ['Order ID', 'Date', 'Customer Name', 'Customer Email', 'Status', 'Total Amount', 'Items'].join(','),
           
-          // Data rows
           ...orders.map(order => [
             order.id,
             order.createdAt.toISOString(),
@@ -215,12 +199,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST - Generate custom financial report
- */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication and admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -235,7 +215,6 @@ export async function POST(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get request body
     const { 
       startDate, 
       endDate, 
@@ -243,7 +222,6 @@ export async function POST(request: NextRequest) {
       filters = {} 
     } = await request.json()
 
-    // Validate dates
     const startDateTime = startDate ? new Date(startDate) : new Date(new Date().setMonth(new Date().getMonth() - 1))
     const endDateTime = endDate ? new Date(endDate) : new Date()
     
@@ -254,7 +232,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Build query filters
     const whereClause: any = {
       createdAt: {
         gte: startDateTime,
@@ -262,7 +239,6 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Add optional filters if provided
     if (filters.status) {
       whereClause.status = filters.status
     }
@@ -281,7 +257,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Fetch filtered order data
     const orders = await prisma.order.findMany({
       where: whereClause,
       include: {
@@ -299,11 +274,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Calculate summary metrics
     const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0)
     const averageOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0
     
-    // Group data for reporting
     const salesByStatus = {
       COMPLETED: orders.filter(o => o.status === 'COMPLETED').reduce((sum, o) => sum + o.totalAmount, 0),
       PENDING: orders.filter(o => o.status === 'PENDING').reduce((sum, o) => sum + o.totalAmount, 0),
@@ -311,12 +284,10 @@ export async function POST(request: NextRequest) {
       CANCELLED: orders.filter(o => o.status === 'CANCELLED').reduce((sum, o) => sum + o.totalAmount, 0)
     }
     
-    // Build response based on report type
     let reportData
 
     switch (reportType) {
       case 'monthly':
-        // Group by month
         const monthlySales: Record<string, number> = {}
         
         orders.forEach(order => {
@@ -340,7 +311,6 @@ export async function POST(request: NextRequest) {
         break
         
       case 'product':
-        // Analyze product performance
         const productSales: Record<string, { 
           id: string, 
           name: string, 
@@ -375,7 +345,7 @@ export async function POST(request: NextRequest) {
         }
         break
         
-      default: // summary
+      default: 
         reportData = {
           reportType: 'summary',
           startDate: startDateTime.toISOString(),

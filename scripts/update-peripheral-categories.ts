@@ -10,14 +10,12 @@ async function updatePeripheralCategories() {
   try {
     console.log('Starting update of peripheral categories...');
 
-    // List of categories that should be marked as peripherals
     const peripheralCategoryNames = [
       'Keyboard', 'Mouse', 'Headphones', 
       'Monitor', 'Speakers', 'Camera', 
       'Microphone', 'Gamepad', 'MousePad'
     ];
 
-    // Update records in database
     const result = await prisma.componentCategory.updateMany({
       where: {
         name: {
@@ -31,7 +29,6 @@ async function updatePeripheralCategories() {
 
     console.log(`Successfully updated ${result.count} peripheral categories`);
     
-    // Verify the update
     const updatedCategories = await prisma.componentCategory.findMany({
       where: {
         type: 'peripheral'
@@ -52,7 +49,6 @@ async function updatePeripheralCategories() {
   }
 }
 
-// Run the script
 updatePeripheralCategories()
   .then(() => {
     console.log('Peripheral category update completed');

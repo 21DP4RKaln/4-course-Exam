@@ -5,7 +5,6 @@ import { createUnauthorizedResponse, createForbiddenResponse, createNotFoundResp
 import { z } from 'zod'
 import * as bcrypt from 'bcryptjs'
 
-// Schema for updating a user
 const updateUserSchema = z.object({
   email: z.string().email('Invalid email address').optional(),
   firstName: z.string().min(1, 'First name is required').optional(),
@@ -17,15 +16,11 @@ const updateUserSchema = z.object({
   blockReason: z.string().optional(),
 })
 
-/**
- * GET - Get a specific user by ID
- */
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -36,14 +31,12 @@ export async function GET(
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Authorization check - only ADMIN can access this endpoint
     if (payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin privileges required')
     }
 
     const userId = params.id
 
-    // Fetch the user
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -59,7 +52,6 @@ export async function GET(
         blockReason: true,
         createdAt: true,
         updatedAt: true,
-        // Never return password hash
       },
     })
 
@@ -67,7 +59,6 @@ export async function GET(
       return createNotFoundResponse('User not found')
     }
 
-    // Get additional user data
     const [
       ordersCount,
       configurationsCount,
@@ -77,7 +68,6 @@ export async function GET(
       prisma.order.count({ where: { userId } }),
       prisma.configuration.count({ where: { userId } }),
       prisma.repair.count({ where: { userId } }),
-      // Could be replaced with actual login tracking if available
       null
     ])
 
@@ -96,15 +86,11 @@ export async function GET(
   }
 }
 
-/**
- * PUT - Update a specific user
- */
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -115,14 +101,12 @@ export async function PUT(
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Authorization check - only ADMIN can access this endpoint
     if (payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin privileges required')
     }
 
     const userId = params.id
 
-    // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { id: userId },
     })
@@ -131,7 +115,6 @@ export async function PUT(
       return createNotFoundResponse('User not found')
     }
 
-    // Parse and validate request body
     const body = await request.json()
     const validationResult = updateUserSchema.safeParse(body)
     
@@ -141,7 +124,6 @@ export async function PUT(
 
     const { email, firstName, lastName, phone, role, password, isBlocked, blockReason } = validationResult.data
 
-    // Check for email uniqueness if changing email
     if (email && email !== existingUser.email) {
       const emailExists = await prisma.user.findUnique({
         where: { email },
@@ -152,7 +134,6 @@ export async function PUT(
       }
     }
 
-    // Check for phone uniqueness if changing phone
     if (phone && phone !== existingUser.phone) {
       const phoneExists = await prisma.user.findFirst({
         where: { phone },
@@ -163,7 +144,6 @@ export async function PUT(
       }
     }
 
-    // Prepare update data
     const updateData: any = {}
 
     if (email !== undefined) updateData.email = email
@@ -174,7 +154,6 @@ export async function PUT(
     if (isBlocked !== undefined) updateData.isBlocked = isBlocked
     if (blockReason !== undefined) updateData.blockReason = blockReason
 
-    // Update name if first name or last name was updated
     if (firstName !== undefined || lastName !== undefined) {
       const newFirstName = firstName !== undefined ? firstName : existingUser.firstName || ''
       const newLastName = lastName !== undefined ? lastName : existingUser.lastName || ''
@@ -182,17 +161,14 @@ export async function PUT(
       updateData.name = `${newFirstName} ${newLastName}`.trim()
     }
 
-    // Hash new password if provided
     if (password) {
       updateData.password = await bcrypt.hash(password, 10)
     }
 
-    // Prevent self-demotion (admin can't demote themselves)
     if (userId === payload.userId && role && role !== 'ADMIN') {
       return createBadRequestResponse('You cannot change your own admin role')
     }
 
-    // Update the user
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: updateData,
@@ -209,7 +185,6 @@ export async function PUT(
         blockReason: true,
         createdAt: true,
         updatedAt: true,
-        // Never return password hash
       },
     })
 
@@ -220,15 +195,11 @@ export async function PUT(
   }
 }
 
-/**
- * DELETE - Delete a user
- */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -239,19 +210,16 @@ export async function DELETE(
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Authorization check - only ADMIN can access this endpoint
     if (payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin privileges required')
     }
 
     const userId = params.id
 
-    // Prevent self-deletion (admin can't delete themselves)
     if (userId === payload.userId) {
       return createBadRequestResponse('You cannot delete your own account')
     }
 
-    // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { id: userId },
     })
@@ -260,7 +228,6 @@ export async function DELETE(
       return createNotFoundResponse('User not found')
     }
 
-    // Delete the user
     await prisma.user.delete({
       where: { id: userId },
     })

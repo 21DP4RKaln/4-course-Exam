@@ -48,10 +48,8 @@ export default async function LocaleLayout({
   children,
   params,
 }: Props) {
-  // Safely extract locale and ensure it's a valid locale before fetching messages
-  const locale = params?.locale || 'en';
+  const { locale } = await params;
   
-  // Only try to fetch messages if locale is one of our supported locales
   const supportedLocales = ['en', 'lv', 'ru'];
   const safeLocale = supportedLocales.includes(locale) ? locale : 'en';
   const messages = await getMessages(safeLocale);

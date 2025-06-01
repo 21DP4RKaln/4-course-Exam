@@ -67,7 +67,6 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Insufficient permissions')
     }
 
-    // Get all the metrics in parallel for efficiency
     const [
       pendingRepairs,
       inProgressRepairs,
@@ -88,7 +87,7 @@ export async function GET(request: NextRequest) {
       prisma.configuration.count({ where: { status: 'SUBMITTED', isTemplate: false } }),
       prisma.configuration.count({ where: { status: 'APPROVED' } }),
       prisma.component.count(),
-      prisma.component.count({ where: { stock: { lt: 10 } } }),
+      prisma.component.count({ where: { quantity: { lt: 10 } } }),
       prisma.peripheral.count(),
       prisma.user.count(),
       prisma.order.count(),
@@ -96,7 +95,6 @@ export async function GET(request: NextRequest) {
       prisma.order.aggregate({ _sum: { totalAmount: true } })
     ])
 
-    // Get recent activity for the dashboard
     const recentRepairs = await prisma.repair.findMany({
       take: 5,
       orderBy: { updatedAt: 'desc' },
@@ -150,7 +148,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Add admin-specific stats if user is admin
     if (payload.role === 'ADMIN') {
       stats.admin = {
         users: totalUsers,

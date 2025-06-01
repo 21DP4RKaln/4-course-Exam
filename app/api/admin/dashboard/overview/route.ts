@@ -15,20 +15,18 @@ export async function GET(request: NextRequest) {
       return createForbiddenResponse();
     }
 
-    // Get date range parameters (default to last 30 days)
     const { searchParams } = new URL(request.url);
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
     
     const startDate = startDateParam 
       ? new Date(startDateParam) 
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); 
     
     const endDate = endDateParam
       ? new Date(endDateParam)
-      : new Date(); // Today
+      : new Date(); 
     
-    // Get counts of various entities
     const [
       totalUsers,
       totalComponents,
@@ -46,48 +44,37 @@ export async function GET(request: NextRequest) {
       orderStatuses,
       repairStatuses
     ] = await Promise.all([
-      // Total users
       prisma.user.count(),
       
-      // Total components
       prisma.component.count(),
       
-      // Total peripherals
       prisma.peripheral.count(),
       
-      // Total configurations
       prisma.configuration.count(),
       
-      // Total orders
       prisma.order.count(),
       
-      // Total repairs
       prisma.repair.count(),
-      
-      // Components with low stock (less than 10)
       prisma.component.findMany({
-        where: { stock: { lt: 10 } },
+        where: { quantity: { lt: 10 } },
         select: {
           id: true,
           name: true,
-          stock: true,
+          quantity: true,
           category: {
             select: { name: true }
           }
         }
       }),
       
-      // Pending repairs
       prisma.repair.count({
         where: { status: 'PENDING' }
       }),
       
-      // Pending orders
       prisma.order.count({
         where: { status: 'PENDING' }
       }),
       
-      // Recent orders
       prisma.order.findMany({
         take: 10,
         orderBy: { createdAt: 'desc' },
@@ -108,13 +95,11 @@ export async function GET(request: NextRequest) {
         }
       }),
       
-      // User counts by role
       prisma.user.groupBy({
         by: ['role'],
         _count: true
       }),
       
-      // Product counts by category
       prisma.$queryRaw`
         SELECT 'component' as type, c.name as category, COUNT(*) as count
         FROM component comp
@@ -127,7 +112,6 @@ export async function GET(request: NextRequest) {
         GROUP BY p.name
       `,
       
-      // Revenue by product type
       prisma.$queryRaw`
         SELECT
           SUM(CASE WHEN oi.productType = 'COMPONENT' THEN oi.price * oi.quantity ELSE 0 END) as componentRevenue,
@@ -138,7 +122,6 @@ export async function GET(request: NextRequest) {
         WHERE o.createdAt BETWEEN ${startDate} AND ${endDate}
       `,
       
-      // Order counts by status
       prisma.order.groupBy({
         by: ['status'],
         _count: true,
@@ -150,7 +133,6 @@ export async function GET(request: NextRequest) {
         }
       }),
       
-      // Repair counts by status
       prisma.repair.groupBy({
         by: ['status'],
         _count: true,
@@ -161,7 +143,7 @@ export async function GET(request: NextRequest) {
           }
         }
       })
-    ]);      // Format response data
+    ]);      
     const formattedUsersByRole = Object.fromEntries(
       usersByRole.map(item => [item.role, item._count])
     );
@@ -174,14 +156,12 @@ export async function GET(request: NextRequest) {
       repairStatuses.map(item => [item.status, item._count])
     );
     
-    // Define the type for the revenue data from raw SQL query
     interface ProductRevenue {
       componentRevenue: number;
       peripheralRevenue: number;
       configurationRevenue: number;
     }
 
-    // Cast the raw SQL result to the correct type
     const revenueData = (productRevenue as unknown as ProductRevenue[])[0] || {
       componentRevenue: 0,
       peripheralRevenue: 0,

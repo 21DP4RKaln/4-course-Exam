@@ -84,7 +84,6 @@ function CheckoutForm() {
   const [promoDiscount, setPromoDiscount] = useState(0)
   const [promoCode, setPromoCode] = useState<string | null>(null)
 
-  // Validate promo code when component mounts if code exists in URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const code = params.get('promo')
@@ -186,9 +185,7 @@ function CheckoutForm() {
         return;
       }
 
-      const shippingRate = shippingRates.find(rate => rate.method === selectedShipping);
-
-      // Prepare common order data
+      const shippingRate = shippingRates.find(rate => rate.method === selectedShipping);      // Prepare common order data
       const orderData = {
         items: items.map(item => ({
           id: item.id,
@@ -199,6 +196,7 @@ function CheckoutForm() {
           images: item.imageUrl ? [item.imageUrl] : []
         })),
         total: totalPrice + (shippingRate?.rate || 0) - promoDiscount,
+        locale: locale, 
         shipping: {
           method: selectedShipping,
           rate: shippingRate?.rate || 0,
@@ -213,7 +211,6 @@ function CheckoutForm() {
         }
       };
 
-      // Handle card payment
       if (data.paymentMethod === 'card') {
         try {
           console.log('Creating Stripe session...');
@@ -247,9 +244,7 @@ function CheckoutForm() {
           setPaymentError(error instanceof Error ? error.message : t('checkout.stripeError'));
           return;
         }
-      }
-
-      // Handle cash payment
+      }      
       console.log('Processing cash payment order...');
       const orderResponse = await fetch('/api/orders', {
         method: 'POST',
@@ -258,7 +253,8 @@ function CheckoutForm() {
           ...orderData,
           paymentMethod: data.paymentMethod,
           promoCode: promoCode,
-          promoDiscount: promoDiscount
+          promoDiscount: promoDiscount,
+          locale: locale 
         })
       });
 
@@ -267,7 +263,6 @@ function CheckoutForm() {
         throw new Error(errorData.error || t('checkout.orderError'));
       }
 
-      // Save address if requested
       if (isAuthenticated && data.saveAddress) {
         console.log('Saving address...');
         await fetch('/api/user/address', {
@@ -564,7 +559,6 @@ function CheckoutForm() {
                 checked={selectedShipping === rate.method}
                 onChange={() => {
                   setSelectedShipping(rate.method)
-                  // Reset payment method when changing shipping
                   setValue('paymentMethod', 'card')
                 }}
                 className="w-4 h-4 text-primary mr-3"
@@ -743,7 +737,6 @@ export default function CheckoutPage() {
   const locale = pathname.split('/')[1]
   const { items } = useCart()
   
-  // Animations for page load and scroll
   const pageRef = useRef(null)
   const isInView = useInView(pageRef, { once: false, amount: 0.3 })
   const { scrollYProgress } = useScroll()

@@ -80,7 +80,6 @@ export default function RepairsPage() {
   const { user, isAuthenticated } = useAuth()
   const locale = pathname.split('/')[1]
   
-  // Form state
   const [currentStep, setCurrentStep] = useState(1)
   const [firstName, setFirstName] = useState(user?.firstName || '')
   const [lastName, setLastName] = useState(user?.lastName || '')
@@ -92,7 +91,6 @@ export default function RepairsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   
-  // Refs for smooth scrolling
   const formRef = useRef<HTMLDivElement>(null)
   
   const selectedServiceDetails = repairServices.find(s => s.id === selectedService)
@@ -139,7 +137,7 @@ export default function RepairsPage() {
       case 3:
         return issue.trim() !== ''
       case 4:
-        return true // Image is optional
+        return true 
       default:
         return true
     }
@@ -167,13 +165,10 @@ export default function RepairsPage() {
         formData.append(`image_${index}`, image)
       })
       
-      // Here you would send to API
       await new Promise(resolve => setTimeout(resolve, 1500))
       
-      // Show success message
       setShowSuccess(true)
       
-      // Reset form if not logged in
       if (!user) {
         setFirstName('')
         setLastName('')

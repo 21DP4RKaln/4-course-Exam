@@ -8,19 +8,16 @@ import { authenticateAdmin } from '@/lib/middleware/authMiddleware'
  */
 export async function GET(request: NextRequest) {
   try {
-    // Authenticate admin user
     const authResult = await authenticateAdmin(request);
     if (authResult instanceof Response) {
       return authResult;
     }
 
-    // Get query parameters
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || 'month';
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
-    // Default date range: current month
     const now = new Date();
     const start = startDate 
       ? new Date(startDate)
@@ -30,20 +27,16 @@ export async function GET(request: NextRequest) {
       ? new Date(endDate) 
       : new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-    // Adjust date range based on period
     if (!startDate && !endDate) {
       if (period === 'week') {
-        // Last 7 days
         start.setDate(now.getDate() - 7);
         end.setDate(now.getDate());
       } else if (period === 'year') {
-        // Current year
         start.setMonth(0, 1);
         end.setMonth(11, 31);
       }
     }
 
-    // Fetch all the data needed for analytics in a transaction for consistency
     const [
       orders,
       totalRevenue,
@@ -51,7 +44,6 @@ export async function GET(request: NextRequest) {
       averageOrderValue,
       productMap
     ] = await prisma.$transaction(async (tx) => {
-      // Get orders with items for the period
       const orderData = await tx.order.findMany({
         where: {
           createdAt: {
@@ -70,12 +62,10 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      // Calculate summary metrics
       const totalRev = orderData.reduce((sum, order) => sum + order.totalAmount, 0);
       const totalCount = orderData.length;
       const avgValue = totalCount > 0 ? totalRev / totalCount : 0;
       
-      // Get product sales data
       const products = new Map();
       
       orderData.forEach(order => {
@@ -99,11 +89,9 @@ export async function GET(request: NextRequest) {
       return [orderData, totalRev, totalCount, avgValue, products];
     });
 
-    // Process data based on period to generate time series
     let salesData = [];
     
     if (period === 'day') {
-      // Group by hour
       const hourlyMap = new Map();
       
       orders.forEach(order => {
@@ -120,7 +108,6 @@ export async function GET(request: NextRequest) {
         });
       });
       
-      // Convert to array and ensure all hours are represented
       for (let i = 0; i < 24; i++) {
         const hourKey = `${i}:00`;
         if (!hourlyMap.has(hourKey)) {
@@ -139,7 +126,6 @@ export async function GET(request: NextRequest) {
           return hourA - hourB;
         });
     } else if (period === 'week' || period === 'month') {
-      // Group by day
       const dailyMap = new Map();
       
       orders.forEach(order => {

@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-/**
- * API route for resetting view counts monthly via CRON job
- * This will be called automatically at the beginning of each month
- */
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('Authorization')

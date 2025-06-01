@@ -9,7 +9,6 @@ const prisma = new PrismaClient()
 async function addSampleConfigurations() {
   console.log('Adding sample configurations...')
   
-  // Check if any configurations already exist
   const configCount = await prisma.configuration.count()
   console.log(`Found ${configCount} existing configurations.`)
   
@@ -77,7 +76,6 @@ async function addSampleConfigurations() {
     }
   ]
   
-  // Add necessary number of configurations
   const configsToAdd = samplePCs.slice(0, Math.min(samplePCs.length, 8 - configCount))
   
   for (const config of configsToAdd) {
@@ -102,7 +100,6 @@ async function addSampleConfigurations() {
   console.log(`Added ${configsToAdd.length} new configurations.`)
 }
 
-// Run the function
 addSampleConfigurations()
   .catch((e) => {
     console.error('Error adding sample configurations:', e)

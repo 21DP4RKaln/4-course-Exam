@@ -29,7 +29,7 @@ export async function authenticateAdmin(request: NextRequest): Promise<JWTPayloa
   const payload = await authenticate(request);
   
   if (payload instanceof Response) {
-    return payload; // Already returns an error response
+    return payload; 
   }
   
   if (payload.role !== 'ADMIN') {
@@ -47,7 +47,7 @@ export async function authenticateStaff(request: NextRequest): Promise<JWTPayloa
   const payload = await authenticate(request);
   
   if (payload instanceof Response) {
-    return payload; // Already returns an error response
+    return payload; 
   }
   
   if (!['ADMIN', 'SPECIALIST'].includes(payload.role)) {

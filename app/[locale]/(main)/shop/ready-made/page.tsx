@@ -29,7 +29,7 @@ const specMapping: Record<string, string[]> = {
   'cpu': ['cpu', 'processor', 'processors'],
   'gpu': ['gpu', 'graphics', 'graphicscard', 'graphics card', 'video card'],
   'ram': ['ram', 'memory', 'memories'],
-  'storage': ['storage', 'storage', 'drive', 'disk', 'ssd', 'hdd'],
+  'storage': ['storage', 'drive', 'disk', 'ssd', 'hdd'],
   'motherboard': ['motherboard', 'mb', 'mainboard', 'system board'],
   'psu': ['psu', 'powersupply', 'power supply', 'power'],
   'case': ['case', 'chassis', 'tower', 'enclosure'],
@@ -47,7 +47,11 @@ function extractOptions(pcs: PC[], specKey: string) {
   pcs.forEach(pc => {
     if (pc.specs) {
       Object.entries(pc.specs).forEach(([key, value]) => {
-        if (validKeys.includes(key.toLowerCase()) && value) {
+        const keyMatches = validKeys.some(validKey => 
+          key.toLowerCase().includes(validKey) || validKey.includes(key.toLowerCase())
+        )
+        
+        if (keyMatches && value) {
           const parts = value.split(/[,;]/).map(part => part.trim())
           parts.forEach(part => {
             if (part) options.add(part)
@@ -112,19 +116,38 @@ export default function ReadyMadePCsPage() {
       setPriceRange({ min: minPrice, max: maxPrice })
     }
   }, [pcs, minPrice, maxPrice])
-
   useEffect(() => {
     const fetchPCs = async () => {
       setLoading(true)
       try {
-        const response = await fetch('/api/shop/product?category=pc')
+        const response = await fetch('/api/shop/product?type=configuration')
         
         if (!response.ok) {
           throw new Error('Failed to load products')
         }
+          const data = await response.json()
         
-        const data = await response.json()
-        setPcs(data)
+        console.log('🔍 Raw API data:', data)
+        console.log('🔍 First config components:', data[0]?.components)        
+        const transformedPCs = data.map((config: any) => ({
+          id: config.id,
+          name: config.name,
+          category: config.category || 'Gaming PC',
+          description: config.description || '',
+          specs: config.components ? config.components.reduce((acc: Record<string, string>, comp: any) => {
+            const categoryName = comp.category || 'unknown';
+            acc[categoryName.toLowerCase()] = comp.name;
+            return acc;
+          }, {}) : {},
+          price: config.price || 0, 
+          imageUrl: config.imageUrl,
+          stock: config.stock || 10
+        }))
+        
+        console.log('🔄 Transformed PCs:', transformedPCs)
+        console.log('🔍 First PC specs:', transformedPCs[0]?.specs)
+        
+        setPcs(transformedPCs)
       } catch (err) {
         console.error('Error fetching ready-made PCs:', err)
         setError('Failed to load products. Please try again later.')
@@ -134,26 +157,50 @@ export default function ReadyMadePCsPage() {
     }
     
     fetchPCs()
-  }, [])
+  }, []) 
+  const categoryOptions = Array.from(new Set(pcs.map(pc => pc.category))).map(cat => ({ 
+    id: cat, 
+    name: cat,
+    translationKey: `shop.filters.${cat.toLowerCase()}`
+  }));
+  const cpuOptions = extractOptions(pcs, 'cpu');
+  const gpuOptions = extractOptions(pcs, 'gpu');
+  const ramOptions = extractOptions(pcs, 'ram');
+  const storageOptions = extractOptions(pcs, 'storage');
+  const motherboardOptions = extractOptions(pcs, 'motherboard');
+  const psuOptions = extractOptions(pcs, 'psu');
+  const caseOptions = extractOptions(pcs, 'case');
+  const coolingOptions = extractOptions(pcs, 'cooling');
+  console.log('🔧 Filter options extracted:', {
+    categoryOptions: categoryOptions.length,
+    cpuOptions: cpuOptions.length,
+    gpuOptions: gpuOptions.length,
+    ramOptions: ramOptions.length,
+    storageOptions: storageOptions.length,
+    motherboardOptions: motherboardOptions.length,
+    psuOptions: psuOptions.length,
+    caseOptions: caseOptions.length,
+    coolingOptions: coolingOptions.length
+  });
 
-  const categoryOptions = useMemo(() => {
-    const categories = new Set<string>()
-    pcs.forEach(pc => categories.add(pc.category))
-    return Array.from(categories).map(cat => ({ id: cat, name: cat }))
-  }, [pcs])
-  const cpuOptions = useMemo(() => extractOptions(pcs, 'cpu'), [pcs])
-  const gpuOptions = useMemo(() => extractOptions(pcs, 'gpu'), [pcs])
-  const ramOptions = useMemo(() => extractOptions(pcs, 'ram'), [pcs])
-  const storageOptions = useMemo(() => extractOptions(pcs, 'storage'), [pcs])
-  const motherboardOptions = useMemo(() => extractOptions(pcs, 'motherboard'), [pcs])
-  const psuOptions = useMemo(() => extractOptions(pcs, 'psu'), [pcs])
-  const caseOptions = useMemo(() => extractOptions(pcs, 'case'), [pcs])
-  const coolingOptions = useMemo(() => extractOptions(pcs, 'cooling'), [pcs])
-
-  useEffect(() => {
+  if (pcs.length > 0) {
+    console.log('📋 First PC specs structure:', pcs[0].specs);
+    console.log('📋 All PC specs keys:', pcs.map(pc => Object.keys(pc.specs || {})));
+  }useEffect(() => {
+    console.log('🔄 Filtering PCs - Starting with:', pcs.length, 'PCs')
+    console.log('🔍 Active filters:', activeFilters)
+    console.log('🔎 Search query:', searchQuery)
+    console.log('💰 Price range:', priceRange)
+    
     let result = [...pcs]
     
-    // Apply text search
+    console.log('🔍 Starting filter process with:', {
+      totalPCs: pcs.length,
+      activeFilters,
+      searchQuery,
+      priceRange
+    })
+    
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter(pc => 
@@ -163,42 +210,55 @@ export default function ReadyMadePCsPage() {
           value.toString().toLowerCase().includes(query)
         )
       )
+      console.log('📝 After search filter:', result.length)
     }
 
-    // Apply price filter
     result = result.filter(pc => pc.price >= priceRange.min && pc.price <= priceRange.max)
+    console.log('💰 After price filter:', result.length)
 
-    // Apply category filters
     if (activeFilters.category && activeFilters.category.length > 0) {
       result = result.filter(pc => activeFilters.category.includes(pc.category))
+      console.log('📂 After category filter:', result.length)
     }
 
-    // Apply component-specific filters
     Object.entries(activeFilters).forEach(([filterType, selectedValues]) => {
       if (filterType !== 'category' && selectedValues && selectedValues.length > 0) {
+        console.log(`🔧 Applying ${filterType} filter with values:`, selectedValues)
+        
+        const beforeCount = result.length
         result = result.filter(pc => {
           if (!pc.specs) return false
           
           const validKeys = getValidKeysForSpec(filterType)
+          console.log(`  Valid keys for ${filterType}:`, validKeys)
+          
           let specValue = ''
+          let foundKey = ''
   
           for (const key of Object.keys(pc.specs)) {
-            if (validKeys.some(validKey => key.toLowerCase().includes(validKey))) {
+            if (validKeys.some(validKey => 
+              key.toLowerCase().includes(validKey) || validKey.includes(key.toLowerCase())
+            )) {
               specValue = pc.specs[key].toLowerCase()
+              foundKey = key
+              break
             }
           }
           
-          return selectedValues.some(filter => 
+          console.log(`  PC "${pc.name}" - Found spec "${foundKey}": "${specValue}"`)
+          
+          const matches = selectedValues.some(filter => 
             specValue.includes(filter.toLowerCase())
           )
+          
+          console.log(`  Matches filter? ${matches}`)
+          return matches
         })
+        
+        console.log(`  ${filterType} filter: ${beforeCount} -> ${result.length}`)
       }
     })
     
-    // Apply price range filter
-    result = result.filter(pc => pc.price >= priceRange.min && pc.price <= priceRange.max)
-    
-    // Apply sorting
     switch (sortOption) {
       case 'price-asc':
         result.sort((a, b) => a.price - b.price)
@@ -214,6 +274,7 @@ export default function ReadyMadePCsPage() {
         break
     }
     
+    console.log('✅ Final result:', result.length)
     setFilteredPCs(result)
   }, [pcs, searchQuery, activeFilters, sortOption, priceRange])
 
@@ -276,8 +337,7 @@ export default function ReadyMadePCsPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Filters */}
         <div className="w-full lg:w-80 shrink-0">
-          <div className="sticky top-4 -translate-x-40 transition-transform duration-200">
-            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md">
+          <div className="sticky top-4 -translate-x-40 transition-transform duration-200">            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md">
               <AdvancedFilter
                 className={styles.select}
                 onFilterChange={setActiveFilters}

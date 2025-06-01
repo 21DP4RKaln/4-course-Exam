@@ -34,7 +34,7 @@ export async function getAdminOverview(): Promise<AdminOverviewStats> {
           orders: {
             some: {
               createdAt: {
-                gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+                gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) 
               }
             }
           }
@@ -61,7 +61,6 @@ export async function getAdminOverview(): Promise<AdminOverviewStats> {
       monthlyRevenue: monthlyRevenue._sum.totalAmount || 0,
       pendingOrders,
       systemHealth: {
-        // These would typically come from system monitoring
         cpuUsage: Math.random() * 100,
         memoryUsage: Math.random() * 100,
         diskSpace: Math.random() * 100
@@ -126,19 +125,16 @@ export async function manageUser(
  * Get system settings
  */
 export async function getSystemSettings() {
-  // This would typically interact with a settings table
-  // For now, returning mock data
   return {
     general: {
       siteName: 'IvaPro PC Configurator',
       siteUrl: 'https://ivapro.com',
       maintenanceMode: false
-    },
-    email: {
-      smtpHost: 'smtp.example.com',
+    },    email: {
+      smtpHost: 'smtp.gmail.com',
       smtpPort: 587,
-      smtpUser: 'noreply@ivapro.com',
-      emailFrom: 'IvaPro <noreply@ivapro.com>'
+      smtpUser: '14dprkalninskvdarbs@gmail.com',
+      emailFrom: 'IvaPro <14dprkalninskvdarbs@gmail.com>'
     },
     backup: {
       autoBackup: true,
@@ -152,7 +148,5 @@ export async function getSystemSettings() {
  * Update system settings
  */
 export async function updateSystemSettings(category: string, settings: Record<string, any>) {
-  // This would typically update a settings table
-  // For now, just returning the settings
   return settings;
 }

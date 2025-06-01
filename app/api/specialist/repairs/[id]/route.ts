@@ -18,7 +18,6 @@ export async function GET(
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Check if the user is a specialist
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { role: true }
@@ -74,7 +73,6 @@ export async function GET(
       return createNotFoundResponse('Repair not found')
     }
 
-    // Format repair for response
     const formattedRepair = {
       id: repair.id,
       title: repair.title,
@@ -135,7 +133,6 @@ export async function PATCH(
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Check if the user is a specialist
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { role: true }
@@ -147,7 +144,6 @@ export async function PATCH(
 
     const data = await request.json()
 
-    // Allow updating specific fields
     const allowedFields = ['status', 'priority', 'estimatedCost', 'finalCost', 'diagnosticNotes', 'completionDate']
     const updateData: any = {}
 

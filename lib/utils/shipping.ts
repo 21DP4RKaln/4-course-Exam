@@ -17,9 +17,8 @@ export interface ShippingAddress {
     
     const shippingRates: ShippingRate[] = []
  
-    // Kurjerpiegāde tikai Latvijai
     if (isLatvia) {
-      const courierRate = isRiga ? 0 : 20 // Rīgā bezmaksas, ārpus Rīgas 20 EUR
+      const courierRate = isRiga ? 0 : 20 
       shippingRates.push({
         rate: courierRate,
         method: 'COURIER',
@@ -27,8 +26,7 @@ export interface ShippingAddress {
       })
     }
 
-    // Pasta piegāde visām valstīm
-    const postRate = isLatvia ? 10 : 30 // Latvijā 10 EUR, Lietuvā un Igaunijā 30 EUR
+    const postRate = isLatvia ? 10 : 30 
     shippingRates.push({
       rate: postRate,
       method: 'POST',

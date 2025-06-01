@@ -2,6 +2,8 @@ import { Component } from './types';
 
 // Helper function to check form factor compatibility
 export const checkFormFactorCompatibility = (caseFormFactor: string, motherboardFormFactor: string): boolean => {
+  if (!caseFormFactor || !motherboardFormFactor) return true;
+  
   const caseSize = caseFormFactor.toLowerCase();
   const mbSize = motherboardFormFactor.toLowerCase();
   
@@ -38,7 +40,18 @@ export const getCompatibilityIssues = (
 ): string[] => {
   const issues: string[] = [];
   
-  // Copy compatibility checks logic here (CPU vs Motherboard, RAM, Case, GPU, PSU, Storage...)
+  // Check power consumption against PSU capacity
+  if (selectedComponents.psu && totalPowerConsumption > 0) {
+    const psuPower = parseInt(selectedComponents.psu.specifications?.['Power'] || '0');
+    // Recommend 40% headroom for the PSU
+    const recommendedPower = Math.ceil(totalPowerConsumption * 1.4);
+    
+    if (psuPower < totalPowerConsumption) {
+      issues.push(`${t('configurator.compatibility.psuTooWeak')} (${totalPowerConsumption}W > ${psuPower}W)`);
+    } else if (psuPower < recommendedPower) {
+      issues.push(`${t('configurator.compatibility.psuLowHeadroom')} (${recommendedPower}W recommended)`);
+    }
+  }
   
   // Example: CPU-Motherboard socket
   if (selectedComponents.cpu && selectedComponents.motherboard) {

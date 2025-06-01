@@ -162,7 +162,6 @@ export async function updateRepair(repairId: string, data: RepairUpdateData) {
 export async function completeRepair(repairId: string, data: RepairCompletionData) {
   try {
     const repair = await prisma.$transaction(async (tx) => {
-      // Update repair status
       const updatedRepair = await tx.repair.update({
         where: { id: repairId },
         data: {
@@ -176,7 +175,6 @@ export async function completeRepair(repairId: string, data: RepairCompletionDat
         }
       });
 
-      // Add parts used
       if (data.partsUsed && data.partsUsed.length > 0) {
         await tx.repairPart.createMany({
           data: data.partsUsed.map(part => ({
@@ -185,14 +183,12 @@ export async function completeRepair(repairId: string, data: RepairCompletionDat
             quantity: part.quantity,
             price: part.price
           }))
-        });
-
-        // Update component stock
+        });       
         for (const part of data.partsUsed) {
           await tx.component.update({
             where: { id: part.componentId },
             data: {
-              stock: {
+              quantity: {
                 decrement: part.quantity
               }
             }
@@ -203,7 +199,6 @@ export async function completeRepair(repairId: string, data: RepairCompletionDat
       return updatedRepair;
     });
 
-    // Send email notification
     await sendRepairCompletionEmail(repair.user.email!, {
       repairId: repair.id,
       description: data.description,
@@ -238,8 +233,6 @@ export async function assignSpecialist(repairId: string, specialistId: string, n
   }
 }
 
-// Email notification function (placeholder)
 async function sendRepairCompletionEmail(email: string, data: any) {
-  // Implement email sending logic
   console.log(`Sending repair completion email to ${email}`, data);
 }

@@ -7,7 +7,6 @@ import { z } from 'zod';
 const categorySchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  displayOrder: z.number().int().min(0).optional(),
   slug: z.string().min(1),
 });
 
@@ -27,20 +26,18 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (id) {
-      // Get a specific category
-      const category = await prisma.peripheralCategory.findUnique({
-        where: { id },
+      const category = await prisma.peripheralCategory.findUnique({        where: { id },
         include: {
           peripherals: {
             select: {
               id: true,
               name: true,
               price: true,
-              stock: true,
+              quantity: true,
+              imagesUrl: true,
               sku: true,
             }
-          },
-          specificationKeys: true
+          }
         }
       });
 
@@ -49,24 +46,15 @@ export async function GET(request: NextRequest) {
       }
 
       return NextResponse.json(category);
-    }
-
-    // Get all categories
+    }   
     const categories = await prisma.peripheralCategory.findMany({
       include: {
         _count: {
           select: { peripherals: true }
-        },
-        specificationKeys: {
-          select: {
-            id: true,
-            name: true,
-            displayName: true
-          }
         }
       },
       orderBy: {
-        displayOrder: 'asc'
+        name: 'asc'
       }
     });
 
@@ -98,7 +86,6 @@ export async function POST(request: NextRequest) {
 
     const data = validationResult.data;
     
-    // Check if category with this name or slug already exists
     const existingCategory = await prisma.peripheralCategory.findFirst({
       where: {
         OR: [
@@ -111,12 +98,10 @@ export async function POST(request: NextRequest) {
     if (existingCategory) {
       return createBadRequestResponse('Peripheral category with this name or slug already exists');
     }
-    
-    const category = await prisma.peripheralCategory.create({
+      const category = await prisma.peripheralCategory.create({
       data: {
         name: data.name,
         description: data.description,
-        displayOrder: data.displayOrder || 0,
         slug: data.slug,
       }
     });

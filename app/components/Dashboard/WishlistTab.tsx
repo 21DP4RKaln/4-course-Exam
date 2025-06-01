@@ -45,7 +45,7 @@ export default function WishlistTab() {
                 type={item.productType.toLowerCase() as 'component' | 'configuration'}
                 category={''}
                 stock={1}
-                showRating={false}
+                showRating={true}
               />
               <button
                 onClick={() => handleRemove(item.productId, item.productType)}

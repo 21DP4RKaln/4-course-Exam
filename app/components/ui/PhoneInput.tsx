@@ -25,14 +25,12 @@ export default function PhoneInput({
   const [selectedCountry, setSelectedCountry] = useState(defaultCountry);
   const [isValid, setIsValid] = useState(true);
 
-  // Format phone number as user types
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     const formatter = new AsYouType(selectedCountry);
     const formattedNumber = formatter.input(newValue);
     onChange(formattedNumber);
 
-    // Validate phone number
     if (newValue) {
       try {
         const isValid = isValidPhoneNumber(newValue, selectedCountry);
@@ -41,11 +39,10 @@ export default function PhoneInput({
         setIsValid(false);
       }
     } else {
-      setIsValid(true); // Empty is considered valid unless required
+      setIsValid(true); 
     }
   };
 
-  // Update validation when country changes
   useEffect(() => {
     if (value) {
       try {

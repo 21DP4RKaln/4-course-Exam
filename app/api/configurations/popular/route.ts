@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
     const period = searchParams.get('period') || 'all'
     const sortBy = searchParams.get('sortBy') || 'viewCount'
     
-    // Calculate date for time period filtering
     const periodDate = new Date()
     if (period === 'day') {
       periodDate.setDate(periodDate.getDate() - 1)
@@ -20,14 +19,11 @@ export async function GET(request: NextRequest) {
       periodDate.setFullYear(periodDate.getFullYear() - 1)
     }
     
-    // Query conditions - simplified to ensure we get results
     const whereCondition = {
       isTemplate: true, 
       isPublic: true,
-      // Remove time period filtering to ensure we get configurations
     }
     
-    // Get configurations with orders count
     const popularConfigurations = await prisma.configuration.findMany({
       where: whereCondition,
       orderBy: sortBy === 'viewCount' 
@@ -37,13 +33,12 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            orders: true // Count related orders
+            orders: true 
           }
         }
       }
     })
     
-    // If no configurations found with the template flag, try without it
     if (popularConfigurations.length === 0) {
       const allConfigurations = await prisma.configuration.findMany({
         where: {
@@ -68,7 +63,7 @@ export async function GET(request: NextRequest) {
         imageUrl: config.imageUrl,
         viewCount: config.viewCount || 0,
         orderCount: config._count.orders,
-        isPopular: true // Force popular flag to ensure display
+        isPopular: true 
       }))
       
       return NextResponse.json(formattedAllConfigs)
@@ -82,7 +77,7 @@ export async function GET(request: NextRequest) {
       imageUrl: config.imageUrl,
       viewCount: config.viewCount || 0,
       orderCount: config._count.orders,
-      isPopular: true // Always mark as popular to ensure they show up
+      isPopular: true 
     }))
 
     return NextResponse.json(formattedConfigs)

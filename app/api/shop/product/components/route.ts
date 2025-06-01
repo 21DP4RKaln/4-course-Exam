@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
+import { createCpuFilterGroups } from '@/app/components/CategoryPage/filters/cpuFilters';
 
 interface FormattedComponent {
   id: string;
@@ -14,160 +15,167 @@ interface FormattedComponent {
   sku: string | null;
 }
 
-// Removed conflicting import from @prisma/client
-// import { Component, ComponentCategory, ComponentSpec, SpecificationKey } from '@prisma/client';
-
-interface FormattedComponent {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  stock: number;
-  imageUrl: string | null;
-  categoryId: string;
-  categoryName: string;
-  specifications: Record<string, string>;
-  sku: string | null;
-}
-
-interface SpecificationKey {
-  id: string;
-  name: string;
-  displayName: string;
-}
-
-interface Component {
-  id: string;
-  specifications: Record<string, string>;
-  [key: string]: any;
-}
-
-export async function GET(request: NextRequest) {
-  try {
+export async function GET(request: NextRequest) {  try {
     const { searchParams } = new URL(request.url);
     const categorySlug = searchParams.get('category');
-    
-    console.log('Request for category:', categorySlug); // Debug log
 
     let whereClause: any = {
       category: {
         type: 'component'
       },
-      stock: { gt: 0 }
+      quantity: { gt: 0 }
     };
 
     let category;
-    if (categorySlug) {
-      // Get the category first if a specific one is requested
-      category = await prisma.componentCategory.findFirst({
+    if (categorySlug) {      category = await prisma.componentCategory.findFirst({
         where: { 
           slug: categorySlug
         }
       });
       
-      console.log('Found category:', category); // Debug log
-
       if (!category) {
-        console.log('Category not found for slug:', categorySlug); // Debug log
         return NextResponse.json(
           { error: `Category not found for slug: ${categorySlug}` },
           { status: 404 }
         );
-      }
-
-      whereClause.categoryId = category.id;
+      }      whereClause.categoryId = category.id;
     }
 
-    // Get all components (filtered by category if specified)
-    console.log('Fetching components with where clause:', whereClause);
     const components = await prisma.component.findMany({
       where: whereClause,
       include: {
         category: true,
-        specValues: {
-          include: {
-            specKey: true
-          }
-        }
+        cpu: true,
+        gpu: true,
+        motherboard: true,
+        ram: true,
+        storage: true,
+        psu: true,
+        cooling: true,
+        caseModel: true,
       }
-    }) as any;
-
-    // Map the data to match the expected format
-    const formattedComponents = components.map((p: any) => {
-      // Extract specifications from multiple sources
-      const specs: Record<string, string> = {};
+    });    const formattedComponents = components.map((p: any) => {
+      let specifications: Record<string, string> = {};
       
-      // 1. From JSON specifications field
-      if (p.specifications) {
-        try {
-          const parsedSpecs = typeof p.specifications === 'string' 
-            ? JSON.parse(p.specifications)
-            : p.specifications;
-          Object.assign(specs, parsedSpecs);
-        } catch (e) {
-          console.error('Error parsing specifications:', e);
-        }
+      if (p.subType) specifications['subType'] = p.subType;
+        if (p.cpu) {
+        specifications['brand'] = p.cpu.brand;
+        specifications['series'] = p.cpu.series;
+        specifications['cores'] = p.cpu.cores.toString();
+        specifications['multithreading'] = p.cpu.multithreading ? 'Yes' : 'No';
+        specifications['socket'] = p.cpu.socket;
+        specifications['frequency'] = p.cpu.frequency.toString();
+        specifications['maxRamCapacity'] = p.cpu.maxRamCapacity.toString();
+        specifications['maxRamFrequency'] = p.cpu.maxRamFrequency.toString();
+        specifications['integratedGpu'] = p.cpu.integratedGpu ? 'Yes' : 'No';
+      } else if (p.gpu) {
+        specifications['brand'] = p.gpu.brand;
+        specifications['videoMemoryCapacity'] = p.gpu.videoMemoryCapacity.toString();
+        specifications['memoryType'] = p.gpu.memoryType;
+        specifications['fanCount'] = p.gpu.fanCount.toString();
+        specifications['chipType'] = p.gpu.chipType;
+        specifications['hasDVI'] = p.gpu.hasDVI ? 'Yes' : 'No';
+        specifications['hasVGA'] = p.gpu.hasVGA ? 'Yes' : 'No';
+        specifications['hasDisplayPort'] = p.gpu.hasDisplayPort ? 'Yes' : 'No';
+        specifications['hasHDMI'] = p.gpu.hasHDMI ? 'Yes' : 'No';
+      } else if (p.motherboard) {
+        specifications['brand'] = p.motherboard.brand;
+        specifications['socket'] = p.motherboard.socket;
+        specifications['memorySlots'] = p.motherboard.memorySlots.toString();
+        specifications['processorSupport'] = p.motherboard.processorSupport;
+        specifications['memoryTypeSupported'] = p.motherboard.memoryTypeSupported;
+        specifications['maxRamCapacity'] = p.motherboard.maxRamCapacity.toString();
+        specifications['maxMemoryFrequency'] = p.motherboard.maxMemoryFrequency.toString();
+        specifications['maxVideoCards'] = p.motherboard.maxVideoCards.toString();
+        specifications['sataPorts'] = p.motherboard.sataPorts.toString();
+        specifications['m2Slots'] = p.motherboard.m2Slots.toString();
+        specifications['sliCrossfireSupport'] = p.motherboard.sliCrossfireSupport ? 'Yes' : 'No';
+        specifications['wifiBluetooth'] = p.motherboard.wifiBluetooth ? 'Yes' : 'No';
+        specifications['nvmeSupport'] = p.motherboard.nvmeSupport ? 'Yes' : 'No';
+      } else if (p.ram) {
+        specifications['brand'] = p.ram.brand;
+        specifications['moduleCount'] = p.ram.moduleCount.toString();
+        specifications['memoryType'] = p.ram.memoryType;
+        specifications['maxFrequency'] = p.ram.maxFrequency.toString();
+        specifications['backlighting'] = p.ram.backlighting ? 'Yes' : 'No';
+        specifications['voltage'] = p.ram.voltage.toString();
+      } else if (p.storage) {
+        specifications['brand'] = p.storage.brand;
+        specifications['volume'] = p.storage.volume.toString();
+        specifications['type'] = p.storage.type;
+        specifications['nvme'] = p.storage.nvme ? 'Yes' : 'No';
+        specifications['size'] = p.storage.size;
+        specifications['compatibility'] = p.storage.compatibility;
+        specifications['writeSpeed'] = p.storage.writeSpeed.toString();
+        specifications['readSpeed'] = p.storage.readSpeed.toString();
+      } else if (p.psu) {
+        specifications['brand'] = p.psu.brand;
+        specifications['power'] = p.psu.power.toString();
+        specifications['sataConnections'] = p.psu.sataConnections.toString();
+        specifications['pciEConnections'] = p.psu.pciEConnections.toString();
+        specifications['pfc'] = p.psu.pfc ? 'Yes' : 'No';
+        specifications['hasFan'] = p.psu.hasFan ? 'Yes' : 'No';
+        specifications['molexPataConnections'] = p.psu.molexPataConnections.toString();
+      } else if (p.cooling) {
+        specifications['brand'] = p.cooling.brand;
+        specifications['socket'] = p.cooling.socket;
+        specifications['fanDiameter'] = p.cooling.fanDiameter.toString();
+        specifications['fanSpeed'] = p.cooling.fanSpeed.toString();
+      } else if (p.caseModel) {
+        specifications['brand'] = p.caseModel.brand;
+        specifications['powerSupplyIncluded'] = p.caseModel.powerSupplyIncluded ? 'Yes' : 'No';
+        specifications['color'] = p.caseModel.color;
+        specifications['material'] = p.caseModel.material;
+        specifications['audioIn'] = p.caseModel.audioIn ? 'Yes' : 'No';
+        specifications['audioOut'] = p.caseModel.audioOut ? 'Yes' : 'No';
+        specifications['usb2'] = p.caseModel.usb2.toString();
+        specifications['usb3'] = p.caseModel.usb3.toString();
+        specifications['usb32'] = p.caseModel.usb32.toString();
+        specifications['usbTypeC'] = p.caseModel.usbTypeC.toString();
+        specifications['slots525'] = p.caseModel.slots525.toString();
+        specifications['slots35'] = p.caseModel.slots35.toString();
+        specifications['slots25'] = p.caseModel.slots25.toString();
+        specifications['waterCoolingSupport'] = p.caseModel.waterCoolingSupport ? 'Yes' : 'No';
       }
-      
-      // 2. From specValues relation
-      p.specValues.forEach((sv: any) => {
-        if (sv.specKey?.name && sv.value) {
-          specs[sv.specKey.name] = sv.value;
-        }
-      });
 
-      // Format the component data
       return {
         id: p.id,
         name: p.name,
         description: p.description,
         price: p.price,
-        stock: p.stock,
-        imageUrl: p.imageUrl,
+        stock: p.quantity,
+        imageUrl: p.imagesUrl, 
         categoryId: p.categoryId,
         categoryName: p.category.name,
-        specifications: specs,
-        sku: p.sku
+        specifications,
+        sku: p.sku,
+        rating: p.rating || 0,
+        ratingCount: p.ratingCount || 0,
+        cpu: p.cpu,
+        gpu: p.gpu,
+        motherboard: p.motherboard,
+        ram: p.ram,
+        storage: p.storage,
+        psu: p.psu,
+        cooling: p.cooling,
+        caseModel: p.caseModel,
       };
-    });    // Get specification keys for this category or all component categories
-    const specificationKeys = await prisma.specificationKey.findMany({
-      where: categorySlug ? { componentCategoryId: category!.id } : undefined
-    });
-    
-    // Extract unique specification values
-    const specifications = specificationKeys.map((key: SpecificationKey) => {
-      const values = new Set<string>();
-      formattedComponents.forEach((component: FormattedComponent) => {
-        if (component.specifications && component.specifications[key.name]) {
-          // Ensure the value is properly cast to string and added to the set
-          const value = component.specifications[key.name].toString().trim();
-          if (value) {
-            values.add(value);
-          }
-        }
-      });
-
-      return {
-        id: key.id,
-        name: key.name,
-        displayName: key.displayName,
-        values: Array.from(values).filter(Boolean).sort()
-      };
-    });
-
-    // Get all categories if none specified
-    const categories = categorySlug 
+    });    const categories = categorySlug 
       ? [category!]
       : await prisma.componentCategory.findMany({
           where: {
             type: 'component'
           }
-        });
+        });      let filterGroups: any[] = [];
+    if (category && category.slug === 'cpu' && formattedComponents.length > 0) {
+      filterGroups = createCpuFilterGroups(formattedComponents);
+    }
 
     return NextResponse.json({
       categories: categories || [],
       components: formattedComponents || [],
-      specifications: specifications || []
+      specifications: [],
+      filterGroups: filterGroups
     });
   } catch (error) {
     console.error('Error in components API:', error);

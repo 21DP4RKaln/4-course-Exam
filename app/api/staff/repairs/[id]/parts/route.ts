@@ -40,7 +40,6 @@ export async function POST(
 
     const { parts } = validationResult.data
 
-    // Check if repair exists
     const existingRepair = await prisma.repair.findUnique({
       where: { id: params.id },
       include: { specialists: true }
@@ -50,7 +49,6 @@ export async function POST(
       return createNotFoundResponse('Repair not found')
     }
 
-    // Check if specialist is assigned to this repair
     if (payload.role === 'SPECIALIST') {
       const isAssigned = existingRepair.specialists.some(s => s.specialistId === payload.userId)
       if (!isAssigned) {
@@ -58,12 +56,10 @@ export async function POST(
       }
     }
 
-    // Check if repair is in a state where parts can be added
     if (existingRepair.status === 'COMPLETED' || existingRepair.status === 'CANCELLED') {
       return createBadRequestResponse(`Cannot add parts to a repair that is already ${existingRepair.status.toLowerCase()}`)
     }
 
-    // Verify that components exist
     const componentIds = parts.map(part => part.componentId)
     const components = await prisma.component.findMany({
       where: { 
@@ -78,7 +74,6 @@ export async function POST(
       return createBadRequestResponse('One or more components do not exist')
     }
 
-    // Create parts for the repair
     const addedParts = []
     for (const part of parts) {
       const component = components.find(c => c.id === part.componentId)
@@ -110,16 +105,13 @@ export async function POST(
       })
     }
 
-    // Calculate total cost of added parts
     const totalPartsCost = parts.reduce((total, part) => total + (part.price * part.quantity), 0)
 
-    // Update repair with new estimated cost
     const currentEstimatedCost = existingRepair.estimatedCost || 0
     await prisma.repair.update({
       where: { id: params.id },
       data: {
         estimatedCost: currentEstimatedCost + totalPartsCost,
-        // If we're adding parts, we're likely working on it
         status: existingRepair.status === 'PENDING' ? 'IN_PROGRESS' : existingRepair.status
       }
     })

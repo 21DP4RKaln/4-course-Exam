@@ -5,7 +5,6 @@ import fetch from 'node-fetch'
  */
 async function resetViewCounts() {
   try {
-    // Get the API key from environment variables
     const apiKey = process.env.RESET_VIEWS_API_KEY
     
     if (!apiKey) {
@@ -13,10 +12,8 @@ async function resetViewCounts() {
       process.exit(1)
     }
     
-    // Get the base URL from environment variables or use default
     const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
     
-    // Make the API call to reset view counts
     const response = await fetch(`${baseUrl}/api/shop/product/view?apiKey=${apiKey}`, {
       method: 'PUT',
     })
@@ -35,7 +32,6 @@ async function resetViewCounts() {
   }
 }
 
-// Run the script
 resetViewCounts()
 
 

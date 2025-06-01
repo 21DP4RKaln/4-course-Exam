@@ -1,176 +1,107 @@
-// Cooler-specific filter groups
-import { Component } from '../types';
-import { FilterOption, FilterGroup, extractBrandOptions } from '../filterInterfaces';
-
-// Helper function to create filter option
-const createFilterOption = (id: string, name: string, category?: string): FilterOption => {
-  return {
-    id,
-    name
-  };
-};
-
-// Helper function to create filter options for brands
-const createBrandOptions = (brandMap: Map<string, string>): FilterOption[] => {
-  return Array.from(brandMap.entries()).map(([brand, name]) => {
-    const id = brand.startsWith('brand=') ? brand : `brand=${brand}`;
-    return createFilterOption(id, name, 'brands');
-  });
-};
+import { Component } from '../types'
+import { FilterGroup, FilterOption, extractBrandOptions } from '../filterInterfaces'
 
 export const createCoolerFilterGroups = (components: Component[]): FilterGroup[] => {
-  console.log("Creating Cooler filter groups from components");
-  
-  // Initialize Cooler filter groups
-  const filterGroups: FilterGroup[] = [];
-  
-  // Create maps to collect filter options
-  const brandOptions = extractBrandOptions(components);
-  const typeOptions = new Map<string, string>();
-  const radiatorSizeOptions = new Map<string, string>();
-  const tdpOptions = new Map<string, string>();
-  const socketOptions = new Map<string, string>();
-  
-  // Process components to extract Cooler specs
-  components.forEach(component => {
-    try {
-      const name = component.name.toLowerCase();
-      
-      // Determine cooler type from name
-      if (name.includes('liquid') || name.includes('water') || name.includes('aio')) {
-        typeOptions.set('type=Liquid', 'Liquid Cooling');
-      } else if (name.includes('air')) {
-        typeOptions.set('type=Air', 'Air Cooling');
-      }
-      
-      // Extract radiator size from name for liquid coolers
-      const radiatorMatch = name.match(/(\d{3}mm|\d{2,3}0mm)/i);
-      if (radiatorMatch) {
-        radiatorSizeOptions.set(`radiator_size=${radiatorMatch[1]}`, radiatorMatch[1]);
-      }
-      
-      // Extract TDP rating from name
-      const tdpMatch = name.match(/(\d+)w\s*tdp/i);
-      if (tdpMatch) {
-        tdpOptions.set(`tdp=${tdpMatch[1]}W`, `${tdpMatch[1]}W`);
-      }
-      
-      // Extract socket compatibility from name
-      const socketTypes = ['am4', 'am5', 'lga1700', 'lga1200', 'lga1151', 'tr4'];
-      for (const socket of socketTypes) {
-        if (name.includes(socket)) {
-          socketOptions.set(`socket=${socket.toUpperCase()}`, socket.toUpperCase());
-        }
-      }
-      
-      // Extract specs from the component specifications
-      if (component.specifications) {
-        Object.entries(component.specifications).forEach(([key, value]) => {
-          if (value === null || value === undefined || value === '') return;
-          
-          const keyLower = key.toLowerCase().trim();
-          const valueStr = String(value).trim().toLowerCase();
-          
-          // Cooler Type
-          if (keyLower.includes('type') || keyLower.includes('cooling')) {
-            if (valueStr.includes('liquid') || valueStr.includes('water') || valueStr.includes('aio')) {
-              typeOptions.set('type=Liquid', 'Liquid Cooling');
-            } else if (valueStr.includes('air')) {
-              typeOptions.set('type=Air', 'Air Cooling');
-            } else {
-              // Capitalize first letter
-              const formattedType = valueStr.charAt(0).toUpperCase() + valueStr.slice(1);
-              typeOptions.set(`type=${formattedType}`, formattedType);
-            }
-          }
-          
-          // Radiator Size
-          if (keyLower.includes('radiator') || keyLower.includes('rad size')) {
-            // Try to extract numeric part with mm
-            const sizeMatch = valueStr.match(/(\d{3}|\d{2})(?:\s*mm)?/);
-            if (sizeMatch) {
-              radiatorSizeOptions.set(`radiator_size=${sizeMatch[1]}mm`, `${sizeMatch[1]}mm`);
-            } else {
-              radiatorSizeOptions.set(`radiator_size=${valueStr}`, valueStr);
-            }
-          }
-          
-          // TDP Rating
-          if (keyLower.includes('tdp') || keyLower.includes('thermal design power')) {
-            // Extract numeric part
-            const tdpMatch = valueStr.match(/(\d+)/);
-            if (tdpMatch) {
-              tdpOptions.set(`tdp=${tdpMatch[1]}W`, `${tdpMatch[1]}W`);
-            } else {
-              tdpOptions.set(`tdp=${valueStr}`, valueStr);
-            }
-          }
-          
-          // Socket Compatibility
-          if (keyLower.includes('socket') || keyLower.includes('compatibility')) {
-            // Split by common separators and extract individual sockets
-            const socketsList = valueStr.split(/[,\/\s]+/);
-            socketsList.forEach(socket => {
-              if (socket && socket !== '') {
-                socket = socket.trim().toUpperCase();
-                if (socket.match(/^(AM4|AM5|LGA\d{3,4}|TR4)$/i)) {
-                  socketOptions.set(`socket=${socket}`, socket);
-                }
-              }
-            });
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error processing Cooler component:", error);
+  const brandMap = extractBrandOptions(components)
+  const brandOptions: FilterOption[] = Array.from(brandMap.entries()).map(([value, label]) => ({
+    id: `manufacturer=${value}`,
+    name: label
+  }))
+
+  // Type options (Air vs Liquid)
+  const typeSet = new Set<string>()
+  components.forEach(c => {
+    const typeSpec = c.specifications?.['type'] || c.specifications?.['Type'] || 
+                    c.specifications?.['coolerType'] || c.specifications?.['Cooler Type']
+    if (typeSpec) typeSet.add(String(typeSpec))
+  })
+  const typeOptions: FilterOption[] = Array.from(typeSet).map(t => ({ id: `type=${t}`, name: t }))
+
+  // Socket compatibility options
+  const socketSet = new Set<string>()
+  components.forEach(c => {
+    if (c.cooling?.socket) {
+      const sockets = c.cooling.socket.split('/').map(s => s.trim())
+      sockets.forEach(s => socketSet.add(s))
     }
-  });
-    // Create filter groups
-  if (brandOptions.size > 0) {
-    filterGroups.push({
-      title: 'Manufacturer',
-      titleTranslationKey: 'filterGroups.manufacturer',
-      type: 'manufacturer',
-      options: createBrandOptions(brandOptions)
-    });
+    
+    const socketSpec = c.specifications?.['socket'] || c.specifications?.['Socket'] || 
+                      c.specifications?.['socketCompatibility'] || c.specifications?.['Socket Compatibility']
+    if (socketSpec) {
+      const socketsStr = String(socketSpec)
+      const sockets = socketsStr.split(/[,\/]/).map(s => s.trim())
+      sockets.forEach(s => socketSet.add(s))
+    }
+  })
+  const socketOptions: FilterOption[] = Array.from(socketSet).map(s => ({ id: `socket=${s}`, name: s }))
+
+  // Fan size/diameter options
+  const fanSizeSet = new Set<number>()
+  components.forEach(c => {
+    if (c.cooling?.fanDiameter) fanSizeSet.add(c.cooling.fanDiameter)
+    
+    const sizeSpec = c.specifications?.['fanSize'] || c.specifications?.['Fan Size'] || 
+                     c.specifications?.['fanDiameter'] || c.specifications?.['Fan Diameter']
+    if (sizeSpec) {
+      const sizeValue = parseInt(String(sizeSpec).replace(/[^\d]/g, ''), 10)
+      if (!isNaN(sizeValue)) fanSizeSet.add(sizeValue)
+    }
+  })
+  const fanSizeOptions: FilterOption[] = Array.from(fanSizeSet)
+    .sort((a, b) => a - b)
+    .map(s => ({ id: `fanDiameter=${s}`, name: `${s} mm` }))
+
+  // TDP rating options
+  const tdpSet = new Set<number>()
+  components.forEach(c => {
+    const tdpSpec = c.specifications?.['tdp'] || c.specifications?.['TDP'] || 
+                   c.specifications?.['maxTdp'] || c.specifications?.['Max TDP']
+    if (tdpSpec) {
+      const tdpValue = parseInt(String(tdpSpec).replace(/[^\d]/g, ''), 10)
+      if (!isNaN(tdpValue)) tdpSet.add(tdpValue)
+    }
+  })
+  const tdpOptions: FilterOption[] = Array.from(tdpSet)
+    .sort((a, b) => a - b)
+    .map(t => ({ id: `tdp=${t}`, name: `${t}W` }))
+
+  // RGB lighting options
+  const rgbSet = new Set<string>()
+  components.forEach(c => {
+    const rgbSpec = c.specifications?.['rgb'] || c.specifications?.['RGB'] || 
+                   c.specifications?.['lighting'] || c.specifications?.['Lighting']
+    if (rgbSpec) {
+      const rgbValue = String(rgbSpec).toLowerCase()
+      if (rgbValue === 'true' || rgbValue === 'yes' || rgbValue.includes('rgb')) rgbSet.add('Yes')
+      else if (rgbValue === 'false' || rgbValue === 'no') rgbSet.add('No')
+      else rgbSet.add(String(rgbSpec))
+    }
+  })
+  const rgbOptions: FilterOption[] = Array.from(rgbSet).map(r => ({ id: `rgb=${r}`, name: r }))
+
+  const filterGroups: FilterGroup[] = [
+    { title: 'Brand', type: 'manufacturer', options: brandOptions }
+  ]
+  
+  if (typeOptions.length > 0) {
+    filterGroups.push({ title: 'Cooler Type', type: 'type', options: typeOptions })
   }
   
-  if (typeOptions.size > 0) {
-    filterGroups.push({
-      title: 'Cooling Type',
-      titleTranslationKey: 'filterGroups.coolingType',
-      type: 'cooling_type',
-      options: Array.from(typeOptions.entries()).map(([id, name]) => createFilterOption(id, name, 'coolingTypes'))
-    });
+  if (socketOptions.length > 0) {
+    filterGroups.push({ title: 'Socket Compatibility', type: 'socket', options: socketOptions })
   }
   
-  if (radiatorSizeOptions.size > 0) {
-    filterGroups.push({
-      title: 'Radiator Size',
-      titleTranslationKey: 'filterGroups.radiatorSize',
-      type: 'radiator_size',
-      options: Array.from(radiatorSizeOptions.entries()).map(([id, name]) => createFilterOption(id, name))
-    });
+  if (fanSizeOptions.length > 0) {
+    filterGroups.push({ title: 'Fan Size', type: 'fanDiameter', options: fanSizeOptions })
   }
   
-  if (socketOptions.size > 0) {
-    filterGroups.push({
-      title: 'Socket Compatibility',
-      titleTranslationKey: 'filterGroups.socketCompatibility',
-      type: 'socket_compatibility',
-      options: Array.from(socketOptions.entries()).map(([id, name]) => createFilterOption(id, name, 'sockets'))
-    });
+  if (tdpOptions.length > 0) {
+    filterGroups.push({ title: 'TDP Rating', type: 'tdp', options: tdpOptions })
   }
   
-  if (tdpOptions.size > 0) {
-    filterGroups.push({
-      title: 'TDP Rating',
-      titleTranslationKey: 'filterGroups.tdp',
-      type: 'tdp',
-      options: Array.from(tdpOptions.entries()).map(([id, name]) => createFilterOption(id, name))
-    });
+  if (rgbOptions.length > 0) {
+    filterGroups.push({ title: 'RGB Lighting', type: 'rgb', options: rgbOptions })
   }
-  
-  console.log("Created Cooler filter groups:", filterGroups);
-  return filterGroups;
-};
+
+  return filterGroups
+}

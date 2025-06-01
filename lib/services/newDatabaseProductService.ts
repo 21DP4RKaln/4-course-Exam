@@ -1,6 +1,5 @@
-import { prisma } from '@/lib/prismaService';
+import { prisma } from '../prismaService';
 
-// Product interface 
 export interface Product {
   id: string;
   type: 'component' | 'peripheral';
@@ -33,20 +32,10 @@ export function getDiscountPrice(price: number, discountPrice: number | null, di
 export function extractComponentSpecifications(component: any): Record<string, string> {
   const specifications: Record<string, string> = {};
   
-  // Extract specifications from JSON field
   if (component.specifications && typeof component.specifications === 'object') {
     Object.entries(component.specifications).forEach(([key, value]) => {
       if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
         specifications[key] = String(value);
-      }
-    });
-  }
-  
-  // Add spec values if available
-  if (component.specValues && Array.isArray(component.specValues)) {
-    component.specValues.forEach((specValue: any) => {
-      if (specValue.specKey && specValue.specKey.name) {
-        specifications[specValue.specKey.name] = specValue.value;
       }
     });
   }
@@ -60,18 +49,11 @@ export function extractComponentSpecifications(component: any): Record<string, s
 export async function getProductById(id: string, type: 'component' | 'peripheral'): Promise<Product | null> {
   try {
     console.log(`getProductById called with ID: ${id}, type: ${type}`);
-    // Adjust prisma query based on the product type and new database structure
     if (type === 'component') {
-      console.log("Searching for component with ID:", id);
-      const component = await prisma.component.findUnique({
+      console.log("Searching for component with ID:", id);      const component = await prisma.component.findUnique({
         where: { id },
         include: {
-          category: true,
-          specValues: {
-            include: {
-              specKey: true
-            }
-          }
+          category: true
         }
       });
       
@@ -90,21 +72,15 @@ export async function getProductById(id: string, type: 'component' | 'peripheral
         specifications,
         price: component.price,
         discountPrice: getDiscountPrice(component.price, component.discountPrice, component.discountExpiresAt),
-        stock: component.stock,
-        imageUrl: component.imageUrl,
+        stock: component.quantity, 
+        imageUrl: component.imagesUrl, 
         ratings: await getProductRatings(id, 'COMPONENT')
-      };    } else {
-      // For peripherals
-      console.log("Searching for peripheral with ID:", id);
-      const peripheral = await prisma.peripheral.findUnique({
+      };    
+    } else {
+      console.log("Searching for peripheral with ID:", id);      const peripheral = await prisma.peripheral.findUnique({
         where: { id },
         include: {
-          category: true,
-          specValues: {
-            include: {
-              specKey: true
-            }
-          }
+          category: true
         }
       });
       
@@ -123,8 +99,8 @@ export async function getProductById(id: string, type: 'component' | 'peripheral
         specifications,
         price: peripheral.price,
         discountPrice: getDiscountPrice(peripheral.price, peripheral.discountPrice, peripheral.discountExpiresAt),
-        stock: peripheral.stock,
-        imageUrl: peripheral.imageUrl,
+        stock: peripheral.quantity, 
+        imageUrl: peripheral.imagesUrl, 
         ratings: await getProductRatings(id, 'PERIPHERAL')
       };
     }
@@ -196,14 +172,12 @@ export async function incrementProductView(productId: string, productType: 'comp
  */
 export async function resetViewCounts() {
   try {
-    // Reset components view counts
     const componentsResult = await prisma.component.updateMany({
       data: {
         viewCount: 0
       }
     });
 
-    // Reset peripherals view counts
     const peripheralsResult = await prisma.peripheral.updateMany({
       data: {
         viewCount: 0

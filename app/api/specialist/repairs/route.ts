@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Check if the user is a specialist
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { role: true }
@@ -25,7 +24,6 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Unauthorized access')
     }
 
-    // Specialists can see all repairs
     const repairs = await prisma.repair.findMany({
       include: {
         user: {
@@ -52,7 +50,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Format repairs for response
     const formattedRepairs = repairs.map(repair => ({
       id: repair.id,
       title: repair.title || `Repair #${repair.id.substring(0, 8)}`,

@@ -23,8 +23,8 @@ export async function GET(request: NextRequest, context: { params: { id: string 
     const payload = await verifyJWT(token);
     if (!payload || payload.role !== 'ADMIN') {
       return createForbiddenResponse();
-    }
-
+    }    
+    
     const category = await prisma.componentCategory.findUnique({
       where: { id: params.id },
       include: {
@@ -33,12 +33,11 @@ export async function GET(request: NextRequest, context: { params: { id: string 
             id: true,
             name: true,
             price: true,
-            stock: true,
-            imageUrl: true,
+            quantity: true,
+            imagesUrl: true,
             sku: true,
           }
-        },
-        specificationKeys: true
+        }
       }
     });
 
@@ -75,7 +74,6 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
 
     const data = validationResult.data;
     
-    // Check if another category with this name or slug already exists
     const existingCategory = await prisma.componentCategory.findFirst({
       where: {
         OR: [
@@ -125,7 +123,6 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
 
     const body = await request.json();
     
-    // Allow partial updates with PATCH
     const partialSchema = categorySchema.partial();
     const validationResult = partialSchema.safeParse(body);
     if (!validationResult.success) {
@@ -135,9 +132,7 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
     const data = validationResult.data;
     const updateData: any = {};
     
-    // Only update fields that were provided
     if (data.name !== undefined) {
-      // Check if name is unique
       if (data.name) {
         const existingCategory = await prisma.componentCategory.findFirst({
           where: {
@@ -153,7 +148,6 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
     }
     
     if (data.slug !== undefined) {
-      // Check if slug is unique
       if (data.slug) {
         const existingCategory = await prisma.componentCategory.findFirst({
           where: {
@@ -174,10 +168,7 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
     
     const category = await prisma.componentCategory.update({
       where: { id: params.id },
-      data: updateData,
-      include: {
-        specificationKeys: true
-      }
+      data: updateData
     });
 
     return NextResponse.json(category);
@@ -200,7 +191,6 @@ export async function DELETE(request: NextRequest, context: { params: { id: stri
       return createForbiddenResponse();
     }
 
-    // Check if there are any components in this category
     const componentCount = await prisma.component.count({
       where: { categoryId: params.id }
     });

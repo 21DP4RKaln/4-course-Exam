@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prismaService'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication and admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -18,13 +17,12 @@ export async function GET(request: NextRequest) {
 
     if (payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin access required')
-    }    // Define date ranges for comparison
+    }    
     const now = new Date()
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
 
-    // Fetch all required stats in parallel
     const [
       totalUsers,
       totalOrders,
@@ -42,32 +40,23 @@ export async function GET(request: NextRequest) {
       lastMonthRepairs,
       thisMonthRepairs
     ] = await prisma.$transaction([
-      // Total users
       prisma.user.count(),
-      // Total orders
       prisma.order.count(),
-      // Total repairs
       prisma.repair.count(),
-      // Total revenue from completed orders
       prisma.order.aggregate({
         where: { status: 'COMPLETED' },
         _sum: { totalAmount: true }
       }),
-      // Pending configurations
       prisma.configuration.count({
         where: { status: 'SUBMITTED' }
       }),
-      // Active repairs
       prisma.repair.count({
         where: { 
           status: { in: ['PENDING', 'IN_PROGRESS', 'WAITING_FOR_PARTS'] }
-        }
-      }),
-      // Low stock items
+        }      }),
       prisma.component.count({
-        where: { stock: { lt: 10 } }
+        where: { quantity: { lt: 10 } }
       }),
-      // Last month orders count
       prisma.order.count({
         where: {
           createdAt: {
@@ -76,7 +65,6 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      // This month orders count
       prisma.order.count({
         where: {
           createdAt: {
@@ -84,7 +72,6 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      // Last month users count
       prisma.user.count({
         where: {
           createdAt: {
@@ -93,7 +80,6 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      // This month users count
       prisma.user.count({
         where: {
           createdAt: {
@@ -101,7 +87,6 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      // Last month revenue
       prisma.order.aggregate({
         where: { 
           status: 'COMPLETED',
@@ -112,7 +97,6 @@ export async function GET(request: NextRequest) {
         },
         _sum: { totalAmount: true }
       }),
-      // This month revenue
       prisma.order.aggregate({
         where: { 
           status: 'COMPLETED',
@@ -122,7 +106,6 @@ export async function GET(request: NextRequest) {
         },
         _sum: { totalAmount: true }
       }),
-      // Last month repairs count
       prisma.repair.count({
         where: {
           createdAt: {
@@ -131,7 +114,6 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      // This month repairs count
       prisma.repair.count({
         where: {
           createdAt: {
@@ -139,7 +121,7 @@ export async function GET(request: NextRequest) {
           }
         }
       })
-    ])    // Calculate growth percentages
+    ])    
     const calculateGrowth = (current: number, previous: number): number => {
       if (previous === 0) return current > 0 ? 100 : 0
       return Math.round(((current - previous) / previous) * 100 * 10) / 10

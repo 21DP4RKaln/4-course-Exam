@@ -29,19 +29,46 @@ export async function GET(request: NextRequest) {
       return createBadRequestResponse('Peripheral ID is required');
     }
 
-    const peripheralSpecs = await prisma.peripheralSpec.findMany({
-      where: { peripheralId },
-      include: {
-        specKey: true
-      },
-      orderBy: {
+    const peripheral = await prisma.peripheral.findUnique({
+      where: { id: peripheralId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        quantity: true,
+        subType: true,
+        categoryId: true
+      }    });
+    
+    if (!peripheral) {
+      return NextResponse.json({ error: 'Peripheral not found' }, { status: 404 });
+    }
+
+    const simulatedSpecs = [
+      {
+        id: `${peripheral.id}-desc`,
+        peripheralId: peripheral.id,
+        value: peripheral.description || '',
         specKey: {
-          name: 'asc'
+          id: 'desc',
+          name: 'description',
+          displayName: 'Description'
+        }
+      },
+      {
+        id: `${peripheral.id}-subtype`,
+        peripheralId: peripheral.id,
+        value: peripheral.subType,
+        specKey: {
+          id: 'subtype',
+          name: 'subType',
+          displayName: 'Sub Type'
         }
       }
-    });
+    ];
 
-    return NextResponse.json(peripheralSpecs);
+    return NextResponse.json(simulatedSpecs);
   } catch (error) {
     console.error('Error fetching peripheral specifications:', error);
     return NextResponse.json({ error: 'Failed to fetch peripheral specifications' }, { status: 500 });
@@ -61,12 +88,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
-    // Handle both single and batch spec creation
+
     const isArray = Array.isArray(body);
     const specsToCreate = isArray ? body : [body];
-    
-    // Validate all specs
+
     const results = [];
     const errors = [];
     
@@ -78,65 +103,45 @@ export async function POST(request: NextRequest) {
       }
       
       const data = validationResult.data;
-      
-      // Check if peripheral exists
+
       const peripheral = await prisma.peripheral.findUnique({
-        where: { id: data.peripheralId },
-        include: { category: true }
+        where: { id: data.peripheralId }
       });
       
       if (!peripheral) {
         errors.push({ data, error: 'Peripheral not found' });
         continue;
       }
-      
-      // Check if spec key exists and belongs to this peripheral's category
-      const specKey = await prisma.specificationKey.findUnique({
-        where: { id: data.specKeyId }
-      });
-      
-      if (!specKey) {
-        errors.push({ data, error: 'Specification key not found' });
-        continue;
-      }
-      
-      if (specKey.peripheralCategoryId !== peripheral.categoryId) {
-        errors.push({ data, error: 'Specification key does not belong to this peripheral category' });
-        continue;
-      }
-      
-      // Check if this peripheral already has a value for this spec key
-      const existingSpec = await prisma.peripheralSpec.findUnique({
-        where: {
-          peripheralId_specKeyId: {
-            peripheralId: data.peripheralId,
-            specKeyId: data.specKeyId
-          }
-        }
-      });
-      
-      if (existingSpec) {
-        errors.push({ data, error: 'Peripheral already has a value for this specification key' });
-        continue;
-      }
-      
-      // Create the spec
+
       try {
-        const spec = await prisma.peripheralSpec.create({
+        const updatedPeripheral = await prisma.peripheral.update({
+          where: { id: data.peripheralId },
           data: {
-            peripheralId: data.peripheralId,
-            specKeyId: data.specKeyId,
-            value: data.value
+            description: data.value
           },
-          include: {
-            specKey: true
+          select: {
+            id: true,
+            name: true,
+            description: true
           }
         });
         
-        results.push(spec);
+        const simulatedSpec = {
+          id: `${updatedPeripheral.id}-desc`,
+          peripheralId: updatedPeripheral.id,
+          specKeyId: data.specKeyId,
+          value: updatedPeripheral.description || '',
+          specKey: {
+            id: data.specKeyId,
+            name: 'description',
+            displayName: 'Description'
+          }
+        };
+        
+        results.push(simulatedSpec);
       } catch (error) {
-        console.error('Error creating peripheral spec:', error);
-        errors.push({ data, error: 'Failed to create specification' });
+        console.error('Error updating peripheral:', error);
+        errors.push({ data, error: 'Failed to update peripheral information' });
       }
     }
     

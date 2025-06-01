@@ -15,7 +15,6 @@ export default function Footer() {
   const { theme } = useTheme()
   const locale = pathname.split('/')[1]
   
-  // References for scroll animations
   const footerRef = useRef(null)
   const companyInfoRef = useRef(null)
   const quickLinksRef = useRef(null)
@@ -24,7 +23,6 @@ export default function Footer() {
   const contactRef = useRef(null)
   const bottomRef = useRef(null)
   
-  // Check if elements are in view
   const isCompanyInfoInView = useInView(companyInfoRef, { once: false, amount: 0.3 })
   const isQuickLinksInView = useInView(quickLinksRef, { once: false, amount: 0.3 })
   const isProductsInView = useInView(productsRef, { once: false, amount: 0.3 })
@@ -32,7 +30,6 @@ export default function Footer() {
   const isContactInView = useInView(contactRef, { once: false, amount: 0.3 })
   const isBottomInView = useInView(bottomRef, { once: false, amount: 0.3 })
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { 
@@ -54,7 +51,6 @@ export default function Footer() {
     }
   }
   
-  // Hover animation for links
   const linkHoverVariants = {
     initial: {},
     hover: {}

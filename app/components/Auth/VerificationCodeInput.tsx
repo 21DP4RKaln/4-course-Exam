@@ -24,7 +24,7 @@ export default function VerificationCodeInput({
 }: VerificationCodeInputProps) {
   const t = useTranslations('auth.resetPassword.step2');
   const [code, setCode] = useState(['', '', '', '', '', '']);
-  const [timeLeft, setTimeLeft] = useState(900); // 15 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(900); 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -40,12 +40,10 @@ export default function VerificationCodeInput({
       newCode[index] = value;
       setCode(newCode);
 
-      // Auto-focus next input
       if (value && index < 5) {
         inputRefs.current[index + 1]?.focus();
       }
 
-      // Check if code is complete
       if (newCode.every(digit => digit !== '') && newCode.join('').length === 6) {
         onCodeComplete(newCode.join(''));
       }
@@ -130,7 +128,7 @@ export default function VerificationCodeInput({
           type="button"
           variant="ghost"
           onClick={onResendCode}
-          disabled={isLoading || timeLeft > 840} // Disable for first 60 seconds
+          disabled={isLoading || timeLeft > 840} 
           className="text-blue-600 hover:text-blue-700"
         >
           {timeLeft > 840 ? t('resendIn', { seconds: 900 - timeLeft }) : t('resendCode')}

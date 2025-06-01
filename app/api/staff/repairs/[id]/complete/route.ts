@@ -7,6 +7,7 @@ import { join } from 'path'
 import { existsSync } from 'fs'
 import { randomUUID } from 'crypto'
 import { z } from 'zod'
+import { sendRepairCompletionEmail, EmailConfig } from '@/lib/email'
 
 const completeRepairSchema = z.object({
   finalCost: z.number(),
@@ -37,14 +38,12 @@ export async function POST(
       return createUnauthorizedResponse('Insufficient permissions')
     }
 
-    // Parse form data for file upload
     const formData = await request.formData()
     const finalCost = parseFloat(formData.get('finalCost') as string)
     const completionNotes = formData.get('completionNotes') as string
     const partsJson = formData.get('parts') as string
     const completionImage = formData.get('completionImage') as File | null
 
-    // Validate input
     const validationData = {
       finalCost,
       completionNotes,
@@ -59,7 +58,6 @@ export async function POST(
 
     const { parts } = validationResult.data
 
-    // Check if repair exists and user has access
     const repair = await prisma.repair.findUnique({
       where: { id: params.id },
       include: {
@@ -81,7 +79,6 @@ export async function POST(
       return createNotFoundResponse('Repair not found')
     }
 
-    // Check if specialist is assigned to this repair
     if (payload.role === 'SPECIALIST') {
       const isAssigned = repair.specialists.some(s => s.specialistId === payload.userId)
       if (!isAssigned) {
@@ -89,12 +86,10 @@ export async function POST(
       }
     }
 
-    // Check if repair is already completed
     if (repair.status === 'COMPLETED') {
       return createBadRequestResponse('Repair is already completed')
     }
 
-    // Handle image upload
     let imageUrl: string | null = null
     if (completionImage) {
       const bytes = await completionImage.arrayBuffer()
@@ -113,7 +108,6 @@ export async function POST(
       imageUrl = `/uploads/repairs/completed/${filename}`
     }
 
-    // Update repair with completion data
     const updateData: any = {
       status: 'COMPLETED',
       finalCost,
@@ -123,19 +117,15 @@ export async function POST(
         `Completion Notes:\n${completionNotes}`
     }
 
-    // Add completion image to diagnostic notes if uploaded
     if (imageUrl) {
       updateData.diagnosticNotes = `${updateData.diagnosticNotes}\n\nCompletion Image: ${imageUrl}`
     }
 
-    // Handle parts if provided
     if (parts && parts.length > 0) {
-      // Remove existing parts
       await prisma.repairPart.deleteMany({
         where: { repairId: params.id }
       })
 
-      // Add new parts
       updateData.parts = {
         create: parts.map(part => ({
           componentId: part.componentId,
@@ -168,36 +158,45 @@ export async function POST(
               }
             }
           }
-        }
+        }      }
+    })
+
+    try {
+      const emailConfig: EmailConfig = {
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.EMAIL_PORT || '587'),
+        secure: process.env.EMAIL_SECURE === 'true',
+        auth: {
+          user: process.env.EMAIL_USER || '',
+          pass: process.env.EMAIL_PASS || ''
+        },
+        fromEmail: process.env.EMAIL_FROM || process.env.EMAIL_USER,        fromName: process.env.EMAIL_FROM_NAME || 'IvaPro Support'
+      };
+
+      const repairCompletionData = {
+        repairId: completedRepair.id,
+        title: completedRepair.title || 'Repair Request',
+        customerName: completedRepair.user.name || 'Customer',
+        finalCost: completedRepair.finalCost || 0,
+        completionNotes: completionNotes,
+        completionImage: imageUrl || undefined,
+        parts: completedRepair.parts.map(part => ({
+          name: part.component.name,
+          quantity: part.quantity,
+          price: part.price
+        })),
+        productName: completedRepair.peripheral?.name || completedRepair.configuration?.name,
+        productType: completedRepair.peripheral ? 'peripheral' : completedRepair.configuration ? 'configuration' : undefined
+      };if (completedRepair.user.email) {
+        await sendRepairCompletionEmail(
+          completedRepair.user.email,
+          repairCompletionData,
+          emailConfig
+        );
       }
-    })
-
-    // Send email notification to customer
-    // TODO: Implement actual email sending service
-    console.log('Email notification:', {
-      to: completedRepair.user.email,
-      subject: `Repair Completed - ${completedRepair.title}`,
-      body: `
-Dear ${completedRepair.user.name},
-
-Your repair request "${completedRepair.title}" has been completed.
-
-Final Cost: €${completedRepair.finalCost}
-Completion Notes: ${completionNotes}
-
-${imageUrl ? `You can view the completion image here: ${process.env.NEXT_PUBLIC_URL}${imageUrl}` : ''}
-
-Parts Used:
-${completedRepair.parts.map(part => 
-  `- ${part.component.name} x${part.quantity} - €${part.price}`
-).join('\n')}
-
-Thank you for choosing our service!
-
-Best regards,
-IvaPro Team
-      `
-    })
+    } catch (emailError) {
+      console.error('Failed to send repair completion email:', emailError);
+    }
 
     return NextResponse.json({
       id: completedRepair.id,

@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { contact, code, type, token } = verifyCodeSchema.parse(body);
 
-    // Verify the reset code
     const resetToken = await verifyResetCode(contact, code, type);
 
     if (!resetToken || resetToken.token !== token) {

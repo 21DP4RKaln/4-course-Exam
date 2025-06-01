@@ -5,7 +5,6 @@ import { createUnauthorizedResponse, createForbiddenResponse, createBadRequestRe
 import { z } from 'zod'
 import * as bcrypt from 'bcryptjs'
 
-// Schema for GET query parameters
 const getUsersQuerySchema = z.object({
   page: z.string().optional().transform(val => (val ? parseInt(val, 10) : 1)),
   limit: z.string().optional().transform(val => (val ? parseInt(val, 10) : 10)),
@@ -15,7 +14,6 @@ const getUsersQuerySchema = z.object({
   order: z.enum(['asc', 'desc']).optional().default('desc'),
 })
 
-// Schema for creating a new user
 const createUserSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
@@ -25,12 +23,8 @@ const createUserSchema = z.object({
   role: z.enum(['USER', 'ADMIN', 'SPECIALIST']).default('USER'),
 })
 
-/**
- * GET - List all users with filtering, pagination, and sorting
- */
 export async function GET(request: NextRequest) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -41,12 +35,10 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Authorization check - only ADMIN can access this endpoint
     if (payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin privileges required')
     }
 
-    // Parse and validate query parameters
     const { searchParams } = new URL(request.url)
     const queryResult = getUsersQuerySchema.safeParse(Object.fromEntries(searchParams.entries()))
     
@@ -56,7 +48,6 @@ export async function GET(request: NextRequest) {
 
     const { page, limit, search, role, sortBy, order } = queryResult.data
 
-    // Build the where clause for filtering
     const where: any = {}
     
     if (search) {
@@ -73,10 +64,8 @@ export async function GET(request: NextRequest) {
       where.role = role
     }
 
-    // Calculate pagination
     const skip = (page - 1) * limit
 
-    // Query users
     const [users, totalCount] = await Promise.all([
       prisma.user.findMany({
         where,
@@ -92,7 +81,6 @@ export async function GET(request: NextRequest) {
           isBlocked: true,
           createdAt: true,
           updatedAt: true,
-          // Never return password hash
         },
         orderBy: {
           [sortBy]: order,
@@ -103,7 +91,6 @@ export async function GET(request: NextRequest) {
       prisma.user.count({ where }),
     ])
 
-    // Calculate pagination metadata
     const totalPages = Math.ceil(totalCount / limit)
     const hasNextPage = page < totalPages
     const hasPreviousPage = page > 1
@@ -125,12 +112,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST - Create a new user
- */
 export async function POST(request: NextRequest) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -141,12 +124,10 @@ export async function POST(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Authorization check - only ADMIN can access this endpoint
     if (payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin privileges required')
     }
 
-    // Parse and validate request body
     const body = await request.json()
     const validationResult = createUserSchema.safeParse(body)
     
@@ -156,7 +137,6 @@ export async function POST(request: NextRequest) {
 
     const { email, password, firstName, lastName, phone, role } = validationResult.data
 
-    // Check if email already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     })
@@ -165,7 +145,6 @@ export async function POST(request: NextRequest) {
       return createBadRequestResponse('Email already in use')
     }
 
-    // Check if phone already exists (if provided)
     if (phone) {
       const existingUserByPhone = await prisma.user.findFirst({
         where: { phone },
@@ -176,10 +155,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create the user
     const user = await prisma.user.create({
       data: {
         email,
@@ -200,7 +177,6 @@ export async function POST(request: NextRequest) {
         role: true,
         profileImageUrl: true,
         createdAt: true,
-        // Never return password hash
       },
     })
 

@@ -18,12 +18,12 @@ const loginSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    console.log('Login request body:', body) // Debug log
+    console.log('Login request body:', body) 
     
     const validationResult = loginSchema.safeParse(body)
 
     if (!validationResult.success) {
-      console.log('Validation error:', validationResult.error.format()) // Debug log
+      console.log('Validation error:', validationResult.error.format()) 
       return createBadRequestResponse('Invalid input data', {
         errors: validationResult.error.format(),
       })
@@ -31,30 +31,30 @@ export async function POST(request: NextRequest) {
 
     const { email, phone, identifier, password } = validationResult.data
     
-    // Use identifier parameter if provided (could be email or phone)
     const loginIdentifier = identifier || email || phone
     
-    console.log('Looking up user with identifier:', loginIdentifier) // Debug log
+    console.log('Looking up user with identifier:', loginIdentifier) 
     
-    // First try to find by email if it looks like an email
     let user = null
     if (loginIdentifier && loginIdentifier.includes('@')) {
       user = await prisma.user.findUnique({ where: { email: loginIdentifier } })
-      console.log('Email lookup result:', user ? 'Found' : 'Not found') // Debug log
+      console.log('Email lookup result:', user ? 'Found' : 'Not found') 
     }
       
-    // If not found by email, try to find by phone
     if (!user) {
       user = await prisma.user.findFirst({ where: { phone: loginIdentifier } })
-      console.log('Phone lookup result:', user ? 'Found' : 'Not found') // Debug log
+      console.log('Phone lookup result:', user ? 'Found' : 'Not found') 
     }
 
     if (!user) {
-      console.log('No user found with provided identifier') // Debug log
+      console.log('No user found with provided identifier') 
+      return createBadRequestResponse('Invalid credentials')
+    }    console.log('Checking password...')
+    if (!user.password) {
+      console.log('User has no password set')
       return createBadRequestResponse('Invalid credentials')
     }
-
-    console.log('Checking password...')
+    
     const isPasswordValid = await bcrypt.compare(password, user.password)
     
     if (!isPasswordValid) {
@@ -81,7 +81,6 @@ export async function POST(request: NextRequest) {
       profileImageUrl: user.profileImageUrl
     })
 
-    // Set longer expiration time - 7 days
     response.cookies.set({
       name: 'authToken',
       value: token,
@@ -89,7 +88,7 @@ export async function POST(request: NextRequest) {
       path: '/',
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7  // 7 days
+      maxAge: 60 * 60 * 24 * 7 
     })
 
     console.log('Login successful!')

@@ -7,7 +7,6 @@ import { z } from 'zod';
 const categorySchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  displayOrder: z.number().int().min(0).optional(),
   slug: z.string().min(1),
 });
 
@@ -22,9 +21,7 @@ export async function GET(request: NextRequest, context: { params: { id: string 
     const payload = await verifyJWT(token);
     if (!payload || payload.role !== 'ADMIN') {
       return createForbiddenResponse();
-    }
-
-    const category = await prisma.peripheralCategory.findUnique({
+    }    const category = await prisma.peripheralCategory.findUnique({
       where: { id: params.id },
       include: {
         peripherals: {
@@ -32,12 +29,11 @@ export async function GET(request: NextRequest, context: { params: { id: string 
             id: true,
             name: true,
             price: true,
-            stock: true,
-            imageUrl: true,
+            quantity: true,
+            imagesUrl: true,
             sku: true,
           }
-        },
-        specificationKeys: true
+        }
       }
     });
 
@@ -74,7 +70,6 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
 
     const data = validationResult.data;
     
-    // Check if another category with this name or slug already exists
     const existingCategory = await prisma.peripheralCategory.findFirst({
       where: {
         OR: [
@@ -90,13 +85,11 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
     if (existingCategory) {
       return createBadRequestResponse('Another peripheral category with this name or slug already exists');
     }
-    
-    const category = await prisma.peripheralCategory.update({
+      const category = await prisma.peripheralCategory.update({
       where: { id: params.id },
       data: {
         name: data.name,
         description: data.description,
-        displayOrder: data.displayOrder || 0,
         slug: data.slug,
       }
     });
@@ -123,7 +116,6 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
 
     const body = await request.json();
     
-    // Allow partial updates with PATCH
     const partialSchema = categorySchema.partial();
     const validationResult = partialSchema.safeParse(body);
     if (!validationResult.success) {
@@ -133,9 +125,7 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
     const data = validationResult.data;
     const updateData: any = {};
     
-    // Only update fields that were provided
     if (data.name !== undefined) {
-      // Check if name is unique
       if (data.name) {
         const existingCategory = await prisma.peripheralCategory.findFirst({
           where: {
@@ -151,7 +141,6 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
     }
     
     if (data.slug !== undefined) {
-      // Check if slug is unique
       if (data.slug) {
         const existingCategory = await prisma.peripheralCategory.findFirst({
           where: {
@@ -165,16 +154,10 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
       }
       updateData.slug = data.slug;
     }
-    
-    if (data.description !== undefined) updateData.description = data.description;
-    if (data.displayOrder !== undefined) updateData.displayOrder = data.displayOrder;
-    
-    const category = await prisma.peripheralCategory.update({
+      if (data.description !== undefined) updateData.description = data.description;
+      const category = await prisma.peripheralCategory.update({
       where: { id: params.id },
-      data: updateData,
-      include: {
-        specificationKeys: true
-      }
+      data: updateData
     });
 
     return NextResponse.json(category);
@@ -197,7 +180,6 @@ export async function DELETE(request: NextRequest, context: { params: { id: stri
       return createForbiddenResponse();
     }
 
-    // Check if there are any peripherals in this category
     const peripheralCount = await prisma.peripheral.count({
       where: { categoryId: params.id }
     });

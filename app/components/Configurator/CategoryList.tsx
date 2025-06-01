@@ -31,11 +31,18 @@ const CategoryList: React.FC<Props> = ({
 }) => {
   const t = useTranslations()
   const { theme } = useTheme()
-  
-  // Exclude networking and sound-cards from the list
-  const displayCategories = categories.filter(category =>
-    category.slug !== 'networking' && category.slug !== 'sound-cards'
-  )
+  const { useLocale } = require('next-intl');
+  const locale = useLocale();
+  const displayCategories = categories.filter(category => {
+    if (['networking', 'sound-cards', 'optical', 'network'].includes(category.slug)) {
+      return false;
+    }
+    if (category.slug === 'services') {
+      const svc = selectedComponents.services;
+      return Array.isArray(svc) ? svc.length > 0 : false;
+    }
+    return true;
+  })
   
   const getCategoryIcon = (categoryId: string) => {
     const iconColor = theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
@@ -93,7 +100,7 @@ const CategoryList: React.FC<Props> = ({
       } border transition-colors duration-200`}
     >      {/* Logo */}
     <LogoWrapper $theme={theme}>
-        <Link href="/" className="logo-link">
+        <Link href={`/${locale}`} className="logo-link">
           <div className="logo-container"> 
             <Image 
               src={theme === 'dark' ? "/images/logo-dark.png" : "/images/logo-light.png"}

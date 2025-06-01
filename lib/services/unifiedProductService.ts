@@ -18,6 +18,7 @@ export interface ProductBase {
 
 export interface ConfigurationType extends ProductBase {
   type: 'configuration';
+  category: string;
   components: Array<{
     id: string;
     name: string;
@@ -62,10 +63,8 @@ export function calculateDiscountPrice(
   discountExpiresAt?: Date | null
 ): number | null {
   if (typeof discountData === 'boolean') {
-    // Handle legacy isPublic parameter - assume 10% discount if public
     return discountData ? price * 0.9 : null;
   } else {
-    // Handle direct discount price
     return getDiscountPrice(price, discountData, discountExpiresAt || null);
   }
 }
@@ -86,27 +85,233 @@ export function getConfigCategory(specs: Record<string, string>): string {
 }
 
 /**
- * Extract specifications from a component including its specValues
+ * Extract specifications from a component including structured data from component tables
  */
 export function extractComponentSpecifications(component: any): Record<string, string> {
   const specifications: Record<string, string> = {};
   
-  // Extract specifications from JSON field
   if (component.specifications && typeof component.specifications === 'object') {
     Object.entries(component.specifications).forEach(([key, value]) => {
       if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
         specifications[key] = String(value);
       }
     });
+  }  if (component.cpu) {
+    specifications['Brand'] = component.cpu.brand || '';
+    
+    // Extract series from CPU name if series field is empty
+    let series = component.cpu.series || '';
+    if (!series && component.name) {
+      const name = component.name.toLowerCase();
+      if (name.includes('core i3')) series = 'Core i3';
+      else if (name.includes('core i5')) series = 'Core i5';
+      else if (name.includes('core i7')) series = 'Core i7';
+      else if (name.includes('core i9')) series = 'Core i9';
+      else if (name.includes('ryzen 3')) series = 'Ryzen 3';
+      else if (name.includes('ryzen 5')) series = 'Ryzen 5';
+      else if (name.includes('ryzen 7')) series = 'Ryzen 7';
+      else if (name.includes('ryzen 9')) series = 'Ryzen 9';
+    }
+    specifications['Series'] = series;
+    
+    specifications['Cores'] = String(component.cpu.cores || '');
+    specifications['Multithreading'] = component.cpu.multithreading ? 'Yes' : 'No';
+    specifications['Socket'] = component.cpu.socket || '';
+    specifications['Base Frequency'] = `${component.cpu.frequency || 0} GHz`;
+    specifications['Max RAM Capacity'] = `${component.cpu.maxRamCapacity || 0} GB`;    specifications['Max RAM Frequency'] = `${component.cpu.maxRamFrequency || 0} MHz`;
+    specifications['Integrated GPU'] = component.cpu.integratedGpu ? 'Yes' : 'No';
+    // Power Consumption removed as requested
+  }
+  if (component.gpu) {
+    specifications['Brand'] = component.gpu.brand || '';
+    specifications['Video Memory'] = `${component.gpu.videoMemoryCapacity || 0} GB`;
+    specifications['Memory Type'] = component.gpu.memoryType || '';
+    specifications['Fan Count'] = String(component.gpu.fanCount || '');
+    specifications['Chip Type'] = component.gpu.chipType || '';
+    specifications['DVI Port'] = component.gpu.hasDVI ? 'Yes' : 'No';
+    specifications['VGA Port'] = component.gpu.hasVGA ? 'Yes' : 'No';    specifications['DisplayPort'] = component.gpu.hasDisplayPort ? 'Yes' : 'No';
+    specifications['HDMI Port'] = component.gpu.hasHDMI ? 'Yes' : 'No';
+    specifications['Sub Brand'] = component.gpu.subBrand || '';
+    // Power Consumption removed as requested
+  }
+  if (component.ram) {
+    specifications['Brand'] = component.ram.brand || '';
+    specifications['Module Count'] = String(component.ram.moduleCount || '');
+    specifications['Memory Type'] = component.ram.memoryType || '';
+    specifications['Max Frequency'] = `${component.ram.maxFrequency || 0} MHz`;    specifications['RGB Lighting'] = component.ram.backlighting ? 'Yes' : 'No';
+    specifications['Voltage'] = `${component.ram.voltage || 0} V`;
+    specifications['Capacity'] = `${component.ram.gb || 0} GB`;
+    // Power Consumption removed as requested
+  }
+  if (component.storage) {
+    specifications['Brand'] = component.storage.brand || '';
+    specifications['Capacity'] = `${component.storage.volume || 0} GB`;
+    specifications['Type'] = component.storage.type || '';
+    specifications['NVMe'] = component.storage.nvme ? 'Yes' : 'No';
+    specifications['Form Factor'] = component.storage.size || '';    specifications['Interface'] = component.storage.compatibility || '';
+    specifications['Write Speed'] = `${component.storage.writeSpeed || 0} MB/s`;
+    specifications['Read Speed'] = `${component.storage.readSpeed || 0} MB/s`;
+    // Power Consumption removed as requested
+  }
+  if (component.motherboard) {
+    specifications['Brand'] = component.motherboard.brand || '';
+    specifications['Socket'] = component.motherboard.socket || '';
+    specifications['Memory Slots'] = String(component.motherboard.memorySlots || '');
+    specifications['Processor Support'] = component.motherboard.processorSupport || '';
+    specifications['Memory Type'] = component.motherboard.memoryTypeSupported || '';
+    specifications['Max RAM Capacity'] = `${component.motherboard.maxRamCapacity || 0} GB`;
+    specifications['Max Memory Frequency'] = `${component.motherboard.maxMemoryFrequency || 0} MHz`;
+    specifications['Max Video Cards'] = String(component.motherboard.maxVideoCards || '');
+    specifications['SATA Ports'] = String(component.motherboard.sataPorts || '');
+    specifications['M.2 Slots'] = String(component.motherboard.m2Slots || '');
+    specifications['SLI/Crossfire'] = component.motherboard.sliCrossfireSupport ? 'Yes' : 'No';
+    specifications['WiFi/Bluetooth'] = component.motherboard.wifiBluetooth ? 'Yes' : 'No';
+    specifications['NVMe Support'] = component.motherboard.nvmeSupport ? 'Yes' : 'No';
+    specifications['Form Factor'] = component.motherboard.form || '';
+  }
+
+  if (component.psu) {
+    specifications['Brand'] = component.psu.brand || '';
+    specifications['Power'] = `${component.psu.power || 0} W`;
+    specifications['SATA Connections'] = String(component.psu.sataConnections || '');
+    specifications['PCIe Connections'] = String(component.psu.pciEConnections || '');
+    specifications['PFC'] = component.psu.pfc ? 'Yes' : 'No';
+    specifications['Fan'] = component.psu.hasFan ? 'Yes' : 'No';
+    specifications['Molex/PATA Connections'] = String(component.psu.molexPataConnections || '');
+  }
+
+  if (component.cooling) {
+    specifications['Brand'] = component.cooling.brand || '';
+    specifications['Socket'] = component.cooling.socket || '';
+    specifications['Fan Diameter'] = `${component.cooling.fanDiameter || 0} mm`;
+    specifications['Fan Speed'] = `${component.cooling.fanSpeed || 0} RPM`;
+  }
+  if (component.caseModel) {
+    specifications['Brand'] = component.caseModel.brand || '';
+    specifications['PSU Included'] = component.caseModel.powerSupplyIncluded ? 'Yes' : 'No';
+    specifications['Color'] = component.caseModel.color || '';
+    specifications['Material'] = component.caseModel.material || '';
+    specifications['Audio In'] = component.caseModel.audioIn ? 'Yes' : 'No';
+    specifications['Audio Out'] = component.caseModel.audioOut ? 'Yes' : 'No';
+    specifications['USB 2.0 Ports'] = String(component.caseModel.usb2 || '');
+    specifications['USB 3.0 Ports'] = String(component.caseModel.usb3 || '');
+    specifications['USB 3.2 Ports'] = String(component.caseModel.usb32 || '');
+    specifications['USB Type-C Ports'] = String(component.caseModel.usbTypeC || '');
+    specifications['Form Factor'] = component.caseModel.form || '';
+    specifications['USB Type-C Ports'] = String(component.caseModel.usbTypeC || '');
+    specifications['5.25" Slots'] = String(component.caseModel.slots525 || '');
+    specifications['3.5" Slots'] = String(component.caseModel.slots35 || '');
+    specifications['2.5" Slots'] = String(component.caseModel.slots25 || '');
+    specifications['Water Cooling'] = component.caseModel.waterCoolingSupport ? 'Yes' : 'No';
   }
   
-  // Add spec values
-  if (component.specValues && Array.isArray(component.specValues)) {
-    component.specValues.forEach((specValue: any) => {
-      if (specValue.specKey && specValue.specKey.name) {
-        specifications[specValue.specKey.name] = specValue.value;
-      }
-    });
+  return specifications;
+}
+
+/**
+ * Extract specifications from a peripheral including structured data from peripheral tables
+ */
+export function extractPeripheralSpecifications(peripheral: any): Record<string, string> {
+  const specifications: Record<string, string> = {};
+  
+  if (peripheral.keyboard) {
+    specifications['Brand'] = peripheral.keyboard.brand || '';
+    specifications['Switch Type'] = peripheral.keyboard.switchType || '';
+    specifications['Layout'] = peripheral.keyboard.layout || '';
+    specifications['Form Factor'] = peripheral.keyboard.form || '';
+    specifications['Connection'] = peripheral.keyboard.connection || '';
+    specifications['RGB Lighting'] = peripheral.keyboard.rgb ? 'Yes' : 'No';
+    specifications['Numpad'] = peripheral.keyboard.numpad ? 'Yes' : 'No';
+  }
+
+  if (peripheral.mouse) {
+    specifications['Brand'] = peripheral.mouse.brand || '';
+    specifications['Color'] = peripheral.mouse.color || '';
+    specifications['Category'] = peripheral.mouse.category || '';
+    specifications['DPI'] = String(peripheral.mouse.dpi || '');
+    specifications['Buttons'] = String(peripheral.mouse.buttons || '');
+    specifications['Connection'] = peripheral.mouse.connection || '';
+    specifications['RGB Lighting'] = peripheral.mouse.rgb ? 'Yes' : 'No';
+    specifications['Weight'] = `${peripheral.mouse.weight || 0} g`;
+    specifications['Sensor'] = peripheral.mouse.sensor || '';
+    specifications['Battery Type'] = peripheral.mouse.batteryType || '';
+    specifications['Battery Life'] = `${peripheral.mouse.batteryLife || 0} hours`;
+  }
+
+  if (peripheral.monitor) {
+    specifications['Brand'] = peripheral.monitor.brand || '';
+    specifications['Size'] = `${peripheral.monitor.size || 0}"`;
+    specifications['Resolution'] = peripheral.monitor.resolution || '';
+    specifications['Refresh Rate'] = `${peripheral.monitor.refreshRate || 0} Hz`;
+    specifications['Panel Type'] = peripheral.monitor.panelType || '';
+    specifications['Response Time'] = `${peripheral.monitor.responseTime || 0} ms`;
+    specifications['Brightness'] = `${peripheral.monitor.brightness || 0} nits`;
+    specifications['HDR'] = peripheral.monitor.hdr ? 'Yes' : 'No';
+    specifications['Ports'] = peripheral.monitor.ports || '';
+    specifications['Speakers'] = peripheral.monitor.speakers ? 'Yes' : 'No';
+    specifications['Curved'] = peripheral.monitor.curved ? 'Yes' : 'No';
+  }
+
+  if (peripheral.headphones) {
+    specifications['Brand'] = peripheral.headphones.brand || '';
+    specifications['Type'] = peripheral.headphones.type || '';
+    specifications['Connection'] = peripheral.headphones.connection || '';
+    specifications['Microphone'] = peripheral.headphones.microphone ? 'Yes' : 'No';
+    specifications['Impedance'] = `${peripheral.headphones.impedance || 0} Ω`;
+    specifications['Frequency'] = peripheral.headphones.frequency || '';
+    specifications['Weight'] = `${peripheral.headphones.weight || 0} g`;
+    specifications['Noise Cancelling'] = peripheral.headphones.noiseCancelling ? 'Yes' : 'No';
+    specifications['RGB Lighting'] = peripheral.headphones.rgb ? 'Yes' : 'No';
+  }
+
+  if (peripheral.speakers) {
+    specifications['Brand'] = peripheral.speakers.brand || '';
+    specifications['Type'] = peripheral.speakers.type || '';
+    specifications['Total Wattage'] = `${peripheral.speakers.totalWattage || 0} W`;
+    specifications['Frequency'] = peripheral.speakers.frequency || '';
+    specifications['Connections'] = peripheral.speakers.connections || '';
+    specifications['Bluetooth'] = peripheral.speakers.bluetooth ? 'Yes' : 'No';
+    specifications['Remote'] = peripheral.speakers.remote ? 'Yes' : 'No';
+  }
+
+  if (peripheral.microphone) {
+    specifications['Brand'] = peripheral.microphone.brand || '';
+    specifications['Type'] = peripheral.microphone.type || '';
+    specifications['Pattern'] = peripheral.microphone.pattern || '';
+    specifications['Frequency'] = `${peripheral.microphone.frequency || 0} Hz`;
+    specifications['Sensitivity'] = `${peripheral.microphone.sensitivity || 0} dB`;
+    specifications['Interface'] = peripheral.microphone.interface || '';
+    specifications['Stand'] = peripheral.microphone.stand ? 'Yes' : 'No';
+  }
+
+  if (peripheral.camera) {
+    specifications['Brand'] = peripheral.camera.brand || '';
+    specifications['Resolution'] = peripheral.camera.resolution || '';
+    specifications['FPS'] = `${peripheral.camera.fps || 0} fps`;
+    specifications['FOV'] = `${peripheral.camera.fov || 0}°`;
+    specifications['Microphone'] = peripheral.camera.microphone ? 'Yes' : 'No';
+    specifications['Autofocus'] = peripheral.camera.autofocus ? 'Yes' : 'No';
+    specifications['Connection'] = peripheral.camera.connection || '';
+  }
+
+  if (peripheral.gamepad) {
+    specifications['Brand'] = peripheral.gamepad.brand || '';
+    specifications['Connection'] = peripheral.gamepad.connection || '';
+    specifications['Platform'] = peripheral.gamepad.platform || '';
+    specifications['Layout'] = peripheral.gamepad.layout || '';
+    specifications['Vibration'] = peripheral.gamepad.vibration ? 'Yes' : 'No';
+    specifications['RGB Lighting'] = peripheral.gamepad.rgb ? 'Yes' : 'No';
+    specifications['Battery Life'] = `${peripheral.gamepad.batteryLife || 0} hours`;
+    specifications['Programmable'] = peripheral.gamepad.programmable ? 'Yes' : 'No';
+  }
+
+  if (peripheral.mousePad) {
+    specifications['Brand'] = peripheral.mousePad.brand || '';
+    specifications['Dimensions'] = peripheral.mousePad.dimensions || '';
+    specifications['Thickness'] = `${peripheral.mousePad.thickness || 0} mm`;
+    specifications['Material'] = peripheral.mousePad.material || '';
+    specifications['RGB Lighting'] = peripheral.mousePad.rgb ? 'Yes' : 'No';
+    specifications['Surface'] = peripheral.mousePad.surface || '';
   }
   
   return specifications;
@@ -118,7 +323,6 @@ export function extractComponentSpecifications(component: any): Record<string, s
  */
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    // Try to find as a configuration first
     const configuration = await prisma.configuration.findUnique({
       where: { id },
       include: {
@@ -147,7 +351,7 @@ export async function getProductById(id: string): Promise<Product | null> {
         const categoryName = configItem.component.category.name.toLowerCase();
         specs[categoryName] = configItem.component.name;
       });
-        // Since configuration properties might be missing in some queries
+      const category = getConfigCategory(specs);
       const discountPrice = 'discountPrice' in configuration && 'discountExpiresAt' in configuration ? 
         getDiscountPrice(
           configuration.totalPrice as number, 
@@ -158,31 +362,33 @@ export async function getProductById(id: string): Promise<Product | null> {
       return {
         id: configuration.id,
         type: 'configuration',
+        category,
         name: configuration.name,
         description: configuration.description || '',
         longDescription: configuration.description || '',
         price: configuration.totalPrice,
         discountPrice,
         imageUrl: configuration.imageUrl,
-        stock: 10, // Default stock for configurations
+        stock: 10, 
         ratings: {
-          average: 4.5, // Mock data, should be replaced with actual reviews
+          average: 4.5, 
           count: 15,
         },
         components,
       };
-    }
-
-    // Try to find as a component
+    }   
     const component = await prisma.component.findUnique({
       where: { id },
       include: {
         category: true,
-        specValues: {
-          include: {
-            specKey: true
-          }
-        }
+        cpu: true,
+        gpu: true,
+        motherboard: true,
+        ram: true,
+        storage: true,
+        psu: true,
+        cooling: true,
+        caseModel: true
       }
     });
 
@@ -190,7 +396,8 @@ export async function getProductById(id: string): Promise<Product | null> {
       const specifications = extractComponentSpecifications(component);
       const isPeripheral = component.category.type === 'peripheral';
 
-      return {        id: component.id,
+      return {
+        id: component.id,
         type: isPeripheral ? 'peripheral' as const : 'component' as const,
         name: component.name,
         category: component.category.name,
@@ -198,16 +405,15 @@ export async function getProductById(id: string): Promise<Product | null> {
         specifications,
         price: component.price,
         discountPrice: null,
-        imageUrl: component.imageUrl,
-        stock: component.stock,
+        imageUrl: component.imagesUrl,
+        stock: component.quantity,
         ratings: {
-          average: 4.3, // Mock data, should be replaced with actual reviews
+          average: 4.3, 
           count: 18,
         },
       };
     }
 
-    // Try to find as a user configuration
     const userConfiguration = await prisma.configuration.findUnique({
       where: {
         id,
@@ -235,9 +441,16 @@ export async function getProductById(id: string): Promise<Product | null> {
         quantity: item.quantity,
       }));
       
+      const specs: Record<string, string> = {};
+      userConfiguration.components.forEach(configItem => {
+        const categoryName = configItem.component.category.name.toLowerCase();
+        specs[categoryName] = configItem.component.name;
+      });
+      const category = getConfigCategory(specs);
       return {
         id: userConfiguration.id,
         type: 'configuration',
+        category,
         name: userConfiguration.name,
         description: userConfiguration.description || '',
         longDescription: userConfiguration.description || '',
@@ -250,6 +463,43 @@ export async function getProductById(id: string): Promise<Product | null> {
           count: 0,
         },
         components,
+      };
+    }
+
+    const peripheral = await prisma.peripheral.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        keyboard: true,
+        mouse: true,
+        microphone: true,
+        camera: true,
+        monitor: true,
+        headphones: true,
+        speakers: true,
+        gamepad: true,
+        mousePad: true
+      }
+    });
+
+    if (peripheral) {
+      const specifications = extractPeripheralSpecifications(peripheral);
+
+      return {
+        id: peripheral.id,
+        type: 'peripheral' as const,
+        name: peripheral.name,
+        category: peripheral.category.name,
+        description: peripheral.description || '',
+        specifications,
+        price: peripheral.price,
+        discountPrice: null,
+        imageUrl: peripheral.imagesUrl,
+        stock: peripheral.quantity,
+        ratings: {
+          average: 4.1, 
+          count: 22,
+        },
       };
     }
 
@@ -296,19 +546,20 @@ export async function getRelatedProducts(
           price: item.component.price,
           quantity: item.quantity,
         }));
-        
         const specs: Record<string, string> = {};
         config.components.forEach((configItem: any) => {
           const categoryName = configItem.component.category.name.toLowerCase();
           specs[categoryName] = configItem.component.name;
         });
-          const discountPrice = 'discountPrice' in config && 'discountExpiresAt' in config ?
+        const category = getConfigCategory(specs);
+        const discountPrice = 'discountPrice' in config && 'discountExpiresAt' in config ?
           getDiscountPrice(config.totalPrice as number, config.discountPrice as number, config.discountExpiresAt as Date | null) :
           ((config as any).isPublic ? config.totalPrice as number * 0.9 : null);
         
         return {
           id: config.id,
           type: 'configuration',
+          category, 
           name: config.name,
           description: config.description || '',
           price: config.totalPrice,
@@ -332,26 +583,29 @@ export async function getRelatedProducts(
       }
       
       if (!categoryId) return [];
-      
-      const relatedComponents = await prisma.component.findMany({
+        const relatedComponents = await prisma.component.findMany({
         where: {
           categoryId,
           id: { not: productId },
         },
         include: {
           category: true,
-          specValues: {
-            include: {
-              specKey: true
-            }
-          }
+          cpu: true,
+          gpu: true,
+          motherboard: true,
+          ram: true,
+          storage: true,
+          psu: true,
+          cooling: true,
+          caseModel: true
         },
         take: limit,
       });
       
       return relatedComponents.map(component => {
         const specifications = extractComponentSpecifications(component);
-        const isPeripheral = component.category.type === 'peripheral';        return {
+        const isPeripheral = component.category.type === 'peripheral';
+        return {
           id: component.id,
           type: (isPeripheral ? 'peripheral' : 'component') as 'peripheral' | 'component',
           name: component.name,
@@ -360,8 +614,8 @@ export async function getRelatedProducts(
           specifications,
           price: component.price,
           discountPrice: null,
-          imageUrl: component.imageUrl,
-          stock: component.stock,
+          imageUrl: component.imagesUrl,
+          stock: component.quantity,
           ratings: {
             average: 4.2,
             count: 12,
@@ -400,7 +654,6 @@ export async function getAllProducts(options: {
     let products: Product[] = [];
     let total = 0;
     
-    // Process configurations
     if (!type || type === 'configuration') {
       const configWhere: any = {
         isTemplate: true,
@@ -412,9 +665,6 @@ export async function getAllProducts(options: {
           { description: { contains: search, mode: 'insensitive' } }
         ];
       }
-      
-      // Adjust for category if needed - this is more complex for configurations
-      // as we need to filter based on components
       
       const [configurations, configCount] = await prisma.$transaction([
         prisma.configuration.findMany({
@@ -431,7 +681,7 @@ export async function getAllProducts(options: {
             },
           },
           skip: type ? skip : 0,
-          take: type ? limit : Math.ceil(limit / 3), // Take fewer if fetching multiple types
+          take: type ? limit : Math.ceil(limit / 3), 
         }),
         prisma.configuration.count({ where: configWhere })
       ]);
@@ -441,19 +691,20 @@ export async function getAllProducts(options: {
       }
         products = [
         ...products,
-        ...configurations.map((config: any) => {          const components = config.components.map((item: any) => ({
+        ...configurations.map((config: any) => {
+          const components = config.components.map((item: any) => ({
             id: item.component.id,
             name: item.component.name,
             category: item.component.category.name,
             price: item.component.price,
             quantity: item.quantity,
           }));
-            const specs: Record<string, string> = {};
+          const specs: Record<string, string> = {};
           config.components.forEach((configItem: any) => {
             const categoryName = configItem.component.category.name.toLowerCase();
             specs[categoryName] = configItem.component.name;
           });
-          
+          const category = getConfigCategory(specs);
           const discountPrice = 'discountPrice' in config && 'discountExpiresAt' in config ?
             getDiscountPrice(config.totalPrice as number, config.discountPrice as number, config.discountExpiresAt as Date | null) :
             ((config as any).isPublic ? config.totalPrice as number * 0.9 : null);
@@ -461,6 +712,7 @@ export async function getAllProducts(options: {
           return {
             id: config.id,
             type: 'configuration' as const,
+            category, 
             name: config.name,
             description: config.description || '',
             price: config.totalPrice,
@@ -477,7 +729,6 @@ export async function getAllProducts(options: {
       ];
     }
     
-    // Process components and peripherals
     if (!type || type === 'component' || type === 'peripheral') {
       const componentWhere: any = {};
       
@@ -504,21 +755,22 @@ export async function getAllProducts(options: {
           slug: category
         };
       }
-      
-      if (inStock) {
-        componentWhere.stock = { gt: 0 };
+        if (inStock) {
+        componentWhere.quantity = { gt: 0 };
       }
-      
-      const [components, componentCount] = await prisma.$transaction([
+        const [components, componentCount] = await prisma.$transaction([
         prisma.component.findMany({
           where: componentWhere,
           include: {
             category: true,
-            specValues: {
-              include: {
-                specKey: true
-              }
-            }
+            cpu: true,
+            gpu: true,
+            motherboard: true,
+            ram: true,
+            storage: true,
+            psu: true,
+            cooling: true,
+            caseModel: true
           },
           skip: type ? skip : products.length,
           take: type ? limit : Math.ceil(limit / 3),
@@ -530,7 +782,9 @@ export async function getAllProducts(options: {
         total = componentCount;
       } else {
         total += componentCount;
-      }      products = [
+      }
+
+      products = [
         ...products,
         ...components.map(component => {
           const specifications = extractComponentSpecifications(component);
@@ -546,8 +800,8 @@ export async function getAllProducts(options: {
             specifications,
             price: component.price,
             discountPrice: null,
-            imageUrl: component.imageUrl,
-            stock: component.stock,
+            imageUrl: component.imagesUrl,
+            stock: component.quantity,
             ratings: {
               average: 4.2,
               count: 12,
@@ -586,7 +840,6 @@ export async function getProductsByCategory(
   } = {}
 ): Promise<PaginatedProducts> {
   try {
-    // Check if categorySlug is a PC type
     if (['gaming', 'workstation', 'office', 'budget'].includes(categorySlug)) {
       return getAllProducts({
         ...options,
@@ -595,7 +848,6 @@ export async function getProductsByCategory(
       });
     }
     
-    // Otherwise, it's a component or peripheral category
     return getAllProducts({
       ...options,
       category: categorySlug
@@ -629,7 +881,6 @@ export async function incrementProductView(productId: string, productType: Produ
     }
   } catch (error) {
     console.error(`Error incrementing view count for ${productType} ${productId}:`, error);
-    // Don't throw here to prevent failure if view count increment fails
   }
 }
 

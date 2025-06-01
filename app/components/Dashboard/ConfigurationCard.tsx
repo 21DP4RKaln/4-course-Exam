@@ -28,14 +28,12 @@ export default function ConfigurationCard({
   const router = useRouter()
   const [imageError, setImageError] = useState(false)
 
-  // Get case component for image display
   const caseComponent = configuration.components?.find(comp => 
     comp.category?.toLowerCase() === 'case' || 
     comp.category?.toLowerCase() === 'cases' ||
     comp.name?.toLowerCase().includes('case')
   )
 
-  // Get main components for specifications
   const cpu = configuration.components?.find(comp => 
     comp.category?.toLowerCase() === 'cpu' || 
     comp.category?.toLowerCase() === 'processor'
@@ -53,13 +51,11 @@ export default function ConfigurationCard({
     comp.category?.toLowerCase() === 'ssd' ||
     comp.category?.toLowerCase() === 'hdd'
   )
-  // Generate fallback image based on configuration name or case
   const getImageUrl = () => {
     if (caseComponent?.imageUrl && !imageError) {
       return caseComponent.imageUrl
     }
     
-    // Fallback to a default PC case image
     return '/products/case/corsair-7000d-airflow.jpg'
   }
 

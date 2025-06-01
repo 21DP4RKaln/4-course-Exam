@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate discount
     const discount = (json.total * promoCode.discountPercentage) / 100
 
     return new Response(

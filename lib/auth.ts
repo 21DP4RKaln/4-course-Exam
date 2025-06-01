@@ -44,13 +44,11 @@ export const authOptions: NextAuthOptions = {
     },
     async signIn({ user, account, profile, email, credentials }) {
       try {
-        // Check if user exists in our database
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email! }
         })
 
         if (!existingUser) {
-          // Create new user with social login data
           await prisma.user.create({
             data: {
               id: user.id,
@@ -60,7 +58,6 @@ export const authOptions: NextAuthOptions = {
               lastName: user.name?.split(' ').slice(1).join(' ') || '',
               profileImageUrl: user.image,
               role: 'USER',
-              // Set a placeholder password since they're using social login
               password: '',
             }
           })

@@ -12,7 +12,6 @@ import AnimatedButton from '@/app/components/ui/animated-button'
 import VerificationCodeInput from '@/app/components/Auth/VerificationCodeInput'
 import NewPasswordForm from '@/app/components/Auth/NewPasswordForm'
 
-// Dynamic schema based on input type
 const createSchema = (inputType: 'email' | 'phone') => {
   if (inputType === 'email') {
     return z.object({
@@ -29,7 +28,6 @@ type ForgotPasswordFormData = {
   contact: string
 }
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
@@ -239,7 +237,6 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  // Render success state
   if (step === 'success') {
     return (
       <motion.div 
@@ -294,7 +291,6 @@ export default function ForgotPasswordPage() {
     )
   }
 
-  // Render verification code input
   if (step === 'verify') {
     return (
       <motion.div 
@@ -336,7 +332,6 @@ export default function ForgotPasswordPage() {
     )
   }
 
-  // Render new password form
   if (step === 'password') {
     return (
       <motion.div 
@@ -375,7 +370,6 @@ export default function ForgotPasswordPage() {
     )
   }
 
-  // Render contact input form (default step)
   return (
     <motion.div 
       className="max-w-md mx-auto"

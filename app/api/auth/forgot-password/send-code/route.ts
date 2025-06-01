@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { contact, type } = sendCodeSchema.parse(body);
 
-    // Find user by email or phone
     let user;
     if (type === 'email') {
       user = await prisma.user.findUnique({
@@ -32,15 +31,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create reset token
     const resetToken = await createPasswordResetToken(user.id, contact, type);
 
-    // Send verification code
     await sendVerificationCode(contact, resetToken.code, type);
 
     return NextResponse.json({
       message: 'Verification code sent successfully',
-      token: resetToken.token, // Return token for the next step
+      token: resetToken.token, 
     });
   } catch (error) {
     console.error('Error sending verification code:', error);

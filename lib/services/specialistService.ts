@@ -16,7 +16,6 @@ export interface SpecialistTask {
 export async function getSpecialistTasks(specialistId: string): Promise<SpecialistTask[]> {
   try {
     const [repairs, configurations] = await prisma.$transaction([
-      // Get assigned repairs
       prisma.repair.findMany({
         where: {
           specialists: {
@@ -33,7 +32,6 @@ export async function getSpecialistTasks(specialistId: string): Promise<Speciali
           { createdAt: 'asc' }
         ]
       }),
-      // Get configurations pending review
       prisma.configuration.findMany({
         where: {
           status: 'SUBMITTED',
@@ -83,7 +81,6 @@ export async function getSpecialistMetrics(specialistId: string, dateRange?: { s
     } : {};
 
     const metrics = await prisma.$transaction([
-      // Repairs completed
       prisma.repair.count({
         where: {
           specialists: {
@@ -93,7 +90,6 @@ export async function getSpecialistMetrics(specialistId: string, dateRange?: { s
           ...whereClause
         }
       }),
-      // Average repair time
       prisma.repair.findMany({
         where: {
           specialists: {
@@ -108,7 +104,6 @@ export async function getSpecialistMetrics(specialistId: string, dateRange?: { s
           completionDate: true
         }
       }),
-      // Configurations reviewed
       prisma.configuration.count({
         where: {
           status: { in: ['APPROVED', 'REJECTED'] },
@@ -117,17 +112,16 @@ export async function getSpecialistMetrics(specialistId: string, dateRange?: { s
       })
     ]);
 
-    // Calculate average repair time
     const avgRepairTime = metrics[1].length > 0
       ? metrics[1].reduce((acc, repair) => {
           const duration = repair.completionDate!.getTime() - repair.createdAt.getTime();
           return acc + duration;
-        }, 0) / metrics[1].length / (1000 * 60 * 60 * 24) // Convert to days
+        }, 0) / metrics[1].length / (1000 * 60 * 60 * 24) 
       : 0;
 
     return {
       repairsCompleted: metrics[0],
-      averageRepairTime: Math.round(avgRepairTime * 10) / 10, // Round to 1 decimal
+      averageRepairTime: Math.round(avgRepairTime * 10) / 10, 
       configurationsReviewed: metrics[2]
     };
   } catch (error) {

@@ -1,4 +1,3 @@
-// Common filter interfaces
 import { Component } from '../../types';
 
 export interface FilterOption {
@@ -14,30 +13,46 @@ export interface FilterGroup {
   titleTranslationKey?: string;
 }
 
-// Helper function to extract brand options from components
 export const extractBrandOptions = (components: Component[]): Map<string, string> => {
   const brandOptions = new Map<string, string>();
   
+  const cpuSeriesToExclude = ['ryzen', 'core', 'athlon', 'fx', 'pentium', 'celeron', 'xeon'];
+  
   components.forEach(component => {
-    if (!component.specifications) return;
+    // For CPUs, use the dedicated brand field
+    if (component.cpu?.brand) {
+      brandOptions.set(component.cpu.brand, component.cpu.brand);
+    }
+    // Fallback: derive brand from series for CPUs without brand field (for backwards compatibility)
+    else if (component.cpu?.series) {
+      const series = component.cpu.series.toLowerCase();
+      if (series.includes('ryzen') || series.includes('athlon') || series.includes('fx')) {
+        brandOptions.set('AMD', 'AMD');
+      } else if (series.includes('core') || series.includes('pentium') || series.includes('celeron') || series.includes('xeon')) {
+        brandOptions.set('Intel', 'Intel');
+      }
+    }
     
-    // Add manufacturer/brand
     if (component.brand || component.manufacturer) {
       const brand = component.brand || component.manufacturer || '';
-      if (brand) {
+      if (brand && !cpuSeriesToExclude.includes(brand.toLowerCase())) {
         brandOptions.set(brand, brand);
       }
     }
     
-    // Also check specifications for brand info
-    Object.entries(component.specifications).forEach(([key, value]) => {
-      if (!value || value === '') return;
-      
-      const keyLower = key.toLowerCase();
-      if (keyLower.includes('brand') || keyLower.includes('manufacturer') || keyLower === 'make') {
-        brandOptions.set(String(value), String(value));
-      }
-    });
+    if (component.specifications) {
+      Object.entries(component.specifications).forEach(([key, value]) => {
+        if (!value || value === '') return;
+        
+        const keyLower = key.toLowerCase();
+        if (keyLower.includes('brand') || keyLower.includes('manufacturer') || keyLower === 'make') {
+          const brandValue = String(value);
+          if (!cpuSeriesToExclude.includes(brandValue.toLowerCase())) {
+            brandOptions.set(brandValue, brandValue);
+          }
+        }
+      });
+    }
   });
   
   return brandOptions;

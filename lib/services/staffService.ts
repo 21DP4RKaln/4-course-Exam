@@ -8,17 +8,16 @@ export interface StaffDashboardStats {
   pendingConfigurations: number;
   approvedConfigurations: number;
   lowStockComponents: number;
-  totalOrders?: number; // Admin only
-  totalRevenue?: number; // Admin only
-  activeUsers?: number; // Admin only
+  totalOrders?: number; 
+  totalRevenue?: number; 
+  activeUsers?: number; 
 }
 
 /**
  * Get dashboard statistics based on user role
  */
 export async function getDashboardStats(userId: string, role: 'ADMIN' | 'SPECIALIST'): Promise<StaffDashboardStats> {
-  try {
-    // Common stats for both roles
+  try {   
     const baseStats = await prisma.$transaction([
       prisma.repair.count(),
       prisma.repair.count({ where: { status: 'PENDING' } }),
@@ -26,7 +25,7 @@ export async function getDashboardStats(userId: string, role: 'ADMIN' | 'SPECIAL
       prisma.configuration.count({ where: { isTemplate: false } }),
       prisma.configuration.count({ where: { status: 'SUBMITTED', isTemplate: false } }),
       prisma.configuration.count({ where: { status: 'APPROVED', isTemplate: false } }),
-      prisma.component.count({ where: { stock: { lt: 10 } } })
+      prisma.component.count({ where: { quantity: { lt: 10 } } })
     ]);
 
     const stats: StaffDashboardStats = {
@@ -39,7 +38,6 @@ export async function getDashboardStats(userId: string, role: 'ADMIN' | 'SPECIAL
       lowStockComponents: baseStats[6]
     };
 
-    // Admin-specific stats
     if (role === 'ADMIN') {
       const adminStats = await prisma.$transaction([
         prisma.order.count(),
@@ -64,31 +62,27 @@ export async function getDashboardStats(userId: string, role: 'ADMIN' | 'SPECIAL
  */
 export async function getRecentActivity(role: 'ADMIN' | 'SPECIALIST', limit = 10) {
   try {
-    const activities = await prisma.$transaction([
-      // Recent repairs
-      prisma.repair.findMany({
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: { user: { select: { name: true, email: true } } }
-      }),
-      // Recent configurations
-      prisma.configuration.findMany({
-        where: { isTemplate: false },
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: { user: { select: { name: true, email: true } } }
-      }),
-      // Recent orders (admin only)
-      role === 'ADMIN' ? prisma.order.findMany({
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: { user: { select: { name: true, email: true } } }
-      }) : prisma.order.findMany({ where: { id: 'none' }, take: 0 })
-    ]);
+    const repairs = await prisma.repair.findMany({
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { name: true, email: true } } }
+    });
 
-    // Merge and sort activities
+    const configurations = await prisma.configuration.findMany({
+      where: { isTemplate: false },
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { name: true, email: true } } }
+    });
+
+    const orders = role === 'ADMIN' ? await prisma.order.findMany({
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { name: true, email: true } } }
+    }) : [];
+
     const allActivities = [
-      ...activities[0].map(repair => ({
+      ...repairs.map(repair => ({
         type: 'repair',
         id: repair.id,
         title: repair.title,
@@ -96,7 +90,7 @@ export async function getRecentActivity(role: 'ADMIN' | 'SPECIALIST', limit = 10
         user: repair.user?.name || 'Unknown',
         createdAt: repair.createdAt
       })),
-      ...activities[1].map(config => ({
+      ...configurations.map(config => ({
         type: 'configuration',
         id: config.id,
         title: config.name,
@@ -104,7 +98,7 @@ export async function getRecentActivity(role: 'ADMIN' | 'SPECIALIST', limit = 10
         user: config.user?.name || 'Unknown',
         createdAt: config.createdAt
       })),
-      ...activities[2].map(order => ({
+      ...orders.map(order => ({
         type: 'order',
         id: order.id,
         title: `Order #${order.id.slice(0, 8)}`,

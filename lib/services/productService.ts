@@ -23,6 +23,143 @@ export interface ProductWithRelated extends Product {
 }
 
 /**
+ * Extract component specifications from structured tables
+ */
+function extractComponentSpecifications(component: any): Record<string, string> {
+  const specs: Record<string, string> = {};
+  
+  if (component.cpu) {
+    specs['CPU Model'] = component.cpu.model;
+    specs['CPU Cores'] = component.cpu.cores?.toString() || '';
+    specs['CPU Base Clock'] = component.cpu.baseClock?.toString() + ' GHz' || '';
+    specs['CPU Boost Clock'] = component.cpu.boostClock?.toString() + ' GHz' || '';
+  }
+  
+  if (component.gpu) {
+    specs['GPU Model'] = component.gpu.model;
+    specs['GPU Memory'] = component.gpu.memorySize?.toString() + ' GB' || '';
+    specs['GPU Memory Type'] = component.gpu.memoryType || '';
+    specs['GPU Base Clock'] = component.gpu.baseClock?.toString() + ' MHz' || '';
+    specs['GPU Boost Clock'] = component.gpu.boostClock?.toString() + ' MHz' || '';
+  }
+  
+  if (component.motherboard) {
+    specs['Motherboard Model'] = component.motherboard.model;
+    specs['Socket'] = component.motherboard.socket || '';
+    specs['Form Factor'] = component.motherboard.formFactor || '';
+    specs['Memory Slots'] = component.motherboard.memorySlots?.toString() || '';
+    specs['Max Memory'] = component.motherboard.maxMemory?.toString() + ' GB' || '';
+  }
+  
+  if (component.ram) {
+    specs['RAM Capacity'] = component.ram.capacity?.toString() + ' GB' || '';
+    specs['RAM Type'] = component.ram.memoryType || '';
+    specs['RAM Speed'] = component.ram.speed?.toString() + ' MHz' || '';
+    specs['RAM Latency'] = component.ram.latency || '';
+  }
+  
+  if (component.storage) {
+    specs['Storage Capacity'] = component.storage.capacity?.toString() + ' GB' || '';
+    specs['Storage Type'] = component.storage.storageType || '';
+    specs['Storage Interface'] = component.storage.interface || '';
+    specs['Read Speed'] = component.storage.readSpeed?.toString() + ' MB/s' || '';
+    specs['Write Speed'] = component.storage.writeSpeed?.toString() + ' MB/s' || '';
+  }
+  
+  if (component.psu) {
+    specs['PSU Wattage'] = component.psu.wattage?.toString() + ' W' || '';
+    specs['PSU Efficiency'] = component.psu.efficiency || '';
+    specs['PSU Modular'] = component.psu.modular ? 'Yes' : 'No';
+  }
+  
+  if (component.cooling) {
+    specs['Cooling Type'] = component.cooling.coolingType || '';
+    specs['Fan Speed'] = component.cooling.fanSpeed?.toString() + ' RPM' || '';
+    specs['Noise Level'] = component.cooling.noiseLevel?.toString() + ' dB' || '';
+  }
+  
+  if (component.caseModel) {
+    specs['Case Type'] = component.caseModel.caseType || '';
+    specs['Form Factor Support'] = component.caseModel.formFactorSupport || '';
+    specs['Front Ports'] = component.caseModel.frontPorts || '';
+  }
+  
+  return specs;
+}
+
+/**
+ * Extract peripheral specifications from structured tables
+ */
+function extractPeripheralSpecifications(peripheral: any): Record<string, string> {
+  const specs: Record<string, string> = {};
+  
+  if (peripheral.keyboard) {
+    specs['Switch Type'] = peripheral.keyboard.switchType || '';
+    specs['Layout'] = peripheral.keyboard.layout || '';
+    specs['Backlight'] = peripheral.keyboard.backlight ? 'Yes' : 'No';
+    specs['Wireless'] = peripheral.keyboard.wireless ? 'Yes' : 'No';
+  }
+  
+  if (peripheral.mouse) {
+    specs['DPI'] = peripheral.mouse.dpi?.toString() || '';
+    specs['Sensor Type'] = peripheral.mouse.sensorType || '';
+    specs['Buttons'] = peripheral.mouse.buttons?.toString() || '';
+    specs['Wireless'] = peripheral.mouse.wireless ? 'Yes' : 'No';
+  }
+  
+  if (peripheral.monitor) {
+    specs['Screen Size'] = peripheral.monitor.screenSize?.toString() + '"' || '';
+    specs['Resolution'] = peripheral.monitor.resolution || '';
+    specs['Refresh Rate'] = peripheral.monitor.refreshRate?.toString() + ' Hz' || '';
+    specs['Panel Type'] = peripheral.monitor.panelType || '';
+    specs['Response Time'] = peripheral.monitor.responseTime?.toString() + ' ms' || '';
+  }
+  
+  if (peripheral.headphones) {
+    specs['Driver Size'] = peripheral.headphones.driverSize?.toString() + ' mm' || '';
+    specs['Frequency Response'] = peripheral.headphones.frequencyResponse || '';
+    specs['Impedance'] = peripheral.headphones.impedance?.toString() + ' Ω' || '';
+    specs['Wireless'] = peripheral.headphones.wireless ? 'Yes' : 'No';
+  }
+  
+  if (peripheral.speakers) {
+    specs['Power'] = peripheral.speakers.power?.toString() + ' W' || '';
+    specs['Frequency Response'] = peripheral.speakers.frequencyResponse || '';
+    specs['Channels'] = peripheral.speakers.channels || '';
+    specs['Wireless'] = peripheral.speakers.wireless ? 'Yes' : 'No';
+  }
+  
+  if (peripheral.microphone) {
+    specs['Frequency Response'] = peripheral.microphone.frequencyResponse || '';
+    specs['Polar Pattern'] = peripheral.microphone.polarPattern || '';
+    specs['Connectivity'] = peripheral.microphone.connectivity || '';
+  }
+  
+  if (peripheral.camera) {
+    specs['Resolution'] = peripheral.camera.resolution || '';
+    specs['Frame Rate'] = peripheral.camera.frameRate?.toString() + ' fps' || '';
+    specs['Field of View'] = peripheral.camera.fieldOfView?.toString() + '°' || '';
+    specs['Auto Focus'] = peripheral.camera.autoFocus ? 'Yes' : 'No';
+  }
+  
+  if (peripheral.gamepad) {
+    specs['Connectivity'] = peripheral.gamepad.connectivity || '';
+    specs['Battery Life'] = peripheral.gamepad.batteryLife?.toString() + ' hours' || '';
+    specs['Vibration'] = peripheral.gamepad.vibration ? 'Yes' : 'No';
+    specs['Wireless'] = peripheral.gamepad.wireless ? 'Yes' : 'No';
+  }
+  
+  if (peripheral.mousePad) {
+    specs['Dimensions'] = peripheral.mousePad.dimensions || '';
+    specs['Material'] = peripheral.mousePad.material || '';
+    specs['Thickness'] = peripheral.mousePad.thickness?.toString() + ' mm' || '';
+    specs['RGB'] = peripheral.mousePad.rgb ? 'Yes' : 'No';
+  }
+  
+  return specs;
+}
+
+/**
  * Helper to determine PC category based on component specs
  */
 function getConfigCategory(specs: Record<string, string>): string {
@@ -41,8 +178,7 @@ function getConfigCategory(specs: Record<string, string>): string {
  * Get a product by ID with related products
  */
 export async function getProductById(id: string): Promise<ProductWithRelated | null> {
-  try {
-    const configuration = await prisma.configuration.findUnique({
+  try {    const configuration = await prisma.configuration.findUnique({
       where: {
         id,
         isTemplate: true, 
@@ -53,14 +189,20 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
             component: {
               include: {
                 category: true,
+                cpu: true,
+                gpu: true,
+                motherboard: true,
+                ram: true,
+                storage: true,
+                psu: true,
+                cooling: true,
+                caseModel: true,
               },
             },
           },
         },
       },
-    });
-
-    if (configuration) {
+    });    if (configuration) {
       const specs: Record<string, string> = {};
       configuration.components.forEach((configItem) => {
         const categoryName = configItem.component.category.name.toLowerCase();
@@ -95,9 +237,7 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
         config.components.forEach((configItem) => {
           const categoryName = configItem.component.category.name.toLowerCase();
           relatedSpecs[categoryName] = configItem.component.name;
-        });
-  
-        return {
+        });        return {
           id: config.id,
           name: config.name,
           category: getConfigCategory(relatedSpecs),
@@ -113,7 +253,6 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
           },
         };
       });
-    
       return {
         id: configuration.id,
         name: configuration.name,
@@ -131,28 +270,26 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
         },
         related: relatedProducts,
       };
-    }
-
+    }   
     const component = await prisma.component.findUnique({
       where: {
         id,
       },
       include: {
         category: true,
-        specValues: {
-          include: {
-            specKey: true
-          }
-        }
+        cpu: true,
+        gpu: true,
+        motherboard: true,
+        ram: true,
+        storage: true,
+        psu: true,
+        cooling: true,
+        caseModel: true,
       }
     });
 
     if (component) {
-      const specs: Record<string, string> = { ...(component.specifications as any || {}) };
- 
-      for (const specValue of component.specValues) {
-        specs[specValue.specKey.name] = specValue.value;
-      }
+      const specs = extractComponentSpecifications(component);
 
       const relatedComponents = await prisma.component.findMany({
         where: {
@@ -161,32 +298,29 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
         },
         include: {
           category: true,
-          specValues: {
-            include: {
-              specKey: true
-            }
-          }
+          cpu: true,
+          gpu: true,
+          motherboard: true,
+          ram: true,
+          storage: true,
+          psu: true,
+          cooling: true,
+          caseModel: true,
         },
         take: 3,
       });
 
       const relatedProducts = relatedComponents.map((relComp) => {
-        const relSpecs: Record<string, string> = { ...(relComp.specifications as any || {}) };
-        
-        for (const specValue of relComp.specValues) {
-          relSpecs[specValue.specKey.name] = specValue.value;
-        }
-
-        return {
+        const relSpecs = extractComponentSpecifications(relComp);        return {
           id: relComp.id,
           name: relComp.name,
           category: relComp.category.name,
           description: relComp.description || '',
           specs: relSpecs,
           price: relComp.price,
-          discountPrice: null, 
-          imageUrl: relComp.imageUrl,
-          stock: relComp.stock,
+          discountPrice: relComp.discountPrice, 
+          imageUrl: relComp.imagesUrl,
+          stock: relComp.quantity,
           ratings: {
             average: 4.2,
             count: 12,
@@ -198,12 +332,86 @@ export async function getProductById(id: string): Promise<ProductWithRelated | n
         id: component.id,
         name: component.name,
         category: component.category.name,
-        description: component.description || '',
-        specs,
+        description: component.description || '',        specs,
         price: component.price,
-        discountPrice: null, 
-        imageUrl: component.imageUrl,
-        stock: component.stock,
+        discountPrice: component.discountPrice, 
+        imageUrl: component.imagesUrl,
+        stock: component.quantity,
+        ratings: {
+          average: 4.3,
+          count: 18,
+        },
+        related: relatedProducts,
+      };
+    }    
+    const peripheral = await prisma.peripheral.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        category: true,
+        keyboard: true,
+        mouse: true,
+        monitor: true,
+        headphones: true,
+        speakers: true,
+        microphone: true,
+        camera: true,
+        gamepad: true,
+        mousePad: true,
+      }
+    });
+
+    if (peripheral) {
+      const specs = extractPeripheralSpecifications(peripheral);
+
+      const relatedPeripherals = await prisma.peripheral.findMany({
+        where: {
+          categoryId: peripheral.categoryId,
+          id: { not: id },
+        },
+        include: {
+          category: true,
+          keyboard: true,
+          mouse: true,
+          monitor: true,
+          headphones: true,
+          speakers: true,
+          microphone: true,
+          camera: true,
+          gamepad: true,
+          mousePad: true,
+        },
+        take: 3,
+      });
+
+      const relatedProducts = relatedPeripherals.map((relPeriph) => {
+        const relSpecs = extractPeripheralSpecifications(relPeriph);        return {
+          id: relPeriph.id,
+          name: relPeriph.name,
+          category: relPeriph.category.name,
+          description: relPeriph.description || '',
+          specs: relSpecs,
+          price: relPeriph.price,
+          discountPrice: relPeriph.discountPrice, 
+          imageUrl: relPeriph.imagesUrl,
+          stock: relPeriph.quantity,
+          ratings: {
+            average: 4.2,
+            count: 12,
+          },
+        };
+      });
+
+      return {
+        id: peripheral.id,
+        name: peripheral.name,        category: peripheral.category.name,
+        description: peripheral.description || '',
+        specs,
+        price: peripheral.price,
+        discountPrice: peripheral.discountPrice, 
+        imageUrl: peripheral.imagesUrl,
+        stock: peripheral.quantity,
         ratings: {
           average: 4.3,
           count: 18,
@@ -250,9 +458,7 @@ export async function getAllProducts(): Promise<Product[]> {
         specs[categoryName] = configItem.component.name;
       });
     
-      const discountPrice = config.isPublic ? Math.round(config.totalPrice * 0.9 * 100) / 100 : null;
-  
-      products.push({
+      const discountPrice = config.isPublic ? Math.round(config.totalPrice * 0.9 * 100) / 100 : null;      products.push({
         id: config.id,
         name: config.name,
         category: getConfigCategory(specs),
@@ -267,19 +473,21 @@ export async function getAllProducts(): Promise<Product[]> {
           count: 15,
         },
       });
-    }
- 
+    }    
     const components = await prisma.component.findMany({
       include: {
         category: true,
-        specValues: {
-          include: {
-            specKey: true
-          }
-        }
+        cpu: true,
+        gpu: true,
+        motherboard: true,
+        ram: true,
+        storage: true,
+        psu: true,
+        cooling: true,
+        caseModel: true,
       },
       where: {
-        stock: {
+        quantity: {
           gt: 0
         }
       },
@@ -287,22 +495,57 @@ export async function getAllProducts(): Promise<Product[]> {
     });
 
     for (const component of components) {
-      const specs: Record<string, string> = { ...(component.specifications as any || {}) };
-    
-      for (const specValue of component.specValues) {
-        specs[specValue.specKey.name] = specValue.value;
-      }
+      const specs = extractComponentSpecifications(component);
 
       products.push({
-        id: component.id,
-        name: component.name,
+        id: component.id,        name: component.name,
         category: component.category.name,
         description: component.description || '',
         specs,
         price: component.price,
-        discountPrice: null, 
-        imageUrl: component.imageUrl,
-        stock: component.stock,
+        discountPrice: component.discountPrice, 
+        imageUrl: component.imagesUrl,
+        stock: component.quantity,
+        ratings: {
+          average: 4.2,
+          count: 12,
+        },
+      });
+    }
+
+    const peripherals = await prisma.peripheral.findMany({
+      include: {
+        category: true,
+        keyboard: true,
+        mouse: true,
+        monitor: true,
+        headphones: true,
+        speakers: true,
+        microphone: true,
+        camera: true,
+        gamepad: true,
+        mousePad: true,
+      },
+      where: {
+        quantity: {
+          gt: 0
+        }
+      },
+      take: 20 
+    });
+
+    for (const peripheral of peripherals) {
+      const specs = extractPeripheralSpecifications(peripheral);
+
+      products.push({
+        id: peripheral.id,
+        name: peripheral.name,        category: peripheral.category.name,
+        description: peripheral.description || '',
+        specs,
+        price: peripheral.price,
+        discountPrice: peripheral.discountPrice, 
+        imageUrl: peripheral.imagesUrl,
+        stock: peripheral.quantity,
         ratings: {
           average: 4.2,
           count: 12,
@@ -320,36 +563,34 @@ export async function getAllProducts(): Promise<Product[]> {
 /**
  * Get products by category
  */
-export async function getProductsByCategory(category: string): Promise<Product[]> {
-  if (category === 'peripheral') {
-    // Get all peripheral type components
-    const peripheralComponents = await prisma.component.findMany({
+export async function getProductsByCategory(category: string): Promise<Product[]> {  if (category === 'peripheral') {
+    const peripheralProducts = await prisma.peripheral.findMany({
       where: {
-        categoryId: {
-          in: (
-            await prisma.componentCategory.findMany({
-              where: { type: 'peripheral' }
-            })
-          ).map(c => c.id)
-        },
-        stock: { gt: 0 }
+        quantity: { gt: 0 }
       },
       include: {
-        category: true
+        category: true,
+        keyboard: true,
+        mouse: true,
+        monitor: true,
+        headphones: true,
+        speakers: true,
+        microphone: true,
+        camera: true,
+        gamepad: true,
+        mousePad: true,
       }
-    });
-
-    // Map to product interface
-    return peripheralComponents.map(p => ({
+    });    
+    return peripheralProducts.map(p => ({
       id: p.id,
       name: p.name,
       category: p.category.name,
       description: p.description || '',
-      specs: p.specifications ? JSON.parse(p.specifications as string) : {},
+      specs: extractPeripheralSpecifications(p),
       price: p.price,
       discountPrice: p.discountPrice,
-      imageUrl: p.imageUrl,
-      stock: p.stock
+      imageUrl: p.imagesUrl,
+      stock: p.quantity
     }));
   }
 
@@ -400,35 +641,29 @@ export async function getProductsByCategory(category: string): Promise<Product[]
             },
           });
         }
-      }
-    } else if (category === 'peripheral') {
-      const peripherals = await prisma.component.findMany({
+      }    } else if (category === 'peripheral') {
+      const peripherals = await prisma.peripheral.findMany({
         where: {
-          category: {
-            type: 'peripheral'
-          },
-          stock: {
+          quantity: {
             gt: 0
           }
         },
         include: {
           category: true,
-          specValues: {
-            include: {
-              specKey: true
-            }
-          }
+          keyboard: true,
+          mouse: true,
+          monitor: true,
+          headphones: true,
+          speakers: true,
+          microphone: true,
+          camera: true,
+          gamepad: true,
+          mousePad: true,
         }
       });
 
       for (const peripheral of peripherals) {
-        const specs: Record<string, string> = { ...(peripheral.specifications as any || {}) };
-        
-        for (const specValue of peripheral.specValues) {
-          specs[specValue.specKey.name] = specValue.value;
-        }
-
-        products.push({
+        const specs = extractPeripheralSpecifications(peripheral);        products.push({
           id: peripheral.id,
           name: peripheral.name,
           category: peripheral.category.name,
@@ -436,15 +671,14 @@ export async function getProductsByCategory(category: string): Promise<Product[]
           specs,
           price: peripheral.price,
           discountPrice: peripheral.discountPrice,
-          imageUrl: peripheral.imageUrl,
-          stock: peripheral.stock,
+          imageUrl: peripheral.imagesUrl,
+          stock: peripheral.quantity,
           ratings: {
             average: 4.2,
             count: 12,
           },
         });
-      }
-    } else {
+      }    } else {
       const components = await prisma.component.findMany({
         where: {
           category: {
@@ -453,37 +687,35 @@ export async function getProductsByCategory(category: string): Promise<Product[]
               { name: category }
             ]
           },
-          stock: {
+          quantity: {
             gt: 0
           }
         },
         include: {
           category: true,
-          specValues: {
-            include: {
-              specKey: true
-            }
-          }
+          cpu: true,
+          gpu: true,
+          motherboard: true,
+          ram: true,
+          storage: true,
+          psu: true,
+          cooling: true,
+          caseModel: true,
         }
       });
 
       for (const component of components) {
-        const specs: Record<string, string> = { ...(component.specifications as any || {}) };
-   
-        for (const specValue of component.specValues) {
-          specs[specValue.specKey.name] = specValue.value;
-        }
+        const specs = extractComponentSpecifications(component);
 
         products.push({
           id: component.id,
           name: component.name,
-          category: component.category.name,
-          description: component.description || '',
+          category: component.category.name,          description: component.description || '',
           specs,
           price: component.price,
-          discountPrice: null, 
-          imageUrl: component.imageUrl,
-          stock: component.stock,
+          discountPrice: component.discountPrice, 
+          imageUrl: component.imagesUrl,
+          stock: component.quantity,
           ratings: {
             average: 4.2,
             count: 12,

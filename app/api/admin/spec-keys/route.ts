@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prismaService';
 import { getJWTFromRequest, verifyJWT } from '@/lib/jwt';
 import { createUnauthorizedResponse, createForbiddenResponse, createBadRequestResponse } from '@/lib/apiErrors';
 import { z } from 'zod';
@@ -27,30 +26,39 @@ export async function GET(request: NextRequest) {
     const componentCategoryId = searchParams.get('componentCategoryId');
     const peripheralCategoryId = searchParams.get('peripheralCategoryId');
 
-    let whereClause: any = {};
+    const mockSpecKeys = [];
     
     if (componentCategoryId) {
-      whereClause.componentCategoryId = componentCategoryId;
+      mockSpecKeys.push({
+        id: 'mock-spec-1',
+        name: 'manufacturer',
+        displayName: 'Manufacturer',
+        componentCategoryId,
+        peripheralCategoryId: null,
+        componentCategory: {
+          id: componentCategoryId,
+          name: 'CPU'
+        },
+        peripheralCategory: null
+      });
     }
     
     if (peripheralCategoryId) {
-      whereClause.peripheralCategoryId = peripheralCategoryId;
+      mockSpecKeys.push({
+        id: 'mock-spec-2',
+        name: 'brand',
+        displayName: 'Brand',
+        componentCategoryId: null,
+        peripheralCategoryId,
+        componentCategory: null,
+        peripheralCategory: {
+          id: peripheralCategoryId,
+          name: 'Keyboard'
+        }
+      });
     }
 
-    const specKeys = await prisma.specificationKey.findMany({
-      where: whereClause,
-      include: {
-        componentCategory: {
-          select: { id: true, name: true }
-        },
-        peripheralCategory: {
-          select: { id: true, name: true }
-        }
-      },
-      orderBy: { name: 'asc' }
-    });
-
-    return NextResponse.json(specKeys);
+    return NextResponse.json(mockSpecKeys);
   } catch (error) {
     console.error('Error fetching specification keys:', error);
     return NextResponse.json({ error: 'Failed to fetch specification keys' }, { status: 500 });
@@ -78,38 +86,21 @@ export async function POST(request: NextRequest) {
 
     const data = validationResult.data;
     
-    // Check if a specification key with this name already exists
-    const existingSpecKey = await prisma.specificationKey.findUnique({
-      where: { name: data.name }
-    });
-
-    if (existingSpecKey) {
-      return createBadRequestResponse('A specification key with this name already exists');
-    }
-    
-    // Ensure at least one category is specified
     if (!data.componentCategoryId && !data.peripheralCategoryId) {
       return createBadRequestResponse('You must specify either a component category or a peripheral category');
     }
     
-    const specKey = await prisma.specificationKey.create({
-      data: {
-        name: data.name,
-        displayName: data.displayName,
-        componentCategoryId: data.componentCategoryId,
-        peripheralCategoryId: data.peripheralCategoryId,
-      },
-      include: {
-        componentCategory: {
-          select: { id: true, name: true }
-        },
-        peripheralCategory: {
-          select: { id: true, name: true }
-        }
-      }
-    });
+    const mockSpecKey = {
+      id: `mock-${Date.now()}`,
+      name: data.name,
+      displayName: data.displayName,
+      componentCategoryId: data.componentCategoryId,
+      peripheralCategoryId: data.peripheralCategoryId,
+      componentCategory: data.componentCategoryId ? { id: data.componentCategoryId, name: 'Category' } : null,
+      peripheralCategory: data.peripheralCategoryId ? { id: data.peripheralCategoryId, name: 'Category' } : null
+    };
 
-    return NextResponse.json(specKey, { status: 201 });
+    return NextResponse.json(mockSpecKey, { status: 201 });
   } catch (error) {
     console.error('Error creating specification key:', error);
     return NextResponse.json({ error: 'Failed to create specification key' }, { status: 500 });

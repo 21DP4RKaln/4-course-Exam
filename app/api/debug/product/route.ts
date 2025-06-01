@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
 
-/**
- * Debug endpoint to help diagnose product loading issues
- */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
     if (id) {
-      // If ID is provided, check for its existence in all possible tables
       const results = {
         queryId: id,
         exists: {
@@ -21,7 +17,6 @@ export async function GET(request: NextRequest) {
         details: {} as any
       };
       
-      // Check component
       const component = await prisma.component.findUnique({
         where: { id },
         select: { id: true, name: true, categoryId: true }
@@ -32,7 +27,6 @@ export async function GET(request: NextRequest) {
         results.details.component = component;
       }
       
-      // Check peripheral
       const peripheral = await prisma.peripheral.findUnique({
         where: { id },
         select: { id: true, name: true, categoryId: true }
@@ -43,7 +37,6 @@ export async function GET(request: NextRequest) {
         results.details.peripheral = peripheral;
       }
       
-      // Check configuration
       const configuration = await prisma.configuration.findUnique({
         where: { id },
         select: { id: true, name: true }
@@ -56,7 +49,6 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json(results);
     } else {
-      // If no ID is provided, return a sample from each table
       const components = await prisma.component.findMany({
         take: 5,
         select: { id: true, name: true, categoryId: true }

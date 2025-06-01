@@ -17,16 +17,16 @@ export async function GET(request: NextRequest) {
 
     if (!['ADMIN', 'SPECIALIST'].includes(payload.role)) {
       return createUnauthorizedResponse('Insufficient permissions')
-    }    // Get all components with their categories for parts selection
+    }    
     const components = await prisma.component.findMany({
       where: {
-        stock: { gt: 0 }
+        quantity: { gt: 0 }
       },
       select: {
         id: true,
         name: true,
         price: true,
-        stock: true,
+        quantity: true,
         category: {
           select: {
             name: true
@@ -38,12 +38,11 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Format the response
     const formattedComponents = components.map(component => ({
       id: component.id,
       name: component.name,
       price: component.price,
-      stock: component.stock,
+      stock: component.quantity,
       category: component.category.name
     }))
 

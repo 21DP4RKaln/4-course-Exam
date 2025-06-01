@@ -9,7 +9,6 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Use a client-side only effect to avoid suspense issues
   useEffect(() => {
     let isMounted = true;
     setLoading(true);

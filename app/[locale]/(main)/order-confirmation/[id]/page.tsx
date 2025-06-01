@@ -28,7 +28,6 @@ export default function OrderConfirmationPage() {
           const data = await response.json()
           setOrder(data)
           
-          // Clear the cart when order is successfully fetched
           clearCart()
         }
       } catch (error) {

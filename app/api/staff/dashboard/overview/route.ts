@@ -17,22 +17,20 @@ export async function GET(request: NextRequest) {
 
     const specialistId = payload.userId;
     
-    // Get date range parameters (default to last 30 days)
     const { searchParams } = new URL(request.url);
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
     
     const startDate = startDateParam 
       ? new Date(startDateParam) 
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); 
     
     const endDate = endDateParam
       ? new Date(endDateParam)
-      : new Date(); // Today
+      : new Date(); 
     
     const isAdmin = payload.role === 'ADMIN';
     
-    // Build repair query based on role
     const repairWhereClause = isAdmin
       ? {
           createdAt: {
@@ -52,7 +50,6 @@ export async function GET(request: NextRequest) {
           }
         };
     
-    // Get counts and data for the specialist dashboard
     const [
       assignedRepairs,
       repairsByStatus,
@@ -63,7 +60,6 @@ export async function GET(request: NextRequest) {
       lowStockComponents,
       recentRepairAssignments
     ] = await Promise.all([
-      // Total repairs assigned to this specialist
       isAdmin
         ? prisma.repair.count()
         : prisma.repair.count({
@@ -76,21 +72,18 @@ export async function GET(request: NextRequest) {
             }
           }),
       
-      // Repairs by status
       prisma.repair.groupBy({
         by: ['status'],
         _count: true,
         where: repairWhereClause
       }),
       
-      // Repairs by priority
       prisma.repair.groupBy({
         by: ['priority'],
         _count: true,
         where: repairWhereClause
       }),
       
-      // Pending repairs
       prisma.repair.findMany({
         where: {
           status: 'PENDING',
@@ -127,7 +120,6 @@ export async function GET(request: NextRequest) {
         take: 10
       }),
       
-      // In-progress repairs
       prisma.repair.findMany({
         where: {
           status: 'IN_PROGRESS',
@@ -164,7 +156,6 @@ export async function GET(request: NextRequest) {
         take: 10
       }),
       
-      // Recently completed repairs
       prisma.repair.findMany({
         where: {
           status: 'COMPLETED',
@@ -176,7 +167,7 @@ export async function GET(request: NextRequest) {
             }
           }),
           updatedAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
           }
         },
         include: {
@@ -203,25 +194,22 @@ export async function GET(request: NextRequest) {
         },
         take: 10
       }),
-      
-      // Low stock components
       prisma.component.findMany({
-        where: { stock: { lt: 10 } },
+        where: { quantity: { lt: 10 } },
         select: {
           id: true,
           name: true,
-          stock: true,
+          quantity: true,
           category: {
             select: { name: true }
           }
         },
         orderBy: {
-          stock: 'asc'
+          quantity: 'asc'
         },
         take: 20
       }),
       
-      // Recent repair assignments (for admin view)
       isAdmin ? prisma.repairSpecialist.findMany({
         take: 10,
         orderBy: {
@@ -245,7 +233,6 @@ export async function GET(request: NextRequest) {
       }) : []
     ]);
     
-    // Format response data
     const formattedRepairsByStatus = Object.fromEntries(
       repairsByStatus.map(item => [item.status, item._count])
     );

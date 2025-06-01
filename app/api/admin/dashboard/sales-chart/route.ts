@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prismaService'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication and admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -20,7 +19,6 @@ export async function GET(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get last 30 days of sales data
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -40,7 +38,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Group by date
     const salesByDate: Record<string, { date: string, sales: number, revenue: number }> = {}
     
     orders.forEach(order => {
@@ -56,7 +53,6 @@ export async function GET(request: NextRequest) {
       salesByDate[dateKey].revenue += order.totalAmount
     })
 
-    // Fill in missing dates with zero values
     const salesData = []
     for (let i = 29; i >= 0; i--) {
       const date = new Date()

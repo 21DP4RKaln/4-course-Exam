@@ -36,13 +36,21 @@ export default function OrderDetailsPage() {
       router.push(`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`)
     }
   }, [isAuthenticated, loading, router, locale, pathname])
-
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
         const response = await fetch(`/api/orders/${orderId}`);
         if (response.ok) {
           const data = await response.json();
+          
+          if (data.discount === null || data.discount === undefined) {
+            data.discount = 0;
+          }
+          
+          if (data.shippingCost === null || data.shippingCost === undefined) {
+            data.shippingCost = 10;
+          }
+          
           setOrder(data);
         } else {
           setOrder(null);
@@ -241,16 +249,49 @@ export default function OrderDetailsPage() {
                 ))}
               </>
             )}
-          </div>
-          
-          <div className="mt-8 text-right">
+          </div>          <div className="mt-8 text-right">
             <div className="space-y-2">
-              <div className="flex justify-between">
+              {/* Calculate subtotal from order items */}              <div className="flex justify-between">
                 <span className="text-neutral-500 dark:text-neutral-400">{t('subtotal')}:</span>
-                <span className="font-medium text-neutral-900 dark:text-white">€{order.totalAmount.toFixed(2)}</span>
-              </div>              <div className="flex justify-between">
+                <span className="font-medium text-neutral-900 dark:text-white">
+                  €{(
+                    (order.orderItems ? order.orderItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0) : 0) +
+                    (order.configuration && order.configuration.components ? 
+                      order.configuration.components.reduce((sum: number, item: any) => 
+                        sum + (item.component.price * item.quantity), 0) : 0)
+                  ).toFixed(2)}
+                </span>
+              </div>              {/* Display any discount if applied */}
+              {(() => {
+                const calculatedSubtotal = (
+                  (order.orderItems ? order.orderItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0) : 0) +
+                  (order.configuration && order.configuration.components ? 
+                    order.configuration.components.reduce((sum: number, item: any) => 
+                      sum + (item.component.price * item.quantity), 0) : 0)
+                );
+                
+                const shippingCost = (order.shippingCost !== undefined && order.shippingCost !== null) ? 
+                  order.shippingCost : 10;
+                
+                let actualDiscount = order.discount;
+                
+                if ((!actualDiscount || actualDiscount === 0) && 
+                    (calculatedSubtotal + shippingCost - order.totalAmount > 0.01)) {
+                  actualDiscount = parseFloat((calculatedSubtotal + shippingCost - order.totalAmount).toFixed(2));
+                }
+                
+                return (actualDiscount && actualDiscount > 0) ? (
+                  <div className="flex justify-between text-red-600 dark:text-red-400">
+                    <span className="text-neutral-500 dark:text-neutral-400">{t('discount')}:</span>
+                    <span>-€{actualDiscount.toFixed(2)}</span>
+                  </div>
+                ) : null;
+              })()}              <div className="flex justify-between">
                 <span className="text-neutral-500 dark:text-neutral-400">{t('shipping')}:</span>
-                <span className="font-medium text-neutral-900 dark:text-white">€10.00</span>
+                <span className="font-medium text-neutral-900 dark:text-white">
+                  €{(order.shippingCost !== undefined && order.shippingCost !== null) ? 
+                    order.shippingCost.toFixed(2) : '10.00'}
+                </span>
               </div>
               <div className="flex justify-between text-lg font-semibold border-t pt-2 border-neutral-200 dark:border-neutral-800">
                 <span className="text-neutral-900 dark:text-white">{t('totalLabel')}: </span>

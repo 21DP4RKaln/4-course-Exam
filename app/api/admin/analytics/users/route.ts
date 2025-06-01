@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prismaService'
 
 export async function GET(request: NextRequest) {
   try {
-    // Authentication check
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -16,18 +15,15 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Authorization check (admin only)
     if (payload.role !== 'ADMIN') {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get query parameters
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || 'month'
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
 
-    // Default date range: current month
     const now = new Date()
     const start = startDate 
       ? new Date(startDate)
@@ -37,20 +33,16 @@ export async function GET(request: NextRequest) {
       ? new Date(endDate) 
       : new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-    // Adjust date range based on period
     if (!startDate && !endDate) {
       if (period === 'week') {
-        // Last 7 days
         start.setDate(now.getDate() - 7)
         end.setDate(now.getDate())
       } else if (period === 'year') {
-        // Current year
         start.setMonth(0, 1)
         end.setMonth(11, 31)
       }
     }
 
-    // Get all users
     const users = await prisma.user.findMany({
       where: {
         role: 'USER',
@@ -93,11 +85,9 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Process signup data based on period
     let signupData = []
     
     if (period === 'day' || period === 'week') {
-      // Group by day
       const dailyMap = new Map()
       
       users.forEach(user => {
@@ -106,14 +96,12 @@ export async function GET(request: NextRequest) {
         dailyMap.set(day, currentCount + 1)
       })
       
-      // Create ordered array
       const days = getDaysArray(start, end)
       signupData = days.map(day => ({
         date: day,
         count: dailyMap.get(day) || 0
       }))
     } else if (period === 'month') {
-      // Group by week
       const weekMap = new Map()
       
       users.forEach(user => {
@@ -123,14 +111,12 @@ export async function GET(request: NextRequest) {
         weekMap.set(weekLabel, currentCount + 1)
       })
       
-      // Create ordered array
       const weeks = getWeeksArray(start, end)
       signupData = weeks.map(week => ({
         date: week,
         count: weekMap.get(week) || 0
       }))
     } else {
-      // Group by month for year view
       const monthlyMap = new Map()
       
       users.forEach(user => {
@@ -140,7 +126,6 @@ export async function GET(request: NextRequest) {
         monthlyMap.set(monthName, currentCount + 1)
       })
       
-      // Create ordered array
       const months = getMonthsArray(start, end)
       signupData = months.map(month => ({
         date: month,
@@ -148,12 +133,10 @@ export async function GET(request: NextRequest) {
       }))
     }
 
-    // Calculate user metrics
     const totalUsers = users.length
     const activeUsers = usersWithOrders.length
     const conversionRate = totalUsers > 0 ? (activeUsers / totalUsers) * 100 : 0
     
-    // Get highest ordering users
     const userOrders = await prisma.order.groupBy({
       by: ['userId'],
       where: {
@@ -172,11 +155,10 @@ export async function GET(request: NextRequest) {
         _all: true
       }
     })
-    
-    const userDetails = await prisma.user.findMany({
+      const userDetails = await prisma.user.findMany({
       where: {
         id: {
-          in: userOrders.map(user => user.userId)
+          in: userOrders.map(user => user.userId).filter((id): id is string => id !== null)
         }
       },
       select: {
@@ -219,7 +201,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Helper functions
 function getDaysArray(start: Date, end: Date): string[] {
   const arr = []
   const dt = new Date(start)

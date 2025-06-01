@@ -7,7 +7,6 @@ import { existsSync } from 'fs'
 import { createUnauthorizedResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
 import { z } from 'zod'
 
-// Validation schema for creating a repair request
 const createRepairSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
@@ -19,7 +18,6 @@ const createRepairSchema = z.object({
   configurationId: z.string().optional()
 });
 
-// Service pricing and estimated times
 const SERVICE_DETAILS: Record<string, { price: number; time: string }> = {
   'diagnostics': { price: 10, time: '1-3 days' },
   'hardware-replacement': { price: 20, time: '1-2 weeks' },
@@ -29,23 +27,17 @@ const SERVICE_DETAILS: Record<string, { price: number; time: string }> = {
   'custom': { price: 35, time: '1-7 days' }
 };
 
-/**
- * POST - Create a new repair request
- */
 export async function POST(request: NextRequest) {
   try {
-    // Check if it's a form submission with file
     const contentType = request.headers.get('content-type') || '';
     let imageUrl: string | null = null;
     let userId: string | null = null;
     let body: any;
     
-    // Handle form data with potential file upload
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
       const image = formData.get('image') as File | null;
       
-      // Build data object from form
       body = {
         firstName: formData.get('firstName'),
         lastName: formData.get('lastName'),
@@ -57,7 +49,6 @@ export async function POST(request: NextRequest) {
         configurationId: formData.get('configurationId')
       };
       
-      // Process image if provided
       if (image) {
         const bytes = await image.arrayBuffer();
         const buffer = Buffer.from(bytes);
@@ -77,11 +68,9 @@ export async function POST(request: NextRequest) {
         imageUrl = `/uploads/repairs/${filename}`;
       }
     } else {
-      // Regular JSON request
       body = await request.json();
     }
     
-    // Validate request data
     const validationResult = createRepairSchema.safeParse(body);
     if (!validationResult.success) {
       return createBadRequestResponse('Invalid repair request data', validationResult.error.format());
@@ -98,13 +87,11 @@ export async function POST(request: NextRequest) {
       configurationId
     } = validationResult.data;
   
-    // Try to get user ID from auth token if available
     const token = await authenticate(request);
     if (!(token instanceof Response)) {
       userId = token.userId;
     }
 
-    // If no authenticated user, try to find or create one
     if (!userId && email) {
       const existingUser = await prisma.user.findUnique({
         where: { email }
@@ -113,8 +100,6 @@ export async function POST(request: NextRequest) {
       if (existingUser) {
         userId = existingUser.id;
       } else {
-        // Create a temporary user account with a random password
-        // In a production app, you'd send an email with a link to set password
         const tempPassword = Math.random().toString(36).substring(2, 15);
         const hashedPassword = await import('bcryptjs').then(bcrypt => 
           bcrypt.hash(tempPassword, 10)
@@ -139,12 +124,9 @@ export async function POST(request: NextRequest) {
       return createBadRequestResponse('Unable to create repair - user identification required');
     }
     
-    // Get service details
     const selectedService = SERVICE_DETAILS[serviceId] || SERVICE_DETAILS.custom;
     
-    // Create repair using a transaction
     const repair = await prisma.$transaction(async (tx) => {
-      // Check if peripheralId or configurationId is valid if provided
       if (peripheralId) {
         const peripheral = await tx.peripheral.findUnique({
           where: { id: peripheralId }
@@ -165,7 +147,6 @@ export async function POST(request: NextRequest) {
         }
       }
       
-      // Create the repair
       return await tx.repair.create({
         data: {
           title: `${serviceId} - ${firstName} ${lastName}`,
@@ -198,7 +179,6 @@ ${imageUrl ? 'Image attached: ' + imageUrl : ''}
       throw error;
     });
     
-    // Send email notification (mock for now)
     const emailContent = `
 New repair request submitted:
 
@@ -241,24 +221,18 @@ Status: PENDING
   }
 }
 
-/**
- * GET - Fetch repairs for the authenticated user
- */
 export async function GET(request: NextRequest) {
   try {
-    // Authenticate user
     const authResult = await authenticate(request);
     if (authResult instanceof Response) {
       return authResult;
     }
     
-    // Parse pagination parameters
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const skip = (page - 1) * limit;
 
-    // Fetch repairs with pagination
     const [repairs, total] = await prisma.$transaction([
       prisma.repair.findMany({
         where: {
@@ -294,7 +268,6 @@ export async function GET(request: NextRequest) {
       })
     ]);
 
-    // Format the response
     const formattedRepairs = repairs.map(repair => ({
       id: repair.id,
       title: repair.title,
@@ -315,7 +288,6 @@ export async function GET(request: NextRequest) {
       } : null
     }));
     
-    // Calculate pagination metadata
     const totalPages = Math.ceil(total / limit);
     
     return NextResponse.json({
@@ -335,18 +307,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * PATCH - Update a repair (cancel it)
- */
 export async function PATCH(request: NextRequest) {
   try {
-    // Authenticate user
     const authResult = await authenticate(request);
     if (authResult instanceof Response) {
       return authResult;
     }
     
-    // Validate request body
     const body = await request.json();
     if (!body.id) {
       return createBadRequestResponse('Repair ID is required');
@@ -360,7 +327,6 @@ export async function PATCH(request: NextRequest) {
       return createBadRequestResponse('Invalid action. Only "cancel" is supported');
     }
     
-    // Check if the repair exists and belongs to the user
     const repair = await prisma.repair.findFirst({
       where: {
         id: body.id,
@@ -372,12 +338,10 @@ export async function PATCH(request: NextRequest) {
       return createBadRequestResponse('Repair not found or does not belong to the user');
     }
     
-    // Check if the repair can be cancelled
     if (!['PENDING', 'DIAGNOSING'].includes(repair.status)) {
       return createBadRequestResponse('Only pending or diagnosing repairs can be cancelled');
     }
     
-    // Update repair status
     await prisma.repair.update({
       where: { id: repair.id },
       data: {

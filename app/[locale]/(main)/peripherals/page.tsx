@@ -29,11 +29,9 @@ export default function PeripheralsPage() {
   const [error, setError] = useState<string | null>(null)
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([])
   
-  // Ref for scroll animation
   const ctaRef = useRef(null)
   const ctaInView = useInView(ctaRef, { once: true, amount: 0.3 })
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -96,7 +94,6 @@ export default function PeripheralsPage() {
   }, [])
   const getCategoryIcon = (slug: string) => {
     const icons = {
-      // Updated to match exact slugs from the database
       'keyboard': <Keyboard size={30} className="text-red-500" />,
       'mouse': <Mouse size={30} className="text-blue-500" />,
       'monitor': <Monitor size={30} className="text-purple-500" />,
@@ -104,7 +101,6 @@ export default function PeripheralsPage() {
       'speakers': <Speaker size={30} className="text-indigo-500" />,
       'gamepad': <Gamepad size={30} className="text-yellow-500" />,
       'camera': <Webcam size={30} className="text-red-500" />,
-      // Keep backwards compatibility
       'keyboards': <Keyboard size={30} className="text-red-500" />,
       'mice': <Mouse size={30} className="text-blue-500" />,
       'monitors': <Monitor size={30} className="text-purple-500" />,
@@ -188,7 +184,6 @@ export default function PeripheralsPage() {
                 <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                   {(() => {
                     try {
-                      // Mēģinām atrast tulkojumu no kategoriju tabulas, ja neizdodas - izmantojam datubāzes nosaukumu
                       return t(`categories.${category.slug}`) || category.name
                     } catch (e) {
                       return category.name
@@ -198,7 +193,6 @@ export default function PeripheralsPage() {
                 <p className="text-neutral-600 dark:text-neutral-400 mb-3">
                   {(() => {
                     try {
-                      // Mēģinām atrast apraksta tulkojumu, citādi izmantojam datubāzes aprakstu vai noklusējuma aprakstu
                       return t(`peripheralDescriptions.${category.slug}`)
                     } catch (e) {
                       return category.description || `Browse our selection of ${category.name.toLowerCase()}`

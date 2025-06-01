@@ -30,25 +30,22 @@ const createOrderSchema = z.object({
   discount: z.number(),
   shippingCost: z.number(),
   taxAmount: z.number(),
-  total: z.number()
+  total: z.number(),
+  locale: z.string().optional().default('en') // Add locale field
 })
 
 export async function POST(request: NextRequest) {
   try {
-    // Try to authenticate, but proceed with guest checkout if not authenticated
     const authResult = await authenticate(request);
     const userData = authResult instanceof Response ? null : authResult;
     const isGuest = !userData;
 
-    // Validate request body
     const body = await request.json();
     const validationResult = createOrderSchema.safeParse(body);
 
     if (!validationResult.success) {
       return createBadRequestResponse('Invalid order data', validationResult.error.format());
-    }
-
-    const {
+    }    const {
       items,
       shippingAddress,
       paymentMethod,
@@ -59,20 +56,31 @@ export async function POST(request: NextRequest) {
       shippingCost,
       taxAmount,
       total,
+      locale, // Add locale to destructuring
     } = validationResult.data;
-
-    // Verify that items exist and are in stock
     for (const item of items) {
-      if (item.type.toUpperCase() === 'COMPONENT' || item.type.toUpperCase() === 'PERIPHERAL') {
+      if (item.type.toUpperCase() === 'COMPONENT') {
         const component = await prisma.component.findUnique({
           where: { id: item.id }
         });
         
         if (!component) {
-          return createBadRequestResponse(`Product with ID ${item.id} not found`);
+          return createBadRequestResponse(`Component with ID ${item.id} not found`);
         }
 
-        if (component.stock < item.quantity) {
+        if (component.quantity < item.quantity) {
+          return createBadRequestResponse(`Insufficient stock for ${item.name}`);
+        }
+      } else if (item.type.toUpperCase() === 'PERIPHERAL') {
+        const peripheral = await prisma.peripheral.findUnique({
+          where: { id: item.id }
+        });
+        
+        if (!peripheral) {
+          return createBadRequestResponse(`Peripheral with ID ${item.id} not found`);
+        }
+
+        if (peripheral.quantity < item.quantity) {
           return createBadRequestResponse(`Insufficient stock for ${item.name}`);
         }
       } else if (item.type.toUpperCase() === 'CONFIGURATION') {
@@ -84,10 +92,7 @@ export async function POST(request: NextRequest) {
           return createBadRequestResponse(`Configuration with ID ${item.id} not found`);
         }
       }
-    }
-
-    // Create order with proper types
-    const order = await prisma.order.create({
+    }    const order = await prisma.order.create({
       data: {
         totalAmount: total,
         status: OrderStatus.PENDING,
@@ -99,6 +104,7 @@ export async function POST(request: NextRequest) {
         shippingMethod: shippingMethod.toUpperCase(),
         isGuestOrder: isGuest,
         userId: userData?.userId || null,
+        locale: locale as any, // Temporary cast until Prisma client regeneration
         orderItems: {
           create: items.map((item) => ({
             productId: item.id,
@@ -110,23 +116,32 @@ export async function POST(request: NextRequest) {
         }
       }
     });
-
-    // Update stock for components and peripherals
     for (const item of items) {
       if (item.type.toUpperCase() === 'COMPONENT' || item.type.toUpperCase() === 'PERIPHERAL') {
         await prisma.component.update({
           where: { id: item.id },
           data: {
-            stock: {
+            quantity: {
               decrement: item.quantity
             }
           }
         });
       }
-    }    // For all orders, return the order ID
+    }
+      if (paymentMethod.toLowerCase() === 'cash') {
+      try {
+        const { sendOrderReceipt } = require('@/lib/orderEmail');      
+        sendOrderReceipt(order.id, locale).catch((err: Error) => {
+          console.error('Error sending order receipt email:', err);
+        });
+      } catch (emailError) {
+        console.error('Error sending order receipt email:', emailError);
+      }
+    }
+    
     return NextResponse.json({ 
       id: order.id,
-      paymentMethod: 'cash'
+      paymentMethod
     });
   } catch (error) {
     console.error('Error creating order:', error);
@@ -134,24 +149,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * GET - Get all orders for the authenticated user
- */
 export async function GET(request: NextRequest) {
   try {
-    // Authenticate user
     const authResult = await authenticate(request);
     if (authResult instanceof Response) {
       return authResult;
     }
 
-    // Parse pagination parameters
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const skip = (page - 1) * limit;
     
-    // Fetch orders with pagination
     const [orders, total] = await prisma.$transaction([
       prisma.order.findMany({
         where: { userId: authResult.userId },
@@ -167,7 +176,6 @@ export async function GET(request: NextRequest) {
       })
     ]);
     
-    // Format the response
     const formattedOrders = orders.map(order => ({
       id: order.id,
       status: order.status,
@@ -185,7 +193,6 @@ export async function GET(request: NextRequest) {
       }))
     }));
     
-    // Calculate pagination metadata
     const totalPages = Math.ceil(total / limit);
     
     return NextResponse.json({
@@ -205,18 +212,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * PATCH - Update an order (cancel it)
- */
 export async function PATCH(request: NextRequest) {
   try {
-    // Authenticate user
     const authResult = await authenticate(request);
     if (authResult instanceof Response) {
       return authResult;
     }
     
-    // Validate request body
     const body = await request.json();
     if (!body.id) {
       return createBadRequestResponse('Order ID is required');
@@ -230,7 +232,6 @@ export async function PATCH(request: NextRequest) {
       return createBadRequestResponse('Invalid action. Only "cancel" is supported');
     }
     
-    // Check if the order exists and belongs to the user
     const order = await prisma.order.findFirst({
       where: {
         id: body.id,
@@ -245,14 +246,11 @@ export async function PATCH(request: NextRequest) {
       return createBadRequestResponse('Order not found or does not belong to the user');
     }
     
-    // Check if the order can be cancelled (only PENDING orders can be cancelled)
     if (order.status !== 'PENDING') {
       return createBadRequestResponse('Only pending orders can be cancelled');
     }
     
-    // Use transaction to ensure atomicity
     await prisma.$transaction(async (tx) => {
-      // Update order status
       await tx.order.update({
         where: { id: order.id },
         data: {
@@ -261,13 +259,12 @@ export async function PATCH(request: NextRequest) {
         }
       });
       
-      // Restore stock for component items
       for (const item of order.orderItems) {
         if (item.productType === 'COMPONENT' || item.productType === 'PERIPHERAL') {
           await tx.component.update({
             where: { id: item.productId },
             data: {
-              stock: {
+              quantity: {
                 increment: item.quantity
               }
             }
@@ -275,7 +272,6 @@ export async function PATCH(request: NextRequest) {
         }
       }
       
-      // Create audit log
       await tx.auditLog.create({
         data: {
           userId: authResult.userId,

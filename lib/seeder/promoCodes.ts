@@ -1,136 +1,127 @@
 import { PrismaClient, PromoCodeScope } from '@prisma/client';
 
-export async function seedPromoCodes(prisma: PrismaClient) {
-  const now = new Date();
-  // Different types of promo codes
-  const promoCodes = [
+export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  const promoCodes = [
     {
-      code: "WELCOME10",
+      code: 'WELCOME10',
+      description: 'Welcome discount for new customers',
       discountPercentage: 10,
-      maxDiscountAmount: 15000,
-      minOrderValue: 5000,
-      expiresAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      maxDiscountAmount: null,
+      minOrderValue: 100.0,
       maxUsage: 1000,
-      usageCount: 348,
+      usageCount: 0,
       isActive: true,
-      description: "10% discount for new customers",
+      expiresAt: new Date('2025-12-31'),
       scope: PromoCodeScope.ALL
     },
     {
-      code: "SUMMER25",
-      discountPercentage: 25,
-      maxDiscountAmount: 25000,
-      minOrderValue: 50000,
-      expiresAt: new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000), // 90 days from now (summer)
+      code: 'GAMING20',
+      description: '20% off gaming configurations',
+      discountPercentage: 20,
+      maxDiscountAmount: null,
+      minOrderValue: 500.0,
       maxUsage: 500,
       usageCount: 0,
       isActive: true,
-      description: "Summer sale - 25% off high-end systems",
+      expiresAt: new Date('2025-08-31'),
       scope: PromoCodeScope.ALL
     },
     {
-      code: "FLAT5000",
-      discountPercentage: 100, // Since Prisma schema only has discountPercentage, using 100 for flat discount
-      maxDiscountAmount: 5000, // €50 flat discount
-      minOrderValue: 20000,
-      expiresAt: new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
-      maxUsage: 200,
-      usageCount: 87,
+      code: 'SUMMER50',
+      description: '5% off with max $50 discount - summer sale',
+      discountPercentage: 5,
+      maxDiscountAmount: 50.0,
+      minOrderValue: 200.0,
+      maxUsage: 300,
+      usageCount: 0,
       isActive: true,
-      description: "€50 off your purchase over €200",
+      expiresAt: new Date('2025-07-31'),
       scope: PromoCodeScope.ALL
     },
     {
-      code: "VIP15",
+      code: 'COMPONENTS15',
+      description: '15% off individual components',
       discountPercentage: 15,
       maxDiscountAmount: null,
-      minOrderValue: 0,
-      expiresAt: new Date(now.getTime() + 305 * 24 * 60 * 60 * 1000), // ~10 months from now
-      maxUsage: 50,
-      usageCount: 12,
+      minOrderValue: 75.0,
+      maxUsage: 750,
+      usageCount: 0,
       isActive: true,
-      description: "15% VIP customer discount",
+      expiresAt: new Date('2025-10-31'),
       scope: PromoCodeScope.ALL
     },
     {
-      code: "FLASH30",
-      discountPercentage: 30,
-      maxDiscountAmount: 30000,
-      minOrderValue: 75000,
-      expiresAt: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
-      maxUsage: 100,
-      usageCount: 23,
+      code: 'BLACKFRIDAY',
+      description: 'Black Friday mega discount',
+      discountPercentage: 25,
+      maxDiscountAmount: null,
+      minOrderValue: 300.0,
+      maxUsage: 2000,
+      usageCount: 0,
       isActive: true,
-      description: "Flash sale - 30% off for 48 hours",
+      expiresAt: new Date('2025-11-30'),
       scope: PromoCodeScope.ALL
     },
     {
-      code: "BUNDLE20",
-      discountPercentage: 20,
-      maxDiscountAmount: 40000,
-      minOrderValue: 100000,
-      expiresAt: new Date(now.getTime() + 20 * 24 * 60 * 60 * 1000), // 20 days from now
-      maxUsage: 75,
-      usageCount: 42,
+      code: 'PERIPHERAL10',
+      description: '10% off peripherals',
+      discountPercentage: 10,
+      maxDiscountAmount: null,
+      minOrderValue: 50.0,
+      maxUsage: 400,
+      usageCount: 0,
       isActive: true,
-      description: "20% off when you spend over €1000",
+      expiresAt: new Date('2025-09-30'),
       scope: PromoCodeScope.ALL
     },
     {
-      code: "HOLIDAY50",
-      discountPercentage: 50,
-      maxDiscountAmount: 100000,
-      minOrderValue: 200000,
-      expiresAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000), // yesterday (expired)
-      maxUsage: 50,
-      usageCount: 50,
-      isActive: false,
-      description: "Holiday special - 50% off premium configurations (EXPIRED)",
+      code: 'STUDENT',
+      description: 'Student discount program',
+      discountPercentage: 12,
+      maxDiscountAmount: null,
+      minOrderValue: 100.0,
+      maxUsage: 1500,
+      usageCount: 0,
+      isActive: true,
+      expiresAt: new Date('2025-12-31'),
       scope: PromoCodeScope.ALL
     },
     {
-      code: "EARLYBIRD",
-      discountPercentage: 15,
-      maxDiscountAmount: 20000,
-      minOrderValue: 0,
-      expiresAt: new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000), // 45 days in the future
+      code: 'FIRSTBUILD',
+      description: 'First time PC builder discount - 10% off with max $75 discount',
+      discountPercentage: 10,
+      maxDiscountAmount: 75.0,
+      minOrderValue: 400.0,
+      maxUsage: 200,
+      usageCount: 0,
+      isActive: true,
+      expiresAt: new Date('2025-11-15'),
+      scope: PromoCodeScope.ALL
+    },
+    {
+      code: 'UPGRADE25',
+      description: '5% off upgrade components with max $25 discount',
+      discountPercentage: 5,
+      maxDiscountAmount: 25.0,
+      minOrderValue: 150.0,
+      maxUsage: 600,
+      usageCount: 0,
+      isActive: true,
+      expiresAt: new Date('2025-08-15'),
+      scope: PromoCodeScope.ALL
+    },
+    {
+      code: 'LOYALTY',
+      description: 'Loyalty program exclusive discount',
+      discountPercentage: 18,
+      maxDiscountAmount: null,
+      minOrderValue: 250.0,
       maxUsage: 100,
       usageCount: 0,
       isActive: true,
-      description: "Early bird discount for next month's sale (not active yet)",
-      scope: PromoCodeScope.ALL
-    },
-    {
-      code: "FREESHIP",
-      discountPercentage: 100, // Full discount percentage
-      maxDiscountAmount: 1000, // €10 shipping discount
-      minOrderValue: 0,
-      expiresAt: new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
-      maxUsage: null, // unlimited
-      usageCount: 853,
-      isActive: true,
-      description: "Free shipping on all orders",
-      scope: PromoCodeScope.ALL
-    },
-    {
-      code: "EMPLOYEE50",
-      discountPercentage: 50,
-      maxDiscountAmount: 100000,
-      minOrderValue: 0,
-      expiresAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
-      maxUsage: 10,
-      usageCount: 4,
-      isActive: true,
-      description: "50% employee discount",
+      expiresAt: new Date('2025-12-31'),
       scope: PromoCodeScope.ALL
     }
   ];
-    // Insert promo codes
-  for (const promoCode of promoCodes) {
-    await prisma.promoCode.upsert({
-      where: { code: promoCode.code },
-      update: promoCode,
-      create: promoCode
-    });
-  }
+
+  await prisma.promoCode.createMany({ data: promoCodes, skipDuplicates: true });
 }

@@ -96,7 +96,6 @@ export default function CartPage() {
         body: JSON.stringify(requestData)
       })
       
-      // Log the full response for debugging
       console.log('Response:', {
         status: response.status,
         statusText: response.statusText,
@@ -116,7 +115,6 @@ export default function CartPage() {
         return
       }
 
-      // replace server error handling to use translations
       if (!response.ok) {
         console.error('Promo code validation failed with status:', response.status, data)
         if (response.status === 400) {
@@ -157,7 +155,6 @@ export default function CartPage() {
     if (promoDiscount > 0 && promoCode) {
       checkoutUrl.searchParams.set('promo', promoCode)
     }
-    // Add guest parameter if user is not authenticated
     if (!isAuthenticated) {
       checkoutUrl.searchParams.set('guest', 'true')
     }
@@ -441,7 +438,7 @@ export default function CartPage() {
                         </h5>
                         <motion.h5 
                           className="text-lg font-bold text-neutral-900 dark:text-white"
-                          key={finalTotal} // Šī atslēga liks animēt cenu katru reizi, kad tā mainās
+                          key={finalTotal} 
                           initial={{ scale: 1 }}
                           animate={{ scale: [1, 1.1, 1] }}
                           transition={{ duration: 0.5 }}

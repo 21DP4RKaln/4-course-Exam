@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prismaService'
 export async function GET(request: NextRequest) {
   console.log('🔍 Reviews API called')
   try {
-    // Check if we should use Google Places API or database
     const useGoogleApi = process.env.USE_GOOGLE_REVIEWS === 'true' && 
                         process.env.GOOGLE_PLACES_API_KEY && 
                         process.env.GOOGLE_PLACE_ID;
@@ -21,7 +20,7 @@ export async function GET(request: NextRequest) {
         
         const response = await fetch(url, { 
           headers: { 'Accept': 'application/json' },
-          next: { revalidate: 3600 } // Cache for 1 hour
+          next: { revalidate: 3600 } 
         })
         
         if (!response.ok) {
@@ -58,10 +57,8 @@ export async function GET(request: NextRequest) {
         });
       } catch (googleError) {
         console.error('Google API error:', googleError);
-        // Fall through to database method
       }
     }
-      // Database fallback method
     console.log('🔍 Falling back to database reviews')
     
     try {
@@ -78,7 +75,6 @@ export async function GET(request: NextRequest) {
         take: 3
       })
       
-      // Calculate average rating from all configuration reviews
       const ratingsData = await prisma.review.aggregate({
         where: {
           productType: 'CONFIGURATION'
@@ -108,7 +104,6 @@ export async function GET(request: NextRequest) {
       console.error('Database error:', dbError)
     }
     
-    // If no reviews found in the database, provide static fallback data
     console.log('🔍 Using static fallback reviews')
     
     return NextResponse.json({
@@ -141,7 +136,6 @@ export async function GET(request: NextRequest) {
     } catch (error) {
     console.error('Error retrieving reviews:', error)
    
-    // Always provide fallback data to prevent errors propagating to the UI
     return NextResponse.json({
       reviews: [
         {

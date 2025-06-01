@@ -1,0 +1,42 @@
+/* Custom scrollbar for dark mode */
+.custom-scrollbar-dark::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar-dark::-webkit-scrollbar-track {
+  background: #202020;
+  border-radius: 10px;
+}
+.custom-scrollbar-dark::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 10px;
+}
+.custom-scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  background: #555555;
+}
+
+/* Custom scrollbar for light mode */
+.custom-scrollbar-light::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar-light::-webkit-scrollbar-track {
+  background: #f8f8f8;
+  border-radius: 10px;
+}
+.custom-scrollbar-light::-webkit-scrollbar-thumb {
+  background: #cfcfcf;
+  border-radius: 10px;
+}
+.custom-scrollbar-light::-webkit-scrollbar-thumb:hover {
+  background: #bbbbbb;
+}
+
+/* Firefox scrollbar styles */
+.custom-scrollbar-dark {
+  scrollbar-width: thin;
+  scrollbar-color: #4a4a4a #202020;
+}
+
+.custom-scrollbar-light {
+  scrollbar-width: thin;
+  scrollbar-color: #cfcfcf #f8f8f8;
+}

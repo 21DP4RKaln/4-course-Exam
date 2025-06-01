@@ -1,178 +1,94 @@
-// Case-specific filter groups
-import { Component } from '../types';
-import { FilterOption, FilterGroup, extractBrandOptions } from '../filterInterfaces';
-
-// Helper function to create filter option
-const createFilterOption = (id: string, name: string, category?: string): FilterOption => {
-  return {
-    id,
-    name
-  };
-};
-
-// Helper function to create filter options for brands
-const createBrandOptions = (brandMap: Map<string, string>): FilterOption[] => {
-  return Array.from(brandMap.entries()).map(([brand, name]) => {
-    const id = brand.startsWith('brand=') ? brand : `brand=${brand}`;
-    return createFilterOption(id, name, 'brands');
-  });
-};
+import { Component } from '../types'
+import { FilterGroup, FilterOption, extractBrandOptions } from '../filterInterfaces'
 
 export const createCaseFilterGroups = (components: Component[]): FilterGroup[] => {
-  console.log("Creating Case filter groups from components");
-  
-  // Initialize Case filter groups
-  const filterGroups: FilterGroup[] = [];
-  
-  // Create maps to collect filter options
-  const brandOptions = extractBrandOptions(components);
-  const formFactorOptions = new Map<string, string>();
-  const colorOptions = new Map<string, string>();
-  const sideWindowOptions = new Map<string, string>();
-  const materialOptions = new Map<string, string>();
-  
-  // Process components to extract Case specs
-  components.forEach(component => {
-    try {
-      const name = component.name.toLowerCase();
-      
-      // Extract form factor from name
-      if (name.includes('atx')) {
-        formFactorOptions.set('form_factor=ATX', 'ATX');
-      }
-      if (name.includes('micro-atx') || name.includes('micro atx') || name.includes('matx') || name.includes('m-atx')) {
-        formFactorOptions.set('form_factor=Micro-ATX', 'Micro-ATX');
-      }
-      if (name.includes('mini-itx') || name.includes('mini itx') || name.includes('mitx')) {
-        formFactorOptions.set('form_factor=Mini-ITX', 'Mini-ITX');
-      }
-      if (name.includes('e-atx') || name.includes('eatx')) {
-        formFactorOptions.set('form_factor=E-ATX', 'E-ATX');
-      }
-      
-      // Extract color from name
-      const commonColors = ['black', 'white', 'red', 'blue', 'green', 'silver', 'rgb', 'gray', 'grey'];
-      for (const color of commonColors) {
-        if (name.includes(color)) {
-          // Capitalize first letter
-          const formattedColor = color.charAt(0).toUpperCase() + color.slice(1);
-          colorOptions.set(`color=${formattedColor}`, formattedColor);
-        }
-      }
-      
-      // Check for side window/panel
-      if (name.includes('glass') || name.includes('window') || name.includes('tempered') || name.includes('transparent')) {
-        sideWindowOptions.set('side_window=Yes', 'With Window');
-      }
-      
-      // Extract specs from the component specifications
-      if (component.specifications) {
-        Object.entries(component.specifications).forEach(([key, value]) => {
-          if (value === null || value === undefined || value === '') return;
-          
-          const keyLower = key.toLowerCase().trim();
-          const valueStr = String(value).trim().toLowerCase();
-          
-          // Form Factor
-          if (keyLower.includes('form factor') || keyLower === 'form' || keyLower.includes('motherboard')) {
-            if (valueStr.includes('atx') && !valueStr.includes('micro') && !valueStr.includes('mini') && !valueStr.includes('e-atx')) {
-              formFactorOptions.set('form_factor=ATX', 'ATX');
-            }
-            if (valueStr.includes('micro-atx') || valueStr.includes('micro atx') || valueStr.includes('matx') || valueStr.includes('m-atx')) {
-              formFactorOptions.set('form_factor=Micro-ATX', 'Micro-ATX');
-            }
-            if (valueStr.includes('mini-itx') || valueStr.includes('mini itx') || valueStr.includes('mitx')) {
-              formFactorOptions.set('form_factor=Mini-ITX', 'Mini-ITX');
-            }
-            if (valueStr.includes('e-atx') || valueStr.includes('eatx')) {
-              formFactorOptions.set('form_factor=E-ATX', 'E-ATX');
-            }
-          }
-          
-          // Color
-          if (keyLower.includes('color')) {
-            // Capitalize first letter
-            const formattedColor = valueStr.charAt(0).toUpperCase() + valueStr.slice(1);
-            colorOptions.set(`color=${formattedColor}`, formattedColor);
-          }
-          
-          // Side Window/Panel
-          if (keyLower.includes('window') || keyLower.includes('panel') || keyLower.includes('glass')) {
-            if (valueStr === 'yes' || valueStr.includes('glass') || valueStr.includes('window') || valueStr.includes('transparent')) {
-              sideWindowOptions.set('side_window=Yes', 'With Window');
-            } else if (valueStr === 'no' || valueStr.includes('solid') || valueStr.includes('closed')) {
-              sideWindowOptions.set('side_window=No', 'No Window');
-            }
-          }
-          
-          // Material
-          if (keyLower.includes('material')) {
-            if (valueStr.includes('steel')) {
-              materialOptions.set('material=Steel', 'Steel');
-            } else if (valueStr.includes('aluminum') || valueStr.includes('aluminium')) {
-              materialOptions.set('material=Aluminum', 'Aluminum');
-            } else if (valueStr.includes('plastic')) {
-              materialOptions.set('material=Plastic', 'Plastic');
-            } else if (valueStr.includes('glass')) {
-              materialOptions.set('material=Glass', 'Glass');
-            } else {
-              // Capitalize first letter
-              const formattedMaterial = valueStr.charAt(0).toUpperCase() + valueStr.slice(1);
-              materialOptions.set(`material=${formattedMaterial}`, formattedMaterial);
-            }
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error processing Case component:", error);
+  const brandMap = extractBrandOptions(components)
+  const brandOptions: FilterOption[] = Array.from(brandMap.entries()).map(([value, label]) => ({
+    id: `manufacturer=${value}`,
+    name: label
+  }))
+
+  // Form factor options (ATX, mATX, ITX, etc.)
+  const formFactorSet = new Set<string>()
+  components.forEach(c => {
+    const formSpec = c.specifications?.['formFactor'] || c.specifications?.['Form Factor'] ||
+                     c.specifications?.['format'] || c.specifications?.['size']
+    if (formSpec) formFactorSet.add(String(formSpec))
+  })
+  const formFactorOptions: FilterOption[] = Array.from(formFactorSet).map(f => ({ id: `formFactor=${f}`, name: f }))
+
+  // Color options
+  const colorSet = new Set<string>()
+  components.forEach(c => {
+    const colorSpec = c.specifications?.['color'] || c.specifications?.['Color']
+    if (colorSpec) colorSet.add(String(colorSpec))
+  })
+  const colorOptions: FilterOption[] = Array.from(colorSet).map(c => ({ id: `color=${c}`, name: c }))
+
+  // Side panel options (Tempered Glass, Acrylic, etc.)
+  const panelSet = new Set<string>()
+  components.forEach(c => {
+    const panelSpec = c.specifications?.['sidePanel'] || c.specifications?.['Side Panel'] || 
+                      c.specifications?.['windowType'] || c.specifications?.['Window Type']
+    if (panelSpec) panelSet.add(String(panelSpec))
+  })
+  const panelOptions: FilterOption[] = Array.from(panelSet).map(p => ({ id: `sidePanel=${p}`, name: p }))
+
+  // Motherboard support options
+  const mbSupportSet = new Set<string>()
+  components.forEach(c => {
+    const mbSpec = c.specifications?.['motherboardSupport'] || c.specifications?.['Motherboard Support'] ||
+                   c.specifications?.['compatibleMotherboards'] || c.specifications?.['Compatible Motherboards']
+    
+    if (mbSpec) {
+      const formats = String(mbSpec).split(/[,\/]/).map(f => f.trim())
+      formats.forEach(f => mbSupportSet.add(f))
     }
-  });
-    // Create filter groups
-  if (brandOptions.size > 0) {
-    filterGroups.push({
-      title: 'Manufacturer',
-      titleTranslationKey: 'filterGroups.manufacturer',
-      type: 'manufacturer',
-      options: createBrandOptions(brandOptions)
-    });
+  })
+  const mbSupportOptions: FilterOption[] = Array.from(mbSupportSet).map(m => ({ id: `motherboardSupport=${m}`, name: m }))
+
+  // RGB lighting options
+  const rgbSet = new Set<string>()
+  components.forEach(c => {
+    const rgbSpec = c.specifications?.['rgb'] || c.specifications?.['RGB'] || 
+                    c.specifications?.['lighting'] || c.specifications?.['Lighting']
+    if (rgbSpec) {
+      const value = String(rgbSpec)
+      if (value.toLowerCase() === 'true' || value.toLowerCase() === 'yes' || 
+          value.toLowerCase().includes('rgb')) {
+        rgbSet.add('Yes') 
+      } 
+      else if (value.toLowerCase() === 'false' || value.toLowerCase() === 'no') {
+        rgbSet.add('No')
+      }
+      else rgbSet.add(value)
+    }
+  })
+  const rgbOptions: FilterOption[] = Array.from(rgbSet).map(r => ({ id: `rgb=${r}`, name: r }))
+
+  const filterGroups: FilterGroup[] = [
+    { title: 'Brand', type: 'manufacturer', options: brandOptions }
+  ]
+  
+  if (formFactorOptions.length > 0) {
+    filterGroups.push({ title: 'Form Factor', type: 'formFactor', options: formFactorOptions })
   }
   
-  if (formFactorOptions.size > 0) {
-    filterGroups.push({
-      title: 'Form Factor',
-      titleTranslationKey: 'filterGroups.formFactor',
-      type: 'form_factor',
-      options: Array.from(formFactorOptions.entries()).map(([id, name]) => createFilterOption(id, name, 'formFactors'))
-    });
+  if (colorOptions.length > 0) {
+    filterGroups.push({ title: 'Color', type: 'color', options: colorOptions })
   }
   
-  if (colorOptions.size > 0) {
-    filterGroups.push({
-      title: 'Color',
-      titleTranslationKey: 'filterGroups.color',
-      type: 'color',
-      options: Array.from(colorOptions.entries()).map(([id, name]) => createFilterOption(id, name))
-    });
+  if (panelOptions.length > 0) {
+    filterGroups.push({ title: 'Side Panel', type: 'sidePanel', options: panelOptions })
   }
   
-  if (materialOptions.size > 0) {
-    filterGroups.push({
-      title: 'Material',
-      titleTranslationKey: 'filterGroups.material',
-      type: 'material',
-      options: Array.from(materialOptions.entries()).map(([id, name]) => createFilterOption(id, name))
-    });
+  if (mbSupportOptions.length > 0) {
+    filterGroups.push({ title: 'Motherboard Support', type: 'motherboardSupport', options: mbSupportOptions })
   }
   
-  if (sideWindowOptions.size > 0) {
-    filterGroups.push({
-      title: 'Side Panel',
-      titleTranslationKey: 'filterGroups.sidePanel',
-      type: 'side_panel',
-      options: Array.from(sideWindowOptions.entries()).map(([id, name]) => createFilterOption(id, name))
-    });
+  if (rgbOptions.length > 0) {
+    filterGroups.push({ title: 'RGB Lighting', type: 'rgb', options: rgbOptions })
   }
-  
-  console.log("Created Case filter groups:", filterGroups);
-  return filterGroups;
-};
+
+  return filterGroups
+}

@@ -1,149 +1,132 @@
-// Monitor-specific filter groups
-import { Component } from '../types';
-import { FilterOption, FilterGroup, extractBrandOptions } from '../filterInterfaces';
-
-// Helper function to create filter option
-const createFilterOption = (id: string, name: string, category?: string): FilterOption => {
-  return {
-    id,
-    name
-  };
-};
-
-// Helper function to create filter options for brands
-const createBrandOptions = (brandMap: Map<string, string>): FilterOption[] => {
-  return Array.from(brandMap.entries()).map(([brand, name]) => {
-    const id = brand.startsWith('brand=') ? brand : `brand=${brand}`;
-    return createFilterOption(id, name, 'brands');
-  });
-};
+import { Component } from '../types'
+import { FilterGroup, FilterOption, extractBrandOptions } from '../filterInterfaces'
 
 export const createMonitorFilterGroups = (components: Component[]): FilterGroup[] => {
-  console.log("Creating Monitor filter groups directly from components");
-  
-  // Initialize Monitor filter groups
-  const filterGroups: FilterGroup[] = [];
-    // Create maps to collect filter options
-  const brandOptions = extractBrandOptions(components);
-  const resolutionOptions = new Map<string, string>();
-  const refreshRateOptions = new Map<string, string>();
-  const panelTypeOptions = new Map<string, string>();
-  const sizeOptions = new Map<string, string>();
-  const hdrOptions = new Map<string, string>();
-  const syncOptions = new Map<string, string>();
-    // Process components to extract Monitor specs
-  components.forEach(component => {
-    if (!component.specifications) return;
-    
-    // Extract specs from component properties
-    Object.entries(component.specifications).forEach(([key, value]) => {
-      if (!value || value === '') return;
-      
-      const keyLower = key.toLowerCase();
-      const valueStr = String(value).trim();
+  const brandMap = extractBrandOptions(components)
+  const brandOptions: FilterOption[] = Array.from(brandMap.entries()).map(([value, label]) => ({
+    id: `manufacturer=${value}`,
+    name: label
+  }))
 
-      // Extract resolution information
-      if (keyLower.includes('resolution')) {
-        resolutionOptions.set(valueStr, valueStr);
+  // Screen size options
+  const sizeSet = new Set<number>()
+  components.forEach(c => {
+    const sizeSpec = c.specifications?.['screenSize'] || c.specifications?.['Screen Size'] ||
+                    c.specifications?.['size'] || c.specifications?.['displaySize']
+    if (sizeSpec) {
+      const match = String(sizeSpec).match(/(\d+(\.\d+)?)/);
+      if (match) {
+        const sizeValue = parseFloat(match[1])
+        if (!isNaN(sizeValue)) sizeSet.add(sizeValue)
       }
-      
-      // Extract refresh rate information
-      else if (keyLower.includes('refresh') || keyLower.includes('hz')) {
-        refreshRateOptions.set(valueStr, valueStr);
-      }
-      
-      // Extract panel type information
-      else if (keyLower.includes('panel') || keyLower.includes('display type')) {
-        panelTypeOptions.set(valueStr, valueStr);
-      }
-      
-      // Extract size information
-      else if (keyLower.includes('size') || keyLower.includes('inch')) {
-        sizeOptions.set(valueStr, valueStr);
-      }
-      
-      // Extract HDR information
-      else if (keyLower.includes('hdr') || keyLower.includes('high dynamic range')) {
-        hdrOptions.set(valueStr, valueStr);
-      }
-      
-      // Extract sync technology information
-      else if (keyLower.includes('sync') || keyLower.includes('g-sync') || 
-               keyLower.includes('freesync') || keyLower.includes('adaptive')) {
-        syncOptions.set(valueStr, valueStr);
-      }
-    });
-  });
-    // Add brand/manufacturer filter group
-  if (brandOptions.size > 0) {
-    filterGroups.push({
-      title: 'Manufacturer',
-      titleTranslationKey: 'filterGroups.manufacturer',
-      type: 'manufacturer',
-      options: createBrandOptions(brandOptions)
-    });
+    }
+  })
+  const sizeOptions: FilterOption[] = Array.from(sizeSet)
+    .sort((a, b) => a - b)
+    .map(s => ({ id: `screenSize=${s}`, name: `${s}"` }))
+
+  // Resolution options
+  const resolutionSet = new Set<string>()
+  components.forEach(c => {
+    const resSpec = c.specifications?.['resolution'] || c.specifications?.['Resolution'] ||
+                   c.specifications?.['nativeResolution'] || c.specifications?.['Native Resolution']
+    if (resSpec) resolutionSet.add(String(resSpec))
+  })
+  const resolutionOptions: FilterOption[] = Array.from(resolutionSet).map(r => ({ id: `resolution=${r}`, name: r }))
+
+  // Panel type options (IPS, VA, TN, etc.)
+  const panelSet = new Set<string>()
+  components.forEach(c => {
+    const panelSpec = c.specifications?.['panelType'] || c.specifications?.['Panel Type'] ||
+                     c.specifications?.['displayType'] || c.specifications?.['Display Type']
+    if (panelSpec) panelSet.add(String(panelSpec))
+  })
+  const panelOptions: FilterOption[] = Array.from(panelSet).map(p => ({ id: `panelType=${p}`, name: p }))
+
+  // Refresh rate options
+  const refreshSet = new Set<number>()
+  components.forEach(c => {
+    const refreshSpec = c.specifications?.['refreshRate'] || c.specifications?.['Refresh Rate'] ||
+                       c.specifications?.['maxRefreshRate'] || c.specifications?.['Max Refresh Rate']
+    if (refreshSpec) {
+      const refreshValue = parseInt(String(refreshSpec).replace(/[^\d]/g, ''), 10)
+      if (!isNaN(refreshValue)) refreshSet.add(refreshValue)
+    }
+  })
+  const refreshOptions: FilterOption[] = Array.from(refreshSet)
+    .sort((a, b) => a - b)
+    .map(r => ({ id: `refreshRate=${r}`, name: `${r} Hz` }))
+
+  // Response time options
+  const responseSet = new Set<number>()
+  components.forEach(c => {
+    const responseSpec = c.specifications?.['responseTime'] || c.specifications?.['Response Time'] ||
+                        c.specifications?.['gtg'] || c.specifications?.['GTG']
+    if (responseSpec) {
+      const responseValue = parseInt(String(responseSpec).replace(/[^\d]/g, ''), 10)
+      if (!isNaN(responseValue)) responseSet.add(responseValue)
+    }
+  })
+  const responseOptions: FilterOption[] = Array.from(responseSet)
+    .sort((a, b) => a - b)
+    .map(r => ({ id: `responseTime=${r}`, name: `${r} ms` }))
+
+  // Adaptive sync options (FreeSync, G-Sync, etc.)
+  const syncSet = new Set<string>()
+  components.forEach(c => {
+    const syncSpec = c.specifications?.['adaptiveSync'] || c.specifications?.['Adaptive Sync'] ||
+                    c.specifications?.['vrr'] || c.specifications?.['VRR']
+    if (syncSpec) syncSet.add(String(syncSpec))
+  })
+  const syncOptions: FilterOption[] = Array.from(syncSet).map(s => ({ id: `adaptiveSync=${s}`, name: s }))
+
+  // Connectivity options
+  const connSet = new Set<string>()
+  components.forEach(c => {
+    const connSpec = c.specifications?.['ports'] || c.specifications?.['Ports'] ||
+                    c.specifications?.['connectivity'] || c.specifications?.['connections']
+    if (connSpec) {
+      const connStr = String(connSpec)
+      if (connStr.includes('HDMI')) connSet.add('HDMI')
+      if (connStr.includes('DisplayPort') || connStr.includes('DP')) connSet.add('DisplayPort')
+      if (connStr.includes('USB-C') || connStr.includes('USB C')) connSet.add('USB-C')
+      if (connStr.includes('DVI')) connSet.add('DVI')
+      if (connStr.includes('VGA')) connSet.add('VGA')
+    }
+  })
+  const connOptions: FilterOption[] = Array.from(connSet).map(c => ({ id: `connectivity=${c}`, name: c }))
+
+  const filterGroups: FilterGroup[] = [
+    { title: 'Brand', type: 'manufacturer', options: brandOptions }
+  ]
+
+  if (sizeOptions.length > 0) {
+    filterGroups.push({ title: 'Screen Size', type: 'screenSize', options: sizeOptions })
   }
-  
-  // Add resolution filter group
-  if (resolutionOptions.size > 0) {
-    filterGroups.push({
-      title: 'Resolution',
-      titleTranslationKey: 'filterGroups.resolution',
-      type: 'resolution',
-      options: Array.from(resolutionOptions.entries()).map(([id, name]) => createFilterOption(`resolution=${id}`, name))
-    });
+
+  if (resolutionOptions.length > 0) {
+    filterGroups.push({ title: 'Resolution', type: 'resolution', options: resolutionOptions })
   }
-  
-  // Add refresh rate filter group
-  if (refreshRateOptions.size > 0) {
-    filterGroups.push({
-      title: 'Refresh Rate',
-      titleTranslationKey: 'filterGroups.refreshRate',
-      type: 'refresh_rate',
-      options: Array.from(refreshRateOptions.entries()).map(([id, name]) => createFilterOption(`refresh_rate=${id}`, name))
-    });
+
+  if (refreshOptions.length > 0) {
+    filterGroups.push({ title: 'Refresh Rate', type: 'refreshRate', options: refreshOptions })
   }
-  
-  // Add panel type filter group
-  if (panelTypeOptions.size > 0) {
-    filterGroups.push({
-      title: 'Panel Type',
-      titleTranslationKey: 'filterGroups.panelType',
-      type: 'panel_type',
-      options: Array.from(panelTypeOptions.entries()).map(([id, name]) => createFilterOption(`panel_type=${id}`, name))
-    });
+
+  if (panelOptions.length > 0) {
+    filterGroups.push({ title: 'Panel Type', type: 'panelType', options: panelOptions })
   }
-  
-  // Add size filter group
-  if (sizeOptions.size > 0) {
-    filterGroups.push({
-      title: 'Size',
-      titleTranslationKey: 'filterGroups.size',
-      type: 'size',
-      options: Array.from(sizeOptions.entries()).map(([id, name]) => createFilterOption(`size=${id}`, name))
-    });
+
+  if (responseOptions.length > 0) {
+    filterGroups.push({ title: 'Response Time', type: 'responseTime', options: responseOptions })
   }
-  
-  // Add HDR filter group
-  if (hdrOptions.size > 0) {
-    filterGroups.push({
-      title: 'HDR',
-      titleTranslationKey: 'filterGroups.hdr',
-      type: 'hdr',
-      options: Array.from(hdrOptions.entries()).map(([id, name]) => createFilterOption(`hdr=${id}`, name))
-    });
+
+  if (syncOptions.length > 0) {
+    filterGroups.push({ title: 'Adaptive Sync', type: 'adaptiveSync', options: syncOptions })
   }
-  
-  // Add sync technology filter group
-  if (syncOptions.size > 0) {
-    filterGroups.push({
-      title: 'Sync Technology',
-      titleTranslationKey: 'filterGroups.syncTech',
-      type: 'sync_tech',
-      options: Array.from(syncOptions.entries()).map(([id, name]) => createFilterOption(`sync_tech=${id}`, name))
-    });
+
+  if (connOptions.length > 0) {
+    filterGroups.push({ title: 'Connectivity', type: 'connectivity', options: connOptions })
   }
-  
-  console.log("Created Monitor filter groups:", filterGroups);
-  return filterGroups;
-};
+
+  return filterGroups
+}

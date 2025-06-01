@@ -10,7 +10,6 @@ fileContent = fileContent.replace(/rumble: (true|false)/g, 'vibration: $1');
 // Replace 'programmableButtons: true' with 'programmable: true'
 fileContent = fileContent.replace(/programmableButtons: (true|false)/g, 'programmable: $1');
 
-// Write back to the file
 fs.writeFileSync(filePath, fileContent);
 
 console.log('Fixed gamepad field names in gamepads.ts');

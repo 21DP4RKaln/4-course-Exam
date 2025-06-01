@@ -115,7 +115,5 @@ function PaymentForm({ clientSecret, returnUrl, onSuccess, onError, billingDetai
 }
 
 export function StripePaymentForm(props: StripePaymentFormProps) {
-  // The Elements provider is now handled by the parent component,
-  // so we just return the PaymentForm directly
   return <PaymentForm {...props} />;
 }

@@ -40,21 +40,12 @@ export async function GET(request: NextRequest) {
         { description: { contains: search, mode: 'insensitive' } },
         { sku: { contains: search, mode: 'insensitive' } }
       ]
-    }
-
-    if (lowStock) {
-      whereClause.stock = { lt: 10 }
-    }
-
-    const components = await prisma.component.findMany({
+    }    if (lowStock) {
+      whereClause.quantity = { lt: 10 }
+    }    const components = await prisma.component.findMany({
       where: whereClause,
       include: {
-        category: true,
-        specValues: {
-          include: {
-            specKey: true
-          }
-        }
+        category: true
       },
       orderBy: {
         name: 'asc'
@@ -73,17 +64,8 @@ export async function GET(request: NextRequest) {
     const formattedComponents = components.map(component => {
       const specifications: Record<string, string> = {}
       
-      // Extract specifications from JSON field
-      if (component.specifications && typeof component.specifications === 'object') {
-        Object.entries(component.specifications).forEach(([key, value]) => {
-          specifications[key] = String(value)
-        })
-      }
-      
-      // Add spec values
-      component.specValues.forEach(specValue => {
-        specifications[specValue.specKey.name] = specValue.value
-      })
+      specifications['SKU'] = component.sku
+      specifications['Sub Type'] = component.subType
       
       return {
         id: component.id,
@@ -92,8 +74,8 @@ export async function GET(request: NextRequest) {
         category: component.category.name,
         categoryId: component.categoryId,
         price: component.price,
-        stock: component.stock,
-        imageUrl: component.imageUrl,
+        stock: component.quantity,
+        imageUrl: component.imagesUrl,
         sku: component.sku,
         specifications,
         viewCount: component.viewCount,

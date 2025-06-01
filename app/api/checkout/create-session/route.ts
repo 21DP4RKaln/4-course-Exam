@@ -38,22 +38,20 @@ interface CheckoutBody {
   }
   promoDiscount?: number
   promoCode?: string
+  locale?: string // Add locale field
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: CheckoutBody = await request.json()
-    const { items, total, shipping, promoDiscount = 0, promoCode } = body
+    const { items, total, shipping, promoDiscount = 0, promoCode, locale = 'en' } = body
 
-    // Check for authenticated user but don't require it
     const token = await getToken({ req: request })
     const user = token?.email ? await prisma.user.findUnique({
       where: { email: token.email }
     }) : null
 
-    // Format line items for Stripe
     const lineItems = items.map((item) => {
-      // Only include absolute URLs for Stripe product images
       const validImages = (item.images || []).filter(url => /^https?:\/\//.test(url));
       const productData: { name: string; images?: string[] } = { name: item.name };
       if (validImages.length > 0) {
@@ -69,7 +67,6 @@ export async function POST(request: NextRequest) {
       };
     });
 
-    // Add shipping as separate line item if applicable
     if (shipping.rate > 0) {
       lineItems.push({
         price_data: {
@@ -83,7 +80,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Create Stripe coupon for promo discount if applicable
     const stripeDiscounts: Array<{coupon: string}> = [];
     if (promoDiscount > 0) {
       const coupon = await stripe.coupons.create({
@@ -97,16 +93,9 @@ export async function POST(request: NextRequest) {
 
     let order;
 
-    // Different approach for guest vs. authenticated users
     if (!user) {
-      // Guest order - direct approach
-      // Generate an order ID
       const orderId = uuidv4();
-      
-      // Create the order directly without the user relation
-      order = await prisma.$transaction(async (prisma) => {
-        // Create the order first
-        const newOrder = await prisma.$queryRaw`
+      order = await prisma.$transaction(async (prisma) => {        const newOrder = await prisma.$queryRaw`
           INSERT INTO \`order\` (
             id, 
             status, 
@@ -118,7 +107,9 @@ export async function POST(request: NextRequest) {
             isGuestOrder, 
             shippingName, 
             shippingEmail, 
-            shippingPhone
+            shippingPhone,
+            shippingCost,
+            locale
           ) 
           VALUES (
             ${orderId}, 
@@ -131,9 +122,11 @@ export async function POST(request: NextRequest) {
             1, 
             ${shipping.address.name}, 
             ${shipping.address.email}, 
-            ${shipping.address.phone}
+            ${shipping.address.phone},
+            ${shipping.rate},
+            ${locale}
           )
-        `;        // Create order items
+        `;
         for (const item of items) {
           await prisma.$queryRaw`
             INSERT INTO \`order_item\` (
@@ -157,7 +150,6 @@ export async function POST(request: NextRequest) {
           `;
         }
         
-        // Return created order data
         return { 
           id: orderId,
           totalAmount: total,
@@ -165,9 +157,7 @@ export async function POST(request: NextRequest) {
           isGuestOrder: true
         };
       });
-    } else {
-      // Authenticated user - use Prisma normally
-      order = await prisma.order.create({
+    } else {      order = await prisma.order.create({
         data: {
           totalAmount: total,
           status: OrderStatus.PENDING,
@@ -176,7 +166,9 @@ export async function POST(request: NextRequest) {
           shippingName: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : shipping.address.name,
           shippingPhone: shipping.address.phone,
           paymentMethod: 'CARD',
+          shippingCost: shipping.rate, 
           isGuestOrder: false,
+          locale: locale as any,
           user: { connect: { id: user.id } },
           orderItems: {
             create: items.map((item) => ({
@@ -191,10 +183,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Determine base URL for redirects
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
-    // Create Stripe checkout session
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,

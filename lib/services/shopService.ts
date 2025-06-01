@@ -111,7 +111,6 @@ export interface PC {
       const category = getConfigCategory(specs);
       const discountPrice = configuration.isPublic ? Math.round(configuration.totalPrice * 0.9 * 100) / 100 : null;
   
-      // Get related PCs
       const relatedConfigurations = await prisma.configuration.findMany({
         where: {
           isTemplate: true,

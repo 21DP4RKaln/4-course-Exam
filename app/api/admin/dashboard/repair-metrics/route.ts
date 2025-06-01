@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prismaService'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication and admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -20,7 +19,6 @@ export async function GET(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get last 6 months of repair data
     const sixMonthsAgo = new Date()
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
 
@@ -39,7 +37,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Group by month
     const repairsByMonth: Record<string, { 
       month: string, 
       pending: number, 
@@ -82,7 +79,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Fill in missing months with zero values
     const repairData = []
     for (let i = 5; i >= 0; i--) {
       const date = new Date()

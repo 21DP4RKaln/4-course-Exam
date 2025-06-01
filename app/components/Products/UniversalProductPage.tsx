@@ -121,9 +121,7 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
       setLoading(true);
       try {
         console.log("Attempting to fetch product with ID:", productId);
-        
-        // First try to fetch from shop/product for configurations
-        // Add cache-busting parameter to avoid browser caching issues
+
         let timestamp = new Date().getTime();
         let response = await fetch(`/api/shop/product/${productId}?_t=${timestamp}`);
         let responseText = await response.clone().text();
@@ -131,7 +129,6 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
         console.log("First API response body preview:", responseText.substring(0, 200));
         
         if (response.status === 404) {
-          // If not found, try components
           console.log("Trying components API...");
           response = await fetch(`/api/shop/product/components/${productId}?_t=${timestamp}`);
           responseText = await response.clone().text();
@@ -139,7 +136,6 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
           console.log("Components API response body preview:", responseText.substring(0, 200));
           
           if (response.status === 404) {
-            // Finally try peripherals
             console.log("Trying peripherals API...");
             response = await fetch(`/api/shop/product/peripherals/${productId}?_t=${timestamp}`);
             responseText = await response.clone().text();
@@ -161,7 +157,6 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
           throw new Error(t('invalidProductData'));
         }     
         if (data.specifications) {
-          // Store original specs for debugging
           const origSpecs = data.specifications;
           data.specifications = parseSpecifications(data.specifications);
           console.log('Original specifications:', origSpecs);
@@ -311,18 +306,13 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
         </div>
       );    } else if (product.type === 'component' || product.type === 'peripheral') {
       const componentProduct = product as ComponentProduct | PeripheralProduct;
-        // Get specifications directly from the product
-      // Note: At this point product.specifications should already be parsed by the earlier call
       let specs: Record<string, string> = {};
       
       if (componentProduct.specifications) {
-        // If it's a string (which shouldn't normally happen at this point),
-        // try to parse it, otherwise use it directly
         if (typeof componentProduct.specifications === 'string') {
           try {
             const parsedSpecs = JSON.parse(componentProduct.specifications);
             if (typeof parsedSpecs === 'object' && parsedSpecs !== null) {
-              // Convert each value to string for consistency
               Object.entries(parsedSpecs).forEach(([key, value]) => {
                 specs[key] = String(value);
               });
@@ -331,22 +321,18 @@ export default function UniversalProductPage({ productId: propProductId }: Unive
             }
           } catch (e) {
             console.error('Failed to parse specifications string:', e);
-            // Try to use it as is
             specs = { 'raw': componentProduct.specifications };
           }
         } else if (typeof componentProduct.specifications === 'object' && componentProduct.specifications !== null) {
-          // Use directly if it's already an object, but ensure values are strings
           Object.entries(componentProduct.specifications as Record<string, any>).forEach(([key, value]) => {
             specs[key] = String(value);
           });
         }
       }
-        // For debugging, remove debug keys if they exist
       const debugKeysToRemove = ['_debug_count', '_debug_keys', '_debug_timestamp'];
       const displaySpecs = { ...specs };
       debugKeysToRemove.forEach(key => delete displaySpecs[key]);
       
-      // Extended debugging information
       console.log('Rendering specifications:');
       console.log('- Type:', typeof componentProduct.specifications);
       console.log('- Raw specs:', componentProduct.specifications);

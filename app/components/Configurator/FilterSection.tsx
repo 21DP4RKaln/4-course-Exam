@@ -19,25 +19,37 @@ export interface FilterGroup {
 }
 
 interface Props {
-  filterGroups: FilterGroup[]
+  filterGroups?: FilterGroup[]
   activeFilters: Record<string, boolean>
-  onFiltersChange: (filters: Record<string, boolean>) => void
+  onFiltersChange?: (filters: Record<string, boolean>) => void
+  onFilterChange?: (filters: Record<string, boolean>) => void
   priceRange?: [number, number]
   onPriceChange?: (range: [number, number]) => void
+  onPriceRangeChange?: (range: [number, number]) => void
   activeCategory: string
   minPrice?: number
   maxPrice?: number
+  searchQuery?: string
+  onSearchChange?: (query: string) => void
+  availableSpecifications?: any[]
+  components?: any[]
 }
 
 const FilterSection: React.FC<Props> = ({
-  filterGroups,
+  filterGroups = [],
   activeFilters,
   onFiltersChange,
+  onFilterChange,
   priceRange = [0, 50000],
   onPriceChange,
+  onPriceRangeChange,
   activeCategory,
   minPrice = 0,
-  maxPrice = 50000
+  maxPrice = 50000,
+  searchQuery = '',
+  onSearchChange,
+  availableSpecifications = [],
+  components = []
 }) => {
   const t = useTranslations()
   const { theme } = useTheme()
@@ -57,12 +69,16 @@ const FilterSection: React.FC<Props> = ({
   useEffect(() => {
     setLocalPriceRange(priceRange)
   }, [priceRange])
-  
-  // Toggle filter option
+    // Toggle filter option
   const toggleFilter = (filterId: string) => {
     const updatedFilters = { ...activeFilters }
     updatedFilters[filterId] = !updatedFilters[filterId]
-    onFiltersChange(updatedFilters)
+    
+    // Use whichever callback is available
+    const callback = onFiltersChange || onFilterChange
+    if (callback) {
+      callback(updatedFilters)
+    }
   }
   
   // Toggle expand section
@@ -84,10 +100,12 @@ const FilterSection: React.FC<Props> = ({
     const newRange: [number, number] = [localPriceRange[0], Math.max(value, localPriceRange[0])]
     setLocalPriceRange(newRange)
   }
-  
-  // Apply the price range
+    // Apply the price range
   const applyPriceRange = () => {
-    onPriceChange?.(localPriceRange)
+    const callback = onPriceChange || onPriceRangeChange
+    if (callback) {
+      callback(localPriceRange)
+    }
   }
   // Use dynamic filterGroups from props
 

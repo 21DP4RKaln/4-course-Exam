@@ -33,7 +33,6 @@ export default function FeaturedConfigurations() {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
   const { isAuthenticated, user } = useAuth()
   
-  // Add scroll animation hooks
   const { scrollY } = useScroll()
   const sectionOpacity = useTransform(scrollY, [300, 600], [0, 1])
   const sectionY = useTransform(scrollY, [300, 600], [100, 0])
@@ -46,7 +45,7 @@ export default function FeaturedConfigurations() {
   useEffect(() => {
     const fetchConfigurations = async () => {
       setLoading(true)
-      try {        // Fetch configurations, limited to 4
+      try {        
         const response = await fetch('/api/configurations/popular?limit=4&sortBy=viewCount')
         if (!response.ok) {
           throw new Error('Failed to fetch popular configurations')
@@ -58,13 +57,10 @@ export default function FeaturedConfigurations() {
           throw new Error(data.error)
         }
         
-        // Sort configurations by viewCount for popular items
         const sortedConfigurations = Array.isArray(data) ? [...data].sort((a, b) => {
-          // First sort by orderCount (for top pick)
           if ((b.orderCount || 0) - (a.orderCount || 0) !== 0) {
             return (b.orderCount || 0) - (a.orderCount || 0);
           }
-          // Then sort by viewCount
           return (b.viewCount || 0) - (a.viewCount || 0);
         }) : [];
         
@@ -93,7 +89,6 @@ export default function FeaturedConfigurations() {
     event.stopPropagation()
     
     if (!isAuthenticated) {
-      // Redirect to login page if not authenticated
       router.push(`/${locale}/auth/login?returnUrl=${encodeURIComponent(pathname)}`)
       return
     }
@@ -108,7 +103,6 @@ export default function FeaturedConfigurations() {
       }
     } catch (error) {
       console.error('Wishlist operation failed:', error)
-      // If token is expired, could redirect to login
       if (String(error).includes('JWT') || String(error).includes('401')) {
         router.push(`/${locale}/auth/login?returnUrl=${encodeURIComponent(pathname)}`)
       }

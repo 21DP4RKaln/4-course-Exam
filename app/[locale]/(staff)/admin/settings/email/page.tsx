@@ -24,21 +24,19 @@ export default function EmailSettingsPage() {
   const [isTesting, setIsTesting] = useState(false)
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null)
   const [testEmail, setTestEmail] = useState('')
-  
-  // SMTP Configuration
   const [smtpConfig, setSmtpConfig] = useState({
     provider: 'custom',
     host: 'smtp.gmail.com',
     port: '587',
-    username: 'noreply@ivapro.com',
+    username: '14dprkalninskvdarbs@gmail.com',
     password: '',
     secure: 'tls',
-    fromEmail: 'noreply@ivapro.com',
+    fromEmail: '14dprkalninskvdarbs@gmail.com',
     fromName: 'IvaPro Support',
     replyTo: 'support@ivapro.com'
   })
 
-  // Email Templates
+
   const [templates, setTemplates] = useState<EmailTemplate[]>([
     {
       id: 'order_confirmation',

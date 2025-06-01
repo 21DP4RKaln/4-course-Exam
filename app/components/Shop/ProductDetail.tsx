@@ -36,7 +36,6 @@ interface ProductDetailProps {
   type: 'component' | 'peripheral';
 }
 
-// Updated Product interface to match the new database schema
 interface Product {
   id: string;
   name: string;
@@ -96,11 +95,8 @@ export default function ProductDetail({ params, type }: ProductDetailProps) {
           setError(t('errors.productIdMissing'));
           setLoading(false);
           return;
-        }
-
-        // Updated API endpoint to use the new database service
-        const apiUrl = `/api/shop/product/${productId}?type=${type}`;
-        const response = await fetch(apiUrl);
+        }       
+        const response = await fetch(`/api/shop/product/${type}s/${productId}`);
         
         if (!response.ok) {
           throw new Error(`${t('errors.errorsfailedToLoad')}: ${response.status}`);

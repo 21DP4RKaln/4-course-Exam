@@ -46,6 +46,18 @@ interface AdvancedFilterProps {
   filterGroups?: FilterGroup[]
 }
 
+interface DbFilterOptions {
+  categories: FilterOption[];
+  cpu: FilterOption[];
+  gpu: FilterOption[];
+  ram: FilterOption[];
+  storage: FilterOption[];
+  motherboard: FilterOption[];
+  psu: FilterOption[];
+  case: FilterOption[];
+  cooling: FilterOption[];
+}
+
 export default function AdvancedFilter({
   onFilterChange,
   onSearchChange,
@@ -53,6 +65,7 @@ export default function AdvancedFilter({
   onPriceRangeChange,
   maxPrice,
   minPrice,
+  className,
   categories = [],
   cpuOptions = [],
   gpuOptions = [],
@@ -63,66 +76,90 @@ export default function AdvancedFilter({
   caseOptions = [],
   coolingOptions = [],
   filterGroups
-}: AdvancedFilterProps) {  const pathname = usePathname()
+}: AdvancedFilterProps) {
+  const pathname = usePathname()
   const locale = pathname.split('/')[1]
   const t = useTranslations()
   const { theme } = useTheme()
 
-  // State for managing UI
   const [searchQuery, setSearchQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
   const [sortOption, setSortOption] = useState('price-asc')
 
-  // State for managing filter groups
   const [internalFilterGroups, setInternalFilterGroups] = useState<FilterGroup[]>([])
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({})
-  
-  // State for managing price range
   const [currentPriceRange, setCurrentPriceRange] = useState({ 
     min: minPrice || 0, 
     max: maxPrice || 5000 
   })
 
-  // Update price range only when component mounts or when min/max props change and current values are outside bounds
+  const [dbFilterOptions, setDbFilterOptions] = useState<DbFilterOptions | null>(null);
+  const [filtersLoading, setFiltersLoading] = useState<boolean>(true);
+  const [filtersError, setFiltersError] = useState<string | null>(null);
+
   useEffect(() => {
     if (currentPriceRange.min < minPrice || currentPriceRange.max > maxPrice) {
       setCurrentPriceRange({ min: minPrice, max: maxPrice })
       onPriceRangeChange(minPrice, maxPrice)
     }
-  }, [minPrice, maxPrice, currentPriceRange.min, currentPriceRange.max])
+  }, [minPrice, maxPrice, currentPriceRange.min, currentPriceRange.max, onPriceRangeChange])
 
-  // Setup filter groups and initialize state
   useEffect(() => {
-    if (filterGroups && filterGroups.length > 0) {
-      setInternalFilterGroups(filterGroups)
-    } else {
-      const groups: FilterGroup[] = [
-        { key: 'category', title: t('shop.filters.category'), options: categories },
-        { key: 'cpu', title: t('shop.filters.processor'), options: cpuOptions },
-        { key: 'gpu', title: t('shop.filters.graphicsCard'), options: gpuOptions },
-        { key: 'ram', title: t('shop.filters.memory'), options: ramOptions },
-        { key: 'storage', title: t('shop.filters.storage'), options: storageOptions },
-        { key: 'motherboard', title: t('shop.filters.motherboard'), options: motherboardOptions },
-        { key: 'psu', title: t('shop.filters.powerSupply'), options: psuOptions },
-        { key: 'case', title: t('shop.filters.case'), options: caseOptions },
-        { key: 'cooling', title: t('shop.filters.cooling'), options: coolingOptions }
-      ].filter(group => group.options && group.options.length > 0)
+    const fetchFilters = async () => {
+      setFiltersLoading(true);
+      try {
+        const res = await fetch('/api/shop/product/filters');
+        if (!res.ok) throw new Error('Failed to load filters');
+        const data: DbFilterOptions = await res.json();
+        setDbFilterOptions(data);
+      } catch (err) {
+        console.error('Error loading filters:', err);
+        setFiltersError('Error loading filters');
+      } finally {
+        setFiltersLoading(false);
+      }
+    };
+    fetchFilters();
+  }, []);
+  useEffect(() => {
+    if (!filtersLoading) {
+      const effectiveCategories = dbFilterOptions?.categories || categories;
+      const effectiveCpuOptions = dbFilterOptions?.cpu || cpuOptions;
+      const effectiveGpuOptions = dbFilterOptions?.gpu || gpuOptions;
+      const effectiveRamOptions = dbFilterOptions?.ram || ramOptions;
+      const effectiveStorageOptions = dbFilterOptions?.storage || storageOptions;
+      const effectiveMotherboardOptions = dbFilterOptions?.motherboard || motherboardOptions;
+      const effectivePsuOptions = dbFilterOptions?.psu || psuOptions;
+      const effectiveCaseOptions = dbFilterOptions?.case || caseOptions;
+      const effectiveCoolingOptions = dbFilterOptions?.cooling || coolingOptions;
 
-      setInternalFilterGroups(groups)
+      if (filterGroups && filterGroups.length > 0) {
+        setInternalFilterGroups(filterGroups);
+      } else {
+        const groups: FilterGroup[] = [
+          { key: 'category', title: t('shop.filters.category'), options: effectiveCategories },
+          { key: 'cpu', title: t('shop.filters.processor'), options: effectiveCpuOptions },
+          { key: 'gpu', title: t('shop.filters.graphicsCard'), options: effectiveGpuOptions },
+          { key: 'ram', title: t('shop.filters.memory'), options: effectiveRamOptions },
+          { key: 'storage', title: t('shop.filters.storage'), options: effectiveStorageOptions },
+          { key: 'motherboard', title: t('shop.filters.motherboard'), options: effectiveMotherboardOptions },
+          { key: 'psu', title: t('shop.filters.powerSupply'), options: effectivePsuOptions },
+          { key: 'case', title: t('shop.filters.case'), options: effectiveCaseOptions },
+          { key: 'cooling', title: t('shop.filters.cooling'), options: effectiveCoolingOptions }
+        ];
+        setInternalFilterGroups(groups);
+      }
     }
-  }, [categories, cpuOptions, gpuOptions, ramOptions, storageOptions, 
-      motherboardOptions, psuOptions, caseOptions, coolingOptions, t, filterGroups])
-
-  // Initialize sections
+  }, [filtersLoading, dbFilterOptions, filterGroups, categories, cpuOptions, gpuOptions, ramOptions, storageOptions, motherboardOptions, psuOptions, caseOptions, coolingOptions, t]);
   useEffect(() => {
     const initialExpandedSections: Record<string, boolean> = {}
     internalFilterGroups.forEach((group) => {
-      initialExpandedSections[group.title] = false
+      initialExpandedSections[group.title] = group.title === t('shop.filters.category')
     })
     initialExpandedSections['price'] = false
     setExpandedSections(initialExpandedSections)
-  }, [internalFilterGroups])
+  }, [internalFilterGroups, t])
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
@@ -284,9 +321,8 @@ export default function AdvancedFilter({
                 {expandedSections['price'] && (
                   <div className="mt-4">
                     <div className="space-y-5">
-                      <div className="flex gap-4">
-                        <div className="w-1/2">
-                          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Min Price</label>
+                      <div className="flex gap-4">                        <div className="w-1/2">
+                          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">{t('shop.filters.minPrice')}</label>
                           <input
                             type="number"
                             value={currentPriceRange.min}
@@ -296,9 +332,8 @@ export default function AdvancedFilter({
                             max={currentPriceRange.max}
                             step="1"
                           />
-                        </div>
-                        <div className="w-1/2">
-                          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Max Price</label>
+                        </div>                        <div className="w-1/2">
+                          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">{t('shop.filters.maxPrice')}</label>
                           <input
                             type="number"
                             value={currentPriceRange.max}
@@ -309,9 +344,8 @@ export default function AdvancedFilter({
                             step="1"
                           />
                         </div>
-                      </div>
-                      <div className="px-1">
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Min Price</label>
+                      </div>                      <div className="px-1">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">{t('shop.filters.minPrice')}</label>
                         <input
                           type="range"
                           value={currentPriceRange.min}
@@ -321,9 +355,8 @@ export default function AdvancedFilter({
                           max={maxPrice}
                           step="1"
                         />
-                      </div>
-                      <div className="px-1">
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Max Price</label>
+                      </div>                      <div className="px-1">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">{t('shop.filters.maxPrice')}</label>
                         <input
                           type="range"
                           value={currentPriceRange.max}
@@ -387,9 +420,8 @@ export default function AdvancedFilter({
                               {(selectedFilters[group.key] || []).includes(option.id) && (
                                 <Check size={14} />
                               )}
-                            </div>
-                            <span className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors">
-                              {option.name}
+                            </div>                            <span className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors">
+                              {option.translationKey ? t(option.translationKey) : option.name}
                             </span>
                           </label>
                         </div>

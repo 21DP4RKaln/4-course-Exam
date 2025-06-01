@@ -56,7 +56,6 @@ interface GoogleReviewsData {
   totalReviews: number;
 }
 
-// Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
@@ -91,7 +90,6 @@ export default function AboutUs() {
   const router = useRouter()
   const locale = pathname.split('/')[1]
 
-  // References for scroll animations
   const storyRef = useRef(null)
   const valuesRef = useRef(null)
   const statsRef = useRef(null)
@@ -100,7 +98,6 @@ export default function AboutUs() {
   const contactRef = useRef(null)
   const ctaRef = useRef(null)
 
-  // Check if elements are in view
   const storyInView = useInView(storyRef, { once: true, amount: 0.3 })
   const valuesInView = useInView(valuesRef, { once: true, amount: 0.3 })
   const statsInView = useInView(statsRef, { once: true, amount: 0.3 })
@@ -126,17 +123,15 @@ export default function AboutUs() {
       try {
         setLoading(true)
         
-        // Fetch stats and reviews in parallel to improve performance
         const [statsResponse, googleReviewsResponse] = await Promise.allSettled([
           fetch('/api/stats/about', { 
-            next: { revalidate: 3600 } // Cache for 1 hour
+            next: { revalidate: 3600 }
           }),
           fetch('/api/reviews/google', { 
-            next: { revalidate: 3600 } // Cache for 1 hour
+            next: { revalidate: 3600 } 
           })
         ])
         
-        // Process stats data
         if (statsResponse.status === 'fulfilled' && statsResponse.value.ok) {
           try {
             const data = await statsResponse.value.json()
@@ -167,18 +162,14 @@ export default function AboutUs() {
             setStats(mappedStats)
           } catch (e) {
             console.error('Error parsing stats data:', e)
-            // Will use fallback stats
           }
         }
         
-        // Process reviews data
         if (googleReviewsResponse.status === 'fulfilled' && googleReviewsResponse.value.ok) {          try {
             const googleReviewsData = await googleReviewsResponse.value.json()
             console.log('Reviews data received:', googleReviewsData)
             
-            // Make sure each review has required fields
             if (googleReviewsData && googleReviewsData.reviews) {
-              // Add a default comment if it's missing
               googleReviewsData.reviews = googleReviewsData.reviews.map((review: Review) => ({
                 ...review,
                 comment: review.comment || 'Great service and excellent products!'
@@ -188,7 +179,6 @@ export default function AboutUs() {
             setGoogleReviewsData(googleReviewsData)
           } catch (e) {
             console.error('Error parsing reviews data:', e)
-            // Will use fallback reviews
           }
         }
         

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as oldService from '@/lib/services/unifiedProductService';
-import * as newService from '@/lib/services/newDatabaseProductService';
+import { incrementProductView, resetViewCounts } from '../../../../../lib/services/newDatabaseProductService';
 import { 
   createBadRequestResponse,
   createUnauthorizedResponse,
@@ -8,20 +8,14 @@ import {
 } from '@/lib/apiErrors';
 import { USE_NEW_DATABASE } from '@/lib/databaseConfig';
 
-/**
- * API route to increment view count for a product
- */
 export async function POST(request: NextRequest) {
   try {
     const { productId, productType } = await request.json();
     
     if (!productId || !productType) {
       return createBadRequestResponse('Product ID and type are required');
-    }
-
-    // Use appropriate service based on the environment flag
-    if (USE_NEW_DATABASE) {
-      await newService.incrementProductView(productId, productType.toLowerCase());
+    }    if (USE_NEW_DATABASE) {
+      await incrementProductView(productId, productType.toLowerCase());
     } else {
       await oldService.incrementProductView(productId, productType);
     }
@@ -33,24 +27,15 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * API route to reset view counts monthly (to be called by a CRON job)
- */
-export async function PUT(request: NextRequest) {
-  try {
+export async function PUT(request: NextRequest) {  try {
     const { searchParams } = new URL(request.url);
     const apiKey = searchParams.get('apiKey');
     
     if (apiKey !== process.env.RESET_VIEWS_API_KEY) {
       return createUnauthorizedResponse('Unauthorized access');
-    }
-   
-    // Use appropriate service based on environment flag
-    let result;
+    }    let result;
     if (USE_NEW_DATABASE) {
-      // Implement resetViewCounts function in newDatabaseProductService if needed
-      // For now, using the old service
-      result = await oldService.resetViewCounts();
+      result = await resetViewCounts();
     } else {
       result = await oldService.resetViewCounts();
     }

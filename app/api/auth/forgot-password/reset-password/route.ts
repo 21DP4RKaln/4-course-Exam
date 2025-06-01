@@ -4,17 +4,16 @@ import { verifyResetCode, markTokenAsUsed } from '@/lib/password-reset';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 
-// Enhanced password validation function
 function validatePasswordStrength(password: string): { isValid: boolean; message?: string } {
   if (password.length < 8) {
     return { isValid: false, message: 'Password must be at least 8 characters long' };
   }
   
   let strength = 0;
-  if (/(?=.*[a-z])/.test(password)) strength++; // lowercase
-  if (/(?=.*[A-Z])/.test(password)) strength++; // uppercase  
-  if (/(?=.*\d)/.test(password)) strength++; // number
-  if (/(?=.*[@$!%*?&])/.test(password)) strength++; // special character
+  if (/(?=.*[a-z])/.test(password)) strength++; 
+  if (/(?=.*[A-Z])/.test(password)) strength++; 
+  if (/(?=.*\d)/.test(password)) strength++; 
+  if (/(?=.*[@$!%*?&])/.test(password)) strength++; 
   
   if (strength < 3) {
     return { 
@@ -42,7 +41,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { contact, code, type, token, newPassword } = resetPasswordSchema.parse(body);
 
-    // Additional password strength validation
     const passwordValidation = validatePasswordStrength(newPassword);
     if (!passwordValidation.isValid) {
       return NextResponse.json(
@@ -51,7 +49,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify the reset code
     const resetToken = await verifyResetCode(contact, code, type);
 
     if (!resetToken || resetToken.token !== token) {
@@ -61,14 +58,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 12);    // Update the user's password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);    
     await prisma.user.update({
       where: { id: resetToken.user.id },
       data: { password: hashedPassword },
     });
 
-    // Mark the token as used
     await markTokenAsUsed(resetToken.id);
 
     return NextResponse.json({

@@ -14,7 +14,6 @@ export default function ServicesSection() {
   const locale = pathname.split('/')[1]
   const { theme } = useTheme()
   
-  // Add scroll animation hooks
   const { scrollY } = useScroll()
   const titleOpacity = useTransform(scrollY, [300, 700], [0, 1])
   const titleY = useTransform(scrollY, [300, 700], [50, 0])

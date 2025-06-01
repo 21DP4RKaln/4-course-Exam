@@ -131,7 +131,6 @@ export async function POST(request: NextRequest) {
 
     const { name, description, components, isTemplate, isPublic } = validationResult.data
 
-    // Calculate total price
     const componentIds = components.map(c => c.componentId)
     const componentPrices = await prisma.component.findMany({
       where: {
@@ -151,13 +150,12 @@ export async function POST(request: NextRequest) {
       return total + (price * item.quantity)
     }, 0)
 
-    // Create the configuration
     const configuration = await prisma.configuration.create({
       data: {
         name,
         description,
         totalPrice,
-        status: 'APPROVED', // Staff-created configs are pre-approved
+        status: 'APPROVED', 
         isTemplate: isTemplate || false,
         isPublic: isPublic || false,
         userId: payload.userId,

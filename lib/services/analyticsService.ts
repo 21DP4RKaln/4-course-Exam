@@ -45,7 +45,6 @@ export async function getSalesAnalytics(period: 'day' | 'week' | 'month' | 'year
       orderBy: { createdAt: 'asc' }
     });
 
-    // Group by date
     const salesByDate: Record<string, number> = {};
     orders.forEach(order => {
       const date = order.createdAt.toISOString().split('T')[0];
@@ -95,7 +94,6 @@ export async function getUserGrowthAnalytics(period: 'week' | 'month' | 'year' =
       orderBy: { createdAt: 'asc' }
     });
 
-    // Group by date
     const usersByDate: Record<string, number> = {};
     users.forEach(user => {
       const date = user.createdAt.toISOString().split('T')[0];
@@ -143,7 +141,6 @@ export async function getRepairMetrics() {
  */
 export async function getRevenueByCategoryAnalytics() {
   try {
-    // First, get all completed orders
     const orders = await prisma.order.findMany({
       where: { 
         status: 'COMPLETED' 
@@ -156,9 +153,7 @@ export async function getRevenueByCategoryAnalytics() {
 
     const revenueByCategory: Record<string, number> = {};
     
-    // Process each order
     for (const order of orders) {
-      // Handle configuration-based orders
       if (order.configurationId) {
         const configuration = await prisma.configuration.findUnique({
           where: { id: order.configurationId },
@@ -184,7 +179,6 @@ export async function getRevenueByCategoryAnalytics() {
         }
       }
 
-      // Handle individual order items
       const orderItems = await prisma.orderItem.findMany({
         where: { orderId: order.id }
       });
@@ -205,7 +199,6 @@ export async function getRevenueByCategoryAnalytics() {
       }
     }
 
-    // Format data for chart
     const chartData: ChartDataPoint[] = Object.entries(revenueByCategory).map(([label, value]) => ({
       label,
       value
@@ -224,7 +217,7 @@ export async function getRevenueByCategoryAnalytics() {
 export async function getStockLevelAnalytics() {
   try {
     const components = await prisma.component.findMany({
-      include: {
+      include: { 
         category: true
       }
     });
@@ -232,17 +225,17 @@ export async function getStockLevelAnalytics() {
     const stockByCategory: Record<string, { inStock: number; lowStock: number; outOfStock: number }> = {};
 
     components.forEach(component => {
-      const category = component.category.name;
-      if (!stockByCategory[category]) {
-        stockByCategory[category] = { inStock: 0, lowStock: 0, outOfStock: 0 };
+      const categoryName = component.category.name;
+      if (!stockByCategory[categoryName]) {
+        stockByCategory[categoryName] = { inStock: 0, lowStock: 0, outOfStock: 0 };
       }
 
-      if (component.stock === 0) {
-        stockByCategory[category].outOfStock++;
-      } else if (component.stock < 10) {
-        stockByCategory[category].lowStock++;
-      } else {
-        stockByCategory[category].inStock++;
+      if (component.quantity === 0) { 
+        stockByCategory[categoryName].outOfStock++;
+      } else if (component.quantity < 10) { 
+        stockByCategory[categoryName].lowStock++;
+      } else { 
+        stockByCategory[categoryName].inStock++;
       }
     });
 
@@ -333,7 +326,6 @@ export async function getPerformanceOverview(dateRange: { start: Date; end: Date
       repairStats,
       newCustomers
     ] = await prisma.$transaction([
-      // Total revenue
       prisma.order.aggregate({
         where: {
           status: 'COMPLETED',
@@ -341,13 +333,11 @@ export async function getPerformanceOverview(dateRange: { start: Date; end: Date
         },
         _sum: { totalAmount: true }
       }),
-      // Total orders
       prisma.order.count({
         where: {
           createdAt: { gte: dateRange.start, lte: dateRange.end }
         }
       }),
-      // Average order value
       prisma.order.aggregate({
         where: {
           status: 'COMPLETED',
@@ -355,7 +345,6 @@ export async function getPerformanceOverview(dateRange: { start: Date; end: Date
         },
         _avg: { totalAmount: true }
       }),
-      // Repair statistics - fixed groupBy format
       prisma.repair.groupBy({
         by: ['status'],
         where: {
@@ -363,9 +352,11 @@ export async function getPerformanceOverview(dateRange: { start: Date; end: Date
         },
         _count: {
           _all: true
+        },
+        orderBy: {
+          status: 'asc' 
         }
       }),
-      // New customers
       prisma.user.count({
         where: {
           role: 'USER',
@@ -380,7 +371,7 @@ export async function getPerformanceOverview(dateRange: { start: Date; end: Date
       averageOrderValue: averageOrderValue._avg.totalAmount || 0,
       repairStats: repairStats.map(stat => ({
         status: stat.status,
-        count: stat._count._all
+        count: stat._count && typeof stat._count === 'object' ? (stat._count._all ?? 0) : 0
       })),
       newCustomers
     };

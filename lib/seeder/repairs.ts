@@ -1,219 +1,125 @@
+// filepath: lib/seeder/repairs.ts
 import { PrismaClient, RepairStatus, RepairPriority } from '@prisma/client';
+import { priceWith99 } from './utils';
 
-export async function seedRepairs(prisma: PrismaClient) {
-  // Get users for the repairs
-  const users = await prisma.user.findMany({
-    take: 8
-  });
-  
-  // Get specialists (staff users) for assigning repairs
-  const specialists = await prisma.user.findMany({
-    where: {
-      role: 'SPECIALIST'
+export async function seedRepairs(prisma: PrismaClient): Promise<void> {
+  // Get sample users, peripherals, and configurations for repairs
+  const users = await prisma.user.findMany({ take: 5 });
+  const peripherals = await prisma.peripheral.findMany({ take: 5 });
+  const configurations = await prisma.configuration.findMany({ take: 5 });
+
+  if (users.length === 0) {
+    throw new Error('Users not found. Please seed users first.');
+  }
+
+  const repairs = [    {
+      title: 'Monitor Screen Flickering',
+      description: 'Customer reports screen flickering issues on gaming monitor',
+      status: RepairStatus.PENDING,
+      priority: RepairPriority.NORMAL,
+      userId: users[0]?.id || '',
+      peripheralId: peripherals[0]?.id,
+      estimatedCost: priceWith99(75, 125),
+      diagnosticNotes: 'Initial assessment required to determine cause of flickering'
     },
-    take: 3
-  });
-  
-  // If we don't have specialists, we can't continue
-  if (specialists.length === 0) {
-    console.log("No specialist users found. Skipping repair seeding.");
-    return;
-  }
-  
-  // Get components that might be used as repair parts
-  const components = await prisma.component.findMany({
-    take: 20
-  });
-  
-  // Get peripherals that might need repair
-  const peripherals = await prisma.peripheral.findMany({
-    take: 15
-  });
-    // Repair statuses - match the RepairStatus enum in Prisma schema
-  const repairStatuses = [
-    'PENDING',
-    'DIAGNOSING',
-    'WAITING_FOR_PARTS',
-    'IN_PROGRESS',
-    'COMPLETED',
-    'CANCELLED'
+    {
+      title: 'Keyboard Key Replacement',
+      description: 'Multiple keys not responding on mechanical keyboard',
+      status: RepairStatus.IN_PROGRESS,
+      priority: RepairPriority.NORMAL,
+      userId: users[1]?.id || '',
+      peripheralId: peripherals[1]?.id,
+      estimatedCost: priceWith99(25, 50),
+      finalCost: priceWith99(35, 45),
+      diagnosticNotes: 'Switch replacement needed for W, A, S, D keys'
+    },
+    {
+      title: 'Gaming PC Overheating',
+      description: 'Computer shuts down during intensive gaming sessions',
+      status: RepairStatus.COMPLETED,
+      priority: RepairPriority.HIGH,
+      userId: users[2]?.id || '',
+      configurationId: configurations[0]?.id,
+      estimatedCost: priceWith99(100, 200),
+      finalCost: priceWith99(149, 179),
+      completionDate: new Date('2025-05-20'),
+      diagnosticNotes: 'Thermal paste replacement and additional case fans installed'
+    },
+    {
+      title: 'Mouse Sensor Malfunction',
+      description: 'Gaming mouse cursor movement erratic and inconsistent',
+      status: RepairStatus.PENDING,
+      priority: RepairPriority.NORMAL,
+      userId: users[3]?.id || '',
+      peripheralId: peripherals[2]?.id,
+      estimatedCost: priceWith99(40, 80),
+      diagnosticNotes: 'Sensor cleaning or replacement may be required'
+    },
+    {
+      title: 'Headset Audio Issues',
+      description: 'Left ear audio cutting out intermittently',
+      status: RepairStatus.IN_PROGRESS,
+      priority: RepairPriority.NORMAL,
+      userId: users[4]?.id || '',
+      peripheralId: peripherals[3]?.id,
+      estimatedCost: priceWith99(60, 100),
+      diagnosticNotes: 'Cable connection issue suspected, replacement cable ordered'
+    },
+    {
+      title: 'PC Won\'t Boot',
+      description: 'System powers on but no display output',
+      status: RepairStatus.IN_PROGRESS,
+      priority: RepairPriority.URGENT,
+      userId: users[0]?.id || '',
+      configurationId: configurations[1]?.id,
+      estimatedCost: priceWith99(150, 300),
+      diagnosticNotes: 'Testing RAM and GPU components for failure'
+    },
+    {
+      title: 'Webcam Not Detected',
+      description: 'USB webcam not recognized by operating system',
+      status: RepairStatus.COMPLETED,
+      priority: RepairPriority.LOW,
+      userId: users[1]?.id || '',
+      peripheralId: peripherals[4]?.id,
+      estimatedCost: priceWith99(20, 40),
+      finalCost: priceWith99(25, 35),
+      completionDate: new Date('2025-05-18'),
+      diagnosticNotes: 'Driver reinstallation and USB port cleaning resolved issue'
+    },
+    {
+      title: 'Speaker Distortion',
+      description: 'Audio distortion at high volumes from desktop speakers',
+      status: RepairStatus.PENDING,
+      priority: RepairPriority.NORMAL,
+      userId: users[2]?.id || '',
+      peripheralId: peripherals[0]?.id,
+      estimatedCost: priceWith99(50, 90),
+      diagnosticNotes: 'Driver damage suspected, replacement parts being sourced'
+    },
+    {
+      title: 'Custom Build Assembly',
+      description: 'Customer requesting professional assembly of purchased components',
+      status: RepairStatus.COMPLETED,
+      priority: RepairPriority.NORMAL,
+      userId: users[3]?.id || '',
+      configurationId: configurations[2]?.id,
+      estimatedCost: priceWith99(100, 150),
+      finalCost: priceWith99(125, 145),
+      completionDate: new Date('2025-05-22'),
+      diagnosticNotes: 'Full system assembly with cable management and testing completed'
+    },
+    {
+      title: 'Gamepad Stick Drift',
+      description: 'Left analog stick registering movement when not touched',
+      status: RepairStatus.CANCELLED,
+      priority: RepairPriority.NORMAL,
+      userId: users[4]?.id || '',
+      peripheralId: peripherals[1]?.id,
+      estimatedCost: priceWith99(30, 60),
+      diagnosticNotes: 'Customer decided to purchase replacement instead of repair'
+    }
   ];
-  
-  // Common issues
-  const commonIssues = [
-    'Does not power on',
-    'Blue screen errors',
-    'Random shutdowns',
-    'Overheating',
-    'GPU artifacts',
-    'Loud fan noise',
-    'USB ports not working',
-    'Slow performance',
-    'Wi-Fi connection issues',
-    'No display output',
-    'Keyboard keys not responsive',
-    'Mouse tracking issues',
-    'Headphone jack not working',
-    'Storage drive not detected',
-    'RGB lighting not functioning'
-  ];
-  
-  // Common diagnoses
-  const commonDiagnoses = [
-    'Faulty power supply',
-    'RAM module failure',
-    'GPU malfunction',
-    'CPU overheating',
-    'Corrupted operating system',
-    'Failed SSD',
-    'Motherboard capacitor issue',
-    'Loose internal connection',
-    'Driver conflict',
-    'BIOS settings issue',
-    'Dust accumulation causing overheating',
-    'Broken USB header on motherboard',
-    'Failed keyboard controller',
-    'Mouse sensor failure',
-    'Corrupted firmware'
-  ];
-  
-  // Generate repairs
-  const repairs = [];
-  const repairCount = 15;
-  
-  const now = new Date();
-  
-  for (let i = 0; i < repairCount; i++) {
-    // Select a random user
-    const user = users[i % users.length];
-    
-    // Determine repair date (within the last 60 days)
-    const daysAgo = Math.floor(Math.random() * 60);
-    const repairDate = new Date(now);
-    repairDate.setDate(repairDate.getDate() - daysAgo);
-    
-    // Determine if it's a peripheral repair
-    const isPeripheralRepair = i % 3 === 0; // 1/3 of repairs are for peripherals
-      // Status depends on the age of the repair
-    let status;
-    if (daysAgo < 3) {
-      status = repairStatuses[Math.min(1, i % 2)]; // PENDING or DIAGNOSING for new repairs
-    } else if (daysAgo < 10) {
-      status = repairStatuses[Math.min(3, 2 + (i % 2))]; // WAITING_FOR_PARTS or IN_PROGRESS for recent repairs
-    } else {
-      status = repairStatuses[Math.min(5, 4 + (i % 2))]; // COMPLETED or CANCELLED for older repairs
-    }
-    
-    // If the repair is completed, set completion date
-    const estimatedCompletionDate = new Date(repairDate);
-    estimatedCompletionDate.setDate(estimatedCompletionDate.getDate() + 3 + Math.floor(Math.random() * 7)); // 3-10 days after request
-    
-    let completionDate = null;
-    if (status === 'COMPLETED') {
-      completionDate = new Date(estimatedCompletionDate);
-      // Some repairs are completed early, some late
-      completionDate.setDate(completionDate.getDate() + (Math.random() > 0.7 ? 2 : -1));
-    }
-    
-    // Select a random specialist
-    const specialist = specialists[i % specialists.length];
-      // Select a random issue and diagnosis
-    const issue = commonIssues[i % commonIssues.length];
-    const diagnosis = status !== 'PENDING' ? commonDiagnoses[i % commonDiagnoses.length] : null;
-    
-    // Determine repair details
-    let deviceDetails;
-    let peripheralId = null;
-    
-    if (isPeripheralRepair && peripherals.length > 0) {
-      const peripheral = peripherals[i % peripherals.length];
-      peripheralId = peripheral.id;
-      deviceDetails = `${peripheral.name} (Issue: ${issue})`;
-    } else {
-      deviceDetails = `Custom PC Build (Issue: ${issue})`;
-    }
-    
-    // Calculate repair cost
-    const diagnosisFee = 2500; // €25
-    let partsCost = 0;
-    let laborCost = 5000; // €50 base labor
-    
-    // Add repair parts for repairs that are diagnosed or beyond
-    const repairParts = [];
-    if (status !== 'REQUESTED' && components.length > 0) {
-      const partsNeeded = Math.floor(Math.random() * 2) + 1; // 1-2 parts needed
-      
-      for (let j = 0; j < partsNeeded; j++) {
-        const component = components[(i + j) % components.length];
-        const quantity = 1;
-        const price = component.price * 0.8; // Parts at 80% of retail price
-        partsCost += price * quantity;
-        
-        repairParts.push({
-          componentId: component.id,
-          quantity,
-          price
-        });
-      }
-    }
-    
-    // Total cost
-    const totalCost = diagnosisFee + partsCost + laborCost;
-      // Create the repair
-    repairs.push({
-      title: isPeripheralRepair ? `Repair for ${peripherals[i % peripherals.length].name}` : `Custom PC Repair #${i+1}`,
-      description: `${issue}. ${diagnosis ? `Diagnosed: ${diagnosis}` : ''}`,
-      status: status as RepairStatus,
-      priority: i % 4 === 0 ? RepairPriority.HIGH : (i % 4 === 1 ? RepairPriority.URGENT : RepairPriority.NORMAL),
-      userId: user.id,
-      peripheralId,
-      configurationId: null,
-      createdAt: repairDate,
-      updatedAt: status !== 'PENDING' ? new Date(repairDate.getTime() + 24 * 60 * 60 * 1000) : repairDate, // Updated 1 day later if not just pending
-      estimatedCost: totalCost,
-      finalCost: status === 'COMPLETED' || status === 'CANCELLED' ? totalCost : null,
-      completionDate,
-      diagnosticNotes: diagnosis ? `${diagnosis}. ${i % 5 === 0 ? 'Customer reported intermittent issues that couldn\'t be reproduced in the shop' : ''}` : null,
-      repairParts,
-      // Create specialist association
-      specialist: {
-        specialistId: specialist.id,
-        assignedAt: status !== 'PENDING' ? new Date(repairDate.getTime() + 12 * 60 * 60 * 1000) : new Date(repairDate), // Assigned 12 hours later if not just pending
-        notes: i % 3 === 0 ? 'Recommended preventative maintenance' : null
-      }
-    });
-  }
-  // Insert repairs
-  for (const repair of repairs) {
-    // Extract the properties we need separately, and collect the rest in repairData
-    const { repairParts = [], specialist, ...repairData } = repair;
-    
-    const createdRepair = await prisma.repair.create({
-      data: repairData
-    });
-    
-    // Add repair specialist
-    if (specialist) {
-      await prisma.repairSpecialist.create({
-        data: {
-          repairId: createdRepair.id,
-          specialistId: specialist.specialistId,
-          assignedAt: specialist.assignedAt,
-          notes: specialist.notes
-        }
-      });
-    }
-    
-    // Add repair parts
-    for (const part of repairParts) {
-      await prisma.repairPart.create({
-        data: {
-          repairId: createdRepair.id,
-          componentId: part.componentId,
-          quantity: part.quantity || 1,
-          price: part.price
-        }
-      });
-    }
-  }
+
+  await prisma.repair.createMany({ data: repairs, skipDuplicates: true });
 }

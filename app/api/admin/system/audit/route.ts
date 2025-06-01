@@ -6,7 +6,6 @@ import { getAuditLogs, exportAuditLogs, createAuditLog } from '@/lib/services/au
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify that the user is authorized and is an admin
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -17,7 +16,6 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Check if user is admin
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { role: true }
@@ -27,7 +25,6 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Unauthorized: Admin access required')
     }
 
-    // Get query parameters for filtering
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '100', 10)
     const page = parseInt(searchParams.get('page') || '1', 10)
@@ -38,31 +35,28 @@ export async function GET(request: NextRequest) {
     const toDate = searchParams.get('toDate')
     const format = searchParams.get('format') as 'json' | 'csv' || 'json'
     
-    // Build filters object
     const filters: any = {}
     
     if (userId) filters.userId = userId
     if (action) filters.action = action
     if (entityType) filters.entityType = entityType
     
-    // Date filtering
     if (fromDate || toDate) {
       filters.dateRange = {}
       
       if (fromDate) {
         filters.dateRange.start = new Date(fromDate)
       } else {
-        filters.dateRange.start = new Date(0) // Default to earliest date
+        filters.dateRange.start = new Date(0) 
       }
       
       if (toDate) {
         filters.dateRange.end = new Date(toDate)
       } else {
-        filters.dateRange.end = new Date() // Default to current date
+        filters.dateRange.end = new Date() 
       }
     }
 
-    // Check if this is an export request
     if (format === 'csv') {
       const csvData = await exportAuditLogs(filters, 'csv')
       return new NextResponse(csvData, {
@@ -73,10 +67,8 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Fetch logs with pagination
     const result = await getAuditLogs(filters, { page, limit })
 
-    // Log this audit viewing
     await createAuditLog({
       userId: payload.userId,
       action: 'view',
@@ -93,10 +85,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Add a new audit log entry
 export async function POST(request: NextRequest) {
   try {
-    // Verify that the user is authorized
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -107,7 +97,6 @@ export async function POST(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Get the request body
     const body = await request.json()
     
     const {
@@ -117,7 +106,6 @@ export async function POST(request: NextRequest) {
       details,
     } = body
 
-    // Validate required fields
     if (!action || !entityType) {
       return NextResponse.json(
         { error: 'Missing required fields: action and entityType are required' },
@@ -125,7 +113,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create the audit log entry
     const auditLog = await createAuditLog({
       userId: payload.userId,
       action,

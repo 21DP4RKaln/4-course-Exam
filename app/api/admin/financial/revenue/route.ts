@@ -3,12 +3,8 @@ import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
 import { createUnauthorizedResponse, createForbiddenResponse, createServerErrorResponse } from '@/lib/apiErrors'
 import { prisma } from '@/lib/prismaService'
 
-/**
- * GET - Fetch revenue statistics for admin dashboard
- */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication and admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -23,11 +19,9 @@ export async function GET(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get query parameters for time ranges
     const { searchParams } = new URL(request.url)
-    const period = searchParams.get('period') || 'month' // day, week, month, year, custom
+    const period = searchParams.get('period') || 'month' 
     
-    // Determine date ranges based on the period
     const now = new Date()
     let startDate: Date
     let endDate = now
@@ -68,7 +62,6 @@ export async function GET(request: NextRequest) {
         startDate.setMonth(now.getMonth() - 1)
     }
     
-    // Fetch orders for the selected period
     const orders = await prisma.order.findMany({
       where: {
         createdAt: {
@@ -84,10 +77,8 @@ export async function GET(request: NextRequest) {
       }
     })
     
-    // Calculate total revenue
     const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0)
     
-    // Calculate revenue by order status
     const revenueByStatus = {
       COMPLETED: orders.filter(o => o.status === 'COMPLETED').reduce((sum, o) => sum + o.totalAmount, 0),
       PENDING: orders.filter(o => o.status === 'PENDING').reduce((sum, o) => sum + o.totalAmount, 0),
@@ -95,7 +86,6 @@ export async function GET(request: NextRequest) {
       CANCELLED: orders.filter(o => o.status === 'CANCELLED').reduce((sum, o) => sum + o.totalAmount, 0)
     }
     
-    // Calculate revenue by product type
     const revenueByProductType = {
       CONFIGURATION: 0,
       COMPONENT: 0,
@@ -110,11 +100,9 @@ export async function GET(request: NextRequest) {
       })
     })
     
-    // Calculate revenue over time (daily, weekly, or monthly grouping)
     let revenueOverTime: Array<{ period: string, revenue: number }> = []
     
     if (period === 'day') {
-      // Group by hour
       const hourlyRevenue: Record<number, number> = {}
       
       orders.forEach(order => {
@@ -127,11 +115,10 @@ export async function GET(request: NextRequest) {
         revenue: hourlyRevenue[hour] || 0
       }))
     } else if (period === 'week' || period === 'month') {
-      // Group by day
       const dailyRevenue: Record<string, number> = {}
       
       orders.forEach(order => {
-        const day = order.createdAt.toISOString().split('T')[0] // YYYY-MM-DD
+        const day = order.createdAt.toISOString().split('T')[0] 
         dailyRevenue[day] = (dailyRevenue[day] || 0) + order.totalAmount
       })
       
@@ -140,11 +127,10 @@ export async function GET(request: NextRequest) {
         revenue
       })).sort((a, b) => a.period.localeCompare(b.period))
     } else if (period === 'year') {
-      // Group by month
       const monthlyRevenue: Record<string, number> = {}
       
       orders.forEach(order => {
-        const month = order.createdAt.toISOString().substring(0, 7) // YYYY-MM
+        const month = order.createdAt.toISOString().substring(0, 7) 
         monthlyRevenue[month] = (monthlyRevenue[month] || 0) + order.totalAmount
       })
       
@@ -154,10 +140,8 @@ export async function GET(request: NextRequest) {
       })).sort((a, b) => a.period.localeCompare(b.period))
     }
     
-    // Calculate average order value
     const averageOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0
     
-    // Get previous period for comparison
     const previousPeriodStart = new Date(startDate)
     const previousPeriodEnd = new Date(startDate)
     
@@ -181,7 +165,6 @@ export async function GET(request: NextRequest) {
         break
     }
     
-    // Fetch previous period orders
     const previousPeriodOrders = await prisma.order.findMany({
       where: {
         createdAt: {
@@ -193,14 +176,12 @@ export async function GET(request: NextRequest) {
     
     const previousPeriodRevenue = previousPeriodOrders.reduce((sum, order) => sum + order.totalAmount, 0)
     
-    // Calculate growth percentage
     let revenueGrowth = 0
     
     if (previousPeriodRevenue > 0) {
       revenueGrowth = ((totalRevenue - previousPeriodRevenue) / previousPeriodRevenue) * 100
     }
     
-    // Calculate top-selling products
     const productSales: Record<string, { 
       productId: string, 
       productName: string, 
@@ -232,7 +213,6 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10)
     
-    // Compile all data
     const revenueData = {
       period: {
         start: startDate.toISOString(),
@@ -259,12 +239,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST - Generate forecast and revenue projections
- */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication and admin role
     const token = getJWTFromRequest(request)
     if (!token) {
       return createUnauthorizedResponse('Authentication required')
@@ -279,25 +255,22 @@ export async function POST(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // Get request body
     const { 
-      forecastPeriod = 12, // Number of months to forecast
-      growthRate = 5, // Estimated monthly growth rate in percentage
-      seasonalFactors = {} // Optional seasonal adjustments by month (e.g., {12: 1.5} for 50% higher in December)
+      forecastPeriod = 12, 
+      growthRate = 5, 
+      seasonalFactors = {} 
     } = await request.json()
     
-    // Get historical data for the past year
     const oneYearAgo = new Date()
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
     
-    // Group orders by month to establish baseline
     const orders = await prisma.order.findMany({
       where: {
         createdAt: {
           gte: oneYearAgo
         },
         status: {
-          in: ['COMPLETED', 'PROCESSING'] // Only count successful orders
+          in: ['COMPLETED', 'PROCESSING'] 
         }
       },
       orderBy: {
@@ -305,7 +278,6 @@ export async function POST(request: NextRequest) {
       }
     })
     
-    // Group revenue by month
     const monthlyRevenue: Record<string, number> = {}
     
     orders.forEach(order => {
@@ -313,20 +285,17 @@ export async function POST(request: NextRequest) {
       monthlyRevenue[month] = (monthlyRevenue[month] || 0) + order.totalAmount
     })
     
-    // Convert to array and sort
     const historicalData = Object.entries(monthlyRevenue).map(([month, revenue]) => ({
       month,
       revenue
     })).sort((a, b) => a.month.localeCompare(b.month))
     
-    // Calculate average monthly revenue if we have historical data
     let baselineMonthlyRevenue = 0
     
     if (historicalData.length > 0) {
       const totalHistoricalRevenue = historicalData.reduce((sum, item) => sum + item.revenue, 0)
       baselineMonthlyRevenue = totalHistoricalRevenue / historicalData.length
     } else {
-      // No historical data, estimate from recent orders
       const recentOrders = await prisma.order.findMany({
         where: {
           status: {
@@ -336,45 +305,39 @@ export async function POST(request: NextRequest) {
         orderBy: {
           createdAt: 'desc'
         },
-        take: 10 // Use 10 most recent orders to estimate
+        take: 10 
       })
       
       if (recentOrders.length > 0) {
         const recentRevenue = recentOrders.reduce((sum, order) => sum + order.totalAmount, 0)
-        baselineMonthlyRevenue = recentRevenue / recentOrders.length * 30 // Rough estimate for a month
+        baselineMonthlyRevenue = recentRevenue / recentOrders.length * 30 
       } else {
-        baselineMonthlyRevenue = 1000 // Default placeholder if no data available
+        baselineMonthlyRevenue = 1000 
       }
     }
     
-    // Generate forecast
     const forecast = []
     let currentDate = new Date()
     let projectedRevenue = baselineMonthlyRevenue
     
     for (let i = 0; i < forecastPeriod; i++) {
-      // Move to next month
       currentDate.setMonth(currentDate.getMonth() + 1)
       
-      // Apply growth rate
       projectedRevenue *= (1 + (growthRate / 100))
       
-      // Apply seasonal factors if provided
-      const month = currentDate.getMonth() + 1 // 1-12 for Jan-Dec
+      const month = currentDate.getMonth() + 1 
       const seasonalFactor = seasonalFactors[month] || 1
       const adjustedRevenue = projectedRevenue * seasonalFactor
       
       forecast.push({
-        month: currentDate.toISOString().substring(0, 7), // YYYY-MM
+        month: currentDate.toISOString().substring(0, 7),
         projectedRevenue: Math.round(adjustedRevenue * 100) / 100
       })
     }
     
-    // Prepare quarterly and annual projections
     const quarterlyProjections: Record<string, number> = {}
     const annualProjection = forecast.reduce((sum, item) => sum + item.projectedRevenue, 0)
     
-    // Group by quarter
     forecast.forEach(item => {
       const year = item.month.substring(0, 4)
       const month = parseInt(item.month.substring(5, 7))
@@ -384,13 +347,11 @@ export async function POST(request: NextRequest) {
       quarterlyProjections[key] = (quarterlyProjections[key] || 0) + item.projectedRevenue
     })
     
-    // Convert quarterly projections to array
     const quarterlyData = Object.entries(quarterlyProjections).map(([quarter, revenue]) => ({
       quarter,
       projectedRevenue: Math.round(revenue as number * 100) / 100
     }))
     
-    // Compile response
     const forecastData = {
       baselineMonthlyRevenue,
       growthAssumption: `${growthRate}% monthly growth`,

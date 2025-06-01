@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `order` ADD COLUMN `discount` DOUBLE NULL DEFAULT 0,
+    ADD COLUMN `shippingCost` DOUBLE NULL DEFAULT 10;

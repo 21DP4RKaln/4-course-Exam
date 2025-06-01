@@ -25,7 +25,13 @@ export async function GET(
       return createNotFoundResponse('Order not found');
     }
     
-    return NextResponse.json(order);
+    const responseOrder = {
+      ...order,
+      discount: (order as any).discount || 0,
+      shippingCost: (order as any).shippingCost || 10
+    };
+    
+    return NextResponse.json(responseOrder);
     
   } catch (error: any) {
     console.error('Error fetching order:', error);

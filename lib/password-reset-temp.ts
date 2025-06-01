@@ -18,15 +18,13 @@ export async function createPasswordResetToken(
 ) {
   const token = generateSecureToken();
   const code = generateVerificationCode();
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); 
 
-  // Delete any existing tokens for this user using raw SQL
   await prisma.$executeRaw`
     DELETE FROM password_reset_tokens 
     WHERE userId = ${userId} AND type = ${type}
   `;
 
-  // Create new token using raw SQL
   await prisma.$executeRaw`
     INSERT INTO password_reset_tokens (id, userId, token, code, type, contact, expiresAt, used, createdAt)
     VALUES (${crypto.randomUUID()}, ${userId}, ${token}, ${code}, ${type}, ${contact}, ${expiresAt}, false, ${new Date()})
@@ -68,7 +66,6 @@ export async function verifyResetCode(
   code: string,
   type: 'email' | 'phone'
 ) {
-  // Use raw SQL to query password reset tokens
   const resetTokens: any[] = await prisma.$queryRaw`
     SELECT rt.*, u.id as userId, u.email, u.phone
     FROM password_reset_tokens rt

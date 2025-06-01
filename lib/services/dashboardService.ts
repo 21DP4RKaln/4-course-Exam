@@ -16,7 +16,7 @@ export interface UserOrder {
   totalAmount: number;
   createdAt: string;
   configurationName?: string;
-  items: any[]; // Make items required and initialized as an empty array if undefined
+  items: any[]; 
 }
 
 /**
@@ -71,19 +71,16 @@ export async function getUserConfigurations(userId: string): Promise<UserConfigu
  */
 export async function getUserOrders(userId: string): Promise<UserOrder[]> {
   try {
-    // First, get the user's email to match with guest orders
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { email: true }
     });
 
-    // Find both authenticated user orders and any guest orders that match the user's email
     const orders = await prisma.order.findMany({
       where: {
         OR: [
-          { userId: userId }, // Regular user orders
+          { userId: userId }, 
           {
-            // Guest orders matching the user's email
             isGuestOrder: true,
             shippingEmail: user?.email,
           }
@@ -112,7 +109,6 @@ export async function getUserOrders(userId: string): Promise<UserOrder[]> {
       totalAmount: order.totalAmount,
       createdAt: order.createdAt.toISOString(),
       configurationName: order.configuration?.name,
-      // Make sure to include all order items, not just the ones from configurations
       items: order.orderItems.length > 0 ? 
         order.orderItems.map(item => ({
           id: item.productId,
@@ -121,7 +117,6 @@ export async function getUserOrders(userId: string): Promise<UserOrder[]> {
           quantity: item.quantity,
           productType: item.productType
         })) : 
-        // Fallback to configuration components if no orderItems exist
         (order.configuration?.components.map(item => ({
           id: item.component.id,
           name: item.component.name,
@@ -189,7 +184,6 @@ export async function getConfigurationById(configId: string, userId: string): Pr
  */
 export async function getOrderById(orderId: string, userId: string): Promise<UserOrder | null> {
   try {
-    // Get the user's email to match with guest orders
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { email: true }
@@ -201,7 +195,6 @@ export async function getOrderById(orderId: string, userId: string): Promise<Use
         OR: [
           { userId: userId },
           {
-            // Guest orders matching the user's email
             isGuestOrder: true,
             shippingEmail: user?.email,
           }
@@ -229,7 +222,6 @@ export async function getOrderById(orderId: string, userId: string): Promise<Use
       totalAmount: order.totalAmount,
       createdAt: order.createdAt.toISOString(),
       configurationName: order.configuration?.name,
-      // Include both order items and configuration components
       items: order.orderItems?.length > 0 ?
         order.orderItems.map(item => ({
           id: item.productId,

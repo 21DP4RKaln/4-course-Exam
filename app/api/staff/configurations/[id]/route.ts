@@ -25,13 +25,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Authenticate user
     const authResult = await authenticateStaff(request);
     if (authResult instanceof Response) {
       return authResult;
-    }
-
-    const configuration = await prisma.configuration.findUnique({
+    }    const configuration = await prisma.configuration.findUnique({
       where: { id: params.id },
       include: {
         user: {
@@ -46,12 +43,7 @@ export async function GET(
           include: {
             component: {
               include: {
-                category: true,
-                specValues: {
-                  include: {
-                    specKey: true
-                  }
-                }
+                category: true
               }
             }
           }
@@ -76,31 +68,16 @@ export async function GET(
         name: configuration.user.name,
         email: configuration.user.email,
         phone: configuration.user.phone
-      } : null,
-      components: configuration.components.map(item => {
-        const specs: Record<string, string> = {};
-        
-        // Extract specifications
-        if (item.component.specifications && typeof item.component.specifications === 'object') {
-          Object.entries(item.component.specifications).forEach(([key, value]) => {
-            specs[key] = String(value);
-          });
-        }
-        
-        // Add spec values
-        item.component.specValues.forEach(specValue => {
-          specs[specValue.specKey.name] = specValue.value;
-        });
-        
+      } : null,      components: configuration.components.map(item => {
         return {
           id: item.component.id,
           name: item.component.name,
           category: item.component.category.name,
           quantity: item.quantity,
           price: item.component.price,
-          stock: item.component.stock,
-          imageUrl: item.component.imageUrl,
-          specifications: specs
+          stock: item.component.quantity,
+          imageUrl: item.component.imagesUrl,
+          specifications: {} 
         };
       }),
       createdAt: configuration.createdAt.toISOString(),
@@ -119,7 +96,6 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Authenticate user
     const authResult = await authenticateStaff(request);
     if (authResult instanceof Response) {
       return authResult;
@@ -134,7 +110,6 @@ export async function PATCH(
 
     const { name, description, status, isTemplate, isPublic, components } = validationResult.data;
 
-    // Check if configuration exists
     const existingConfig = await prisma.configuration.findUnique({
       where: { id: params.id }
     });
@@ -143,9 +118,7 @@ export async function PATCH(
       return createNotFoundResponse('Configuration not found');
     }
 
-    // Use a transaction to ensure atomicity when updating components
     const updatedConfiguration = await prisma.$transaction(async (tx) => {
-      // Prepare update data
       const updateData: any = {};
       if (name !== undefined) updateData.name = name;
       if (description !== undefined) updateData.description = description;
@@ -154,11 +127,9 @@ export async function PATCH(
       if (isPublic !== undefined) updateData.isPublic = isPublic;
       updateData.updatedAt = new Date();
 
-      // If components are provided, calculate new total price
       let totalPrice = existingConfig.totalPrice;
       
       if (components) {
-        // Calculate new total price
         const componentIds = components.map(c => c.componentId);
         const componentPrices = await tx.component.findMany({
           where: {
@@ -180,12 +151,10 @@ export async function PATCH(
 
         updateData.totalPrice = totalPrice;
 
-        // Delete existing components
         await tx.configItem.deleteMany({
           where: { configurationId: params.id }
         });
 
-        // Create new components
         await tx.configItem.createMany({
           data: components.map(item => ({
             configurationId: params.id,
@@ -195,7 +164,6 @@ export async function PATCH(
         });
       }
 
-      // Update the configuration
       return await tx.configuration.update({
         where: { id: params.id },
         data: updateData,
@@ -220,7 +188,6 @@ export async function PATCH(
       });
     });
 
-    // Format the response
     return NextResponse.json({
       id: updatedConfiguration.id,
       name: updatedConfiguration.name,
@@ -254,7 +221,6 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Only admin can delete configurations
     const authResult = await authenticateAdmin(request);
     if (authResult instanceof Response) {
       return authResult;
@@ -268,14 +234,11 @@ export async function DELETE(
       return createNotFoundResponse('Configuration not found');
     }
 
-    // Use transaction to ensure all related records are deleted properly
     await prisma.$transaction(async (tx) => {
-      // Delete related configuration items first
       await tx.configItem.deleteMany({
         where: { configurationId: params.id }
       });
       
-      // Delete the configuration
       await tx.configuration.delete({
         where: { id: params.id }
       });

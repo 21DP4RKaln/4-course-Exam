@@ -87,7 +87,6 @@ export async function getAuditLogs(filters?: AuditFilters, pagination?: { page: 
       prisma.auditLog.count({ where })
     ]);
     
-    // Format the logs
     const formattedLogs = logs.map(log => ({
       id: log.id,
       userId: log.userId,
@@ -122,24 +121,30 @@ export async function getAuditStatistics(dateRange: { start: Date; end: Date }) 
       actionCounts,
       entityTypeCounts,
       userActivityCounts
-    ] = await prisma.$transaction([
-      // Actions count
-      prisma.auditLog.groupBy({
+    ] = await prisma.$transaction([      prisma.auditLog.groupBy({
         by: ['action'],
         where: {
           createdAt: { gte: dateRange.start, lte: dateRange.end }
         },
-        _count: true
+        _count: true,
+        orderBy: {
+          _count: {
+            action: 'desc'
+          }
+        }
       }),
-      // Entity types count
       prisma.auditLog.groupBy({
         by: ['entityType'],
         where: {
           createdAt: { gte: dateRange.start, lte: dateRange.end }
         },
-        _count: true
+        _count: true,
+        orderBy: {
+          _count: {
+            entityType: 'desc'
+          }
+        }
       }),
-      // User activity
       prisma.auditLog.groupBy({
         by: ['userId'],
         where: {
@@ -155,7 +160,6 @@ export async function getAuditStatistics(dateRange: { start: Date; end: Date }) 
       })
     ]);
     
-    // Fetch user names for top active users
     const userIds = userActivityCounts.map(item => item.userId);
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
@@ -190,13 +194,11 @@ export async function getAuditStatistics(dateRange: { start: Date; end: Date }) 
  */
 export async function exportAuditLogs(filters?: AuditFilters, format: 'csv' | 'json' = 'json') {
   try {
-    // Fetch logs without pagination for export
     const logs = await getAuditLogs(filters);
     
     if (format === 'json') {
       return JSON.stringify(logs.logs, null, 2);
     } else {
-      // Convert to CSV
       const headers = ['ID', 'User ID', 'User Name', 'Action', 'Entity Type', 'Entity ID', 'Details', 'IP Address', 'Date'];
       const csvRows = [headers.join(',')];
       
@@ -249,6 +251,5 @@ export async function logAction(
     });
   } catch (error) {
     console.error('Error logging action:', error);
-    // Don't throw error to prevent disrupting the main operation
   }
 }

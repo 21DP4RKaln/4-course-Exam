@@ -66,13 +66,24 @@ export async function reviewConfiguration(
   comment?: string
 ) {
   try {
+    const existingConfiguration = await prisma.configuration.findUnique({
+      where: { id: configId },
+      select: { description: true } 
+    });
+
+    if (!existingConfiguration) {
+      throw new Error(`Configuration with ID ${configId} not found.`);
+    }
+
+    const newDescription = comment 
+      ? `${existingConfiguration.description || ''}\n\nReview comment: ${comment}` 
+      : existingConfiguration.description;
+
     const configuration = await prisma.configuration.update({
       where: { id: configId },
       data: {
         status: action,
-        description: comment ? 
-          `${configuration.description}\n\nReview comment: ${comment}` : 
-          configuration.description
+        description: newDescription
       }
     });
 
@@ -129,7 +140,6 @@ export async function createCustomConfiguration(
   }
 ) {
   try {
-    // Calculate total price
     const componentIds = data.components.map(c => c.componentId);
     const components = await prisma.component.findMany({
       where: { id: { in: componentIds } }
@@ -185,7 +195,6 @@ export async function updateConfiguration(
   }
 ) {
   try {
-    // If components are updated, recalculate price
     let totalPrice: number | undefined;
     
     if (data.components) {
@@ -210,14 +219,11 @@ export async function updateConfiguration(
       }
     });
 
-    // Update components if provided
     if (data.components) {
-      // Delete existing components
       await prisma.configItem.deleteMany({
         where: { configurationId: configId }
       });
 
-      // Create new components
       await prisma.configItem.createMany({
         data: data.components.map(item => ({
           configurationId: configId,

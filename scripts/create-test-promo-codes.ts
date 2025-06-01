@@ -4,7 +4,6 @@ const prisma = new PrismaClient()
 
 async function createTestPromoCodes() {
   try {
-    // Create TEST20 promo code
     await prisma.promoCode.upsert({
       where: { code: 'TEST20' },
       update: {},
@@ -17,7 +16,6 @@ async function createTestPromoCodes() {
       }
     })
 
-    // Create TEST50 promo code
     await prisma.promoCode.upsert({
       where: { code: 'TEST50' },
       update: {},
@@ -30,7 +28,6 @@ async function createTestPromoCodes() {
       }
     })
 
-    // Create TEST100 promo code
     await prisma.promoCode.upsert({
       where: { code: 'TEST100' },
       update: {},

@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
     const headersList = await headers()
     const signature = headersList.get('stripe-signature')
     
-    // Get IP from forwarded header or direct IP
     const forwardedFor = request.headers.get('x-forwarded-for')
     const clientIp = forwardedFor ? forwardedFor.split(',')[0] : request.headers.get('x-real-ip')
 
@@ -38,16 +37,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Handle the event
-    switch (event.type) {      case 'checkout.session.completed': {
+    switch (event.type) {
+      case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const orderId = session.metadata?.orderId
 
         if (!orderId) {
           throw new Error('No orderId found in session metadata')
-        }
-
-        await prisma.order.update({
+        }        await prisma.order.update({
           where: { id: orderId },
           data: { 
             status: 'PROCESSING',
@@ -55,10 +52,19 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        // Set a cookie to clear the cart on the client-side
-        // We'll handle this in the order confirmation page with localStorage
+        try {         
+          const order = await prisma.order.findUnique({
+            where: { id: orderId }
+          });
+            const { sendOrderReceipt } = require('@/lib/orderEmail');
+          const orderLocale = order?.locale || 'en';
+          sendOrderReceipt(orderId, orderLocale).catch((err: Error) => {
+            console.error('Error sending order receipt email from Stripe webhook:', err);
+          });
+        } catch (emailError) {
+          console.error('Error importing or calling sendOrderReceipt:', emailError);
+        }
 
-        // Create audit log
         await prisma.auditLog.create({
           data: {
             action: 'UPDATE',
@@ -68,7 +74,8 @@ export async function POST(request: NextRequest) {
               event: event.type,
               sessionId: session.id,
               amount: session.amount_total,
-              clearCart: true // Add flag to indicate cart should be cleared
+              clearCart: true, 
+              emailSent: true  
             }),
             ipAddress: clientIp || '',
             userAgent: request.headers.get('user-agent') || '',
@@ -137,8 +144,7 @@ export async function POST(request: NextRequest) {
               user: { connect: { id: "system" } }
             }
           })
-        }
-        break
+        }        break
       }
 
       case 'payment_intent.succeeded': {
@@ -153,13 +159,25 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        // Update order status
         await prisma.order.update({
           where: { id: orderId },
           data: { status: 'PROCESSING' }
         })
 
-        // Create audit log
+        try {
+          // Get order to retrieve locale
+          const order = await prisma.order.findUnique({
+            where: { id: orderId }
+          });
+            const { sendOrderReceipt } = require('@/lib/orderEmail');
+          const orderLocale = order?.locale || 'en';
+          sendOrderReceipt(orderId, orderLocale).catch((err: Error) => {
+            console.error('Error sending order receipt email from payment intent:', err);
+          });
+        } catch (emailError) {
+          console.error('Error importing or calling sendOrderReceipt:', emailError);
+        }
+
         await prisma.auditLog.create({
           data: {
             action: 'UPDATE',
@@ -168,11 +186,12 @@ export async function POST(request: NextRequest) {
             details: JSON.stringify({
               event: 'payment_intent.succeeded',
               amount: paymentIntent.amount,
-              paymentIntentId: paymentIntent.id
+              paymentIntentId: paymentIntent.id,
+              emailSent: true  
             }),
             ipAddress: clientIp || '',
             userAgent: request.headers.get('user-agent') || '',
-            user: { connect: { id: "system" } } // Connect to a system user
+            user: { connect: { id: "system" } } 
           }
         })
 

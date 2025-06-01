@@ -1,70 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 
-export async function seedComponentCategories(prisma: PrismaClient) {
-  const categories = [
-    {
-      name: 'CPU',
-      description: 'Central Processing Units for desktop computers and workstations',
-      slug: 'cpu',
-      type: 'component',
-      displayOrder: 1
-    },
-    {
-      name: 'GPU',
-      description: 'Graphics Processing Units for gaming and professional work',
-      slug: 'gpu',
-      type: 'component',
-      displayOrder: 2
-    },
-    {
-      name: 'Motherboard',
-      description: 'Motherboards for different CPU sockets and form factors',
-      slug: 'motherboard',
-      type: 'component',
-      displayOrder: 3
-    },
-    {
-      name: 'RAM',
-      description: 'Memory modules for desktop and laptop computers',
-      slug: 'ram',
-      type: 'component',
-      displayOrder: 4
-    },
-    {
-      name: 'Storage',
-      description: 'Storage devices including SSDs and HDDs',
-      slug: 'storage',
-      type: 'component',
-      displayOrder: 5
-    },
-    {
-      name: 'PSU',
-      description: 'Power Supply Units for desktop computers',
-      slug: 'psu',
-      type: 'component',
-      displayOrder: 6
-    },
-    {
-      name: 'Case',
-      description: 'Computer cases for different motherboard form factors',
-      slug: 'case',
-      type: 'component',
-      displayOrder: 7
-    },
-    {
-      name: 'Cooling',
-      description: 'CPU and system cooling solutions',
-      slug: 'cooling',
-      type: 'component',
-      displayOrder: 8
-    }
+export async function seedComponentCategories(prisma: PrismaClient): Promise<void> {  const categories = [
+    { name: 'CPU', description: 'Central Processing Units', displayOrder: 1, slug: 'cpu' },
+    { name: 'GPU', description: 'Graphics Processing Units', displayOrder: 2, slug: 'gpu' },
+    { name: 'Motherboard', description: 'Motherboards and Mainboards', displayOrder: 3, slug: 'motherboard' },
+    { name: 'RAM', description: 'Random Access Memory', displayOrder: 4, slug: 'ram' },
+    { name: 'Storage', description: 'Storage Devices', displayOrder: 5, slug: 'storage' },
+    { name: 'PSU', description: 'Power Supply Units', displayOrder: 6, slug: 'psu' },
+    { name: 'Case', description: 'Computer Cases', displayOrder: 7, slug: 'case' },
+    { name: 'Cooling', description: 'Cooling Solutions', displayOrder: 8, slug: 'cooling' },
+    { name: 'Services', description: 'Additional Services and Software', displayOrder: 9, slug: 'services' }
   ];
-  
-  for (const category of categories) {
-    await prisma.componentCategory.upsert({
-      where: { slug: category.slug },
-      update: {},
-      create: category
-    });
-  }
+  await prisma.componentCategory.createMany({ data: categories, skipDuplicates: true });
 }

@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
         
         switch (item.productType) {
           case 'CONFIGURATION':
-            const config = await prisma.configuration.findUnique({
-              where: { id: item.productId }
-            })
+            const config = await prisma.configuration.findUnique({            where: { id: item.productId }
+            });
+            
             if (config) productDetails = {
               name: config.name,
               price: config.totalPrice,
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
             if (component) productDetails = {
               name: component.name,
               price: component.price,
-              imageUrl: component.imageUrl
+              imageUrl: component.imagesUrl
             }
             break
             
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
             if (peripheral) productDetails = {
               name: peripheral.name,
               price: peripheral.price,
-              imageUrl: peripheral.imageUrl
+              imageUrl: peripheral.imagesUrl
             }
             break
         }

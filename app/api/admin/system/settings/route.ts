@@ -3,10 +3,6 @@ import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
 import { createUnauthorizedResponse, createForbiddenResponse, createServerErrorResponse } from '@/lib/apiErrors'
 import { prisma } from '@/lib/prismaService'
 
-/**
- * Retrieves system settings
- * Only accessible by ADMIN users
- */
 export async function GET(request: NextRequest) {
   try {
     const token = getJWTFromRequest(request)
@@ -19,7 +15,6 @@ export async function GET(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Check if user is admin
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { role: true }
@@ -29,20 +24,18 @@ export async function GET(request: NextRequest) {
       return createForbiddenResponse('Admin access required')
     }
 
-    // In a production app, you'd typically have a settings table
-    // For this example, we'll return mock settings
     const settings = {
       general: {
         siteName: 'IvaPro PC Configurator',
         contactEmail: 'admin@ivapro.com',
-        maxUploadSize: 5, // MB
+        maxUploadSize: 5, 
         maintenanceMode: false
       },
       email: {
         provider: 'SMTP',
-        senderEmail: 'noreply@ivapro.com',
+        senderEmail: '14dprkalninskvdarbs@gmail.com',
         senderName: 'IvaPro PC Configurator',
-        smtpHost: 'smtp.example.com',
+        smtpHost: 'smtp.gmail.com',
         smtpPort: 587,
         smtpSecure: true,
         notifyOnNewOrder: true,
@@ -50,7 +43,7 @@ export async function GET(request: NextRequest) {
       },
       security: {
         loginAttempts: 5,
-        lockoutTime: 30, // minutes
+        lockoutTime: 30, 
         requireStrongPasswords: true,
         twoFactorAuthEnabled: false
       },
@@ -69,10 +62,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * Updates system settings
- * Only accessible by ADMIN users
- */
 export async function PUT(request: NextRequest) {
   try {
     const token = getJWTFromRequest(request)
@@ -85,7 +74,6 @@ export async function PUT(request: NextRequest) {
       return createUnauthorizedResponse('Invalid token')
     }
 
-    // Check if user is admin
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { role: true }
@@ -97,16 +85,12 @@ export async function PUT(request: NextRequest) {
 
     const settings = await request.json()
 
-    // Validate settings
     if (!settings || typeof settings !== 'object') {
       return NextResponse.json(
         { error: 'Invalid settings data' },
         { status: 400 }
       )
     }
-
-    // In a production app, you'd update the settings in the database
-    // For this example, we'll just return mock success
 
     return NextResponse.json({
       success: true,

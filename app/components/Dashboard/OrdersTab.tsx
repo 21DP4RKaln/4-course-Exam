@@ -35,7 +35,7 @@ export default function OrdersTab({
         animate={{ opacity: 1 }}
       >
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 dark:border-red-500 mr-3"></div>
-        <span className="text-neutral-600 dark:text-neutral-400">Loading orders...</span>
+        <span className="text-neutral-600 dark:text-neutral-400">{t('dashboard.loadingOrders')}</span>
       </motion.div>
     )
   }
@@ -82,23 +82,22 @@ export default function OrdersTab({
     >     
 
       <div className="overflow-x-auto bg-white dark:bg-neutral-950 rounded-xl shadow-lg border border-blue-100 dark:border-red-900/20">
-        <table className="min-w-full divide-y divide-blue-100 dark:divide-red-900/20">
-          <thead className="bg-neutral-50 dark:bg-neutral-950">
+        <table className="min-w-full divide-y divide-blue-100 dark:divide-red-900/20">          <thead className="bg-neutral-50 dark:bg-neutral-950">
             <tr>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                Order ID
+                {t('dashboard.orderId')}
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                Date
+                {t('dashboard.date')}
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                Configuration
+                {t('dashboard.configuration')}
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                Status
+                {t('dashboard.status')}
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                Total
+                {t('dashboard.total')}
               </th>
             </tr>
           </thead>

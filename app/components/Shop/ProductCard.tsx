@@ -85,7 +85,7 @@ export default function ProductCard({
     if (type === 'configuration') {
       return `/${locale}/shop/product/${id}`
     } else if (type === 'component') {
-      return `/${locale}/components/${category.toLowerCase()}/${id}`
+      return `/${locale}/components/${(category || '').toLowerCase()}/${id}`
     } else if (type === 'peripheral') {
       return `/${locale}/peripherals/${id}`
     }
@@ -173,16 +173,18 @@ export default function ProductCard({
           className={`w-full h-full object-contain transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
         />
         
-        {/* Category badge */}
-        <div className="absolute bottom-3 left-3">
-          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
-            theme === 'dark' 
-              ? 'bg-black/40 text-white border border-stone-950' 
-              : 'bg-white/40 text-neutral-900 border border-neutral-200'
-          }`}>
-            {t(`shop.categories.${category.toLowerCase()}`)}
-          </span>
-        </div>
+        {/* Category badge (only if category exists) */}
+        {category && (
+          <div className="absolute bottom-3 left-3">
+            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
+              theme === 'dark' 
+                ? 'bg-black/40 text-white border border-stone-950' 
+                : 'bg-white/40 text-neutral-900 border border-neutral-200'
+            }`}>
+              {t(`shop.categories.${category.toLowerCase()}`)}
+            </span>
+          </div>
+        )}
         
         {/* Stock indicator */}
         <div className="absolute bottom-3 right-3">
@@ -291,27 +293,25 @@ export default function ProductCard({
               </span>
             )}
           </div>
-            {/* Specs button */}
-          {Object.keys(specs).length > 0 && (
-            <div className="mt-auto">
-              <button
-                onClick={toggleSpecs}
-                className={`w-full flex items-center justify-center py-2 px-4 rounded-lg transition-all ${
-                  theme === 'dark' 
-                    ? `${showSpecs ? 'bg-red-600 hover:bg-red-700' : 'bg-stone-950 hover:bg-neutral-700'} text-white border ${showSpecs ? 'border-red-500' : 'border-neutral-700'}` 
-                    : `${showSpecs ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-neutral-100 hover:bg-neutral-200 text-stone-950'} border ${showSpecs ? 'border-blue-500' : 'border-neutral-200'}`
-                }`}
-              >
-                <Info size={16} className="mr-2" />
-                {showSpecs ? t('buttons.hideSpecs') : t('buttons.viewSpecs')}
-                {showSpecs ? (
-                  <ChevronUp size={16} className="ml-2" />
-                ) : (
-                  <ChevronDown size={16} className="ml-2" />
-                )}
-              </button>
-            </div>
-          )}
+          {/* Specs button */}
+          <div className="mt-auto">
+            <button
+              onClick={toggleSpecs}
+              className={`w-full flex items-center justify-center py-2 px-4 rounded-lg transition-all ${
+                theme === 'dark' 
+                  ? `${showSpecs ? 'bg-red-600 hover:bg-red-700' : 'bg-stone-950 hover:bg-neutral-700'} text-white border ${showSpecs ? 'border-red-500' : 'border-neutral-700'}` 
+                  : `${showSpecs ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-neutral-100 hover:bg-neutral-200 text-stone-950'} border ${showSpecs ? 'border-blue-500' : 'border-neutral-200'}`
+              }`}
+            >
+              <Info size={16} className="mr-2" />
+              {showSpecs ? t('buttons.hideSpecs') : t('buttons.viewSpecs')}
+              {showSpecs ? (
+                <ChevronUp size={16} className="ml-2" />
+              ) : (
+                <ChevronDown size={16} className="ml-2" />
+              )}
+            </button>
+          </div>
         </div>
           {/* Expandable specs section */}        {showSpecs && Object.keys(specs).length > 0 && (
           <div className={`mt-3 p-4 rounded-lg mb-1 text-xs space-y-2 overflow-y-auto max-h-[200px] scrollbar-thin ${

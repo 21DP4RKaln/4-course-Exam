@@ -1,198 +1,175 @@
-import { PrismaClient, OrderStatus, ProductType } from '@prisma/client';
+import { PrismaClient, OrderStatus } from '@prisma/client';
+import { priceWith99 } from './utils';
 
-export async function seedOrders(prisma: PrismaClient) {
-  // Get users to assign orders to
-  const users = await prisma.user.findMany({
-    take: 10
-  });
-  
-  // Get products to include in orders
-  const components = await prisma.component.findMany({
-    take: 30
-  });
-  
-  const peripherals = await prisma.peripheral.findMany({
-    take: 20
-  });
-  
-  // Get configurations
-  const configurations = await prisma.configuration.findMany({
-    where: { isTemplate: true },
-    take: 5
-  });
-  
-  // Get promo codes
-  const promoCodes = await prisma.promoCode.findMany({
-    where: { isActive: true },
-    take: 5
-  });
-    // Order statuses and their weights (higher = more common)
-  const orderStatuses = [
-    { status: OrderStatus.PENDING, weight: 2 },
-    { status: OrderStatus.PROCESSING, weight: 3 },
-    { status: OrderStatus.COMPLETED, weight: 12 }, // Combining SHIPPED and DELIVERED into COMPLETED
-    { status: OrderStatus.CANCELLED, weight: 2 }
+export async function seedOrders(prisma: PrismaClient): Promise<void> {
+  const users = await prisma.user.findMany({ take: 5 });
+  const configurations = await prisma.configuration.findMany({ take: 5 });
+
+  if (users.length === 0 || configurations.length === 0) {
+    throw new Error('Users and configurations not found. Please seed users and configurations first.');
+  }
+  const orders = [
+    {
+      userId: users[0]?.id,
+      configurationId: configurations[0]?.id,
+      status: OrderStatus.COMPLETED,
+      totalAmount: priceWith99(899, 1199),
+      discount: priceWith99(100, 200),
+      shippingCost: 10.0,
+      shippingAddress: '123 Main St, New York, NY 10001',
+      paymentMethod: 'Credit Card',
+      shippingMethod: 'Standard',
+      shippingEmail: 'customer1@example.com',
+      shippingName: 'John Doe',
+      shippingPhone: '+1-555-0101',
+      createdAt: new Date('2025-05-01'),
+      updatedAt: new Date('2025-05-05')
+    },
+    {
+      userId: users[1]?.id,
+      configurationId: configurations[1]?.id,
+      status: OrderStatus.PROCESSING,
+      totalAmount: priceWith99(1599, 1899),
+      discount: priceWith99(100, 200),
+      shippingCost: 15.0,
+      shippingAddress: '456 Oak Ave, Los Angeles, CA 90210',
+      paymentMethod: 'PayPal',
+      shippingMethod: 'Express',
+      shippingEmail: 'customer2@example.com',
+      shippingName: 'Jane Smith',
+      shippingPhone: '+1-555-0102',
+      createdAt: new Date('2025-05-15'),
+      updatedAt: new Date('2025-05-20')
+    },
+    {
+      userId: users[2]?.id,
+      configurationId: configurations[2]?.id,
+      status: OrderStatus.PROCESSING,
+      totalAmount: priceWith99(2799, 3199),
+      discount: priceWith99(200, 300),
+      shippingCost: 20.0,
+      shippingAddress: '789 Pine St, Chicago, IL 60601',
+      paymentMethod: 'Credit Card',
+      shippingMethod: 'Overnight',
+      shippingEmail: 'customer3@example.com',
+      shippingName: 'Mike Johnson',
+      shippingPhone: '+1-555-0103',
+      createdAt: new Date('2025-05-20'),
+      updatedAt: new Date('2025-05-22')
+    },
+    {
+      userId: users[3]?.id,
+      configurationId: configurations[3]?.id,
+      status: OrderStatus.PENDING,
+      totalAmount: priceWith99(1299, 1599),
+      discount: priceWith99(100, 200),
+      shippingCost: 10.0,
+      shippingAddress: '321 Elm Dr, Houston, TX 77001',
+      paymentMethod: 'Bank Transfer',
+      shippingMethod: 'Standard',
+      shippingEmail: 'customer4@example.com',
+      shippingName: 'Sarah Wilson',
+      shippingPhone: '+1-555-0104',
+      createdAt: new Date('2025-05-25'),
+      updatedAt: new Date('2025-05-25')
+    },
+    {
+      userId: users[4]?.id,
+      configurationId: configurations[4]?.id,
+      status: OrderStatus.CANCELLED,
+      totalAmount: priceWith99(699, 899),
+      discount: priceWith99(100, 150),
+      shippingCost: 10.0,
+      shippingAddress: '654 Maple Rd, Phoenix, AZ 85001',
+      paymentMethod: 'Credit Card',
+      shippingMethod: 'Standard',
+      shippingEmail: 'customer5@example.com',
+      shippingName: 'David Brown',
+      shippingPhone: '+1-555-0105',
+      createdAt: new Date('2025-05-10'),
+      updatedAt: new Date('2025-05-12')
+    },
+    {
+      userId: users[0]?.id,
+      configurationId: configurations[1]?.id,
+      status: OrderStatus.COMPLETED,
+      totalAmount: priceWith99(1899, 2299),
+      discount: priceWith99(100, 200),
+      shippingCost: 15.0,
+      shippingAddress: '987 Cedar Ln, Miami, FL 33101',
+      paymentMethod: 'Credit Card',
+      shippingMethod: 'Express',
+      shippingEmail: 'customer1@example.com',
+      shippingName: 'John Doe',
+      shippingPhone: '+1-555-0101',
+      createdAt: new Date('2025-04-20'),
+      updatedAt: new Date('2025-04-25')
+    },
+    {
+      userId: users[1]?.id,
+      configurationId: configurations[2]?.id,
+      status: OrderStatus.PROCESSING,
+      totalAmount: priceWith99(999, 1299),
+      discount: priceWith99(100, 150),
+      shippingCost: 10.0,
+      shippingAddress: '147 Birch St, Seattle, WA 98101',
+      paymentMethod: 'PayPal',
+      shippingMethod: 'Standard',
+      shippingEmail: 'customer2@example.com',
+      shippingName: 'Jane Smith',
+      shippingPhone: '+1-555-0102',
+      createdAt: new Date('2025-05-18'),
+      updatedAt: new Date('2025-05-23')
+    },
+    {
+      userId: users[2]?.id,
+      configurationId: configurations[3]?.id,
+      status: OrderStatus.PROCESSING,
+      totalAmount: priceWith99(1499, 1799),
+      discount: priceWith99(100, 150),
+      shippingCost: 12.0,
+      shippingAddress: '258 Spruce Ave, Denver, CO 80201',
+      paymentMethod: 'Credit Card',
+      shippingMethod: 'Express',
+      shippingEmail: 'customer3@example.com',
+      shippingName: 'Mike Johnson',
+      shippingPhone: '+1-555-0103',
+      createdAt: new Date('2025-05-22'),
+      updatedAt: new Date('2025-05-24')
+    },
+    {
+      userId: users[3]?.id,
+      configurationId: configurations[4]?.id,
+      status: OrderStatus.PENDING,
+      totalAmount: priceWith99(799, 999),
+      discount: priceWith99(100, 150),
+      shippingCost: 10.0,
+      shippingAddress: '369 Willow Way, Boston, MA 02101',
+      paymentMethod: 'Bank Transfer',
+      shippingMethod: 'Standard',
+      shippingEmail: 'customer4@example.com',
+      shippingName: 'Sarah Wilson',
+      shippingPhone: '+1-555-0104',
+      createdAt: new Date('2025-05-26'),
+      updatedAt: new Date('2025-05-26')
+    },
+    {
+      isGuestOrder: true,
+      configurationId: configurations[0]?.id,
+      status: OrderStatus.COMPLETED,
+      totalAmount: priceWith99(1199, 1499),
+      discount: priceWith99(100, 150),
+      shippingCost: 15.0,
+      shippingAddress: '741 Poplar St, Portland, OR 97201',
+      paymentMethod: 'Credit Card',
+      shippingMethod: 'Express',
+      shippingEmail: 'guest@example.com',
+      shippingName: 'Guest Customer',
+      shippingPhone: '+1-555-0199',
+      createdAt: new Date('2025-05-05'),
+      updatedAt: new Date('2025-05-10')
+    }
   ];
-  
-  // Calculate total weight for weighted random selection
-  const totalWeight = orderStatuses.reduce((sum, status) => sum + status.weight, 0);
-    // Function to select random status based on weight
-  function getRandomStatus(): OrderStatus {
-    let random = Math.random() * totalWeight;
-    
-    for (const status of orderStatuses) {
-      random -= status.weight;
-      if (random <= 0) {
-        return status.status;
-      }
-    }
-    
-    return OrderStatus.COMPLETED; // fallback
-  }
-  
-  // Payment methods
-  const paymentMethods = ['CREDIT_CARD', 'BANK_TRANSFER', 'PAYPAL'];
-  
-  // Shipping methods
-  const shippingMethods = ['STANDARD', 'EXPRESS', 'IN_STORE_PICKUP'];
-  
-  // Generate orders
-  const orders = [];
-  const orderCount = 25; // Generate 25 orders
-  
-  const now = new Date();
-  
-  for (let i = 0; i < orderCount; i++) {
-    // Select a random user
-    const user = users[i % users.length];
-    
-    // Determine order date (within the last 90 days)
-    const daysAgo = Math.floor(Math.random() * 90);
-    const orderDate = new Date(now);
-    orderDate.setDate(orderDate.getDate() - daysAgo);
-      // Get a random status as an OrderStatus enum value
-    const status: OrderStatus = getRandomStatus();
-    
-    // Determine if a promo code is used
-    const usePromoCode = Math.random() > 0.7; // 30% chance of using a promo code
-    const promoCode = usePromoCode ? promoCodes[i % promoCodes.length] : null;
-    
-    // Payment details
-    const paymentMethod = paymentMethods[i % paymentMethods.length];
-    const shippingMethod = shippingMethods[i % shippingMethods.length];
-    
-    // Select random items for this order
-    const itemCount = 1 + Math.floor(Math.random() * 4); // 1-4 items per order
-    const orderItems = [];
-    let subtotal = 0;
-    
-    // Decide if this order will include a configuration
-    const includeConfiguration = i % 5 === 0; // 20% of orders include a full configuration
-    
-    if (includeConfiguration && configurations.length > 0) {
-      // Add a configuration to the order
-      const config = configurations[i % configurations.length];
-      subtotal += config.totalPrice;
-        orderItems.push({
-        productType: ProductType.CONFIGURATION,
-        productId: config.id,
-        quantity: 1,
-        price: config.totalPrice,
-        name: config.name
-      });
-    } else {
-      // Add individual items
-      for (let j = 0; j < itemCount; j++) {
-        if (j % 2 === 0 && components.length > 0) {      // Add a component
-      const component = components[(i + j) % components.length];
-      const quantity = Math.floor(Math.random() * 2) + 1; // 1-2 quantity
-      const price = component.price;
-      subtotal += price * quantity;
-      
-      orderItems.push({
-        productType: ProductType.COMPONENT,
-        productId: component.id,
-        quantity,
-        price,
-        name: component.name
-      });
-    } else if (peripherals.length > 0) {
-      // Add a peripheral
-      const peripheral = peripherals[(i + j) % peripherals.length];
-      const quantity = Math.floor(Math.random() * 2) + 1; // 1-2 quantity
-      const price = peripheral.price;
-      subtotal += price * quantity;
-      
-      orderItems.push({
-        productType: ProductType.PERIPHERAL,
-        productId: peripheral.id,
-        quantity,
-        price,
-        name: peripheral.name
-      });
-        }
-      }
-    }
-    
-    // Calculate shipping, tax, and discounts
-    const shippingCost = shippingMethod === 'EXPRESS' ? 1500 : (shippingMethod === 'STANDARD' ? 800 : 0);
-    const taxRate = 0.21; // 21% tax
-    const taxAmount = Math.round(subtotal * taxRate);
-      // Apply discount if promo code is used
-    let discountAmount = 0;
-    if (usePromoCode && promoCode) {
-      if (promoCode.discountPercentage) {
-        discountAmount = Math.min(
-          Math.round(subtotal * (promoCode.discountPercentage / 100)),
-          promoCode.maxDiscountAmount || Infinity
-        );
-      } else if (promoCode.maxDiscountAmount) {
-        discountAmount = promoCode.maxDiscountAmount;
-      }
-    }
-    
-    // Calculate total
-    const totalAmount = subtotal + shippingCost + taxAmount - discountAmount;    // Create the order - make sure it matches the schema structure
-    orders.push({
-      userId: user.id,
-      status, // status is already an OrderStatus enum value
-      totalAmount, // This is the only amount field in the schema
-      shippingAddress: (user.shippingAddress || '123 Main St') + 
-        ', ' + (user.shippingCity || 'Vilnius') + 
-        ', ' + (user.shippingPostalCode || '01234') + 
-        ', ' + (user.shippingCountry || 'Lithuania'),
-      paymentMethod,
-      shippingMethod,
-      isGuestOrder: false,
-      shippingEmail: user.email || 'customer@example.com',
-      shippingName: (user.firstName || 'Customer') + ' ' + (user.lastName || 'User'),
-      shippingPhone: user.phone || '+37112345678',
-      createdAt: orderDate,
-      updatedAt: orderDate,
-      items: orderItems
-    });
-  }
-    // Insert orders
-  for (const order of orders) {
-    // Extract items and userId using destructuring
-    const { items: orderItems, userId, ...orderData } = order;
-    
-    // Create order with proper nested user relation
-    const createdOrder = await prisma.order.create({
-      data: {
-        ...orderData,
-        user: userId ? { connect: { id: userId } } : undefined
-      }
-    });
-    
-    // Add order items
-    for (const item of orderItems) {
-      await prisma.orderItem.create({
-        data: {
-          orderId: createdOrder.id,
-          ...item
-        }
-      });
-    }
-  }
+
+  await prisma.order.createMany({ data: orders, skipDuplicates: true });
 }
