@@ -5,9 +5,12 @@
         "schedule": "0 0 1 * *"
       }
     ],
+    "buildCommand": "npm run build:vercel",
+    "installCommand": "npm install --legacy-peer-deps",
     "build": {
       "env": {
-        "NODE_OPTIONS": "--max-old-space-size=4096"
+        "NODE_OPTIONS": "--max-old-space-size=3072",
+        "NEXT_WEBPACK_CONCURRENCY": "1"
       }
     },
     "functions": {

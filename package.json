@@ -10,6 +10,7 @@
     "build": "next build",
     "build:high-memory": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
     "build:low-memory": "cross-env NEXT_WEBPACK_CONCURRENCY=1 NODE_OPTIONS=--max-old-space-size=4096 next build",
+    "build:vercel": "cross-env NODE_OPTIONS=--max-old-space-size=3072 NEXT_WEBPACK_CONCURRENCY=1 next build",
     "build:dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 NODE_ENV=development next build",
     "build:partial": "node scripts/partial-build.js",
     "cleanup": "node scripts/cleanup-before-build.js",
