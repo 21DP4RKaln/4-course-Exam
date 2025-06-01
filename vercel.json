@@ -6,7 +6,6 @@
       }
     ],
     "buildCommand": "npm run build:vercel",
-    "installCommand": "npm install",
     "build": {
       "env": {
         "NODE_OPTIONS": "--max-old-space-size=3072",
