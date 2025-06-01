@@ -7,7 +7,7 @@
     "dev:high-memory": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
     "dev:simple": "cross-env NODE_OPTIONS=--max-old-space-size=4096 NEXT_DEV_SIMPLE=true next dev",
     "dev:reduced": "node scripts/dev-reduced-routes.js",
-    "build": "next build",
+    "build": "prisma generate && cross-env NODE_OPTIONS=--max-old-space-size=3072 NEXT_WEBPACK_CONCURRENCY=1 next build",
     "build:high-memory": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
     "build:low-memory": "cross-env NEXT_WEBPACK_CONCURRENCY=1 NODE_OPTIONS=--max-old-space-size=4096 next build",
     "build:vercel": "prisma generate && cross-env NODE_OPTIONS=--max-old-space-size=3072 NEXT_WEBPACK_CONCURRENCY=1 next build",

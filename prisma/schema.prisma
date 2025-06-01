@@ -58,11 +58,11 @@ model ConfigItem {
   configurationId String
   componentId     String
   quantity        Int           @default(1)
-  component       Component     @relation(fields: [componentId], references: [id])
-  configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+  component       Component     @relation(fields: [componentId], references: [id], map: "config_item_component_fk")
+  configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade, map: "config_item_configuration_fk")
 
-  @@index([componentId], map: "configitem_componentId_fkey")
-  @@index([configurationId], map: "configitem_configurationId_fkey")
+  @@index([componentId], map: "configitem_componentId_idx")
+  @@index([configurationId], map: "configitem_configurationId_idx")
   @@map("configitem")
 }
 
@@ -83,11 +83,11 @@ model Configuration {
   discountExpiresAt DateTime?
   discountPrice     Float?
   components        ConfigItem[]
-  user              User?        @relation(fields: [userId], references: [id])
+  user              User?        @relation(fields: [userId], references: [id], map: "configuration_user_fk")
   orders            Order[]
   repairs           Repair[]
 
-  @@index([userId], map: "configuration_userId_fkey")
+  @@index([userId], map: "configuration_userId_idx")
   @@map("configuration")
 }
 
@@ -127,11 +127,11 @@ model Peripheral {
   monitor           Monitor?
   mouse             Mouse?
   mousePad          MousePad?
-  category          PeripheralCategory @relation(fields: [categoryId], references: [id])
+  category          PeripheralCategory @relation(fields: [categoryId], references: [id], map: "peripheral_category_fk")
   repairs           Repair[]
   speakers          Speakers?
 
-  @@index([categoryId], map: "peripheral_categoryId_fkey")
+  @@index([categoryId], map: "peripheral_categoryId_idx")
   @@map("peripheral")
 }
 
@@ -150,15 +150,15 @@ model Repair {
   finalCost       Float?
   completionDate  DateTime?
   diagnosticNotes String?            @db.Text
-  configuration   Configuration?     @relation(fields: [configurationId], references: [id])
-  peripheral      Peripheral?        @relation(fields: [peripheralId], references: [id])
-  user            User               @relation(fields: [userId], references: [id])
+  configuration   Configuration?     @relation(fields: [configurationId], references: [id], map: "repair_configuration_fk")
+  peripheral      Peripheral?        @relation(fields: [peripheralId], references: [id], map: "repair_peripheral_fk")
+  user            User               @relation(fields: [userId], references: [id], map: "repair_user_fk")
   parts           RepairPart[]
   specialists     RepairSpecialist[]
 
-  @@index([configurationId], map: "repair_configurationId_fkey")
-  @@index([peripheralId], map: "repair_peripheralId_fkey")
-  @@index([userId], map: "repair_userId_fkey")
+  @@index([configurationId], map: "repair_configurationId_idx")
+  @@index([peripheralId], map: "repair_peripheralId_idx")
+  @@index([userId], map: "repair_userId_idx")
   @@map("repair")
 }
 
@@ -168,11 +168,11 @@ model RepairSpecialist {
   specialistId String
   assignedAt   DateTime @default(now())
   notes        String?  @db.Text
-  repair       Repair   @relation(fields: [repairId], references: [id], onDelete: Cascade)
-  specialist   User     @relation(fields: [specialistId], references: [id])
+  repair       Repair   @relation(fields: [repairId], references: [id], onDelete: Cascade, map: "repair_specialist_repair_fk")
+  specialist   User     @relation(fields: [specialistId], references: [id], map: "repair_specialist_user_fk")
 
   @@unique([repairId, specialistId])
-  @@index([specialistId], map: "repairspecialist_specialistId_fkey")
+  @@index([specialistId], map: "repairspecialist_specialistId_idx")
   @@map("repairspecialist")
 }
 
@@ -182,11 +182,11 @@ model RepairPart {
   componentId String
   quantity    Int       @default(1)
   price       Float
-  component   Component @relation(fields: [componentId], references: [id])
-  repair      Repair    @relation(fields: [repairId], references: [id], onDelete: Cascade)
+  component   Component @relation(fields: [componentId], references: [id], map: "repair_part_component_fk")
+  repair      Repair    @relation(fields: [repairId], references: [id], onDelete: Cascade, map: "repair_part_repair_fk")
 
-  @@index([componentId], map: "repairpart_componentId_fkey")
-  @@index([repairId], map: "repairpart_repairId_fkey")
+  @@index([componentId], map: "repairpart_componentId_idx")
+  @@index([repairId], map: "repairpart_repairId_idx")
   @@map("repairpart")
 }
 
@@ -208,12 +208,12 @@ model Order {
   discount        Float?         @default(0)
   shippingCost    Float?         @default(10)
   locale          String?        @default("en")
-  configuration   Configuration? @relation(fields: [configurationId], references: [id])
-  user            User?          @relation(fields: [userId], references: [id])
+  configuration   Configuration? @relation(fields: [configurationId], references: [id], map: "order_configuration_fk")
+  user            User?          @relation(fields: [userId], references: [id], map: "order_user_fk")
   orderItems      OrderItem[]
 
-  @@index([configurationId], map: "order_configurationId_fkey")
-  @@index([userId], map: "order_userId_fkey")
+  @@index([configurationId], map: "order_configurationId_idx")
+  @@index([userId], map: "order_userId_idx")
   @@map("order")
 }
 
@@ -241,11 +241,11 @@ model ReviewHelpful {
   userId    String
   isHelpful Boolean  @default(true)
   createdAt DateTime @default(now())
-  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade, map: "review_helpful_review_fk")
+  user      User     @relation(fields: [userId], references: [id], map: "review_helpful_user_fk")
 
   @@unique([reviewId, userId])
-  @@index([userId], map: "review_helpful_userId_fkey")
+  @@index([userId], map: "review_helpful_userId_idx")
   @@map("review_helpful")
 }
 
@@ -269,9 +269,9 @@ model OrderItem {
   quantity    Int         @default(1)
   price       Float
   name        String
-  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade, map: "order_item_order_fk")
 
-  @@index([orderId], map: "order_item_orderId_fkey")
+  @@index([orderId], map: "order_item_orderId_idx")
   @@map("order_item")
 }
 
@@ -300,9 +300,9 @@ model PromoProduct {
   promoCodeId String
   productId   String
   productType String
-  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade, map: "promo_product_promo_code_fk")
 
-  @@index([promoCodeId], map: "promoproduct_promoCodeId_fkey")
+  @@index([promoCodeId], map: "promoproduct_promoCodeId_idx")
   @@map("promoproduct")
 }
 
@@ -337,14 +337,14 @@ model MarketingCampaign {
   content        String?          @db.Text
   bannerImageUrl String?
   promoCodeId    String?
-  metadata       String?          @db.LongText
+  metadata       String?          @db.Text
   createdById    String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   metrics        CampaignMetrics?
-  promoCode      PromoCode?       @relation(fields: [promoCodeId], references: [id])
+  promoCode      PromoCode?       @relation(fields: [promoCodeId], references: [id], map: "marketing_campaign_promo_code_fk")
 
-  @@index([promoCodeId], map: "marketing_campaign_promoCodeId_fkey")
+  @@index([promoCodeId], map: "marketing_campaign_promoCodeId_idx")
   @@map("marketing_campaign")
 }
 
@@ -373,10 +373,10 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "account_user_fk")
 
   @@unique([provider, providerAccountId])
-  @@index([userId], map: "accounts_userId_fkey")
+  @@index([userId], map: "accounts_userId_idx")
   @@map("accounts")
 }
 
@@ -385,9 +385,9 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "session_user_fk")
 
-  @@index([userId], map: "sessions_userId_fkey")
+  @@index([userId], map: "sessions_userId_idx")
   @@map("sessions")
 }
 
@@ -401,9 +401,9 @@ model PasswordResetToken {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "password_reset_token_user_fk")
 
-  @@index([userId], map: "password_reset_tokens_userId_fkey")
+  @@index([userId], map: "password_reset_tokens_userId_idx")
   @@map("password_reset_tokens")
 }
 
@@ -434,7 +434,7 @@ model Component {
   rating            Float?            @default(0)
   ratingCount       Int               @default(0)
   caseModel         Case?
-  category          ComponentCategory @relation(fields: [categoryId], references: [id])
+  category          ComponentCategory @relation(fields: [categoryId], references: [id], map: "component_category_fk")
   configItems       ConfigItem[]
   cooling           Cooling?
   cpu               CPU?
@@ -445,7 +445,7 @@ model Component {
   repairParts       RepairPart[]
   storage           Storage?
 
-  @@index([categoryId], map: "component_categoryId_fkey")
+  @@index([categoryId], map: "component_categoryId_idx")
   @@map("component")
 }
 
