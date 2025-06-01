@@ -1,7 +1,0 @@
--- AlterTable
-ALTER TABLE `component` ADD COLUMN `rating` DOUBLE NULL DEFAULT 0,
-    ADD COLUMN `ratingCount` INTEGER NOT NULL DEFAULT 0;
-
--- AlterTable
-ALTER TABLE `peripheral` ADD COLUMN `rating` DOUBLE NULL DEFAULT 0,
-    ADD COLUMN `ratingCount` INTEGER NOT NULL DEFAULT 0;

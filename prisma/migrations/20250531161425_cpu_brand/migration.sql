@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `cpu` ALTER COLUMN `brand` DROP DEFAULT;
