@@ -6,6 +6,14 @@ import { EmailConfig } from './email';
 export async function getEmailConfig(): Promise<EmailConfig> {
   try {
     console.log('Getting email configuration...');
+    console.log('Environment variables:', {
+      SMTP_HOST: process.env.SMTP_HOST,
+      SMTP_PORT: process.env.SMTP_PORT,
+      SMTP_USER: process.env.SMTP_USER,
+      SMTP_PASS: process.env.SMTP_PASS ? '***' : 'not set',
+      SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL,
+      SMTP_FROM_NAME: process.env.SMTP_FROM_NAME
+    });
     
     // Check if required environment variables are present
     const requiredVars = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'];
@@ -13,6 +21,7 @@ export async function getEmailConfig(): Promise<EmailConfig> {
     
     if (missingVars.length > 0) {
       console.warn('Missing required environment variables:', missingVars);
+      throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
     }
     
     const config = {
@@ -47,7 +56,7 @@ export async function getEmailConfig(): Promise<EmailConfig> {
       secure: false,
       auth: {
         user: '14dprkalninskvdarbs@gmail.com',
-        pass: '',
+        pass: 'egku zbeo xaao xcsj',
       },
       fromEmail: '14dprkalninskvdarbs@gmail.com',
       fromName: 'IvaPro Support'

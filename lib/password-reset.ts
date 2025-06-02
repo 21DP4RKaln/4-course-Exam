@@ -55,10 +55,31 @@ export async function sendVerificationCode(
   try {
     if (type === 'email') {
       console.log('Attempting to send email verification code to:', contact);
-      const emailConfig = await getEmailConfig();
-      console.log('Email config obtained, sending email...');
-      await sendPasswordResetEmail(contact, code, emailConfig);
-      console.log('Email sent successfully');
+      
+      try {
+        const emailConfig = await getEmailConfig();
+        console.log('Email config obtained, sending email...');
+        await sendPasswordResetEmail(contact, code, emailConfig);
+        console.log('Email sent successfully');
+      } catch (emailError) {
+        console.error('Primary email config failed, trying fallback:', emailError);
+        
+        // Fallback email config
+        const fallbackConfig = {
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+          auth: {
+            user: '14dprkalninskvdarbs@gmail.com',
+            pass: 'egku zbeo xaao xcsj',
+          },
+          fromEmail: '14dprkalninskvdarbs@gmail.com',
+          fromName: 'IvaPro Support'
+        };
+        
+        await sendPasswordResetEmail(contact, code, fallbackConfig);
+        console.log('Email sent successfully with fallback config');
+      }
     } else if (type === 'phone') {
       console.log('Attempting to send SMS verification code to:', contact);
       const smsConfig: SMSConfig = {
@@ -72,6 +93,7 @@ export async function sendVerificationCode(
   } catch (error) {
     console.error('Error sending verification code:', error);
     console.error('Contact:', contact, 'Type:', type);
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
     throw error;
   }
 }

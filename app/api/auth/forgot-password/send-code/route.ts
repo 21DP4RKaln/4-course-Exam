@@ -52,6 +52,16 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error) {
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
+      
+      // Return more detailed error for debugging in production
+      return NextResponse.json(
+        { 
+          error: 'Failed to send verification code',
+          details: error.message,
+          type: error.constructor.name
+        },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(

@@ -32,33 +32,50 @@ export async function sendPasswordResetEmail(
   code: string,
   config: EmailConfig
 ) {
-  const transporter = await createEmailTransporter(config);
+  try {
+    console.log('Creating email transporter with config:', {
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
+      user: config.auth.user,
+      hasPassword: !!config.auth.pass
+    });
+    
+    const transporter = await createEmailTransporter(config);
 
-  const mailOptions = {
-    from: config.fromEmail ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>` : config.auth.user,
-    to,
-    subject: 'Password Reset Verification Code',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
-        <p>You have requested to reset your password. Please use the verification code below:</p>
-        
-        <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
-          <h1 style="color: #007bff; font-size: 32px; margin: 0; letter-spacing: 5px;">${code}</h1>
+    const mailOptions = {
+      from: config.fromEmail ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>` : config.auth.user,
+      to,
+      subject: 'Password Reset Verification Code',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
+          <p>You have requested to reset your password. Please use the verification code below:</p>
+          
+          <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
+            <h1 style="color: #007bff; font-size: 32px; margin: 0; letter-spacing: 5px;">${code}</h1>
+          </div>
+          
+          <p>This code will expire in 15 minutes for security reasons.</p>
+          <p>If you did not request this password reset, please ignore this email.</p>
+          
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 14px; text-align: center;">
+            This is an automated message, please do not reply to this email.
+          </p>
         </div>
-        
-        <p>This code will expire in 15 minutes for security reasons.</p>
-        <p>If you did not request this password reset, please ignore this email.</p>
-        
-        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-        <p style="color: #666; font-size: 14px; text-align: center;">
-          This is an automated message, please do not reply to this email.
-        </p>
-      </div>
-    `,
-  };
+      `,
+    };
 
-  await transporter.sendMail(mailOptions);
+    console.log('Sending email to:', to);
+    const result = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully, messageId:', result.messageId);
+    
+    return result;
+  } catch (error) {
+    console.error('Error in sendPasswordResetEmail:', error);
+    throw error;
+  }
 }
 
 export async function sendOrderConfirmationEmail(
