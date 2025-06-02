@@ -3,24 +3,10 @@ import { FilterGroup, FilterOption, extractBrandOptions } from './filterInterfac
 
 /**
  * Generate filter groups for Cooling components dynamically based on component specifications.
+ * Excludes Type filters as they are handled by Quick Filters.
  */
 export const createCoolingFilterGroups = (components: Component[]): FilterGroup[] => {
   const groups: FilterGroup[] = []
-
-  // Brand filter
-  const brandOptions = extractBrandOptions(components)
-  if (brandOptions.size > 0) {
-    const options: FilterOption[] = Array.from(brandOptions.entries()).map(([id, name]) => ({ 
-      id, 
-      name 
-    }))
-    groups.push({ 
-      title: 'manufacturer',
-      titleTranslationKey: 'filterGroups.manufacturer',
-      options 
-    })
-  }
-
   // Socket Compatibility
   const socketSet = new Set<string>()
   components.forEach(c => {
@@ -38,17 +24,18 @@ export const createCoolingFilterGroups = (components: Component[]): FilterGroup[
     }
   })
   if (socketSet.size > 0) {
-    const options: FilterOption[] = Array.from(socketSet).map(val => ({ 
-      id: `socket=${val}`, 
-      name: val 
-    }))
+    const options: FilterOption[] = Array.from(socketSet)
+      .sort()
+      .map(val => ({ 
+        id: `socket=${val}`, 
+        name: val 
+      }))
     groups.push({ 
       title: 'specs.socket',
       titleTranslationKey: 'filterGroups.socket', 
       options 
     })
   }
-
 
   // Radiator Size (for AIOs)
   const radiatorSet = new Set<string>()
@@ -68,17 +55,22 @@ export const createCoolingFilterGroups = (components: Component[]): FilterGroup[
     }
   })
   if (radiatorSet.size > 0) {
-    const options: FilterOption[] = Array.from(radiatorSet).map(val => ({ 
-      id: `radiatorSize=${val}`, 
-      name: val 
-    }))
+    const options: FilterOption[] = Array.from(radiatorSet)
+      .sort((a, b) => {
+        const aNum = parseInt(a.replace(/\D/g, '')) || 0
+        const bNum = parseInt(b.replace(/\D/g, '')) || 0
+        return aNum - bNum
+      })
+      .map(val => ({ 
+        id: `radiatorSize=${val}`, 
+        name: val 
+      }))
     groups.push({ 
       title: 'specs.radiatorSize',
       titleTranslationKey: 'filterGroups.radiatorSize', 
       options 
     })
   }
-
   // RGB Lighting
   const rgbSet = new Set<string>()
   components.forEach(c => {

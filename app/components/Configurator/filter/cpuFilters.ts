@@ -4,6 +4,7 @@ import { FilterGroup, FilterOption, extractBrandOptions } from './filterInterfac
 
 /**
  * Generate filter groups for CPU components dynamically based on component specifications.
+ * Excludes Brand and Series filters as they are handled by Quick Filters.
  */
 export const createCpuFilterGroups = (components: Component[]): FilterGroup[] => {
   const groups: FilterGroup[] = []
@@ -15,7 +16,9 @@ export const createCpuFilterGroups = (components: Component[]): FilterGroup[] =>
     if (cores) coresSet.add(String(cores))
   })
   if (coresSet.size) {
-    const options: FilterOption[] = Array.from(coresSet).map(val => ({ id: `cores=${val}`, name: `${val}` }))
+    const options: FilterOption[] = Array.from(coresSet)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .map(val => ({ id: `cores=${val}`, name: `${val}` }))
     groups.push({ 
       title: 'specs.cores', 
       titleTranslationKey: 'filterGroups.cores',
@@ -30,7 +33,9 @@ export const createCpuFilterGroups = (components: Component[]): FilterGroup[] =>
     if (threads) threadsSet.add(String(threads))
   })
   if (threadsSet.size) {
-    const options: FilterOption[] = Array.from(threadsSet).map(val => ({ id: `threads=${val}`, name: `${val}` }))
+    const options: FilterOption[] = Array.from(threadsSet)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .map(val => ({ id: `threads=${val}`, name: `${val}` }))
     groups.push({ 
       title: 'specs.threads',
       titleTranslationKey: 'filterGroups.threads', 

@@ -3,23 +3,10 @@ import { FilterGroup, FilterOption, extractBrandOptions } from './filterInterfac
 
 /**
  * Generate filter groups for Case components dynamically based on component specifications.
+ * Excludes Form Factor filters as they are handled by Quick Filters.
  */
 export const createCaseFilterGroups = (components: Component[]): FilterGroup[] => {
   const groups: FilterGroup[] = []
-
-  // Brand filter
-  const brandOptions = extractBrandOptions(components)
-  if (brandOptions.size > 0) {
-    const options: FilterOption[] = Array.from(brandOptions.entries()).map(([id, name]) => ({ 
-      id, 
-      name 
-    }))
-    groups.push({ 
-      title: 'manufacturer',
-      titleTranslationKey: 'filterGroups.manufacturer',
-      options 
-    })
-  }
 
   // Case Type (Mid Tower, Full Tower, etc.)
   const typeSet = new Set<string>()
@@ -31,10 +18,12 @@ export const createCaseFilterGroups = (components: Component[]): FilterGroup[] =
     if (type) typeSet.add(String(type))
   })
   if (typeSet.size > 0) {
-    const options: FilterOption[] = Array.from(typeSet).map(val => ({ 
-      id: `caseType=${val}`, 
-      name: val 
-    }))
+    const options: FilterOption[] = Array.from(typeSet)
+      .sort()
+      .map(val => ({ 
+        id: `caseType=${val}`, 
+        name: val 
+      }))
     groups.push({ 
       title: 'specs.caseType',
       titleTranslationKey: 'filterGroups.caseType', 
@@ -52,10 +41,12 @@ export const createCaseFilterGroups = (components: Component[]): FilterGroup[] =
     if (psuIncluded) psuIncludedSet.add(String(psuIncluded))
   })
   if (psuIncludedSet.size > 0) {
-    const options: FilterOption[] = Array.from(psuIncludedSet).map(val => ({ 
-      id: `psuIncluded=${val}`, 
-      name: val 
-    }))
+    const options: FilterOption[] = Array.from(psuIncludedSet)
+      .sort()
+      .map(val => ({ 
+        id: `psuIncluded=${val}`, 
+        name: val 
+      }))
     groups.push({ 
       title: 'specs.psuIncluded',
       titleTranslationKey: 'filterGroups.psuIncluded', 
@@ -70,10 +61,12 @@ export const createCaseFilterGroups = (components: Component[]): FilterGroup[] =
     if (color) colorSet.add(String(color))
   })
   if (colorSet.size > 0) {
-    const options: FilterOption[] = Array.from(colorSet).map(val => ({ 
-      id: `color=${val}`, 
-      name: val 
-    }))
+    const options: FilterOption[] = Array.from(colorSet)
+      .sort()
+      .map(val => ({ 
+        id: `color=${val}`, 
+        name: val 
+      }))
     groups.push({ 
       title: 'specs.color',
       titleTranslationKey: 'filterGroups.color', 
@@ -88,10 +81,12 @@ export const createCaseFilterGroups = (components: Component[]): FilterGroup[] =
     if (material) materialSet.add(String(material))
   })
   if (materialSet.size > 0) {
-    const options: FilterOption[] = Array.from(materialSet).map(val => ({ 
-      id: `material=${val}`, 
-      name: val 
-    }))
+    const options: FilterOption[] = Array.from(materialSet)
+      .sort()
+      .map(val => ({ 
+        id: `material=${val}`, 
+        name: val 
+      }))
     groups.push({ 
       title: 'specs.material',
       titleTranslationKey: 'filterGroups.material', 

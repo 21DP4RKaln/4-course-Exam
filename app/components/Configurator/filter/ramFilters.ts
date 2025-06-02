@@ -3,23 +3,10 @@ import { FilterGroup, FilterOption, extractBrandOptions } from './filterInterfac
 
 /**
  * Generate filter groups for RAM components dynamically based on component specifications.
+ * Excludes Type and Capacity filters as they are handled by Quick Filters.
  */
 export const createRamFilterGroups = (components: Component[]): FilterGroup[] => {
   const groups: FilterGroup[] = []
-
-  // Brand filter
-  const brandOptions = extractBrandOptions(components)
-  if (brandOptions.size > 0) {
-    const options: FilterOption[] = Array.from(brandOptions.entries()).map(([id, name]) => ({ 
-      id, 
-      name 
-    }))
-    groups.push({ 
-      title: 'manufacturer',
-      titleTranslationKey: 'filterGroups.manufacturer',
-      options 
-    })
-  }
 
   // Frequency (MHz)
   const freqSet = new Set<string>()

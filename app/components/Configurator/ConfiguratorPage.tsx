@@ -235,11 +235,17 @@ const ConfiguratorPage = () => {
     const category = componentCategories.find(cat => cat.id === activeCategory);
     return category ? category.slug : '';
   }, [activeCategory, componentCategories]);
-
   // Reset filters when category changes
   useEffect(() => {
     setQuickCpuFilter(null);
     setActiveFilters({});
+    setSearchQuery('');
+    // Reset price range to category's min/max
+    if (components.length > 0) {
+      const categoryMinPrice = Math.min(...components.map(c => c.price));
+      const categoryMaxPrice = Math.max(...components.map(c => c.price));
+      setPriceRange([categoryMinPrice, categoryMaxPrice]);
+    }
   }, [activeCategory]);
   // Load components based on active category and apply filters
   useEffect(() => {
@@ -826,12 +832,11 @@ const ConfiguratorPage = () => {
     if (['intel', 'amd', 'nvidia'].includes(filterType)) {
       const brand = filterType.charAt(0).toUpperCase() + filterType.slice(1);
       newActiveFilters[`Brand=${brand}`] = true;
-    }
-    // Handle CPU-specific filters
+    }    // Handle CPU-specific filters
     else if (filterType.startsWith('intel-core-')) {
       newActiveFilters['Brand=Intel'] = true;
       const series = filterType.split('intel-core-')[1];
-      newActiveFilters[`Series=Core i${series}`] = true;
+      newActiveFilters[`Series=Core ${series}`] = true;
     } else if (filterType.startsWith('amd-ryzen-')) {
       newActiveFilters['Brand=AMD'] = true;
       const series = filterType.split('amd-ryzen-')[1];
@@ -922,12 +927,11 @@ const ConfiguratorPage = () => {
     if (['intel', 'amd', 'nvidia'].includes(filterType)) {
       const brand = filterType.charAt(0).toUpperCase() + filterType.slice(1);
       expectedFilters[`Brand=${brand}`] = true;
-    }
-    // Handle CPU-specific filters
+    }    // Handle CPU-specific filters
     else if (filterType.startsWith('intel-core-')) {
       expectedFilters['Brand=Intel'] = true;
       const series = filterType.split('intel-core-')[1];
-      expectedFilters[`Series=Core i${series}`] = true;
+      expectedFilters[`Series=Core ${series}`] = true;
     } else if (filterType.startsWith('amd-ryzen-')) {
       expectedFilters['Brand=AMD'] = true;
       const series = filterType.split('amd-ryzen-')[1];
@@ -938,17 +942,17 @@ const ConfiguratorPage = () => {
     }
     // Handle GPU-specific filters
     else if (filterType.startsWith('nvidia-rtx-')) {
-      expectedFilters['Brand=NVIDIA'] = true;
+      expectedFilters['subBrand=NVIDIA'] = true;
       const model = filterType.split('nvidia-rtx-')[1];
-      expectedFilters[`Series=RTX ${model.replace('-', ' ').toUpperCase()}`] = true;
+      expectedFilters[`architecture=RTX ${model.replace('-', ' ').toUpperCase()}`] = true;
     } else if (filterType.startsWith('amd-rx-')) {
-      expectedFilters['Brand=AMD'] = true;
+      expectedFilters['subBrand=AMD'] = true;
       const model = filterType.split('amd-rx-')[1];
-      expectedFilters[`Series=RX ${model.replace('-', ' ').toUpperCase()}`] = true;
+      expectedFilters[`architecture=RX ${model.replace('-', ' ').toUpperCase()}`] = true;
     } else if (filterType.startsWith('intel-a')) {
-      expectedFilters['Brand=Intel'] = true;
+      expectedFilters['subBrand=Intel'] = true;
       const model = filterType.split('intel-')[1];
-      expectedFilters[`Series=Arc ${model.toUpperCase()}`] = true;
+      expectedFilters[`architecture=Arc ${model.toUpperCase()}`] = true;
     }
     // Handle RAM-specific filters
     else if (['ddr4', 'ddr5'].includes(filterType)) {
@@ -984,11 +988,12 @@ const ConfiguratorPage = () => {
       expectedFilters['Type=Air'] = true;
     } else if (filterType === 'fluid') {
       expectedFilters['Type=Liquid'] = true;
-    }
-    // Handle PSU-specific filters
+    }    // Handle PSU-specific filters
     else if (filterType.includes('80+')) {
-      const certification = filterType.replace(/\+/g, '+ ').toUpperCase();
-      expectedFilters[`Certification=${certification}`] = true;
+      // Convert "80+bronze" to "80+ Bronze", "80+gold" to "80+ Gold", etc.
+      const level = filterType.replace('80+', ''); // Extract "bronze", "gold", etc.
+      const capitalizedLevel = level.charAt(0).toUpperCase() + level.slice(1); // "Bronze", "Gold", etc.
+      expectedFilters[`Energy Efficiency=80+ ${capitalizedLevel}`] = true;
     }
     // Handle services-specific filters
     else if (filterType === 'windows') {

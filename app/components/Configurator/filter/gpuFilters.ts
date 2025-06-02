@@ -3,23 +3,10 @@ import { FilterGroup, FilterOption, extractBrandOptions } from './filterInterfac
 
 /**
  * Generate filter groups for GPU components dynamically based on component specifications.
+ * Excludes Brand and Series filters as they are handled by Quick Filters.
  */
 export const createGpuFilterGroups = (components: Component[]): FilterGroup[] => {
   const groups: FilterGroup[] = []
-
-  // Brand filter
-  const brandOptions = extractBrandOptions(components)
-  if (brandOptions.size > 0) {
-    const options: FilterOption[] = Array.from(brandOptions.entries()).map(([id, name]) => ({ 
-      id, 
-      name 
-    }))
-    groups.push({ 
-      title: 'manufacturer',
-      titleTranslationKey: 'filterGroups.manufacturer',
-      options 
-    })
-  }
 
   // Memory Size (VRAM)
   const memorySet = new Set<string>()
