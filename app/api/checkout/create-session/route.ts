@@ -6,7 +6,7 @@ import { ProductType, OrderStatus, Prisma } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-04-30.basil'
+  apiVersion: '2025-05-28.basil'
 })
 
 interface ShippingAddress {
@@ -94,60 +94,37 @@ export async function POST(request: NextRequest) {
     let order;
 
     if (!user) {
-      const orderId = uuidv4();
-      order = await prisma.$transaction(async (prisma) => {        const newOrder = await prisma.$queryRaw`
-          INSERT INTO \`order\` (
-            id, 
-            status, 
-            totalAmount, 
-            shippingAddress, 
-            paymentMethod, 
-            createdAt,
-            updatedAt, 
-            isGuestOrder, 
-            shippingName, 
-            shippingEmail, 
-            shippingPhone,
-            shippingCost,
-            locale
-          ) 
-          VALUES (
-            ${orderId}, 
-            'PENDING', 
-            ${total}, 
-            ${`${shipping.address.address}, ${shipping.address.city}, ${shipping.address.country}, ${shipping.address.postalCode}`}, 
-            'CARD', 
-            NOW(), 
-            NOW(), 
-            1, 
-            ${shipping.address.name}, 
-            ${shipping.address.email}, 
-            ${shipping.address.phone},
-            ${shipping.rate},
-            ${locale}
-          )
-        `;
+      const orderId = uuidv4();      order = await prisma.$transaction(async (prisma) => {
+        // Create order using proper Prisma API instead of raw queries
+        const newOrder = await prisma.order.create({
+          data: {
+            id: orderId,
+            status: OrderStatus.PENDING,
+            totalAmount: total,
+            shippingAddress: `${shipping.address.address}, ${shipping.address.city}, ${shipping.address.country}, ${shipping.address.postalCode}`,
+            paymentMethod: 'CARD',
+            isGuestOrder: true,
+            shippingName: shipping.address.name,
+            shippingEmail: shipping.address.email,
+            shippingPhone: shipping.address.phone,
+            shippingCost: shipping.rate,
+            locale: locale as any
+          }
+        });
+        
+        // Create order items using proper Prisma API
         for (const item of items) {
-          await prisma.$queryRaw`
-            INSERT INTO \`order_item\` (
-              id, 
-              orderId, 
-              productId, 
-              productType, 
-              quantity, 
-              price, 
-              name
-            ) 
-            VALUES (
-              ${uuidv4()}, 
-              ${orderId}, 
-              ${item.id}, 
-              ${item.type.toUpperCase()}, 
-              ${item.quantity}, 
-              ${item.price}, 
-              ${item.name}
-            )
-          `;
+          await prisma.orderItem.create({
+            data: {
+              id: uuidv4(),
+              orderId: orderId,
+              productId: item.id,
+              productType: item.type.toUpperCase() as ProductType,
+              quantity: item.quantity,
+              price: item.price,
+              name: item.name
+            }
+          });
         }
         
         return { 

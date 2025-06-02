@@ -112,13 +112,12 @@ export async function GET(request: NextRequest) {
         GROUP BY p.name
       `,
       
-      prisma.$queryRaw`
-        SELECT
+      prisma.$queryRaw`        SELECT
           SUM(CASE WHEN oi.productType = 'COMPONENT' THEN oi.price * oi.quantity ELSE 0 END) as componentRevenue,
           SUM(CASE WHEN oi.productType = 'PERIPHERAL' THEN oi.price * oi.quantity ELSE 0 END) as peripheralRevenue,
           SUM(CASE WHEN oi.productType = 'CONFIGURATION' THEN oi.price * oi.quantity ELSE 0 END) as configurationRevenue
-        FROM orderitem oi
-        JOIN \`order\` o ON oi.orderId = o.id
+        FROM "orderitem" oi
+        JOIN "order" o ON oi.orderId = o.id
         WHERE o.createdAt BETWEEN ${startDate} AND ${endDate}
       `,
       
