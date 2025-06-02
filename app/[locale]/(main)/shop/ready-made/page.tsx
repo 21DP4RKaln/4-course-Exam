@@ -297,7 +297,7 @@ export default function ReadyMadePCsPage() {
           onClick={() => window.location.reload()}
           className="mt-4 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
         >
-          Try Again
+          {t('common.tryAgain')}
         </button>
       </div>
     )
@@ -337,7 +337,8 @@ export default function ReadyMadePCsPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Filters */}
         <div className="w-full lg:w-80 shrink-0">
-          <div className="sticky top-4 -translate-x-40 transition-transform duration-200">            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md">
+          <div className="sticky top-4 transition-transform duration-200 max-h-[calc(100vh-2rem)] overflow-y-auto scrollbar-hide">
+            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md">
               <AdvancedFilter
                 className={styles.select}
                 onFilterChange={setActiveFilters}
@@ -361,7 +362,7 @@ export default function ReadyMadePCsPage() {
         </div>
 
         {/* Product grid */}
-        <div className="flex-1 -translate-x-20 min-w-0">
+        <div className="flex-1 min-w-0">
           {filteredPCs.length === 0 ? (
             <div className="bg-white/95 dark:bg-red-900/20 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-400/50 dark:border-red-900/30 shadow-lg">
               <Info size={48} className="mx-auto text-blue-500 dark:text-red-400 mb-4" />

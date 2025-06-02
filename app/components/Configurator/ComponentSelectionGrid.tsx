@@ -112,7 +112,7 @@ const ComponentSelectionGrid: React.FC<ComponentSelectionGridProps> = ({
           <span className={`text-sm ${
             theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
           }`} aria-live="polite">
-            {t('pagination.pageOf', { current: currentPage, total: totalPages, defaultMessage: `Page ${currentPage} of ${totalPages}` })}
+            {t('pagination.pageOf', { currentPage: currentPage, totalPages: totalPages, defaultMessage: `Page ${currentPage} of ${totalPages}` })}
           </span>
           
           <button 

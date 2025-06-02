@@ -10,6 +10,7 @@ import { useCart } from '@/app/contexts/CartContext'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { Trash2, Plus, Minus, ShoppingBag, ChevronLeft } from 'lucide-react'
 
+// Animāciju konfigurācijas objekti
 const fadeIn = {
   hidden: { opacity: 0 },
   visible: { 
@@ -52,24 +53,29 @@ const staggerContainer = {
 };
 
 export default function CartPage() {
+  // Inicializē hooks un states
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const locale = pathname.split('/')[1]
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
   const { isAuthenticated } = useAuth()
+  
+  // State mainīgie promo koda un maksājuma apstrādei
   const [isProcessing, setIsProcessing] = useState(false)
   const [promoCode, setPromoCode] = useState('')
   const [promoDiscount, setPromoDiscount] = useState(0)
   const [promoError, setPromoError] = useState('')
   const [promoMessage, setPromoMessage] = useState('')
 
+  // Funkcija preču daudzuma maiņai
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity > 0) {
       updateQuantity(id, newQuantity)
     }
   };
 
+  // Promo koda validācijas funkcija
   const validatePromoCode = async () => {
     if (!promoCode.trim()) {
       setPromoError(t('cart.enterPromoCode'))
@@ -126,12 +132,14 @@ export default function CartPage() {
         return
       }
 
+      // Pārbauda vai kods ir derīgs
       if (!data.valid) {
         setPromoError(t('cart.invalidPromoCode'))
         setPromoDiscount(0)
         return
       }
 
+      // Piemēro atlaidi
       setPromoError('')
       setPromoDiscount(data.discount || 0)
 
@@ -152,16 +160,20 @@ export default function CartPage() {
   const handleCheckout = () => {
     setIsProcessing(true)
     const checkoutUrl = new URL(`/${locale}/checkout`, window.location.origin)
+    
     if (promoDiscount > 0 && promoCode) {
       checkoutUrl.searchParams.set('promo', promoCode)
     }
+    
     if (!isAuthenticated) {
       checkoutUrl.searchParams.set('guest', 'true')
     }
+    
     router.push(checkoutUrl.pathname + checkoutUrl.search)
     setIsProcessing(false)
   }
 
+  // Ja grozs ir tukšs, parāda atbilstošu ziņojumu
   if (items.length === 0) {
     return (
       <motion.div 
@@ -216,6 +228,7 @@ export default function CartPage() {
     )
   }
 
+  // Grozā izskats
   return (
     <motion.section 
       className="py-8"
@@ -238,7 +251,7 @@ export default function CartPage() {
             >
               <div className="p-0">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
-                  {/* Left Column - Cart Items */}
+                  {/* Kreisā puse - Groza preces */}
                   <div className="lg:col-span-8">
                     <div className="p-8">
                       <motion.div 
@@ -256,6 +269,7 @@ export default function CartPage() {
 
                       <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
+                      {/* Preču saraksts ar animācijām */}
                       <motion.div
                         variants={staggerContainer}
                         initial="hidden"
@@ -273,7 +287,7 @@ export default function CartPage() {
                               layout
                             >
                               <div className="flex items-center py-6">
-                                {/* Item Image */}
+                                {/* Preces attēls */}
                                 <motion.div 
                                   className="relative w-20 h-20 lg:w-24 lg:h-24 bg-neutral-200 dark:bg-neutral-700 rounded-lg overflow-hidden border border-neutral-300 dark:border-neutral-600"
                                   whileHover={{ scale: 1.05 }}
@@ -289,7 +303,7 @@ export default function CartPage() {
                                   />
                                 </motion.div>
                                 
-                                {/* Item Details */}
+                                {/* Preces detaļas */}
                                 <div className="ml-6 flex-1">
                                   <p className="text-sm text-neutral-600 dark:text-neutral-400">
                                     {item.type === 'component' ? t('cart.itemType.component') : t('cart.itemType.configuration')}
@@ -311,7 +325,7 @@ export default function CartPage() {
                                   </motion.div>
                                 </div>
 
-                                {/* Quantity Controls */}                                <div className="flex items-center mx-4">
+                                {/* Daudzuma kontroles */}                                <div className="flex items-center mx-4">
                                   <motion.button 
                                     onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                                     className="p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
@@ -342,7 +356,7 @@ export default function CartPage() {
                                   </motion.button>
                                 </div>
                                 
-                                {/* Remove Button */}
+                                {/* Dzēšanas poga */}
                                 <motion.button 
                                   onClick={() => removeItem(item.id)}
                                   className="ml-4 text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400"
@@ -360,6 +374,7 @@ export default function CartPage() {
 
                       <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
+                      {/* Atpakaļ uz veikalu saite */}
                       <div className="pt-8">
                         <motion.div
                           whileHover={{ x: -5 }}
@@ -377,7 +392,7 @@ export default function CartPage() {
                     </div>
                   </div>
                   
-                  {/* Right Column - Order Summary */}
+                  {/* Labā puse - Pasūtījuma kopsavilkums */}
                   <motion.div 
                     className="lg:col-span-4 bg-neutral-50 dark:bg-stone-900 border-l border-neutral-200 dark:border-neutral-800"
                     initial={{ opacity: 0, x: 20 }}
@@ -396,6 +411,7 @@ export default function CartPage() {
 
                       <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
+                      {/* Starpsumma */}
                       <motion.div 
                         className="flex justify-between mb-4"
                         initial={{ opacity: 0 }}
@@ -408,6 +424,7 @@ export default function CartPage() {
                         <h5 className="text-neutral-900 dark:text-white">€ {totalPrice.toFixed(2)}</h5>
                       </motion.div>
 
+                      {/* Promo atlaides rādīšana */}
                       <AnimatePresence>
                         {promoDiscount > 0 && (
                           <motion.div 
@@ -427,6 +444,7 @@ export default function CartPage() {
 
                       <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
+                      {/* Kopējā summa */}
                       <motion.div 
                         className="flex justify-between mb-8"
                         initial={{ opacity: 0 }}
@@ -447,6 +465,7 @@ export default function CartPage() {
                         </motion.h5>
                       </motion.div>
 
+                      {/* Promo koda ievade */}
                       <motion.div 
                         className="mb-8"
                         initial={{ opacity: 0, y: 10 }}
@@ -485,6 +504,7 @@ export default function CartPage() {
 
                       <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
 
+                      {/* Maksājuma poga */}
                       <motion.button
                         onClick={handleCheckout}
                         disabled={isProcessing}
@@ -505,6 +525,7 @@ export default function CartPage() {
                         )}
                       </motion.button>
 
+                      {/* Pieteikšanās saite neautentificētiem lietotājiem */}
                       {!isAuthenticated && (
                         <motion.div 
                           className="mt-4 text-center"

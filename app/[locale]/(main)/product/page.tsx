@@ -27,48 +27,66 @@ import {
 
 import type { ConfigurationProduct, ComponentProduct, PeripheralProduct } from '@/lib/services/universalProductService'
 
+// Produktu tipu definīcija - apvieno visus iespējamos produktu tipus
 type Product = ConfigurationProduct | ComponentProduct | PeripheralProduct;
 
 interface FilterState {
-  category: string;
-  priceRange: [number, number];
-  sort: string;
-  search: string;
+  category: string;           
+  priceRange: [number, number]; 
+  sort: string;              
+  search: string;           
 }
 
-const categories = [
-  { id: 'all', name: 'All Products' },
-  { id: 'gaming', name: 'Gaming PCs' },
-  { id: 'workstation', name: 'Workstations' },
-  { id: 'office', name: 'Office PCs' },
-  { id: 'budget', name: 'Budget PCs' },
-  { id: 'cpu', name: 'Processors' },
-  { id: 'gpu', name: 'Graphics Cards' },
-  { id: 'motherboard', name: 'Motherboards' },
-  { id: 'ram', name: 'Memory' },
-  { id: 'storage', name: 'Storage' },
-  { id: 'case', name: 'Cases' },
-  { id: 'cooling', name: 'Cooling' },
-  { id: 'keyboards', name: 'Keyboards' },
-  { id: 'mice', name: 'Mice' },
-  { id: 'monitors', name: 'Monitors' },
-  { id: 'headphones', name: 'Headphones' }
+// Kategoriju masīvs ar ID un nosaukumiem 
+const getCategoriesArray = (t: any) => [
+  { id: 'all', name: t('categories.all') },
+  { id: 'gaming', name: t('categories.gaming') },
+  { id: 'workstation', name: t('categories.workstation') },
+  { id: 'office', name: t('categories.office') },
+  { id: 'budget', name: t('categories.budget') },
+  { id: 'cpu', name: t('categories.cpu') },
+  { id: 'gpu', name: t('categories.gpu') },
+  { id: 'motherboard', name: t('categories.motherboard') },
+  { id: 'ram', name: t('categories.ram') },
+  { id: 'storage', name: t('categories.storage') },
+  { id: 'case', name: t('categories.case') },
+  { id: 'cooling', name: t('categories.cooling') },
+  { id: 'psu', name: t('categories.psu') },
+  { id: 'keyboards', name: t('categories.keyboards') },
+  { id: 'mice', name: t('categories.mice') },
+  { id: 'monitors', name: t('categories.monitors') },
+  { id: 'headphones', name: t('categories.headphones') }
 ]
 
+/**
+ * Galvenā produktu lapas komponente
+ * Latvian: Šī komponente nodrošina:
+ * - Produktu saraksta attēlošanu
+ * - Filtru un meklēšanas funkcionalitāti  
+ * - Kategoriju navigāciju
+ * - Produktu pievienošanu grozā
+ */
 export default function ProductsPage() {
+  // Tulkošanas hook internationalizācijai
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const locale = pathname.split('/')[1]
+  const locale = pathname.split('/')[1] 
   const { addItem } = useCart()
   
+  // Iegūst lokalizēto kategoriju masīvu
+  const categories = getCategoriesArray(t)
+  
+  // Sākotnējā kategorija no URL parametriem
   const initialCategory = searchParams.get('category') || 'all'
   
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // Stāvokļa mainīgie
+  const [products, setProducts] = useState<Product[]>([]) 
+  const [loading, setLoading] = useState(true)             
+  const [error, setError] = useState<string | null>(null)  
   
+  // Filtru stāvoklis ar sākotnējām vērtībām
   const [filters, setFilters] = useState<FilterState>({
     category: initialCategory,
     priceRange: [0, 5000],
@@ -76,10 +94,11 @@ export default function ProductsPage() {
     search: searchParams.get('search') || ''
   })
   
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  // UI stāvokļa mainīgie
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false) 
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]) 
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
-  const [expandedSpecs, setExpandedSpecs] = useState<string | null>(null)
+  const [expandedSpecs, setExpandedSpecs] = useState<string | null>(null) 
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -92,7 +111,7 @@ export default function ProductsPage() {
         const response = await fetch(url)
         
         if (!response.ok) {
-          throw new Error('Failed to load products')
+          throw new Error(t('productsPage.errors.loadingFailed'))
         }
         
         const data = await response.json()
@@ -100,6 +119,7 @@ export default function ProductsPage() {
         if (Array.isArray(data)) {
           setProducts(data)
     
+          // Atjaunina URL parametrus
           const params = new URLSearchParams(searchParams.toString())
           params.set('category', filters.category)
           if (filters.search) {
@@ -114,34 +134,38 @@ export default function ProductsPage() {
         }
       } catch (error) {
         console.error('Error fetching products:', error)
-        setError('Failed to load products. Please try again later.')
+        setError(t('productsPage.errors.loadingFailed'))
       } finally {
         setLoading(false)
       }
     }
     
     fetchProducts()
-  }, [filters.category, pathname, searchParams])
+  }, [filters.category, pathname, searchParams, t])
 
   useEffect(() => {
     if (products.length === 0) return
     
     let result = [...products]
 
+    // Meklēšanas filtrs
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase()
       result = result.filter(product => {
+        // Meklē produkta nosaukumā un aprakstā
         if (product.name.toLowerCase().includes(searchTerm) || 
             product.description.toLowerCase().includes(searchTerm)) {
           return true
         }
 
+        // Meklē komponentu un perifērijas ierīču specifikācijās
         if (product.type === 'component' || product.type === 'peripheral') {
           return Object.values(product.specifications).some(spec => 
             typeof spec === 'string' && spec.toLowerCase().includes(searchTerm)
           )
         }
 
+        // Meklē konfigurāciju komponentos
         if (product.type === 'configuration') {
           return product.components.some(component => 
             component.name.toLowerCase().includes(searchTerm)
@@ -152,11 +176,13 @@ export default function ProductsPage() {
       })
     }
 
+    // Cenu diapazons filtrs
     result = result.filter(product => {
       const price = product.discountPrice || product.price
       return price >= filters.priceRange[0] && price <= filters.priceRange[1]
     })
 
+    // Kārtošana pēc izvēlētās opcijas
     switch (filters.sort) {
       case 'price-asc':
         result.sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price))
@@ -177,7 +203,7 @@ export default function ProductsPage() {
     
     setFilteredProducts(result)
   }, [filters, products])
-  
+
   const toggleSpecs = (id: string) => {
     if (expandedSpecs === id) {
       setExpandedSpecs(null)
@@ -185,7 +211,7 @@ export default function ProductsPage() {
       setExpandedSpecs(id)
     }
   }
-  
+
   const handleAddToCart = (product: Product) => {
     addItem({
       id: product.id,
@@ -195,7 +221,7 @@ export default function ProductsPage() {
       imageUrl: product.imageUrl || ''
     })
   }
-  
+
   const resetFilters = () => {
     setFilters({
       category: filters.category,
@@ -278,7 +304,7 @@ export default function ProductsPage() {
           onClick={() => window.location.reload()}
           className="mt-4 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
         >
-          Try Again
+          {t('common.tryAgain')}
         </button>
       </div>
     )
@@ -286,13 +312,14 @@ export default function ProductsPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {/* Galvenes sadaļa ar virsrakstu un meklēšanu */}
       <div className="flex flex-wrap items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4 md:mb-0">
-          {filters.category === 'all' ? 'All Products' : 
-            categories.find(c => c.id === filters.category)?.name || 'Products'}
+          {filters.category === 'all' ? t('categories.all') : 
+            categories.find(cat => cat.id === filters.category)?.name || t('productsPage.title')}
         </h1>
         
-        {/* Search bar - desktop */}
+        {/* Meklēšanas josla - darbvirsmas versija */}
         <div className="hidden md:flex w-full md:w-auto">
           <div className="relative w-64">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -312,9 +339,10 @@ export default function ProductsPage() {
                 }
                 window.history.pushState({}, '', `${pathname}?${params.toString()}`)
               }}
-              placeholder="Search products..."
+              placeholder={t('common.search')}
               className="block w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
             />
+            {/* Meklēšanas notīrīšanas poga */}
             {filters.search && (
               <button
                 onClick={() => {
@@ -333,7 +361,7 @@ export default function ProductsPage() {
         </div>
       </div>
       
-      {/* Categories row */}
+      {/* Kategoriju rinda */}
       <div className="mb-6 overflow-x-auto">
         <div className="flex space-x-2 pb-2">
           {categories.map(category => (
@@ -353,7 +381,7 @@ export default function ProductsPage() {
         </div>
       </div>
       
-      {/* Search bar - mobile */}
+      {/* Meklēšanas josla - mobilā versija */}
       <div className="md:hidden mb-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -373,7 +401,7 @@ export default function ProductsPage() {
               }
               window.history.pushState({}, '', `${pathname}?${params.toString()}`)
             }}
-            placeholder="Search products..."
+            placeholder={t('common.search')}
             className="w-full pl-10 pr-10 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
           />
           {filters.search && (
@@ -393,28 +421,28 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Main content area with sidebar and product grid */}
+      {/* Galvenā satura zona ar sānjoslu un produktu režģi */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Filter sidebar - desktop */}
+        {/* Filtru sānjosla - darbvirsmas versija */}
         <div className="hidden md:block w-64 flex-shrink-0">
           <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 sticky top-24">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-white flex items-center">
                 <Filter size={18} className="mr-2" />
-                Filters
+                {t('productsPage.filters')}
               </h2>
               <button
                 onClick={resetFilters}
                 className="text-sm text-red-600 dark:text-red-400 hover:underline"
               >
-                Reset
+                {t('productsPage.messages.clearFilters')}
               </button>
             </div>
             
-            {/* Price range filter */}
+            {/* Cenu diapazons filtrs */}
             <div className="mb-6">
               <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-3">
-                Price Range
+                {t('productsPage.priceRange')}
               </h3>
               <div className="flex items-center space-x-4 mb-2">
                 <div className="w-full">
@@ -462,77 +490,77 @@ export default function ProductsPage() {
               </div>
             </div>
             
-            {/* Sort options */}
+            {/* Kārtošanas opcijas */}
             <div>
               <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-3">
-                Sort By
+                {t('productsPage.sortBy')}
               </h3>
               <select
                 value={filters.sort}
                 onChange={(e) => setFilters({...filters, sort: e.target.value})}
                 className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
               >
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="name-asc">Name: A to Z</option>
-                <option value="name-desc">Name: Z to A</option>
-                <option value="rating-desc">Highest Rated</option>
+                <option value="price-asc">{t('productsPage.sortOptions.priceAsc')}</option>
+                <option value="price-desc">{t('productsPage.sortOptions.priceDesc')}</option>
+                <option value="name-asc">{t('productsPage.sortOptions.name')} A-Z</option>
+                <option value="name-desc">{t('productsPage.sortOptions.name')} Z-A</option>
+                <option value="rating-desc">{t('productsPage.sortOptions.rating')}</option>
               </select>
             </div>
           </div>
         </div>
         
-        {/* Mobile filter button */}
+        {/* Mobilais filtru panelis */}
         <div className="md:hidden mb-4">
           <button
             onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
             className="w-full flex items-center justify-center py-2 px-4 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-stone-950 text-neutral-700 dark:text-neutral-300"
           >
             <Filter size={18} className="mr-2" />
-            Filters
+            {t('productsPage.filters')}
             <ChevronDown size={18} className={`ml-2 ${isMobileFilterOpen ? 'rotate-180' : ''} transform transition-transform`} />
           </button>
         </div>
         
-        {/* Mobile filter panel */}
+        {/* Mobilais filtru panelis */}
         {isMobileFilterOpen && (
           <div className="md:hidden bg-white dark:bg-stone-950 rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                Filters
+                {t('productsPage.filters')}
               </h2>
               <button
                 onClick={resetFilters}
                 className="text-sm text-red-600 dark:text-red-400 hover:underline"
               >
-                Reset
+                {t('productsPage.messages.clearFilters')}
               </button>
             </div>
             
-            {/* Mobile filters content - simplified version */}
+            {/* Mobilā versijas filtru saturs - vienkāršota versija */}
             <div className="space-y-6">
-              {/* Sort options */}
+              {/* Kārtošanas opcijas */}
               <div>
                 <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
-                  Sort By
+                  {t('productsPage.sortBy')}
                 </h3>
                 <select
                   value={filters.sort}
                   onChange={(e) => setFilters({...filters, sort: e.target.value})}
                   className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
-                  <option value="price-asc">Price: Low to High</option>
-                  <option value="price-desc">Price: High to Low</option>
-                  <option value="name-asc">Name: A to Z</option>
-                  <option value="name-desc">Name: Z to A</option>
-                  <option value="rating-desc">Highest Rated</option>
+                  <option value="price-asc">{t('productsPage.sortOptions.priceAsc')}</option>
+                  <option value="price-desc">{t('productsPage.sortOptions.priceDesc')}</option>
+                  <option value="name-asc">{t('productsPage.sortOptions.name')} A-Z</option>
+                  <option value="name-desc">{t('productsPage.sortOptions.name')} Z-A</option>
+                  <option value="rating-desc">{t('productsPage.sortOptions.rating')}</option>
                 </select>
               </div>
               
-              {/* Price range filter */}
+              {/* Cenu diapazons filtrs */}
               <div>
                 <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
-                  Price Range: €{filters.priceRange[0]} - €{filters.priceRange[1]}
+                  {t('productsPage.priceRange')}: €{filters.priceRange[0]} - €{filters.priceRange[1]}
                 </h3>
                 <div className="flex items-center space-x-4 mb-2">
                   <span className="text-sm text-neutral-600 dark:text-neutral-400">€0</span>
@@ -558,38 +586,39 @@ export default function ProductsPage() {
                 onClick={() => setIsMobileFilterOpen(false)}
                 className="flex-1 py-2 px-4 border border-neutral-300 dark:border-neutral-600 rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
                 className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700"
               >
-                Apply
+                {t('common.confirm')}
               </button>
             </div>
           </div>
         )}
         
-        {/* Main product grid */}
+        {/* Galvenais produktu režģis */}
         <div className="flex-1">
           {filteredProducts.length === 0 ? (
             <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-8 text-center">
               <Info size={48} className="mx-auto text-neutral-400 mb-4" />
               <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
-                No Products Found
+                {t('productsPage.messages.noResults')}
               </h2>
               <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-                We couldn't find any products matching your current filters.
+                {t('productsPage.messages.noResults')}
               </p>
               <button
                 onClick={resetFilters}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
               >
-                Reset Filters
+                {t('productsPage.messages.clearFilters')}
               </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Produktu karte ar lokalizētiem tekstiem */}
               {filteredProducts.map((product) => (
                 <div 
                   key={product.id}
@@ -597,7 +626,7 @@ export default function ProductsPage() {
                   onMouseEnter={() => setHoveredProduct(product.id)}
                   onMouseLeave={() => setHoveredProduct(null)}
                 >
-                  {/* Product image */}
+                  {/* Produkta attēls */}
                   <div className="relative h-48 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
                     {product.imageUrl ? (
                       <img 
@@ -611,22 +640,22 @@ export default function ProductsPage() {
                       </span>
                     )}
                     
-                    {/* Category badge */}
+                    {/* Kategorijas iezīme */}
                     <span className="absolute top-2 left-2 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 text-xs px-2 py-1 rounded">
                       {getProductTypeDisplay(product)}
                     </span>
                     
-                    {/* Stock indicator */}
+                    {/* Krājuma indikators */}
                     <span className={`absolute top-2 right-2 text-xs px-2 py-1 rounded ${
                       product.stock <= 3 
                         ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' 
                         : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                     }`}>
-                      {product.stock <= 0 ? 'Out of stock' : 
-                       product.stock <= 3 ? `Only ${product.stock} left` : 'In Stock'}
+                      {product.stock <= 0 ? t('common.outOfStock') : 
+                       product.stock <= 3 ? `${t('common.onlyLeft')} ${product.stock}` : t('common.inStock')}
                     </span>
                     
-                    {/* Quick action buttons */}
+                    {/* Ātrās darbības pogas */}
                     {hoveredProduct === product.id && (
                       <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                         <div className="flex space-x-2">
@@ -650,6 +679,7 @@ export default function ProductsPage() {
                   </div>
                   
                   <div className="p-4">
+                    {/* Novērtējuma zvaigznes */}
                     <div className="flex items-center mb-1">
                       <div className="flex">
                         {[...Array(5)].map((_, i) => (
@@ -671,7 +701,7 @@ export default function ProductsPage() {
                     <div className="flex justify-between">
                       <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">
                         <Link 
-                          href={`/${locale}/shop/product/${product.id}`}
+                          href={`/${locale}/product/${product.id}`}
                           className="hover:text-red-600 dark:hover:text-red-400"
                         >
                           {product.name}
@@ -691,7 +721,7 @@ export default function ProductsPage() {
                       {product.description}
                     </p>
                     
-                    {/* Expanded specs */}
+                    {/* Izvērstās specifikācijas */}
                     {expandedSpecs === product.id && (product.type === 'component' || product.type === 'peripheral') && (
                       <div className="bg-neutral-50 dark:bg-neutral-900 p-3 rounded-md mb-3">
                         <ul className="text-sm space-y-1">
@@ -724,10 +754,10 @@ export default function ProductsPage() {
                       
                       <div className="flex space-x-2">
                         <Link 
-                          href={`/${locale}/shop/product/${product.id}`}
+                          href={`/${locale}/product/${product.id}`}
                           className="p-2 text-neutral-700 border border-neutral-300 dark:border-neutral-600 dark:text-neutral-300 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         >
-                          View
+                          {t('common.view')}
                         </Link>
                         <button
                           onClick={() => handleAddToCart(product)}

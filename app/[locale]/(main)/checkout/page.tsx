@@ -24,9 +24,11 @@ import {
   Loader2
 } from 'lucide-react'
 
+// Inicializē Stripe maksājumu sistēmu
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 function CheckoutForm() {
+  // Inicializē hooks un kontekstus
   const t = useTranslations()
   const router = useRouter()
   const pathname = usePathname()
@@ -35,16 +37,17 @@ function CheckoutForm() {
   const { items, totalPrice, clearCart } = useCart()
   const { user, isAuthenticated } = useAuth()
 
-  // Animation refs and effects
+  // Ref objekti animāciju pārvaldībai
   const formRef = useRef(null)
   const shippingRef = useRef(null)
   const paymentRef = useRef(null)
   
+  // InView hooks animāciju aktivizēšanai
   const isFormInView = useInView(formRef, { once: false, margin: "-100px", amount: 0.2 })
   const isShippingInView = useInView(shippingRef, { once: false, margin: "-100px", amount: 0.2 })
   const isPaymentInView = useInView(paymentRef, { once: false, amount: 0.2 })
 
-  // Animation variants
+  // Animāciju konfigurācijas objekti
   const formVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -76,6 +79,7 @@ function CheckoutForm() {
     })
   }
 
+  // State mainīgie formas pārvaldībai
   const [useStoredAddress, setUseStoredAddress] = useState(true)
   const [selectedShipping, setSelectedShipping] = useState<string | null>(null)
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([])
@@ -84,6 +88,7 @@ function CheckoutForm() {
   const [promoDiscount, setPromoDiscount] = useState(0)
   const [promoCode, setPromoCode] = useState<string | null>(null)
 
+  // Iegūst promo kodu no URL parametriem, ja tāds ir
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const code = params.get('promo')
@@ -93,6 +98,7 @@ function CheckoutForm() {
     }
   }, [])
 
+  // Validē promo kodu caur API
   const validatePromoCode = async (code: string) => {
     try {
       const response = await fetch('/api/promo/validate', {
@@ -124,6 +130,7 @@ function CheckoutForm() {
     }
   }
 
+  // Formas validācijas shēma ar Zod
   const formSchema = z.object({
     email: z.string().email(t('validation.invalidEmail')),
     phone: z.string().min(8, t('validation.invalidPhone')),
@@ -137,6 +144,7 @@ function CheckoutForm() {
 
   type CheckoutFormData = z.infer<typeof formSchema>
 
+  // React Hook Form inicializācija
   const {
     register,
     handleSubmit,
@@ -158,6 +166,7 @@ function CheckoutForm() {
 
   const formValues = watch()
 
+  // Aprēķina piegādes cenas, kad mainās adrese
   useEffect(() => {
     if (formValues.address && formValues.city && formValues.postalCode && formValues.country) {
       const rates = calculateShipping({
@@ -170,22 +179,27 @@ function CheckoutForm() {
     }
   }, [formValues.address, formValues.city, formValues.postalCode, formValues.country])
 
+  // Galvenā formas apstrādes funkcija
   const onSubmit = async (data: CheckoutFormData) => {
     try {
       setIsSubmitting(true);
       setPaymentError('');
 
+      // Pārbauda vai ir izvēlēts piegādes veids
       if (!selectedShipping) {
         setPaymentError(t('checkout.selectShippingMethod'));
         return;
       }
 
+      // Pārbauda vai ir izvēlēts maksājuma veids
       if (!data.paymentMethod) {
         setPaymentError(t('checkout.selectPaymentMethod'));
         return;
       }
 
-      const shippingRate = shippingRates.find(rate => rate.method === selectedShipping);      // Prepare common order data
+      const shippingRate = shippingRates.find(rate => rate.method === selectedShipping);      
+      
+      // Sagatavo pasūtījuma datus
       const orderData = {
         items: items.map(item => ({
           id: item.id,
@@ -211,6 +225,7 @@ function CheckoutForm() {
         }
       };
 
+      // Ja maksājums ar karti, izveido Stripe sesiju
       if (data.paymentMethod === 'card') {
         try {
           console.log('Creating Stripe session...');
@@ -245,6 +260,8 @@ function CheckoutForm() {
           return;
         }
       }      
+      
+      // Apstrādā skaidras naudas maksājumu
       console.log('Processing cash payment order...');
       const orderResponse = await fetch('/api/orders', {
         method: 'POST',
@@ -263,6 +280,7 @@ function CheckoutForm() {
         throw new Error(errorData.error || t('checkout.orderError'));
       }
 
+      // Saglabā adresi, ja lietotājs to vēlas
       if (isAuthenticated && data.saveAddress) {
         console.log('Saving address...');
         await fetch('/api/user/address', {
@@ -277,6 +295,7 @@ function CheckoutForm() {
         });
       }
 
+      // Pārvirza uz pasūtījuma apstiprinājuma lapu
       const { id } = await orderResponse.json();
       clearCart();
       router.push(`/${locale}/order-confirmation/${id}`);
@@ -296,6 +315,7 @@ function CheckoutForm() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Piegādes adreses sadaļa */}
       <motion.div 
         ref={formRef}
         initial="hidden"
@@ -314,6 +334,7 @@ function CheckoutForm() {
           {t('checkout.shippingAddress')}
         </motion.h2>
 
+        {/* Saglabātās adreses izvēle autentificētiem lietotājiem */}
         {isAuthenticated && user?.shippingAddress && (
           <div className="mb-6">
             <motion.div 
@@ -367,8 +388,10 @@ function CheckoutForm() {
           </div>
         )}
 
+        {/* Adreses ievades forma */}
         {(!isAuthenticated || !user?.shippingAddress || !useStoredAddress) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Email lauks */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -391,6 +414,7 @@ function CheckoutForm() {
               )}
             </motion.div>
 
+            {/* Telefona lauks */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -407,6 +431,7 @@ function CheckoutForm() {
               />
             </motion.div>
 
+            {/* Adreses lauks */}
             <motion.div 
               className="md:col-span-2"
               initial={{ opacity: 0, y: 10 }}
@@ -430,6 +455,7 @@ function CheckoutForm() {
               )}
             </motion.div>
 
+            {/* Pilsētas lauks */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -452,6 +478,7 @@ function CheckoutForm() {
               )}
             </motion.div>
 
+            {/* Pasta koda lauks */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -474,6 +501,7 @@ function CheckoutForm() {
               )}
             </motion.div>
 
+            {/* Valsts izvēles lauks */}
             <motion.div 
               className="md:col-span-2"
               initial={{ opacity: 0, y: 10 }}
@@ -500,6 +528,7 @@ function CheckoutForm() {
               )}
             </motion.div>
 
+            {/* Adreses saglabāšanas izvēlne */}
             {isAuthenticated && (
               <motion.div 
                 className="md:col-span-2"
@@ -524,6 +553,7 @@ function CheckoutForm() {
         )}
       </motion.div>
 
+      {/* Piegādes veida un maksājuma sadaļa */}
       <motion.div 
         ref={shippingRef}
         initial="hidden"
@@ -541,6 +571,7 @@ function CheckoutForm() {
           {t('checkout.shippingMethod')}
         </motion.h3>
         
+        {/* Piegādes veidu saraksts */}
         <div className="space-y-3 mb-6">
           {shippingRates.map((rate, index) => (
             <motion.label 
@@ -581,6 +612,7 @@ function CheckoutForm() {
           ))}
         </div>
 
+        {/* Maksājuma veidu izvēle */}
         {selectedShipping && (
           <motion.div 
             ref={paymentRef}
@@ -598,6 +630,7 @@ function CheckoutForm() {
               {t('checkout.paymentMethods.title')}
             </motion.h3>
             <div className="space-y-3">
+              {/* Karšu maksājums */}
               <motion.label 
                 className="flex items-center p-4 border rounded-lg hover:border-primary cursor-pointer"
                 initial={{ opacity: 0, y: 10 }}
@@ -617,6 +650,7 @@ function CheckoutForm() {
                 </div>
               </motion.label>
               
+              {/* Skaidras naudas maksājums (tikai kurjeriem) */}
               {selectedShipping === 'COURIER' && (
                 <motion.label 
                   className="flex items-center p-4 border rounded-lg hover:border-primary cursor-pointer"
@@ -644,17 +678,20 @@ function CheckoutForm() {
           </motion.div>
         )}
 
+        {/* Pasūtījuma kopsavilkums */}
         <motion.div 
           className="space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
+          {/* Starpsumma */}
           <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
             <span>{t('checkout.subtotal')} ({items.length} {t('checkout.items')})</span>
             <span>€{totalPrice.toFixed(2)}</span>
           </div>
           
+          {/* Piegādes maksa */}
           {selectedShipping && (
             <motion.div 
               className="flex justify-between text-neutral-600 dark:text-neutral-400"
@@ -671,6 +708,7 @@ function CheckoutForm() {
             </motion.div>
           )}
 
+          {/* Promo atlaide */}
           {promoDiscount > 0 && (
             <motion.div 
               className="flex justify-between text-green-600 dark:text-green-400"
@@ -683,6 +721,7 @@ function CheckoutForm() {
             </motion.div>
           )}
           
+          {/* Kopējā summa */}
           <motion.div 
             className="border-t border-neutral-200 dark:border-neutral-700 pt-4"
             initial={{ scale: 0.95, opacity: 0 }}
@@ -696,6 +735,7 @@ function CheckoutForm() {
           </motion.div>
         </motion.div>
 
+        {/* Kļūdu paziņojumi */}
         {paymentError && (
           <motion.p 
             className="mt-4 text-red-600 dark:text-red-400 flex items-center"
@@ -708,6 +748,7 @@ function CheckoutForm() {
           </motion.p>
         )}
         
+        {/* Pasūtījuma apstiprinājuma poga */}
         <motion.button
           type="submit"
           disabled={isSubmitting}

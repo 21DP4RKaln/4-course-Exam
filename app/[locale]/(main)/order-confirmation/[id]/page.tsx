@@ -10,6 +10,7 @@ import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/ap
 import { useCart } from '@/app/contexts/CartContext'
 
 export default function OrderConfirmationPage() {
+  // Inicializē tulkošanas un navigācijas hooks
   const t = useTranslations('orderConfirmation')
   const pathname = usePathname()
   const params = useParams()
@@ -17,12 +18,15 @@ export default function OrderConfirmationPage() {
   const orderId = params.id as string
   const { clearCart } = useCart()
 
+  // State mainīgie pasūtījuma datu un ielādes pārvaldībai
   const [order, setOrder] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
+  // useEffect hook pasūtījuma datu ielādei no API
   useEffect(() => {
     const fetchOrder = async () => {
       try {
+        // Izpilda API pieprasījumu, lai iegūtu pasūtījuma datus
         const response = await fetch(`/api/orders/${orderId}`)
         if (response.ok) {
           const data = await response.json()
@@ -48,12 +52,15 @@ export default function OrderConfirmationPage() {
     )
   }
 
+  // Rāda kļūdas ziņojumu, ja pasūtījums nav atrasts
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           {t('notFoundTitle')}
-        </h1>        <Link
+        </h1>
+        {/* Poga atgriešanai uz dashboard */}
+        <Link
           href={`/${locale}/dashboard`}
           className="px-6 py-3 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 inline-flex items-center"
         >
@@ -64,20 +71,26 @@ export default function OrderConfirmationPage() {
     )
   }
 
+  // Galvenā pasūtījuma apstiprinājuma lapa
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white dark:bg-stone-950 shadow-md rounded-lg p-8 text-center">        <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+      <div className="bg-white dark:bg-stone-950 shadow-md rounded-lg p-8 text-center">
+        {/* Veiksmīgā pasūtījuma ikona */}
+        <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
           <Check className="h-8 w-8 text-green-600 dark:text-green-300" />
         </div>
         
+        {/* Galvenais virsraksts */}
         <h1 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
           {t('successTitle')}
         </h1>
         
+        {/* Apstiprinājuma ziņojums */}
         <p className="mt-3 text-neutral-600 dark:text-neutral-400">
           {t('successMessage')}
         </p>
         
+        {/* Pasūtījuma numura displejs */}
         <div className="mt-6 p-4 bg-neutral-50 dark:bg-neutral-900 rounded-md inline-block">
           <p className="text-neutral-600 dark:text-neutral-400">
             {t('orderNumberLabel')}
@@ -87,7 +100,10 @@ export default function OrderConfirmationPage() {
           </p>
         </div>
         
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">          <div className="flex flex-col items-center">
+        {/* Nākamo soļu informācijas sekcija */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {/* E-pasta apstiprinājuma informācija */}
+          <div className="flex flex-col items-center">
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-100 dark:bg-red-900/30">
               <Mail className="h-6 w-6 text-blue-600 dark:text-red-400" />
             </div>
@@ -98,7 +114,9 @@ export default function OrderConfirmationPage() {
               {t('confirmationEmailSubtitle')}
             </p>
           </div>
-            <div className="flex flex-col items-center">
+          
+          {/* Pasūtījuma apstrādes informācija */}
+          <div className="flex flex-col items-center">
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-100 dark:bg-red-900/30">
               <Package className="h-6 w-6 text-blue-600 dark:text-red-400" />
             </div>
@@ -109,7 +127,9 @@ export default function OrderConfirmationPage() {
               {t('processingSubtitle')}
             </p>
           </div>
-            <div className="flex flex-col items-center">
+          
+          {/* Piegādes informācija */}
+          <div className="flex flex-col items-center">
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-100 dark:bg-red-900/30">
               <Truck className="h-6 w-6 text-blue-600 dark:text-red-400" />
             </div>
@@ -122,13 +142,17 @@ export default function OrderConfirmationPage() {
           </div>
         </div>
         
-        <div className="mt-8 space-x-4">          <Link 
+        {/* Darbību pogas */}
+        <div className="mt-8 space-x-4">
+          {/* Poga pasūtījuma detaļu skatīšanai */}
+          <Link 
             href={`/${locale}/orders/${orderId}`}
             className="px-6 py-3 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 inline-block"
           >
             {t('viewOrderDetails')}
           </Link>
           
+          {/* Poga turpināt iepirkšanos */}
           <Link 
             href={`/${locale}`}
             className="px-6 py-3 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-700 inline-block"

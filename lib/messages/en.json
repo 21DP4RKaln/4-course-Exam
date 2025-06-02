@@ -33,6 +33,12 @@
     "apply": "Apply",
     "email": "Email",
     "or": "or",
+    "tryAgain": "Try Again",
+    "productIdMissing": "Product ID is missing",
+    "component": "Component",
+    "outOfStock": "Out of stock",
+    "onlyLeft": "Only",
+    "inStock": "In Stock",
     "MISSING_MESSAGE": "Translation not available"
   },
   "nav": {
@@ -122,12 +128,6 @@
     "goBack": "Go back to home",
     "offline": "You are offline",
     "offlineMessage": "Please check your internet connection and try again.",
-    "productIdMissing": "Product ID is missing",
-    "errorsfailedToLoad": "Failed to load product",
-    "invalidProductData": "Invalid product data received",
-    "failedToLoad": "Failed to load product details",
-    "notFound": "Product Not Found",
-    "productNotExist": "The product you're looking for doesn't exist or has been removed.",
     "unauthorized": {
       "title": "Access Denied",
       "message": "You do not have permission to access this page."
@@ -152,6 +152,9 @@
     "backToShop": "Back to Shop",
     "productNotFound": "Product Not Found",
     "productRemovedText": "The product you're looking for doesn't exist or has been removed.",
+    "productIdMissing": "Product ID is missing",
+    "failedToLoad": "Failed to load product details",
+    "invalidProductData": "Invalid product data received",
     "freeShippingOver100": "Free shipping on orders over €100",
     "freeShipping": "Free shipping on orders over €100",
     "warrantyIncluded": "2 years warranty included",
@@ -984,14 +987,23 @@
     }
   },
   "categories": {
-      "cpu": "Processor",
-      "gpu": "Graphics Card",
+      "all": "All Products",
+      "gaming": "Gaming PCs",
+      "workstation": "Workstations",
+      "office": "Office PCs",
+      "budget": "Budget PCs",
+      "cpu": "Processors",
+      "gpu": "Graphics Cards",
       "ram": "Memory",
-      "motherboard": "Motherboard",
-      "psu": "Power Supply",
+      "motherboard": "Motherboards",
+      "psu": "Power Supplies",
       "cooling": "Cooling",
-      "case": "Case",
+      "case": "Cases",
       "storage": "Storage",
+      "keyboards": "Keyboards",
+      "mice": "Mice",
+      "monitors": "Monitors",
+      "headphones": "Headphones",
       "services": "Services",
       "processors": "Processors",
       "graphics-cards": "Graphics Cards",
@@ -1005,7 +1017,6 @@
       "microphone": "Microphones",
       "camera": "Webcams",
       "monitor": "Monitors",
-      "headphones": "Headphones",
       "speakers": "Speakers",
       "gamepad": "Gamepads",
       "tablet": "Tablets",
@@ -1904,6 +1915,7 @@
     "title": "Order #{orderId}",
     "orderItems": "Order Items",
     "configuration": "Configuration",
+    "component": "Component",
     "totalLabel": "Total",    "orderDate": "Order Date",
     "totalAmount": "Total Amount",
     "paymentMethod": "Payment Method",
@@ -1911,7 +1923,10 @@
     "subtotal": "Subtotal",
     "discount": "Discount",
     "shipping": "Shipping",
-    "backToDashboard": "Back to Dashboard"
+    "backToDashboard": "Back to Dashboard",
+    "notFoundTitle": "Order Not Found",
+    "notFoundMessage": "This order does not exist or you don't have permission to view it.",
+    "backToOrders": "Back to Orders"
   },
   "resetPassword": {
     "title": "Reset Password",
@@ -2013,6 +2028,41 @@
       "shipping": "• You'll receive shipping information soon",
       "tracking": "• Track your order status in your account",
       "estimatedDelivery": "Estimated delivery time: 3-5 business days"
+    }
+  },
+  "productsPage": {
+    "title": "Products",
+    "filters": "Filters",
+    "priceRange": "Price Range",
+    "sortBy": "Sort By",
+    "categories": {
+      "all": "All",
+      "processors": "Processors",
+      "graphics": "Graphics Cards",
+      "memory": "Memory",
+      "storage": "Storage",
+      "motherboards": "Motherboards",
+      "power": "Power Supplies",
+      "cooling": "Cooling",
+      "cases": "Cases",
+      "peripherals": "Peripherals"
+    },
+    "sortOptions": {
+      "name": "Name",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "rating": "Rating",
+      "newest": "Newest"
+    },
+    "errors": {
+      "loadingFailed": "Failed to load products",
+      "noProducts": "No products found",
+      "filterError": "Error applying filters"
+    },
+    "messages": {
+      "noResults": "No products found matching your criteria",
+      "loadingProducts": "Loading products...",
+      "clearFilters": "Clear filters"
     }
   }
 }

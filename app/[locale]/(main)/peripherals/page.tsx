@@ -10,6 +10,7 @@ import { AlertTriangle, ArrowLeft, Keyboard, Monitor, Headphones, Mouse, Gamepad
 import AnimatedButton from '@/app/components/ui/animated-button'
 import { motion, useInView } from 'framer-motion'
 
+// Kategorijas interfeiss
 interface Category {
   id: string;
   name: string;
@@ -18,20 +19,27 @@ interface Category {
   componentCount: number;
 }
 
+/**
+ * Perifērijas lapas komponente
+ * Rāda perifērijas kategoriju sarakstu ar animācijām un ikonām
+ */
 export default function PeripheralsPage() {
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const locale = pathname.split('/')[1]
   
+  // Komponentes stāvokļi
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([])
   
+  // Animāciju atsauces
   const ctaRef = useRef(null)
   const ctaInView = useInView(ctaRef, { once: true, amount: 0.3 })
 
+  // Animāciju varianti konteineram
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -42,6 +50,7 @@ export default function PeripheralsPage() {
     }
   }
   
+  // Animāciju varianti elementiem
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -53,6 +62,7 @@ export default function PeripheralsPage() {
     }
   }
 
+  // Animāciju varianti bannerim
   const bannerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
     visible: {
@@ -64,6 +74,7 @@ export default function PeripheralsPage() {
     }
   }
 
+  // Iegūst kategoriju datus no API
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true)
@@ -73,12 +84,14 @@ export default function PeripheralsPage() {
         
         const data = await response.json()
         
+        // Pārbauda un uzstāda kategorijas
         if (data.categories && Array.isArray(data.categories)) {
           setCategories(data.categories)
         } else {
           throw new Error('Invalid response data')
         }
 
+        // Pārbauda un uzstāda izceltos produktus
         if (data.featuredProducts && Array.isArray(data.featuredProducts)) {
           setFeaturedProducts(data.featuredProducts)
         }
@@ -92,6 +105,12 @@ export default function PeripheralsPage() {
     
     fetchCategories()
   }, [])
+  
+  /**
+   * Atgriež atbilstošo ikonu kategorijas slug vērtībai
+   * @param slug - kategorijas identifikators
+   * @returns React ikona elements
+   */
   const getCategoryIcon = (slug: string) => {
     const icons = {
       'keyboard': <Keyboard size={30} className="text-red-500" />,
@@ -111,10 +130,12 @@ export default function PeripheralsPage() {
     return icons[slug as keyof typeof icons] || <Keyboard size={30} className="text-neutral-500" />
   }
 
+  // Ielādes stāvoklis
   if (loading) {
     return <FullPageLoading />
   }
 
+  // Kļūdas stāvoklis
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -132,7 +153,7 @@ export default function PeripheralsPage() {
           onClick={() => window.location.reload()}
           className="mt-4 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
         >
-          Try Again
+          {t('common.tryAgain')}
         </button>
       </div>
     )
@@ -144,6 +165,7 @@ export default function PeripheralsPage() {
       animate="visible"
       className="max-w-7xl mx-auto px-4 py-8"
     >
+      {/* Navigācijas poga atpakaļ */}
       <div className="mb-6 flex justify-start">
         <AnimatedButton
           href={`/${locale}`}
@@ -153,6 +175,7 @@ export default function PeripheralsPage() {
         />
       </div>
       
+      {/* Lapas virsraksts */}
       <motion.h1 
         variants={itemVariants}
         className="text-3xl font-bold text-neutral-900 dark:text-white mb-6"
@@ -160,6 +183,7 @@ export default function PeripheralsPage() {
         {t('peripherals.title')}
       </motion.h1>
       
+      {/* Lapas apraksts */}
       <motion.p 
         variants={itemVariants}
         className="text-lg text-neutral-600 dark:text-neutral-400 mb-8"
@@ -167,6 +191,7 @@ export default function PeripheralsPage() {
         {t('peripherals.description')}
       </motion.p>
       
+      {/* Kategoriju režģis */}
       <motion.div 
         variants={containerVariants}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -178,9 +203,11 @@ export default function PeripheralsPage() {
               className="block bg-white dark:bg-stone-950 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="p-6">
+                {/* Kategorijas ikona */}
                 <div className="mb-4">
                   {getCategoryIcon(category.slug)}
                 </div>
+                {/* Kategorijas nosaukums */}
                 <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                   {(() => {
                     try {
@@ -190,6 +217,7 @@ export default function PeripheralsPage() {
                     }
                   })()}
                 </h2>
+                {/* Kategorijas apraksts */}
                 <p className="text-neutral-600 dark:text-neutral-400 mb-3">
                   {(() => {
                     try {
@@ -199,6 +227,7 @@ export default function PeripheralsPage() {
                     }
                   })()}
                 </p>
+                {/* Produktu skaits */}
                 <div className="text-sm text-neutral-500 dark:text-neutral-400">
                   {t('peripherals.productsAvailable', { count: category.componentCount })}
                 </div>
@@ -207,13 +236,17 @@ export default function PeripheralsPage() {
           </motion.div>
         ))}
       </motion.div>
-        {/* CTA section */}  <div className="mt-12 bg-gradient-to-r from-blue-800 to-blue-950 dark:from-red-900/30 dark:to-neutral-900 rounded-lg border border-blue-700 dark:border-neutral-800 shadow-lg p-8 text-center">
+      
+      {/* CTA sekcija ar darbības aicinājumiem */}
+      <div className="mt-12 bg-gradient-to-r from-blue-800 to-blue-950 dark:from-red-900/30 dark:to-neutral-900 rounded-lg border border-blue-700 dark:border-neutral-800 shadow-lg p-8 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">
           {t('peripherals.buildingNewPc')}
         </h2>
         <p className="text-neutral-300 mb-6 max-w-2xl mx-auto">
           {t('peripherals.buildingDesc')}
-        </p>        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        </p>
+        {/* Darbības pogas */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href={`/${locale}/components`}
             className="px-6 py-3 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 border border-blue-500 dark:border-red-500"

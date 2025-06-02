@@ -18,7 +18,12 @@ import {
 import Loading from '@/app/components/ui/Loading'
 import AnimatedButton from '@/app/components/ui/animated-button'
 
+/**
+ * Pasūtījuma detalizētās informācijas lapa
+ * Rāda konkrēta pasūtījuma pilnu informāciju, tostarp produktus, cenas un statusu
+ */
 export default function OrderDetailsPage() {
+  // Iegūst pasūtījuma ID no URL parametriem
   const params = useParams()
   const orderId = params.id as string
   
@@ -28,14 +33,18 @@ export default function OrderDetailsPage() {
   const { user, isAuthenticated, loading } = useAuth()
   const locale = pathname.split('/')[1]
   
+  // Komponentes lokālie stāvokļi
   const [showDetails, setShowDetails] = useState(false)
   const [order, setOrder] = useState<any>(null)
 
+  // Pārbauda autentifikāciju un novirza uz pieteikšanās lapu, ja nepieciešams
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.push(`/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`)
     }
   }, [isAuthenticated, loading, router, locale, pathname])
+  
+  // Iegūst pasūtījuma datus no API
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
@@ -43,6 +52,7 @@ export default function OrderDetailsPage() {
         if (response.ok) {
           const data = await response.json();
           
+          // Uzstāda noklusējuma vērtības, ja trūkst datu
           if (data.discount === null || data.discount === undefined) {
             data.discount = 0;
           }
@@ -101,6 +111,11 @@ export default function OrderDetailsPage() {
     )
   }
   
+  /**
+   * Formatē datumu atbilstoši Lielbritānijas standartam
+   * @param dateString - datuma virkne ISO formātā
+   * @returns formatēts datums
+   */
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return new Intl.DateTimeFormat('en-GB', {
@@ -110,6 +125,11 @@ export default function OrderDetailsPage() {
     }).format(date)
   }
   
+  /**
+   * Atgriež atbilstošo ikonu pasūtījuma statusam
+   * @param status - pasūtījuma statuss
+   * @returns React ikona elements
+   */
   const getStatusIcon = (status: string) => {
     switch(status) {
       case 'COMPLETED':
@@ -125,6 +145,11 @@ export default function OrderDetailsPage() {
     }
   }
   
+  /**
+   * Atgriež CSS klases pasūtījuma statusa krāsošanai
+   * @param status - pasūtījuma statuss
+   * @returns CSS klašu virkne
+   */
   const getStatusClass = (status: string) => {
     switch(status) {
       case 'COMPLETED':
@@ -142,6 +167,7 @@ export default function OrderDetailsPage() {
   
   return (
     <div className="max-w-5xl mx-auto">
+      {/* Navigācijas poga atpakaļ uz dashboard */}
       <div className="mb-6 flex justify-start">
         <AnimatedButton
           href={`/${locale}/dashboard?tab=orders`}
@@ -152,6 +178,7 @@ export default function OrderDetailsPage() {
       </div>
       
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
+        {/* Pasūtījuma galvenes informācija */}
         <div className="p-6 border-b border-neutral-200 dark:border-neutral-800">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">{t('title', { orderId: orderId.substring(0, 8) })}</h1>
@@ -161,6 +188,7 @@ export default function OrderDetailsPage() {
             </div>
           </div>
           
+          {/* Pasūtījuma pamatinformācijas režģis */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('orderDate')}</p>
@@ -181,10 +209,12 @@ export default function OrderDetailsPage() {
           </div>
         </div>
         
+        {/* Pasūtījuma produktu saraksts */}
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">{t('orderItems')}</h2>
           
           <div className="space-y-4">
+            {/* Parasti pasūtījuma produkti */}
             {order.orderItems && order.orderItems.map((item: any) => (
               <div key={item.id} className="flex items-center border-b pb-4 border-neutral-200 dark:border-neutral-800">
                 <div className="w-16 h-16 bg-neutral-200 dark:bg-neutral-700 rounded-md flex items-center justify-center mr-4">
@@ -215,7 +245,7 @@ export default function OrderDetailsPage() {
               </div>
             ))}
             
-            {/* If order items from configuration */}
+            {/* Konfigurācijas komponenti, ja tādi ir */}
             {order.configuration && order.configuration.components && order.configuration.components.length > 0 && (
               <>
                 <div className="pt-2 pb-3">
@@ -233,7 +263,7 @@ export default function OrderDetailsPage() {
                     <div className="flex-1">
                       <h3 className="font-medium text-neutral-900 dark:text-white">{item.component.name}</h3>
                       <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                        Component
+                        {t('component')}
                       </p>
                     </div>
                     
@@ -249,9 +279,13 @@ export default function OrderDetailsPage() {
                 ))}
               </>
             )}
-          </div>          <div className="mt-8 text-right">
+          </div>
+          
+          {/* Pasūtījuma kopsummas aprēķini */}
+          <div className="mt-8 text-right">
             <div className="space-y-2">
-              {/* Calculate subtotal from order items */}              <div className="flex justify-between">
+              {/* Aprēķina starpsummu no pasūtījuma pozīcijām */}
+              <div className="flex justify-between">
                 <span className="text-neutral-500 dark:text-neutral-400">{t('subtotal')}:</span>
                 <span className="font-medium text-neutral-900 dark:text-white">
                   €{(
@@ -261,7 +295,9 @@ export default function OrderDetailsPage() {
                         sum + (item.component.price * item.quantity), 0) : 0)
                   ).toFixed(2)}
                 </span>
-              </div>              {/* Display any discount if applied */}
+              </div>
+              
+              {/* Atlaižu aprēķins un attēlošana */}
               {(() => {
                 const calculatedSubtotal = (
                   (order.orderItems ? order.orderItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0) : 0) +
@@ -275,6 +311,7 @@ export default function OrderDetailsPage() {
                 
                 let actualDiscount = order.discount;
                 
+                // Aprēķina atlaidi, ja tā nav norādīta, bet kopējā summa neatbilst
                 if ((!actualDiscount || actualDiscount === 0) && 
                     (calculatedSubtotal + shippingCost - order.totalAmount > 0.01)) {
                   actualDiscount = parseFloat((calculatedSubtotal + shippingCost - order.totalAmount).toFixed(2));
@@ -286,13 +323,18 @@ export default function OrderDetailsPage() {
                     <span>-€{actualDiscount.toFixed(2)}</span>
                   </div>
                 ) : null;
-              })()}              <div className="flex justify-between">
+              })()}
+              
+              {/* Piegādes izmaksas */}
+              <div className="flex justify-between">
                 <span className="text-neutral-500 dark:text-neutral-400">{t('shipping')}:</span>
                 <span className="font-medium text-neutral-900 dark:text-white">
                   €{(order.shippingCost !== undefined && order.shippingCost !== null) ? 
                     order.shippingCost.toFixed(2) : '10.00'}
                 </span>
               </div>
+              
+              {/* Kopējā summa */}
               <div className="flex justify-between text-lg font-semibold border-t pt-2 border-neutral-200 dark:border-neutral-800">
                 <span className="text-neutral-900 dark:text-white">{t('totalLabel')}: </span>
                 <span className="text-neutral-900 dark:text-white">€{order.totalAmount.toFixed(2)}</span>

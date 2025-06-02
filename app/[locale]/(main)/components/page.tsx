@@ -10,6 +10,7 @@ import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/ap
 import AnimatedButton from '@/app/components/ui/animated-button'
 import { motion, useInView } from 'framer-motion'
 
+// Definē kategorijas interfeisu
 interface Category {
   id: string;
   name: string;
@@ -18,6 +19,7 @@ interface Category {
   componentCount: number;
 }
 
+// Funkcija, kas atgriež atbilstošo ikonu katrai kategorijas slug vērtībai
 const getCategoryIcon = (slug: string) => {
   const icons = {
     'cpu': <Cpu size={30} className="text-red-500" />,
@@ -35,28 +37,33 @@ const getCategoryIcon = (slug: string) => {
 }
 
 export default function ComponentsPage() {
+  // Inicializē tulkošanas un navigācijas hooks
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const locale = pathname.split('/')[1]
   
+  // State mainīgie kategoriju, ielādes un kļūdu pārvaldībai
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
+  // Ref objekts CTA sekcijas animācijas pārvaldībai
   const ctaRef = useRef(null)
   const ctaInView = useInView(ctaRef, { once: true, amount: 0.3 })
 
+  // Animāciju konfigurācijas objekti
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.1 
       }
     }
   }
   
+  // Individuālo elementu animācija
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -68,6 +75,7 @@ export default function ComponentsPage() {
     }
   }
 
+  // Banner sekcijas animācija ar mērogošanas efektu
   const bannerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
     visible: {
@@ -79,15 +87,18 @@ export default function ComponentsPage() {
     }
   }
 
+  // useEffect hook, kas ielādē kategorijas no API, kad komponente tiek palaista
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true)
       try {
+        // Izpilda API pieprasījumu, lai iegūtu komponenšu kategorijas
         const response = await fetch('/api/components')
         if (!response.ok) throw new Error('Failed to fetch component categories')
         
         const data = await response.json()
         
+        // Pārbauda vai atbildē ir derīgi kategoriju dati
         if (data.categories && Array.isArray(data.categories)) {
           setCategories(data.categories)
         } else {
@@ -108,6 +119,7 @@ export default function ComponentsPage() {
     return <FullPageLoading />
   }
 
+  // Rāda kļūdas ziņojumu un atkārtošanas pogu, ja radusies kļūda
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -125,18 +137,20 @@ export default function ComponentsPage() {
           onClick={() => window.location.reload()}
           className="mt-4 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
         >
-          Try Again
+          {t('common.tryAgain')}
         </button>
       </div>
     )
   }
 
+  // Galvenā komponentes JSX struktūra
   return (
     <motion.div 
       initial="hidden"
       animate="visible"
       className="max-w-7xl mx-auto px-4 py-8"
     >      
+      {/* Navigācijas poga atgriešanai uz sākumlapu */}
       <div className="mb-6 flex justify-start">
         <AnimatedButton
           href={`/${locale}`}
@@ -146,6 +160,7 @@ export default function ComponentsPage() {
         />
       </div>
       
+      {/* Lapas virsraksts ar animāciju */}
       <motion.h1 
         variants={itemVariants}
         className="text-3xl font-bold text-neutral-900 dark:text-white mb-6"
@@ -153,6 +168,7 @@ export default function ComponentsPage() {
         {t('components.title')}
       </motion.h1>
       
+      {/* Lapas apraksts ar animāciju */}
       <motion.p 
         variants={itemVariants}
         className="text-lg text-neutral-600 dark:text-neutral-400 mb-8"
@@ -160,10 +176,12 @@ export default function ComponentsPage() {
         {t('components.description')}
       </motion.p>
       
+      {/* Kategoriju režģis ar animāciju */}
       <motion.div 
         variants={containerVariants}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
       >
+        {/* Kartē katru kategoriju uz animētu kartīti */}
         {categories.map(category => (
           <motion.div key={category.id} variants={itemVariants}>
             <Link
@@ -171,9 +189,11 @@ export default function ComponentsPage() {
               className="block bg-white dark:bg-stone-950 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="p-6">
+                {/* Kategorijas ikona */}
                 <div className="mb-4">
                   {getCategoryIcon(category.slug)}
                 </div>
+                {/* Kategorijas nosaukums ar tulkošanas mēģinājumu */}
                 <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                   {(() => {
                     try {
@@ -183,6 +203,7 @@ export default function ComponentsPage() {
                     }
                   })()}
                 </h2>
+                {/* Kategorijas apraksts ar tulkošanas mēģinājumu */}
                 <p className="text-neutral-600 dark:text-neutral-400 mb-3">
                   {(() => {
                     try {
@@ -192,6 +213,7 @@ export default function ComponentsPage() {
                     }
                   })()}
                 </p>
+                {/* Pieejamo produktu skaita rādītājs */}
                 <div className="text-sm text-neutral-500 dark:text-neutral-400">
                   {t('components.productsAvailable', { count: category.componentCount })}
                 </div>
@@ -201,13 +223,18 @@ export default function ComponentsPage() {
         ))}
       </motion.div>
       
-       {/* CTA section */}      <div className="mt-12 bg-gradient-to-r from-blue-800 to-blue-950 dark:from-red-900/30 dark:to-neutral-900 rounded-lg border border-blue-700 dark:border-neutral-800 shadow-lg p-8 text-center">
+      {/* CTA (Call-to-Action) sekcija ar gradientu fonu */}
+      <div className="mt-12 bg-gradient-to-r from-blue-800 to-blue-950 dark:from-red-900/30 dark:to-neutral-900 rounded-lg border border-blue-700 dark:border-neutral-800 shadow-lg p-8 text-center">
+        {/* CTA virsraksts */}
         <h2 className="text-2xl font-bold text-white mb-4">
           {t('peripherals.buildingNewPc')}
         </h2>
+        {/* CTA apraksts */}
         <p className="text-neutral-300 mb-6 max-w-2xl mx-auto">
           {t('peripherals.buildingDesc')}
-        </p>        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        </p>
+        {/* CTA pogas - komponenšu pārlūkošanai un PC konfiguratoram */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href={`/${locale}/components`}
             className="px-6 py-3 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 border border-blue-500 dark:border-red-500"

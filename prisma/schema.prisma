@@ -4,8 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("ivapro_DATABASE_URL")
 }
 
 model User {
@@ -61,8 +61,8 @@ model ConfigItem {
   component       Component     @relation(fields: [componentId], references: [id], map: "config_item_component_fk")
   configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade, map: "config_item_configuration_fk")
 
-  @@index([componentId], map: "configitem_componentId_idx")
-  @@index([configurationId], map: "configitem_configurationId_idx")
+  @@index([componentId], map: "config_item_component_fk")
+  @@index([configurationId], map: "config_item_configuration_fk")
   @@map("configitem")
 }
 
@@ -87,7 +87,7 @@ model Configuration {
   orders            Order[]
   repairs           Repair[]
 
-  @@index([userId], map: "configuration_userId_idx")
+  @@index([userId], map: "configuration_user_fk")
   @@map("configuration")
 }
 
@@ -131,7 +131,7 @@ model Peripheral {
   repairs           Repair[]
   speakers          Speakers?
 
-  @@index([categoryId], map: "peripheral_categoryId_idx")
+  @@index([categoryId], map: "peripheral_category_fk")
   @@map("peripheral")
 }
 
@@ -156,9 +156,9 @@ model Repair {
   parts           RepairPart[]
   specialists     RepairSpecialist[]
 
-  @@index([configurationId], map: "repair_configurationId_idx")
-  @@index([peripheralId], map: "repair_peripheralId_idx")
-  @@index([userId], map: "repair_userId_idx")
+  @@index([configurationId], map: "repair_configuration_fk")
+  @@index([peripheralId], map: "repair_peripheral_fk")
+  @@index([userId], map: "repair_user_fk")
   @@map("repair")
 }
 
@@ -172,7 +172,7 @@ model RepairSpecialist {
   specialist   User     @relation(fields: [specialistId], references: [id], map: "repair_specialist_user_fk")
 
   @@unique([repairId, specialistId])
-  @@index([specialistId], map: "repairspecialist_specialistId_idx")
+  @@index([specialistId], map: "repair_specialist_user_fk")
   @@map("repairspecialist")
 }
 
@@ -185,8 +185,8 @@ model RepairPart {
   component   Component @relation(fields: [componentId], references: [id], map: "repair_part_component_fk")
   repair      Repair    @relation(fields: [repairId], references: [id], onDelete: Cascade, map: "repair_part_repair_fk")
 
-  @@index([componentId], map: "repairpart_componentId_idx")
-  @@index([repairId], map: "repairpart_repairId_idx")
+  @@index([componentId], map: "repair_part_component_fk")
+  @@index([repairId], map: "repair_part_repair_fk")
   @@map("repairpart")
 }
 
@@ -212,8 +212,8 @@ model Order {
   user            User?          @relation(fields: [userId], references: [id], map: "order_user_fk")
   orderItems      OrderItem[]
 
-  @@index([configurationId], map: "order_configurationId_idx")
-  @@index([userId], map: "order_userId_idx")
+  @@index([configurationId], map: "order_configuration_fk")
+  @@index([userId], map: "order_user_fk")
   @@map("order")
 }
 
@@ -245,7 +245,7 @@ model ReviewHelpful {
   user      User     @relation(fields: [userId], references: [id], map: "review_helpful_user_fk")
 
   @@unique([reviewId, userId])
-  @@index([userId], map: "review_helpful_userId_idx")
+  @@index([userId], map: "review_helpful_user_fk")
   @@map("review_helpful")
 }
 
@@ -271,7 +271,7 @@ model OrderItem {
   name        String
   order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade, map: "order_item_order_fk")
 
-  @@index([orderId], map: "order_item_orderId_idx")
+  @@index([orderId], map: "order_item_order_fk")
   @@map("order_item")
 }
 
@@ -302,7 +302,7 @@ model PromoProduct {
   productType String
   promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade, map: "promo_product_promo_code_fk")
 
-  @@index([promoCodeId], map: "promoproduct_promoCodeId_idx")
+  @@index([promoCodeId], map: "promo_product_promo_code_fk")
   @@map("promoproduct")
 }
 
@@ -337,14 +337,14 @@ model MarketingCampaign {
   content        String?          @db.Text
   bannerImageUrl String?
   promoCodeId    String?
-  metadata       String?          @db.Text
+  metadata       String?          @db.LongText
   createdById    String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   metrics        CampaignMetrics?
   promoCode      PromoCode?       @relation(fields: [promoCodeId], references: [id], map: "marketing_campaign_promo_code_fk")
 
-  @@index([promoCodeId], map: "marketing_campaign_promoCodeId_idx")
+  @@index([promoCodeId], map: "marketing_campaign_promo_code_fk")
   @@map("marketing_campaign")
 }
 
@@ -376,7 +376,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "account_user_fk")
 
   @@unique([provider, providerAccountId])
-  @@index([userId], map: "accounts_userId_idx")
+  @@index([userId], map: "account_user_fk")
   @@map("accounts")
 }
 
@@ -387,7 +387,7 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "session_user_fk")
 
-  @@index([userId], map: "sessions_userId_idx")
+  @@index([userId], map: "session_user_fk")
   @@map("sessions")
 }
 
@@ -403,7 +403,7 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "password_reset_token_user_fk")
 
-  @@index([userId], map: "password_reset_tokens_userId_idx")
+  @@index([userId], map: "password_reset_token_user_fk")
   @@map("password_reset_tokens")
 }
 
@@ -445,7 +445,7 @@ model Component {
   repairParts       RepairPart[]
   storage           Storage?
 
-  @@index([categoryId], map: "component_categoryId_idx")
+  @@index([categoryId], map: "component_category_fk")
   @@map("component")
 }
 
