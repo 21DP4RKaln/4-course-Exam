@@ -1139,6 +1139,7 @@
   },
   "privacyPolicy": {
     "title": "Privātuma Politika",
+    "back":"Atpakaļ",
     "lastUpdated": "Pēdējie Atjauninājumi",
     "introduction": {
       "title": "Ievads",
@@ -1183,6 +1184,7 @@
   },
   "termsOfService": {
     "title": "Pakalpojuma Noteikumi",
+    "back": "Atpakaļ",
     "lastUpdated": "Pēdējie Atjauninājumi",
     "introduction": {
       "title": "Ievads",

@@ -1024,6 +1024,7 @@
   },
   "privacyPolicy": {
     "title": "Политика Конфиденциальности",
+    "back":"Назад",
     "lastUpdated": "Последнее Обновление",
     "introduction": {
       "title": "Введение",

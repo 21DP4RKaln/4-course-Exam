@@ -1074,6 +1074,7 @@
   },
   "privacyPolicy": {
     "title": "Privacy Policy",
+    "back":"Back",
     "lastUpdated": "Last Updated",
     "introduction": {
       "title": "Introduction",
@@ -1206,6 +1207,7 @@
     },
   "termsOfService": {
     "title": "Terms of Service",
+    "back": "Back",
     "lastUpdated": "Last Updated",
     "introduction": {
       "title": "Introduction",
