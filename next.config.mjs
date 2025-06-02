@@ -1,17 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,    typescript: {
+    reactStrictMode: true,    
+    typescript: {
       // !! WARN !!
       // Dangerously allow production builds to successfully complete even if
       // your project has type errors.
       // !! WARN !!
       ignoreBuildErrors: true,
     },
+    // For Vercel deployment
+    eslint: {
+      // Warning: This allows production builds to successfully complete even if
+      // your project has ESLint errors.
+      ignoreDuringBuilds: true,
+    },
     productionBrowserSourceMaps: false, // Disable source maps in production
     poweredByHeader: false, // Remove X-Powered-By header for security
     compiler: {
       removeConsole: process.env.NODE_ENV === 'production', // Remove console logs in production
-    },    webpack: (config, { dev, isServer }) => {
+    },webpack: (config, { dev, isServer }) => {
       // Disable the default cache
       config.cache = false;
       

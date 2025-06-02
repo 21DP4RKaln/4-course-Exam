@@ -6,10 +6,7 @@
         "schedule": "0 0 1 * *"
       }
     ],
-    "buildEnv": {
-      "NODE_OPTIONS": "--max-old-space-size=3072",
-      "NEXT_WEBPACK_CONCURRENCY": "1"
-    },
+    "buildCommand": "NODE_OPTIONS='--max-old-space-size=3072' NEXT_WEBPACK_CONCURRENCY=1 next build",
     "functions": {
       "app/api/**": {
         "maxDuration": 30
