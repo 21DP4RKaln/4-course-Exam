@@ -1,16 +1,14 @@
 {
-    "buildCommand": "npm run build:vercel",
+    "version": 2,
     "crons": [
       {
         "path": "/api/cron/reset-views",
         "schedule": "0 0 1 * *"
       }
     ],
-    "build": {
-      "env": {
-        "NODE_OPTIONS": "--max-old-space-size=3072",
-        "NEXT_WEBPACK_CONCURRENCY": "1"
-      }
+    "buildEnv": {
+      "NODE_OPTIONS": "--max-old-space-size=3072",
+      "NEXT_WEBPACK_CONCURRENCY": "1"
     },
     "functions": {
       "app/api/**": {

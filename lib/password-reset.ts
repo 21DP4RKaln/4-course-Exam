@@ -20,15 +20,28 @@ export async function createPasswordResetToken(
   const code = generateVerificationCode();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); 
 
-  await prisma.$executeRaw`
-    DELETE FROM password_reset_tokens 
-    WHERE userId = ${userId} AND type = ${type}
-  `;
+  // Delete existing tokens using Prisma client
+  await prisma.passwordResetToken.deleteMany({
+    where: {
+      userId,
+      type
+    }
+  });
 
-  await prisma.$executeRaw`
-    INSERT INTO password_reset_tokens (id, userId, token, code, type, contact, expiresAt, used, createdAt)
-    VALUES (${crypto.randomUUID()}, ${userId}, ${token}, ${code}, ${type}, ${contact}, ${expiresAt}, false, ${new Date()})
-  `;
+  // Create new token using Prisma client
+  await prisma.passwordResetToken.create({
+    data: {
+      id: crypto.randomUUID(),
+      userId,
+      token,
+      code,
+      type,
+      contact,
+      expiresAt,
+      used: false,
+      createdAt: new Date()
+    }
+  });
 
   return { token, code };
 }
@@ -66,23 +79,32 @@ export async function verifyResetCode(
   code: string,
   type: 'email' | 'phone'
 ) {
-  const resetTokens: any[] = await prisma.$queryRaw`
-    SELECT rt.*, u.id as userId, u.email, u.phone
-    FROM password_reset_tokens rt
-    JOIN user u ON rt.userId = u.id
-    WHERE rt.contact = ${contact} 
-    AND rt.code = ${code} 
-    AND rt.type = ${type}
-    AND rt.used = false 
-    AND rt.expiresAt > ${new Date()}
-    LIMIT 1
-  `;
+  // Use Prisma client instead of raw queries
+  const resetToken = await prisma.passwordResetToken.findFirst({
+    where: {
+      contact,
+      code,
+      type,
+      used: false,
+      expiresAt: {
+        gt: new Date()
+      }
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          phone: true
+        }
+      }
+    }
+  });
 
-  if (resetTokens.length === 0) {
+  if (!resetToken) {
     return null;
   }
-
-  const resetToken = resetTokens[0];
+  
   return {
     id: resetToken.id,
     token: resetToken.token,
@@ -91,23 +113,25 @@ export async function verifyResetCode(
     type: resetToken.type,
     user: {
       id: resetToken.userId,
-      email: resetToken.email,
-      phone: resetToken.phone,
+      email: resetToken.user?.email || null,
+      phone: resetToken.user?.phone || null,
     },
   };
 }
 
 export async function markTokenAsUsed(tokenId: string) {
-  await prisma.$executeRaw`
-    UPDATE password_reset_tokens 
-    SET used = true 
-    WHERE id = ${tokenId}
-  `;
+  await prisma.passwordResetToken.update({
+    where: { id: tokenId },
+    data: { used: true }
+  });
 }
 
 export async function cleanupExpiredTokens() {
-  await prisma.$executeRaw`
-    DELETE FROM password_reset_tokens 
-    WHERE expiresAt < ${new Date()}
-  `;
+  await prisma.passwordResetToken.deleteMany({
+    where: {
+      expiresAt: {
+        lt: new Date()
+      }
+    }
+  });
 }

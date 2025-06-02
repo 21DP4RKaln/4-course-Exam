@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { prisma } from '@/lib/prismaService'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil'
+  apiVersion: '2023-10-16'
 })
 
 export async function GET(request: NextRequest) {
