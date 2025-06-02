@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prismaService';
 import { sendPasswordResetEmail, EmailConfig } from '@/lib/email';
 import { sendPasswordResetSMS, SMSConfig } from '@/lib/sms';
+import { getEmailConfig } from '@/lib/emailConfig';
 import crypto from 'crypto';
 
 export function generateVerificationCode(): string {
@@ -51,26 +52,27 @@ export async function sendVerificationCode(
   code: string,
   type: 'email' | 'phone'
 ) {
-  if (type === 'email') {
-    const emailConfig: EmailConfig = {
-      host: process.env.SMTP_HOST || '',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER || '',
-        pass: process.env.SMTP_PASS || '',
-      },
-    };
-
-    await sendPasswordResetEmail(contact, code, emailConfig);
-  } else if (type === 'phone') {
-    const smsConfig: SMSConfig = {
-      accountSid: process.env.TWILIO_ACCOUNT_SID || '',
-      authToken: process.env.TWILIO_AUTH_TOKEN || '',
-      fromNumber: process.env.TWILIO_FROM_NUMBER || '',
-    };
-
-    await sendPasswordResetSMS(contact, code, smsConfig);
+  try {
+    if (type === 'email') {
+      console.log('Attempting to send email verification code to:', contact);
+      const emailConfig = await getEmailConfig();
+      console.log('Email config obtained, sending email...');
+      await sendPasswordResetEmail(contact, code, emailConfig);
+      console.log('Email sent successfully');
+    } else if (type === 'phone') {
+      console.log('Attempting to send SMS verification code to:', contact);
+      const smsConfig: SMSConfig = {
+        accountSid: process.env.TWILIO_ACCOUNT_SID || '',
+        authToken: process.env.TWILIO_AUTH_TOKEN || '',
+        fromNumber: process.env.TWILIO_FROM_NUMBER || '',
+      };
+      await sendPasswordResetSMS(contact, code, smsConfig);
+      console.log('SMS sent successfully');
+    }
+  } catch (error) {
+    console.error('Error sending verification code:', error);
+    console.error('Contact:', contact, 'Type:', type);
+    throw error;
   }
 }
 

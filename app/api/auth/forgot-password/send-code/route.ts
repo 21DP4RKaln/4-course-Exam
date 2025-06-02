@@ -38,8 +38,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: 'Verification code sent successfully',
       token: resetToken.token, 
-    });
-  } catch (error) {
+    });  } catch (error) {
     console.error('Error sending verification code:', error);
     
     if (error instanceof z.ZodError) {
@@ -47,6 +46,12 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid input', details: error.errors },
         { status: 400 }
       );
+    }
+
+    // More specific error messages
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
     }
 
     return NextResponse.json(
