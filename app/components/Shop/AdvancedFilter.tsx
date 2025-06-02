@@ -398,7 +398,7 @@ export default function AdvancedFilter({
                   </button>
 
                   {expandedSections[group.title] && (
-                    <div className="mt-3 ml-2 space-y-2 max-h-56 overflow-y-auto pr-2">
+                    <div className="mt-3 ml-2 space-y-2 max-h-56 overflow-y-auto scrollbar-hide pr-2">
                       {group.options.map(option => (
                         <div key={option.id} className="flex items-center">
                           <label className="flex items-center cursor-pointer w-full">

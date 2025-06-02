@@ -35,10 +35,9 @@ export default function AdvancedFilter({
   onSearchChange,
   activeCategory,
   filterGroups
-}: AdvancedFilterProps) {
-  const t = useTranslations()
+}: AdvancedFilterProps) {  const t = useTranslations()
   const [searchQuery, setSearchQuery] = useState('')
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({}) // Start with collapsed sections for cleaner UI
   const [priceRange, setPriceRange] = useState({ min: 0, max: 5000 })
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({})
 

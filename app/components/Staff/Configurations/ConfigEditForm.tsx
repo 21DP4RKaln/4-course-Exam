@@ -283,9 +283,8 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
                 </div>
               )}
             </div>
-            
-            <div className="border dark:border-neutral-700 rounded-lg overflow-hidden">
-              <div className="max-h-96 overflow-y-auto">
+              <div className="border dark:border-neutral-700 rounded-lg overflow-hidden">
+              <div className="max-h-96 overflow-y-auto scrollbar-hide">
                 {filteredComponents.length > 0 ? (
                   filteredComponents.map(component => (
                     <div 
@@ -319,9 +318,8 @@ export function ConfigEditForm({ configuration, onSave, onCancel }: ConfigEditFo
           {/* Selected Components */}
           <div>
             <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">Selected Components</h3>
-            
-            <div className="border dark:border-neutral-700 rounded-lg overflow-hidden">
-              <div className="max-h-96 overflow-y-auto">
+              <div className="border dark:border-neutral-700 rounded-lg overflow-hidden">
+              <div className="max-h-96 overflow-y-auto scrollbar-hide">
                 {formData.components.length > 0 ? (
                   formData.components.map(component => (
                     <div 

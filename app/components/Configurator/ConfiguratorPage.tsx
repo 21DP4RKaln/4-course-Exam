@@ -1401,7 +1401,7 @@ const ConfiguratorPage = () => {
                   {t('configurator.clearAllFilters', {defaultMessage: 'Clear all filters'})}
                 </button>
               </div>
-            )}              <div className="overflow-y-auto flex-grow">
+            )}              <div className="overflow-y-auto scrollbar-hide flex-grow">
               <div className={`${theme === 'dark' ? 'custom-scrollbar-dark' : 'custom-scrollbar-light'}`} style={{ height: '100%', overflowY: 'auto' }}>
                 <ComponentSelectionGrid
                   components={components}

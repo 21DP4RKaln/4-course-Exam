@@ -50,11 +50,10 @@ const FilterSection: React.FC<Props> = ({
   onSearchChange,
   availableSpecifications = [],
   components = []
-}) => {
-  const t = useTranslations()
+}) => {  const t = useTranslations()
   const { theme } = useTheme()
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    price: true,
+    price: false, // Start collapsed for cleaner UI
     'specs.cores': false,
     'specs.threads': false,
     'specs.socket': false,

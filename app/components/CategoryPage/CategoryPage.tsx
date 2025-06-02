@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Component, Specification, CategoryPageProps } from './types'
 import { FilterGroup, FilterOption } from './filterInterfaces'
 import { createKeyboardFilterGroups } from './filters/keyboardFilters'
@@ -352,12 +353,10 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
               title: t('categoryPage.filterGroups.manufacturer'),
               type: 'manufacturer',
               options: []
-            }];          }
-
-          setFilterGroups(filterGroups);// Initialize filter states - expand all filter sections by default
+            }];          }          setFilterGroups(filterGroups);// Initialize filter states - collapse all filter sections by default
           const initialExpandedSections = filterGroups.reduce((acc, group) => ({
             ...acc,
-            [group.type]: true // Always expand all sections for better visibility
+            [group.type]: false // Collapse all sections by default for cleaner UI
           }), {});
 
           const initialSelectedFilters = filterGroups.reduce((acc, group) => ({
@@ -607,36 +606,75 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
     setSortOption('price-asc')
     setPriceRange({ min: minPrice, max: maxPrice })
   }
-
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh] bg-neutral-50 dark:bg-neutral-900">
-        <Loading size="medium" />
-      </div>
+      <motion.div 
+        className="flex justify-center items-center min-h-[50vh] bg-neutral-50 dark:bg-neutral-900"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
+          <Loading size="medium" />
+        </motion.div>
+      </motion.div>
     )
   }
  
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto text-center py-16">
-        <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
+      <motion.div 
+        className="max-w-7xl mx-auto text-center py-16"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />        </motion.div>
+        <motion.h2 
+          className="text-2xl font-bold text-neutral-900 dark:text-white mb-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+        >
           {error}
-        </h2>
-        <button
+        </motion.h2>        <motion.button
           onClick={() => window.location.reload()}
           className="mt-4 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.6 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           {t('categoryPage.tryAgain')}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     )
   }
   
   return (
-    <div className="max-w-7xl mx-auto">
+    <motion.div 
+      className="max-w-7xl mx-auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Back button */}
-      <div className="mb-3 flex justify-start">
+      <motion.div 
+        className="mb-3 flex justify-start"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
         <Link href={`/${locale}/${type}s`}>
           <AnimatedButton
             title={t('categoryPage.backTo', { 
@@ -646,19 +684,32 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
             className="text-neutral-600 dark:text-neutral-200"
           />
         </Link>
-      </div>
-
-      {/* Header Section */}
-      <div className="mb-8">
+      </motion.div>      {/* Header Section */}
+      <motion.div 
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
         <p className="text-lg text-neutral-600 dark:text-neutral-400 mt-2">
           {filteredComponents.length} {t(`categoryPage.${filteredComponents.length === 1 ? 'item' : 'items'}`)}
         </p>
-      </div>
-      
-      <div className="flex flex-col lg:flex-row gap-6">        {/* Filters */}
-        <div className="w-full lg:w-80 shrink-0">
+      </motion.div>
+        <motion.div 
+        className="flex flex-col lg:flex-row gap-6"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        {/* Filters */}
+        <motion.div 
+          className="w-full lg:w-80 shrink-0"
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+        >
           <div className="sticky top-4 transition-transform duration-200">
-            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md p-6 overflow-y-auto max-h-[calc(100vh-2rem)] overflow-x-hidden">
+            <div className="bg-blue-100/80 dark:bg-red-900/60 backdrop-blur-sm rounded-2xl border border-blue-200 dark:border-red-700/50 shadow-md p-6 overflow-y-auto scrollbar-hide max-h-[calc(100vh-2rem)] overflow-x-hidden">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-neutral-900 dark:text-white flex items-center">
                   <Filter size={18} className="mr-2" />
@@ -672,51 +723,61 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
                   {t('buttons.reset')}
                 </button>
               </div>
-              
-              {/* Active Filters Summary */}
-              {Object.entries(selectedFilters).some(([_, values]) => values.length > 0) && (
-                <div className="mb-4 p-3 bg-blue-50 dark:bg-red-950/30 rounded-lg">
-                  <h4 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
-                    {t('categoryPage.activeFilters')}
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(selectedFilters).map(([type, values]) => 
-                      values.map(value => {
-                        const [key, val] = value.split('=')
-                        // Find the filter option to get translation
-                        const filterGroup = filterGroups.find(g => g.type === type)
-                        const filterOption = filterGroup?.options.find(o => o.id === value)
-                        const displayValue = filterOption?.translationKey                          
+                {/* Active Filters Summary */}
+              <AnimatePresence>
+                {Object.entries(selectedFilters).some(([_, values]) => values.length > 0) && (
+                  <motion.div 
+                    className="mb-4 p-3 bg-blue-50 dark:bg-red-950/30 rounded-lg"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <h4 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
+                      {t('categoryPage.activeFilters')}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(selectedFilters).map(([type, values]) => 
+                        values.map(value => {
+                          const [key, val] = value.split('=')
+                          // Find the filter option to get translation
+                          const filterGroup = filterGroups.find(g => g.type === type)
+                          const filterOption = filterGroup?.options.find(o => o.id === value)
+                          const displayValue = filterOption?.translationKey
                           ? t(`filterValues.${filterOption.translationKey.split('.').pop()}`, { value: val })
                           : val
-                        
-                        return (
-                          <button
+                          return (
+                          <motion.button
                             key={value}
                             onClick={() => handleFilterChange(type, value)}
                             className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 dark:bg-red-900/40 text-blue-700 dark:text-red-300 hover:bg-blue-200 dark:hover:bg-red-800/40 transition-colors"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                           >
                             {displayValue}
                             <X size={14} className="ml-1" />
-                          </button>
+                          </motion.button>
                         )
                       })
                     )}
-                  </div>
-                </div>
-              )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Search bar */}
               <div className="relative mb-6">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Search size={16} className="text-neutral-500 dark:text-neutral-400" />
-                </div>
-                <input
+                </div>                <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('categoryPage.searchPlaceholder')}
-                  className="block w-full pl-10 pr-10 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
+                  className="block w-full pl-10 pr-10 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-400 transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -732,11 +793,10 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
               <div className="mb-6">
                 <h3 className="text-sm font-medium text-neutral-900 dark:text-white mb-2">
                   {t('categoryPage.sortBy')}
-                </h3>
-                <select
+                </h3>                <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
-                  className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
+                  className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-400 transition-all"
                 >
                   <option value="price-asc">{t('categoryPage.sortOptions.priceAsc')}</option>
                   <option value="price-desc">{t('categoryPage.sortOptions.priceDesc')}</option>
@@ -756,14 +816,13 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
                     <div className="flex-1">
                       <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">
                         {t('categoryPage.min')}
-                      </label>
-                      <input
+                      </label>                      <input
                         type="number"
                         min={minPrice}
                         max={maxPrice}
                         value={priceRange.min}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
-                        className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
+                        className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-400 transition-all"
                       />
                     </div>
                     <div className="flex-1">
@@ -772,21 +831,25 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
                       </label>
                       <input
                         type="number"
-                        min={minPrice}
-                        max={maxPrice}
+                        min={minPrice}                        max={maxPrice}
                         value={priceRange.max}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
-                        className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-all"
+                        className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-400 transition-all"
                       />
                     </div>
                   </div>
                 </div>
               </div>
-              
-              {/* Filter groups */}
+                {/* Filter groups */}
               <div className="space-y-4 overflow-y-visible">
-                {filterGroups.map((group) => (
-                  <div key={group.type} className="border-t border-neutral-200 dark:border-neutral-700 pt-4">
+                {filterGroups.map((group, index) => (
+                  <motion.div 
+                    key={group.type} 
+                    className="border-t border-neutral-200 dark:border-neutral-700 pt-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 * index }}
+                  >
                     <button
                       onClick={() => toggleSection(group.type)}
                       className="flex items-center justify-between w-full text-left hover:text-red-600 dark:hover:text-red-400 transition-colors"
@@ -794,93 +857,163 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
                       <span className="font-medium text-neutral-900 dark:text-white">
                         {group.titleTranslationKey ? t(group.titleTranslationKey) : group.title}
                       </span>
-                      <ChevronDown 
-                        size={18} 
-                        className={`text-neutral-500 transform transition-transform ${
-                          expandedSections[group.type] ? 'rotate-180' : ''
-                        }`} 
-                      />
-                    </button>
+                      <motion.div
+                        animate={{ rotate: expandedSections[group.type] ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ChevronDown 
+                          size={18} 
+                          className="text-neutral-500"
+                        />
+                      </motion.div>                    </button>
                     
-                    {expandedSections[group.type] && (
-                      <div className="mt-2 ml-2 space-y-1 max-h-48 overflow-y-auto scrollbar-hide">
-                        {group.options.length > 0 ? (
-                          group.options.map(option => (
-                            <div key={option.id} className="flex items-center">
-                              <label className="flex items-center cursor-pointer" onClick={() => handleFilterChange(group.type, option.id)}>
-                                <div                   
-                                  className={`w-4 h-4 mr-2 border rounded-sm flex items-center justify-center transition-all ${
-                                    (selectedFilters[group.type] || []).includes(option.id)
-                                      ? 'bg-blue-600 dark:bg-red-600 border-blue-600 dark:border-red-600 text-white shadow-sm'
-                                      : 'border-neutral-300 dark:border-neutral-600 hover:border-blue-500 dark:hover:border-red-400'
-                                  }`}
-                                >
-                                  {(selectedFilters[group.type] || []).includes(option.id) && (
-                                    <Check size={12} />
-                                  )} 
-                                </div>
-                                <span className="text-sm text-neutral-700 dark:text-neutral-300">
-                                  {option.translationKey ? t(option.translationKey) : option.name}
-                                </span>
-                              </label>
+                    <AnimatePresence>
+                      {expandedSections[group.type] && (
+                        <motion.div 
+                          className="mt-2 ml-2 space-y-1 max-h-48 overflow-y-auto scrollbar-hide"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {group.options.length > 0 ? (
+                            group.options.map((option, optionIndex) => (
+                              <motion.div 
+                                key={option.id} 
+                                className="flex items-center"
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.2, delay: 0.05 * optionIndex }}
+                              >
+                                <label className="flex items-center cursor-pointer" onClick={() => handleFilterChange(group.type, option.id)}>
+                                  <motion.div                   
+                                    className={`w-4 h-4 mr-2 border rounded-sm flex items-center justify-center transition-all ${
+                                      (selectedFilters[group.type] || []).includes(option.id)                                        ? 'bg-blue-600 dark:bg-red-600 border-blue-600 dark:border-red-600 text-white shadow-sm'
+                                        : 'border-neutral-300 dark:border-neutral-600 hover:border-blue-500 dark:hover:border-red-400'
+                                    }`}
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                  >
+                                    {(selectedFilters[group.type] || []).includes(option.id) && (
+                                      <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ duration: 0.2 }}
+                                      >
+                                        <Check size={12} />
+                                      </motion.div>
+                                    )} 
+                                  </motion.div>
+                                  <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                                    {option.translationKey ? t(option.translationKey) : option.name}
+                                  </span>
+                                </label>
+                              </motion.div>
+                            ))
+                          ) : (
+                            <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                              {t('categoryPage.noOptions')}
                             </div>
-                          ))
-                        ) : (
-                          <div className="text-sm text-neutral-500 dark:text-neutral-400">
-                            {t('categoryPage.noOptions')}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>                ))}
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* Product grid */}
-        <div className="flex-1 min-w-0">
+        </motion.div>
+          {/* Product grid */}
+        <motion.div 
+          className="flex-1 min-w-0"
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.5 }}
+        >
           {filteredComponents.length === 0 ? (
-            <div className="bg-white/95 dark:bg-red-900/20 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-400/50 dark:border-red-900/30 shadow-lg">
-              <Info size={48} className="mx-auto text-blue-500 dark:text-red-400 mb-4" />
-              <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+            <motion.div 
+              className="bg-white/95 dark:bg-red-900/20 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-400/50 dark:border-red-900/30 shadow-lg"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.6 }}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.7 }}
+              >
+                <Info size={48} className="mx-auto text-blue-500 dark:text-red-400 mb-4" />
+              </motion.div>
+              <motion.h2 
+                className="text-xl font-semibold text-neutral-900 dark:text-white mb-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.8 }}
+              >
                 {t('categoryPage.noProductsFound')}
-              </h2>
-              <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+              </motion.h2>
+              <motion.p 
+                className="text-neutral-600 dark:text-neutral-400 mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.9 }}
+              >
                 {t('categoryPage.noCriteriaMatch')}
-              </p>
-              <button
+              </motion.p>              <motion.button
                 onClick={resetFilters}
                 className="mt-4 px-4 py-2 bg-blue-600 dark:bg-red-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-red-700 transition-colors shadow-sm"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 1.0 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {t('categoryPage.resetFilters')}
-              </button>
-            </div>
+              </motion.button>            </motion.div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-              {filteredComponents.map((component) => (
-                <div key={component.id} className="h-full flex">                  <ProductCard
-                    id={component.id}
-                    name={component.name}
-                    price={component.price}
-                    imageUrl={component.imageUrl}
-                    category={component.categoryName}
-                    type={type}
-                    linkPrefix={`/${locale}/${type}s/${categorySlug}`}
-                    stock={component.stock}
-                    specs={component.specifications}
-                    showRating={true}
-                    rating={component.rating}
-                    ratingCount={component.ratingCount}
-                  />
-                </div>
-              ))}
-            </div>
+            <motion.div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.6 }}
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredComponents.map((component, index) => (
+                  <motion.div 
+                    key={component.id} 
+                    className="h-full flex"
+                    layout
+                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -50, scale: 0.9 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      delay: Math.min(index * 0.1, 1.0),
+                      layout: { duration: 0.3 }
+                    }}
+                    whileHover={{ y: -5 }}
+                  >
+                    <ProductCard
+                      id={component.id}
+                      name={component.name}
+                      price={component.price}
+                      imageUrl={component.imageUrl}
+                      category={component.categoryName}
+                      type={type}
+                      linkPrefix={`/${locale}/${type}s/${categorySlug}`}
+                      stock={component.stock}
+                      specs={component.specifications}
+                      showRating={true}                      rating={component.rating}
+                      ratingCount={component.ratingCount}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           )}
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   )
 }
 

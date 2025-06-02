@@ -111,7 +111,7 @@ export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+        <div className="p-6 overflow-y-auto scrollbar-hide" style={{ maxHeight: 'calc(90vh - 180px)' }}>
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Status and Basic Info */}

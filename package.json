@@ -20,9 +20,13 @@
     "prisma:generate": "prisma generate",
     "prisma:generate:prod": "prisma generate --no-engine",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio",
-    "seed": "tsx lib/seeder.ts",
-    "migrate:peripherals": "tsx migrate-peripherals.ts"
+    "prisma:studio": "prisma studio",    "seed": "tsx lib/seeder.ts",
+    "migrate:peripherals": "tsx migrate-peripherals.ts",    "debug:stripe": "node scripts/debug-stripe.js",
+    "cleanup:orders": "node scripts/cleanup-orders.js",
+    "test:webhook": "node scripts/test-webhook.js",
+    "fix:pending": "node scripts/fix-pending-orders.js",
+    "deploy:setup": "node scripts/deploy-setup.js",
+    "validate:webhook": "node scripts/validate-webhook.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",

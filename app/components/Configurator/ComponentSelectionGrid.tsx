@@ -75,7 +75,7 @@ const ComponentSelectionGrid: React.FC<ComponentSelectionGridProps> = ({
   return (
     <div className="w-full px-2 sm:px-4 pb-4">
       <div 
-        className={`space-y-6 overflow-y-auto w-full pr-1 ${
+        className={`space-y-6 overflow-y-auto scrollbar-hide w-full pr-1 ${
           theme === 'dark' 
             ? 'custom-scrollbar-dark' 
             : 'custom-scrollbar-light'

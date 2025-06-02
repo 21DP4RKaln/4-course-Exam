@@ -6,7 +6,7 @@ import { ProductType, OrderStatus, Prisma } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16'
+  apiVersion: '2025-05-28.basil'
 })
 
 interface ShippingAddress {
@@ -42,6 +42,8 @@ interface CheckoutBody {
 }
 
 export async function POST(request: NextRequest) {
+  let order: any = null; // Define order variable at function scope
+  
   try {
     const body: CheckoutBody = await request.json()
     const { items, total, shipping, promoDiscount = 0, promoCode, locale = 'en' } = body
@@ -89,12 +91,12 @@ export async function POST(request: NextRequest) {
         name: promoCode,
       });
       stripeDiscounts.push({ coupon: coupon.id });
-    }
-
-    let order;
-
-    if (!user) {
-      const orderId = uuidv4();      order = await prisma.$transaction(async (prisma) => {
+    }    if (!user) {
+      const orderId = uuidv4();
+      
+      order = await prisma.$transaction(async (prisma) => {
+        console.log(`Creating guest order: ${orderId}`)
+        
         // Create order using proper Prisma API instead of raw queries
         const newOrder = await prisma.order.create({
           data: {
@@ -134,7 +136,10 @@ export async function POST(request: NextRequest) {
           isGuestOrder: true
         };
       });
-    } else {      order = await prisma.order.create({
+    } else {
+      console.log(`Creating authenticated user order for user: ${user.id}`)
+      
+      order = await prisma.order.create({
         data: {
           totalAmount: total,
           status: OrderStatus.PENDING,
@@ -158,35 +163,64 @@ export async function POST(request: NextRequest) {
           }
         }
       });
-    }
+    }    // Get base URL from environment or use default
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-
-    const stripeSession = await stripe.checkout.sessions.create({
+    console.log(`Creating Stripe session with baseUrl: ${baseUrl}`);    const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       discounts: stripeDiscounts,
       mode: 'payment',
-      success_url: `${baseUrl}/en/order-confirmation/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/en/checkout`,
+      success_url: `${baseUrl}/${locale}/order-confirmation/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/${locale}/checkout`,
       shipping_address_collection: {
         allowed_countries: ['LV', 'LT', 'EE'],
       },
       customer_email: shipping.address.email,
       metadata: {
         orderId: order.id,
+        locale: locale,
+        totalAmount: total.toString(),
+        isGuestOrder: (!user).toString()
       },
+      payment_intent_data: {
+        metadata: {
+          orderId: order.id,
+          locale: locale
+        }
+      }
     });
+
+    console.log(`Stripe session created: ${stripeSession.id} for order: ${order.id}`);
 
     return NextResponse.json({
       sessionUrl: stripeSession.url,
       sessionId: stripeSession.id,
     });
-
   } catch (error: any) {
-    console.error('Stripe session creation error:', error);
+    console.error('Stripe session creation error:', {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    
+    // If order was created but Stripe session failed, mark order as cancelled
+    if (order && order.id) {
+      try {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { status: 'CANCELLED' }
+        });
+        console.log(`Order ${order.id} marked as cancelled due to Stripe session failure`);
+      } catch (updateError) {
+        console.error('Failed to update order status after Stripe error:', updateError);
+      }
+    }
+    
     return NextResponse.json(
-      { error: error.message }, 
+      { error: error.message || 'Failed to create checkout session' }, 
       { status: 400 }
     );
   }

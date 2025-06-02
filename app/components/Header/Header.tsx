@@ -74,15 +74,14 @@ export default function Header() {
       document.removeEventListener('mousedown', handleOutsideClick)
     }
   }, [])
-
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-white/80 dark:bg-dark-background/80 backdrop-blur-md shadow-sm' 
+        ? 'bg-white/90 dark:bg-dark-background/90 backdrop-blur-lg shadow-lg' 
         : 'bg-transparent'
     }`}>
-      <div className="container mx-auto">
-        <div className="flex items-center justify-between">          {/* Logo */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-18">          {/* Logo */}
           <LogoWrapper $theme={theme}>
             <Link href={`/${locale}`} className="logo-link">
               <div className="logo-container">

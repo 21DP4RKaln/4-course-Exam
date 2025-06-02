@@ -147,7 +147,7 @@ const SelectedComponentsList: React.FC<Props> = ({
           />                         
         </div>
       </div>      {/* Component List */}
-      <div className="p-4 space-y-3 max-h-[800px] overflow-y-auto">
+      <div className="p-4 space-y-3 max-h-[800px] overflow-y-auto scrollbar-hide">
         {visibleCategories.map(category => {
           const selected = selectedComponents[category.id]
           const isSelected = category.id === 'services'
@@ -234,7 +234,7 @@ const SelectedComponentsList: React.FC<Props> = ({
             <AlertTriangle size={16} className="flex-shrink-0" />
             <span className="truncate">{t('configurator.compatibility.issuesFound')}</span>
           </div>
-          <ul className={`text-xs space-y-1 max-h-20 overflow-y-auto ${
+          <ul className={`text-xs space-y-1 max-h-20 overflow-y-auto scrollbar-hide ${
             theme === 'dark' ? 'text-red-400' : 'text-red-600'
           }`}>
             {compatibilityIssues.map((issue, index) => (

@@ -1,122 +1,323 @@
-import { Component } from '../types'
+﻿import { Component } from '../types'
 import { FilterGroup, FilterOption, extractBrandOptions } from '../filterInterfaces'
 
+/**
+ * Generate filter groups for CPU components dynamically based on component specifications.
+ * Includes Brand and Series filters alongside technical specifications.
+ */
 export const createCpuFilterGroups = (components: Component[]): FilterGroup[] => {
+  const groups: FilterGroup[] = []
+
+  // Brand group
   const brandMap = extractBrandOptions(components)
-  const brandOptions: FilterOption[] = Array.from(brandMap.entries()).map(([value, label]) => ({ 
-    id: `Brand=${value}`, 
-    name: label 
-  }))
+  if (brandMap.size > 0) {
+    const brandOptions: FilterOption[] = Array.from(brandMap.entries()).map(([value]) => ({ 
+      id: `manufacturer=${value}`, 
+      name: value 
+    }))
+    groups.push({
+      title: 'specs.brand',
+      type: 'manufacturer',
+      titleTranslationKey: 'filterGroups.brand',
+      options: brandOptions
+    })
+  }
 
-  // Series options
+  // Series group
   const seriesSet = new Set<string>()
-  components.forEach(c => { 
-    if (c.cpu?.series) seriesSet.add(c.cpu.series) 
-    const seriesSpec = c.specifications?.['series'] || c.specifications?.['Series']
-    if (seriesSpec) seriesSet.add(String(seriesSpec))
+  components.forEach(c => {
+    const series = c.specifications?.['Series'] || c.specifications?.['series'] || 
+                  c.specifications?.['Product Series'] || c.specifications?.['productSeries'] ||
+                  c.cpu?.series
+    if (series) seriesSet.add(String(series))
   })
-  const seriesOptions: FilterOption[] = Array.from(seriesSet).map(s => ({ id: `cpu_series=${s}`, name: s }))
+  if (seriesSet.size > 0) {
+    const seriesOptions: FilterOption[] = Array.from(seriesSet)
+      .sort()
+      .map(val => ({ id: `series=${val}`, name: val }))
+    groups.push({
+      title: 'specs.series',
+      type: 'series',
+      titleTranslationKey: 'filterGroups.series',
+      options: seriesOptions
+    })
+  }
 
-  // Core count options
-  const coresSet = new Set<number>()
-  components.forEach(c => { 
-    if (typeof c.cpu?.cores === 'number') coresSet.add(c.cpu.cores)
-    const coresSpec = c.specifications?.['cores'] || c.specifications?.['Cores']
-    if (coresSpec) {
-      const coreCount = parseInt(String(coresSpec), 10)
-      if (!isNaN(coreCount)) coresSet.add(coreCount)
+  // Cores group
+  const coresSet = new Set<string>()
+  components.forEach(c => {
+    const cores = c.specifications?.['Cores'] || c.specifications?.['cores']
+    if (cores) coresSet.add(String(cores))
+  })
+  if (coresSet.size > 0) {
+    const options: FilterOption[] = Array.from(coresSet)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .map(val => ({ id: `cores=${val}`, name: `${val}` }))
+    groups.push({ 
+      title: 'specs.cores', 
+      titleTranslationKey: 'filterGroups.cores',
+      type: 'cores',
+      options 
+    })
+  }
+
+  // Threads group
+  const threadsSet = new Set<string>()
+  components.forEach(c => {
+    const threads = c.specifications?.['Threads'] || c.specifications?.['threads']
+    if (threads) threadsSet.add(String(threads))
+  })
+  if (threadsSet.size > 0) {
+    const options: FilterOption[] = Array.from(threadsSet)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .map(val => ({ id: `threads=${val}`, name: `${val}` }))
+    groups.push({ 
+      title: 'specs.threads',
+      titleTranslationKey: 'filterGroups.threads',
+      type: 'threads',
+      options 
+    })
+  }
+  
+  // Multithreading
+  const multiThreadingSet = new Set<string>()
+  components.forEach(c => {
+    let multithreading = c.specifications?.['Multithreading'] || c.specifications?.['multithreading'] || 
+                        c.specifications?.['HyperThreading'] || c.specifications?.['hyperThreading']
+    
+    // If not specified in specs, try to infer from cores/threads
+    if (!multithreading) {
+      const cores = c.specifications?.['Cores'] || c.specifications?.['cores']
+      const threads = c.specifications?.['Threads'] || c.specifications?.['threads']
+      if (cores && threads && parseInt(String(cores)) < parseInt(String(threads))) {
+        multithreading = 'Yes'
+      }
     }
+    
+    if (multithreading) multiThreadingSet.add(String(multithreading))
   })
-  const coresOptions: FilterOption[] = Array.from(coresSet)
-    .sort((a, b) => a - b)
-    .map(n => ({ id: `cores=${n}`, name: `${n} cores` }))
+  if (multiThreadingSet.size > 0) {
+    const options: FilterOption[] = Array.from(multiThreadingSet).map(val => ({ 
+      id: `multithreading=${val}`, 
+      name: val 
+    }))
+    groups.push({ 
+      title: 'specs.multithreading',
+      titleTranslationKey: 'filterGroups.multithreading',
+      type: 'multithreading',
+      options 
+    })
+  }
 
-  // Socket options
+  // Socket group
   const socketSet = new Set<string>()
   components.forEach(c => {
-    if (c.cpu?.socket) socketSet.add(c.cpu.socket)
-    const socketSpec = c.specifications?.['socket'] || c.specifications?.['Socket']
-    if (socketSpec) socketSet.add(String(socketSpec))
+    const socket = c.specifications?.['Socket'] || c.specifications?.['socket']
+    if (socket) socketSet.add(String(socket))
   })
-  const socketOptions: FilterOption[] = Array.from(socketSet).map(s => ({ id: `socket=${s}`, name: s }))
+  if (socketSet.size > 0) {
+    const options: FilterOption[] = Array.from(socketSet).map(val => ({ id: `socket=${val}`, name: val }))
+    groups.push({ 
+      title: 'specs.socket',
+      titleTranslationKey: 'filterGroups.socket',
+      type: 'socket',
+      options 
+    })
+  }
 
-  // Frequency/Clock Speed options
-  const frequencySet = new Set<number>()
+  // Base Frequency group
+  const baseFreqSet = new Set<string>()
   components.forEach(c => {
-    if (typeof c.cpu?.frequency === 'number') frequencySet.add(c.cpu.frequency)
-    const freqSpec = c.specifications?.['frequency'] || c.specifications?.['Frequency'] || 
-                    c.specifications?.['baseFrequency'] || c.specifications?.['Base Clock']
-    if (freqSpec) {
-      const freqValue = parseFloat(String(freqSpec).replace(/[^\d.]/g, ''))
-      if (!isNaN(freqValue)) frequencySet.add(freqValue)
-    }
+    const baseFreq = c.specifications?.['Base Frequency'] || c.specifications?.['baseFrequency'] || 
+                   c.specifications?.['Base Clock'] || c.specifications?.['baseClock']
+    if (baseFreq) baseFreqSet.add(String(baseFreq))
   })
-  const frequencyOptions: FilterOption[] = Array.from(frequencySet)
-    .sort((a, b) => a - b)
-    .map(f => ({ id: `frequency=${f}`, name: `${f} GHz` }))
-
-  // Multithreading options
-  const mtSet = new Set<string>()
+  if (baseFreqSet.size > 0) {
+    // Sort frequencies numerically
+    const sortedFreq = Array.from(baseFreqSet).sort((a, b) => {
+      const numA = parseFloat(a.replace(/[^\d.]/g, ''))
+      const numB = parseFloat(b.replace(/[^\d.]/g, ''))
+      return numA - numB
+    })
+    
+    const options: FilterOption[] = sortedFreq.map(val => ({ 
+      id: `baseFrequency=${val}`, 
+      name: val 
+    }))
+    groups.push({ 
+      title: 'specs.baseFrequency',
+      titleTranslationKey: 'filterGroups.baseClock',
+      type: 'baseFrequency',
+      options 
+    })
+  }
+  
+  // Max RAM Capacity
+  const maxRamCapacitySet = new Set<string>()
   components.forEach(c => {
-    if (c.cpu?.multithreading !== undefined) {
-      mtSet.add(c.cpu.multithreading ? 'Yes' : 'No')
-    }
-    const mtSpec = c.specifications?.['multithreading'] || c.specifications?.['hyperthreading'] || 
-                  c.specifications?.['Multithreading']
-    if (mtSpec !== undefined) {
-      const isMultithreading = String(mtSpec).toLowerCase()
-      if (isMultithreading === 'true' || isMultithreading === 'yes') mtSet.add('Yes')
-      else if (isMultithreading === 'false' || isMultithreading === 'no') mtSet.add('No')
-    }
+    const maxRam = c.specifications?.['Max RAM Capacity'] || c.specifications?.['maxRamCapacity'] || 
+                  c.specifications?.['Max Memory'] || c.specifications?.['maxMemory']
+    if (maxRam) maxRamCapacitySet.add(String(maxRam))
   })
-  const mtOptions: FilterOption[] = Array.from(mtSet).map(mt => ({ 
-    id: `multithreading=${mt.toLowerCase() === 'yes' ? 'true' : 'false'}`,
-    name: mt
-  }))
+  if (maxRamCapacitySet.size > 0) {
+    // Sort capacity numerically
+    const sortedCapacity = Array.from(maxRamCapacitySet).sort((a, b) => {
+      const numA = parseInt(a.replace(/[^\d]/g, ''))
+      const numB = parseInt(b.replace(/[^\d]/g, ''))
+      return numA - numB
+    })
+    
+    const options: FilterOption[] = sortedCapacity.map(val => ({ 
+      id: `maxRamCapacity=${val}`, 
+      name: val 
+    }))
+    groups.push({ 
+      title: 'specs.maxRamCapacity',
+      titleTranslationKey: 'filterGroups.maxMemory',
+      type: 'maxRamCapacity',
+      options 
+    })
+  }
+  
+  // Max RAM Frequency
+  const maxRamFreqSet = new Set<string>()
+  components.forEach(c => {
+    const maxRamFreq = c.specifications?.['Max RAM Frequency'] || c.specifications?.['maxRamFrequency'] || 
+                      c.specifications?.['Memory Speed'] || c.specifications?.['memorySpeed']
+    if (maxRamFreq) maxRamFreqSet.add(String(maxRamFreq))
+  })
+  if (maxRamFreqSet.size > 0) {
+    // Sort frequencies numerically
+    const sortedFreq = Array.from(maxRamFreqSet).sort((a, b) => {
+      const numA = parseInt(a.replace(/[^\d]/g, ''))
+      const numB = parseInt(b.replace(/[^\d]/g, ''))
+      return numA - numB
+    })
+    
+    const options: FilterOption[] = sortedFreq.map(val => ({ 
+      id: `maxRamFrequency=${val}`, 
+      name: val 
+    }))
+    groups.push({ 
+      title: 'specs.maxRamFrequency',
+      titleTranslationKey: 'filterGroups.memorySpeed',
+      type: 'maxRamFrequency',
+      options 
+    })
+  }
 
-  // Integrated GPU options
+  // Integrated GPU group
   const igpuSet = new Set<string>()
   components.forEach(c => {
-    if (c.cpu?.integratedGpu !== undefined) {
-      igpuSet.add(c.cpu.integratedGpu ? 'Yes' : 'No')
-    }
-    const igpuSpec = c.specifications?.['integratedGpu'] || c.specifications?.['integrated_graphics']
-    if (igpuSpec !== undefined) {
-      const hasIgpu = String(igpuSpec).toLowerCase()
-      if (hasIgpu === 'true' || hasIgpu === 'yes') igpuSet.add('Yes')
-      else if (hasIgpu === 'false' || hasIgpu === 'no') igpuSet.add('No')
+    let igpu = c.specifications?.['Integrated GPU'] || c.specifications?.['integratedGpu'] || 
+              c.specifications?.['Graphics'] || c.specifications?.['graphics']
+    
+    // Normalize values to Yes/No for consistency
+    if (igpu) {
+      const igpuLower = String(igpu).toLowerCase()
+      if (igpuLower === 'yes' || igpuLower === 'true' || igpuLower.includes('uhd') || igpuLower.includes('iris')) {
+        igpu = 'Yes'
+      } else if (igpuLower === 'no' || igpuLower === 'false' || igpuLower === 'none') {
+        igpu = 'No'
+      }
+      igpuSet.add(String(igpu))
     }
   })
-  const igpuOptions: FilterOption[] = Array.from(igpuSet).map(ig => ({ 
-    id: `integratedGpu=${ig.toLowerCase() === 'yes' ? 'true' : 'false'}`,
-    name: ig
-  }))
-
-  const filterGroups: FilterGroup[] = [
-    { title: 'Brand', type: 'Brand', options: brandOptions }
-  ]
-
-  if (seriesOptions.length > 0) {
-    filterGroups.push({ title: 'Series', type: 'cpu_series', options: seriesOptions })
+  if (igpuSet.size > 0) {
+    const options: FilterOption[] = Array.from(igpuSet).map(val => ({ 
+      id: `integratedGpu=${val}`, 
+      name: val 
+    }))
+    groups.push({ 
+      title: 'specs.integratedGpu',
+      titleTranslationKey: 'filterGroups.integratedGraphics',
+      type: 'integratedGpu',
+      options 
+    })
   }
 
-  if (socketOptions.length > 0) {
-    filterGroups.push({ title: 'Socket', type: 'socket', options: socketOptions })
+  // Clock Speed group
+  const speedSet = new Set<string>()
+  components.forEach(c => {
+    const speed = c.specifications?.['Speed'] || c.specifications?.['speed']
+    if (speed) speedSet.add(String(speed))
+  })
+  if (speedSet.size > 0) {
+    const options: FilterOption[] = Array.from(speedSet).map(val => ({ id: `speed=${val}`, name: val }))
+    groups.push({ 
+      title: 'specs.speed',
+      titleTranslationKey: 'filterGroups.speed',
+      type: 'speed',
+      options 
+    })
   }
 
-  if (coresOptions.length > 0) {
-    filterGroups.push({ title: 'Cores', type: 'cores', options: coresOptions })
+  // Boost Clock group
+  const boostClockSet = new Set<string>()
+  components.forEach(c => {
+    const boost = c.specifications?.['Boost_Clock'] || c.specifications?.['boostClock']
+    if (boost) boostClockSet.add(String(boost))
+  })
+  if (boostClockSet.size > 0) {
+    const options: FilterOption[] = Array.from(boostClockSet).map(val => ({ id: `boostClock=${val}`, name: val }))
+    groups.push({ 
+      title: 'specs.boostClock',
+      titleTranslationKey: 'filterGroups.boostClock',
+      type: 'boostClock',
+      options 
+    })
   }
 
-  if (frequencyOptions.length > 0) {
-    filterGroups.push({ title: 'Base Frequency', type: 'frequency', options: frequencyOptions })
+  // Cache group
+  const cacheSet = new Set<string>()
+  components.forEach(c => {
+    const cache = c.specifications?.['Cache'] || c.specifications?.['cacheSize'] || c.specifications?.['cache']
+    if (cache) cacheSet.add(String(cache))
+  })
+  if (cacheSet.size > 0) {
+    const options: FilterOption[] = Array.from(cacheSet).map(val => ({ id: `cache=${val}`, name: val }))
+    groups.push({ 
+      title: 'specs.Cache',
+      titleTranslationKey: 'filterGroups.cache',
+      type: 'cache',
+      options 
+    })
   }
 
-  if (mtOptions.length > 0) {
-    filterGroups.push({ title: 'Multithreading', type: 'multithreading', options: mtOptions })
-  }  if (igpuOptions.length > 0) {
-    filterGroups.push({ title: 'Integrated Graphics', type: 'integratedGpu', options: igpuOptions })
+  // TDP group
+  const tdpSet = new Set<string>()
+  components.forEach(c => {
+    const tdp = c.specifications?.['TDP'] || c.specifications?.['tdp']
+    if (tdp) tdpSet.add(String(tdp))
+  })
+  if (tdpSet.size > 0) {
+    const options: FilterOption[] = Array.from(tdpSet).map(val => ({ id: `tdp=${val}`, name: val }))
+    groups.push({ 
+      title: 'specs.tdp',
+      titleTranslationKey: 'filterGroups.tdp',
+      type: 'tdp',
+      options 
+    })
   }
 
-  return filterGroups
+  // Architecture group
+  const archSet = new Set<string>()
+  components.forEach(c => {
+    const arch = c.specifications?.['architecture'] || c.specifications?.['Architecture']
+    if (arch) archSet.add(String(arch))
+  })
+  if (archSet.size > 0) {
+    const options: FilterOption[] = Array.from(archSet).map(val => ({ 
+      id: `architecture=${val}`, 
+      name: val 
+    }))
+    groups.push({ 
+      title: 'specs.architecture',
+      titleTranslationKey: 'filterGroups.architecture',
+      type: 'architecture',
+      options 
+    })
+  }
+
+  return groups
 }

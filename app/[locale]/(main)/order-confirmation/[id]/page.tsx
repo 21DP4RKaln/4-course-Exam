@@ -53,10 +53,9 @@ export default function OrderConfirmationPage() {
       <div className="max-w-4xl mx-auto text-center py-12">
         <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           {t('notFoundTitle')}
-        </h1>
-        <Link
+        </h1>        <Link
           href={`/${locale}/dashboard`}
-          className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-flex items-center"
+          className="px-6 py-3 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 inline-flex items-center"
         >
           <ArrowLeft size={18} className="mr-2" />
           {t('backToDashboard')}
@@ -67,8 +66,7 @@ export default function OrderConfirmationPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white dark:bg-stone-950 shadow-md rounded-lg p-8 text-center">
-        <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+      <div className="bg-white dark:bg-stone-950 shadow-md rounded-lg p-8 text-center">        <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
           <Check className="h-8 w-8 text-green-600 dark:text-green-300" />
         </div>
         
@@ -89,10 +87,9 @@ export default function OrderConfirmationPage() {
           </p>
         </div>
         
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="flex flex-col items-center">
-            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-              <Mail className="h-6 w-6 text-red-600 dark:text-red-400" />
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">          <div className="flex flex-col items-center">
+            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-100 dark:bg-red-900/30">
+              <Mail className="h-6 w-6 text-blue-600 dark:text-red-400" />
             </div>
             <p className="mt-2 text-sm font-medium text-neutral-900 dark:text-white">
               {t('confirmationEmailTitle')}
@@ -101,10 +98,9 @@ export default function OrderConfirmationPage() {
               {t('confirmationEmailSubtitle')}
             </p>
           </div>
-          
-          <div className="flex flex-col items-center">
-            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-              <Package className="h-6 w-6 text-red-600 dark:text-red-400" />
+            <div className="flex flex-col items-center">
+            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-100 dark:bg-red-900/30">
+              <Package className="h-6 w-6 text-blue-600 dark:text-red-400" />
             </div>
             <p className="mt-2 text-sm font-medium text-neutral-900 dark:text-white">
               {t('processingTitle')}
@@ -113,10 +109,9 @@ export default function OrderConfirmationPage() {
               {t('processingSubtitle')}
             </p>
           </div>
-          
-          <div className="flex flex-col items-center">
-            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-              <Truck className="h-6 w-6 text-red-600 dark:text-red-400" />
+            <div className="flex flex-col items-center">
+            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-100 dark:bg-red-900/30">
+              <Truck className="h-6 w-6 text-blue-600 dark:text-red-400" />
             </div>
             <p className="mt-2 text-sm font-medium text-neutral-900 dark:text-white">
               {t('shippingTitle')}
@@ -127,10 +122,9 @@ export default function OrderConfirmationPage() {
           </div>
         </div>
         
-        <div className="mt-8 space-x-4">
-          <Link 
+        <div className="mt-8 space-x-4">          <Link 
             href={`/${locale}/orders/${orderId}`}
-            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 inline-block"
+            className="px-6 py-3 bg-blue-600 dark:bg-red-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-red-700 inline-block"
           >
             {t('viewOrderDetails')}
           </Link>
