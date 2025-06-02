@@ -200,10 +200,12 @@ async function getCategories(type: string) {
         description: cat.description,
         componentCount: cat._count.peripherals
       }))
-    } else {
-      const categories = await prisma.componentCategory.findMany({
+    } else {      const categories = await prisma.componentCategory.findMany({
         where: {
-          type: 'component'
+          type: 'component',
+          slug: {
+            not: 'services'
+          }
         },
         orderBy: {
           displayOrder: 'asc'

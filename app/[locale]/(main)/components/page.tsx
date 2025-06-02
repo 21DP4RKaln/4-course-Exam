@@ -27,6 +27,7 @@ const getCategoryIcon = (slug: string) => {
     'storage': <HardDrive size={30} className="text-indigo-500" />,
     'psu': <Zap size={30} className="text-yellow-500" />,
     'case': <Shield size={30} className="text-pink-500" />,
+    'cooling': <Fan size={30} className="text-teal-500" />,
     'cooler': <Fan size={30} className="text-teal-500" />,
     'default': <Layers size={30} className="text-neutral-500" />
   }

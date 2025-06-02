@@ -19,7 +19,7 @@ import { createRamFilterGroups } from './filters/ramFilters'
 import { createStorageFilterGroups } from './filters/storageFilters'
 import { createPsuFilterGroups } from './filters/psuFilters'
 import { createCaseFilterGroups } from './filters/caseFilters'
-import { createCoolerFilterGroups } from './filters/coolerFilters'
+import { createCoolingFilterGroups } from './filters/coolerFilters'
 import { createCameraFilterGroups } from './filters/cameraFilters'
 import { createSpeakerFilterGroups } from './filters/speakerFilters'
 import { createMousePadFilterGroups } from './filters/mousePadFilters'
@@ -341,7 +341,7 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
             else if (categoryChecks.isStorageCategory) filterGroups = createStorageFilterGroups(data.components);
             else if (categoryChecks.isPsuCategory) filterGroups = createPsuFilterGroups(data.components);
             else if (categoryChecks.isCaseCategory) filterGroups = createCaseFilterGroups(data.components);
-            else if (categoryChecks.isCoolerCategory) filterGroups = createCoolerFilterGroups(data.components);          }
+            else if (categoryChecks.isCoolerCategory) filterGroups = createCoolingFilterGroups(data.components);          }
           
           // Fallback to generic filters if none created
           if (!filterGroups.length) {

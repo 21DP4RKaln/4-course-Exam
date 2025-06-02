@@ -1,73 +1,89 @@
 import { Component } from '../types'
-import { FilterGroup, FilterOption, extractBrandOptions } from '../filterInterfaces'
+import { FilterGroup, FilterOption } from '../filterInterfaces'
 
+/**
+ * Generate filter groups for PSU components dynamically based on component specifications.
+ * Excludes Certification filters as they are handled by Quick Filters.
+ */
 export const createPsuFilterGroups = (components: Component[]): FilterGroup[] => {
-  const brandMap = extractBrandOptions(components)
-  const brandOptions: FilterOption[] = Array.from(brandMap.entries()).map(([value, label]) => ({
-    id: `manufacturer=${value}`,
-    name: label
-  }))
+  const groups: FilterGroup[] = []
 
-  // Wattage options
-  const wattageSet = new Set<number>()
+  // Wattage filter
+  const wattageSet = new Set<string>()
   components.forEach(c => {
-    if (c.psu?.power) wattageSet.add(c.psu.power)
-    const powerSpec = c.specifications?.['power'] || c.specifications?.['Power'] || 
-                      c.specifications?.['wattage'] || c.specifications?.['Wattage']
-    if (powerSpec) {
-      const wattValue = parseInt(String(powerSpec).replace(/[^\d]/g, ''), 10)
-      if (!isNaN(wattValue)) wattageSet.add(wattValue)
+    const wattage = c.specifications?.['Wattage'] || c.specifications?.['wattage'] || c.specifications?.['Power']
+    if (wattage) {
+      wattageSet.add(String(wattage))
     }
   })
-  const wattageOptions: FilterOption[] = Array.from(wattageSet)
-    .sort((a, b) => a - b)
-    .map(w => ({ id: `power=${w}`, name: `${w} W` }))
+  if (wattageSet.size > 0) {
+    // Sort wattage values numerically
+    const sortedWattage = Array.from(wattageSet).sort((a, b) => {
+      const numA = parseInt(a.replace(/\D/g, ''))
+      const numB = parseInt(b.replace(/\D/g, ''))
+      return numA - numB
+    })
+    
+    const options: FilterOption[] = sortedWattage.map(val => ({ 
+      id: `wattage=${val}`, 
+      name: val 
+    }))
+    groups.push({ 
+      title: 'specs.wattage',
+      titleTranslationKey: 'filterGroups.wattage',
+      type: 'wattage',
+      options 
+    })
+  }
 
-  // Certification options (80+ Bronze, Gold, etc.)
-  const certSet = new Set<string>()
+  // Modularity filter
+  const modularitySet = new Set<string>()
   components.forEach(c => {
-    const certSpec = c.specifications?.['certification'] || c.specifications?.['Certification'] || 
-                     c.specifications?.['80Plus'] || c.specifications?.['80 PLUS']
-    if (certSpec) certSet.add(String(certSpec))
+    const modularity = c.specifications?.['Modularity'] || c.specifications?.['modularity'] || c.specifications?.['Modular']
+    if (modularity) {
+      modularitySet.add(String(modularity))
+    }
   })
-  const certOptions: FilterOption[] = Array.from(certSet).map(c => ({ id: `certification=${c}`, name: c }))
+  if (modularitySet.size > 0) {
+    const options: FilterOption[] = Array.from(modularitySet)
+      .sort()
+      .map(val => ({ 
+        id: `modularity=${val}`, 
+        name: val 
+      }))
+    groups.push({ 
+      title: 'specs.modularity',
+      titleTranslationKey: 'filterGroups.modularity',
+      type: 'modularity',
+      options 
+    })
+  }
 
-  // Modular options (Non-modular, Semi-modular, Fully modular)
-  const modularSet = new Set<string>()
-  components.forEach(c => {
-    const modSpec = c.specifications?.['modular'] || c.specifications?.['Modular'] || 
-                   c.specifications?.['cableType'] || c.specifications?.['Cable Type']
-    if (modSpec) modularSet.add(String(modSpec))
+  return groups
+}
+
+/**
+ * Filter PSU components based on selected filters.
+ */
+export const filterPsuComponents = (components: Component[], activeFilters: Record<string, boolean>): Component[] => {
+  return components.filter(component => {
+    for (const [filterId, isActive] of Object.entries(activeFilters)) {
+      if (!isActive) continue
+
+      const [filterType, filterValue] = filterId.split('=')
+      
+      switch (filterType) {
+        case 'wattage':
+          const wattage = component.specifications?.['Wattage'] || component.specifications?.['wattage'] || component.specifications?.['Power']
+          if (wattage && String(wattage) !== filterValue) return false
+          break
+        case 'modularity':
+          const modularity = component.specifications?.['Modularity'] || component.specifications?.['modularity'] || component.specifications?.['Modular']
+          if (modularity && String(modularity) !== filterValue) return false
+          break
+      }
+    }
+    
+    return true
   })
-  const modularOptions: FilterOption[] = Array.from(modularSet).map(m => ({ id: `modular=${m}`, name: m }))
-
-  // Form factor options (ATX, SFX, etc.)
-  const formFactorSet = new Set<string>()
-  components.forEach(c => {
-    const formSpec = c.specifications?.['formFactor'] || c.specifications?.['Form Factor']
-    if (formSpec) formFactorSet.add(String(formSpec))
-  })
-  const formFactorOptions: FilterOption[] = Array.from(formFactorSet).map(f => ({ id: `formFactor=${f}`, name: f }))
-
-  const filterGroups: FilterGroup[] = [
-    { title: 'Brand', type: 'manufacturer', options: brandOptions }
-  ]
-
-  if (wattageOptions.length > 0) {
-    filterGroups.push({ title: 'Power Rating', type: 'power', options: wattageOptions })
-  }
-
-  if (certOptions.length > 0) {
-    filterGroups.push({ title: 'Certification', type: 'certification', options: certOptions })
-  }
-
-  if (modularOptions.length > 0) {
-    filterGroups.push({ title: 'Modularity', type: 'modular', options: modularOptions })
-  }
-
-  if (formFactorOptions.length > 0) {
-    filterGroups.push({ title: 'Form Factor', type: 'formFactor', options: formFactorOptions })
-  }
-
-  return filterGroups
 }

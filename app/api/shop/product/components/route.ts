@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
 import { createCpuFilterGroups } from '@/app/components/CategoryPage/filters/cpuFilters';
+import { createGpuFilterGroups } from '@/app/components/CategoryPage/filters/gpuFilters';
+import { createMotherboardFilterGroups } from '@/app/components/CategoryPage/filters/motherboardFilters';
+import { createRamFilterGroups } from '@/app/components/CategoryPage/filters/ramFilters';
+import { createStorageFilterGroups } from '@/app/components/CategoryPage/filters/storageFilters';
+import { createPsuFilterGroups } from '@/app/components/CategoryPage/filters/psuFilters';
+import { createCaseFilterGroups } from '@/app/components/CategoryPage/filters/caseFilters';
+import { createCoolingFilterGroups } from '@/app/components/CategoryPage/filters/coolerFilters';
 
 interface FormattedComponent {
   id: string;
@@ -167,8 +174,45 @@ export async function GET(request: NextRequest) {  try {
             type: 'component'
           }
         });      let filterGroups: any[] = [];
-    if (category && category.slug === 'cpu' && formattedComponents.length > 0) {
-      filterGroups = createCpuFilterGroups(formattedComponents);
+    if (category && formattedComponents.length > 0) {
+      switch (category.slug) {
+        case 'cpu':
+        case 'processors':
+          filterGroups = createCpuFilterGroups(formattedComponents);
+          break;
+        case 'gpu':
+        case 'graphics-cards':
+          filterGroups = createGpuFilterGroups(formattedComponents);
+          break;
+        case 'motherboard':
+        case 'motherboards':
+          filterGroups = createMotherboardFilterGroups(formattedComponents);
+          break;
+        case 'ram':
+        case 'memory':
+          filterGroups = createRamFilterGroups(formattedComponents);
+          break;
+        case 'storage':
+          filterGroups = createStorageFilterGroups(formattedComponents);
+          break;
+        case 'psu':
+        case 'power-supplies':
+          filterGroups = createPsuFilterGroups(formattedComponents);
+          break;
+        case 'case':
+        case 'cases':
+          filterGroups = createCaseFilterGroups(formattedComponents);
+          break;
+        case 'cooling':
+        case 'coolers':
+          filterGroups = createCoolingFilterGroups(formattedComponents);
+          break;
+        default:
+          // For other categories (peripherals), don't create filter groups yet
+          // They can be added later if needed
+          filterGroups = [];
+          break;
+      }
     }
 
     return NextResponse.json({
