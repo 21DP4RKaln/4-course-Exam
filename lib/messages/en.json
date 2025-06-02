@@ -656,6 +656,8 @@
     "cores": "Cores",
     "multithreading": "Multithreading",
     "socket": "Socket",
+    "brand": "Brand",
+    "series": "Series",
     "baseClock": "Base Clock",
     "maxMemory": "Max Memory",
     "memorySpeed": "Memory Speed",
@@ -1621,11 +1623,19 @@
       "createdOn": "Created On",
       "visibility": "Visibility",
       "template": "Template",
-      "public": "Public",
-      "componentSummary": "Component Summary",
+      "public": "Public",      "componentSummary": "Component Summary",
       "historyText": "Configuration history will be implemented here",
       "close": "Close"
-    }
+    },
+    "componentsManagement": "Components Management",
+    "addComponent": "Add Component",
+    "searchComponents": "Search components...",
+    "name": "Name",
+    "category": "Category",
+    "price": "Price",
+    "discountPrice": "Discount Price",
+    "stock": "Stock",
+    "sku": "SKU"
   },
   "specialist": {
     "dashboard": {
@@ -1667,9 +1677,10 @@
     "totalRepairs": "Total Repairs",
     "totalRevenue": "Total Revenue",
     "pendingConfigurations": "Pending Configurations",
-    "activeRepairs": "Active Repairs",
-    "lowStockItems": "Low Stock Items",
+    "activeRepairs": "Active Repairs",    "lowStockItems": "Low Stock Items",
     "monthlyGrowth": "Monthly Growth",
+    "salesOverview": "Sales Overview",
+    "repairMetrics": "Repair Metrics",
     "retry": "Retry",
     "failedToLoadData": "Failed to load dashboard data"
   },

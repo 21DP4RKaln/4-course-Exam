@@ -148,21 +148,23 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, isSelected, on
             )}
           </div>
           <div className="flex flex-col sm:flex-row items-center mt-3 justify-center sm:justify-end gap-3">
-            <button 
-              className={`text-sm px-3 py-1.5 rounded-md transition-colors w-full sm:w-auto ${
-                theme === 'dark'
-                  ? 'text-neutral-400 hover:text-white hover:bg-stone-800'
-                  : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
-              } focus:outline-none focus:ring-1 ${
-                theme === 'dark' ? 'focus:ring-brand-red-400' : 'focus:ring-brand-blue-400'
-              }`}
-              onClick={(e) => {
-                e.stopPropagation()
-                // Compare functionality would go here
-              }}
-            >
-              {t('buttons.compare')}
-            </button>
+             {/* 
+                <button 
+                  className={`text-sm px-3 py-1.5 rounded-md transition-colors w-full sm:w-auto ${
+                    theme === 'dark'
+                      ? 'text-neutral-400 hover:text-white hover:bg-stone-800'
+                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+                  } focus:outline-none focus:ring-1 ${
+                    theme === 'dark' ? 'focus:ring-brand-red-400' : 'focus:ring-brand-blue-400'
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    // Compare functionality would go here
+                  }}
+                >
+                  {t('buttons.compare')}
+                </button> 
+              */}
             <button
               className={`text-sm px-4 py-1.5 rounded-full font-medium transition-all w-full sm:w-auto ${
                 isSelected 

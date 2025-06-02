@@ -640,6 +640,8 @@
     "cores": "Kodoli",
     "multithreading": "Pavedieni",
     "socket": "Ligzda",
+    "brand": "Ražotājs",
+    "series": "Sērija",
     "baseClock": "Pamat Takts",
     "maxMemory": "Maksimālā Atmiņa",
     "memorySpeed": "Atmiņas Ātrums",
@@ -1598,11 +1600,19 @@
     "createdOn":"Izveidots",
     "visibility":"Redzamība",
     "template":"Šablons",
-    "public":"Publisks",
-    "componentSummary":"Komponentu kopsavilkums",
+    "public":"Publisks",    "componentSummary":"Komponentu kopsavilkums",
     "historyText":"Konfigurācijas vēsture tiks ieviesta šeit",
     "close":"Aizvērt"
-  }
+  },
+  "componentsManagement": "Komponentu pārvaldība",
+  "addComponent": "Pievienot komponentu",
+  "searchComponents": "Meklēt komponentes...",
+  "name": "Nosaukums",
+  "category": "Kategorija",
+  "price": "Cena",
+  "discountPrice": "Atlaides cena",
+  "stock": "Krājumi",
+  "sku": "SKU"
 },
 "specialist": {
   "dashboard": {
@@ -1643,9 +1653,10 @@
   "totalRepairs": "Kopējie remonti",
   "totalRevenue": "Kopējie ieņēmumi",
   "pendingConfigurations": "Gaidošās konfigurācijas",
-  "activeRepairs": "Aktīvie remonti",
-  "lowStockItems": "Preces ar zemu krājumu",
+  "activeRepairs": "Aktīvie remonti",  "lowStockItems": "Preces ar zemu krājumu",
   "monthlyGrowth": "Mēneša pieaugums",
+  "salesOverview": "Pārdošanas pārskats",
+  "repairMetrics": "Remonta metrika",
   "retry": "Mēģināt vēlreiz",
   "failedToLoadData": "Neizdevās ielādēt paneļa datus"
 },

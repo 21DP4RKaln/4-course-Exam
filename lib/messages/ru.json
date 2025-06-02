@@ -355,6 +355,7 @@
       "general": "Общие",
       "model": "Модель",
       "socket": "Сокет",
+      "brand": "Бренд",
       "cores": "Ядра",
       "threads": "Потоки",
       "baseClock": "Базовая Частота",
@@ -1474,14 +1475,21 @@
       "totalPrice": "Общая стоимость",
       "description": "Описание",
       "createdBy": "Создан",
-      "createdOn": "Создано",
-      "visibility": "Видимость",
+      "createdOn": "Создано",      "visibility": "Видимость",
       "template": "Шаблон",
-      "public": "Публичный",
-      "componentSummary": "Краткое описание компонентов",
+      "public": "Публичный",      "componentSummary": "Краткое описание компонентов",
       "historyText": "История конфигурации будет представлена здесь",
       "close": "Закрыть"
-    }
+    },
+    "componentsManagement": "Управление компонентами",
+    "addComponent": "Добавить компонент",
+    "searchComponents": "Поиск компонентов...",
+    "name": "Название",
+    "category": "Категория",
+    "price": "Цена",
+    "discountPrice": "Цена со скидкой",
+    "stock": "Наличие",
+    "sku": "Артикул"
   },
   "specialist": {
     "dashboard": {
@@ -1519,9 +1527,10 @@
     "totalRepairs": "Всего ремонтов",
     "totalRevenue": "Общий доход",
     "pendingConfigurations": "Ожидающие конфигурации",
-    "activeRepairs": "Активные ремонты",
-    "lowStockItems": "Товары с низким запасом",
+    "activeRepairs": "Активные ремонты",    "lowStockItems": "Товары с низким запасом",
     "monthlyGrowth": "Месячный рост",
+    "salesOverview": "Обзор продаж",
+    "repairMetrics": "Метрики ремонта",
     "retry": "Повторить",
     "failedToLoadData": "Не удалось загрузить данные панели"
   },

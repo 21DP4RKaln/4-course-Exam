@@ -60,43 +60,42 @@ export default function ComponentsPage() {
       
       if (response.ok) {
         setComponents(components.filter(component => component.id !== id))
-      }
-    } catch (error) {
+      }    } catch (error) {
       console.error('Error deleting component:', error)
     }
   }
+  
   const columns: Column<Component>[] = [
     { 
       key: 'name',
-      label: 'Name' 
+      label: t('admin.name')
     },
     { 
       key: 'category',
-      label: 'Category',
+      label: t('admin.category'),
       render: (value: Component['category']) => value.name
     },
     { 
       key: 'price',
-      label: 'Price',
+      label: t('admin.price'),
       render: (value: number) => `€${value.toFixed(2)}`
     },
     {
       key: 'discountPrice',
-      label: 'Discount Price',
+      label: t('admin.discountPrice'),
       render: (value: number | null, row: Component) => {
         if (!value) return '-';
         const isExpired = row.discountExpiresAt && new Date(row.discountExpiresAt) < new Date();
         if (isExpired) return '-';
         return `€${value.toFixed(2)}`;
-      }
-    },
+      }    },
     { 
       key: 'stock',
-      label: 'Stock'
+      label: t('admin.stock')
     },
     { 
       key: 'sku',
-      label: 'SKU'
+      label: t('admin.sku')
     },
     {      key: 'id',
       label: 'Actions',
@@ -125,26 +124,24 @@ export default function ComponentsPage() {
   )
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6">      <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
-          Components Management
+          {t('admin.componentsManagement')}
         </h1>
         <button
           onClick={() => router.push(`/${locale}/admin/components/create`)}
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Component
+          {t('admin.addComponent')}
         </button>
       </div>
 
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm">
-        <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
-          <SearchBar
+        <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">          <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="Search components..."
+            placeholder={t('admin.searchComponents')}
           />
         </div>
         

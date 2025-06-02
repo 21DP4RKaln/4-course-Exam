@@ -62,24 +62,22 @@ export default function CreateComponentPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-4">
-        <button
+      <div className="flex items-center space-x-4">        <button
           onClick={() => router.back()}
           className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
-          Create Component
+          {t('admin.createComponent')}
         </h1>
       </div>
 
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                Name
+            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                {t('admin.name')}
               </label>
               <input
                 type="text"
@@ -91,9 +89,8 @@ export default function CreateComponentPage() {
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                SKU
+            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                {t('admin.sku')}
               </label>
               <input
                 type="text"
@@ -105,15 +102,14 @@ export default function CreateComponentPage() {
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                Category
+            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                {t('admin.category')}
               </label>
               <select
                 {...register('categoryId')}
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               >
-                <option value="">Select category</option>
+                <option value="">{t('admin.selectCategory')}</option>
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -125,9 +121,8 @@ export default function CreateComponentPage() {
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                Price (€)
+            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                {t('admin.price')} (€)
               </label>
               <input
                 type="number"
@@ -140,9 +135,8 @@ export default function CreateComponentPage() {
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                Discount Price (€)
+            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                {t('admin.discountPrice')} (€)
               </label>
               <input
                 type="number"

@@ -159,14 +159,13 @@ export default function AdminDashboard() {
             <TrendingUp className="h-8 w-8 text-green-500" />
           </div>
         </div>
-      </div>      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      </div>      {/* Charts */}      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">Sales Overview</h2>
+          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">{t('staff.salesOverview')}</h2>
           <SalesChart />
         </div>
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">Repair Metrics</h2>
+          <h2 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">{t('staff.repairMetrics')}</h2>
           <RepairChart />
         </div>
       </div>
