@@ -10,7 +10,7 @@ import {
   analyzePasswordStrength,
   getPasswordStrengthColor,
   getPasswordStrengthTextColor,
-} from '@/lib/passwordStrength';
+} from '@/lib/auth/passwordStrength';
 
 interface NewPasswordFormProps {
   onSubmit: (password: string) => void;

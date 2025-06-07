@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyResetCode } from '@/lib/password-reset';
+import { verifyResetCode } from '@/lib/auth/password-reset';
 import { z } from 'zod';
 
 const verifyCodeSchema = z.object({

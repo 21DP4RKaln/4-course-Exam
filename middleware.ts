@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { locales, defaultLocale } from './app/i18n/config';
-import { verifyJWT } from './lib/jwt';
+import { verifyJWT } from './lib/auth/jwt';
 
 const PUBLIC_PATHS = [
   /^\/_next\//,

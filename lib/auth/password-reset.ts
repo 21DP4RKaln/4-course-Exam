@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prismaService';
-import { sendPasswordResetEmail, EmailConfig } from '@/lib/email';
-import { sendPasswordResetSMS, SMSConfig } from '@/lib/sms';
-import { getEmailConfig } from '@/lib/emailConfig';
+import { sendPasswordResetEmail, EmailConfig } from '@/lib/mail/email';
+import { sendPasswordResetSMS, SMSConfig } from '@/lib/sms/sms';
+import { getEmailConfig } from '@/lib/mail/emailConfig';
 import crypto from 'crypto';
 
 export function generateVerificationCode(): string {

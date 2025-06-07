@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import { verifyJWT, getJWTFromRequest } from '@/lib/auth/jwt';
 import {
   createUnauthorizedResponse,
   createNotFoundResponse,
@@ -12,7 +12,7 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import { randomUUID } from 'crypto';
 import { z } from 'zod';
-import { sendRepairCompletionEmail, EmailConfig } from '@/lib/email';
+import { sendRepairCompletionEmail, EmailConfig } from '@/lib/mail/email';
 
 const completeRepairSchema = z.object({
   finalCost: z.number(),

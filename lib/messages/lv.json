@@ -1859,6 +1859,10 @@
 },
 "checkout": {
   "title": "Pasūtījuma noformēšana",
+  "firstName": "Vārds",
+  "lastName": "Uzvārds",
+  "firstNamePlaceholder": "Ievadiet savu vārdu",
+  "lastNamePlaceholder": "Ievadiet savu uzvārdu",
   "email": "E-pasts",
   "phone": "Tālrunis",
   "address": "Adrese",

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
-import { signJWT } from '@/lib/jwt';
+import { signJWT } from '@/lib/auth/jwt';
 import {
   createBadRequestResponse,
   createServerErrorResponse,

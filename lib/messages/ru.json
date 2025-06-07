@@ -1731,10 +1731,13 @@
     "notesPlaceholder": "Введите примечания об изменении статуса...",
     "confirmDelete": "Вы действительно хотите удалить этот ремонт?",
     "noProduct": "Нет продукта"
-  },
-  "checkout": {
+  },  "checkout": {
     "title": "Оформление Заказа",
     "shippingAddress": "Адрес Доставки",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "firstNamePlaceholder": "Введите ваше имя",
+    "lastNamePlaceholder": "Введите вашу фамилию",
     "fullName": "Имя и Фамилия",
     "email": "Электронная Почта",
     "phone": "Телефон",

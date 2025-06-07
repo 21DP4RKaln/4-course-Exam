@@ -151,6 +151,8 @@ function CheckoutForm() {
 
   // Formas validācijas shēma ar Zod
   const formSchema = z.object({
+    firstName: z.string().min(1, t('validation.required')),
+    lastName: z.string().min(1, t('validation.required')),
     email: z.string().email(t('validation.invalidEmail')),
     phone: z.string().min(8, t('validation.invalidPhone')),
     address: z.string().min(1, t('validation.required')),
@@ -173,6 +175,8 @@ function CheckoutForm() {
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
       email: user?.email || '',
       phone: user?.phone || '',
       address: user?.shippingAddress || '',
@@ -246,6 +250,9 @@ function CheckoutForm() {
           method: selectedShipping,
           rate: shippingRate?.rate || 0,
           address: {
+            name: `${data.firstName} ${data.lastName}`.trim(),
+            firstName: data.firstName,
+            lastName: data.lastName,
             email: data.email,
             phone: data.phone,
             address: data.address,
@@ -303,10 +310,30 @@ function CheckoutForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...orderData,
+          items: items.map(item => ({
+            id: item.id,
+            type: item.type,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          shippingAddress: {
+            fullName: `${data.firstName} ${data.lastName}`.trim(),
+            email: data.email,
+            phone: data.phone,
+            address: data.address,
+            city: data.city,
+            postalCode: data.postalCode,
+            country: data.country,
+          },
           paymentMethod: data.paymentMethod,
-          promoCode: promoCode,
-          promoDiscount: promoDiscount,
+          shippingMethod: selectedShipping,
+          promoCode: promoCode || undefined,
+          subtotal: totalPrice,
+          discount: promoDiscount,
+          shippingCost: shippingRate?.rate || 0,
+          taxAmount: 0, // Tax calculation is handled server-side
+          total: totalPrice + (shippingRate?.rate || 0) - promoDiscount,
           locale: locale,
         }),
       });
@@ -431,6 +458,64 @@ function CheckoutForm() {
         {/* Adreses ievades forma */}
         {(!isAuthenticated || !user?.shippingAddress || !useStoredAddress) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Vārda lauks */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, duration: 0.3 }}
+            >
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+              >
+                {t('checkout.firstName')}
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                {...register('firstName')}
+                className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
+                  border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white 
+                  focus:ring-2 focus:ring-primary focus:border-transparent transition-colors
+                  placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                placeholder={t('checkout.firstNamePlaceholder')}
+              />
+              {errors.firstName && (
+                <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">
+                  {errors.firstName.message}
+                </p>
+              )}
+            </motion.div>
+
+            {/* Uzvārda lauks */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.075, duration: 0.3 }}
+            >
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+              >
+                {t('checkout.lastName')}
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                {...register('lastName')}
+                className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
+                  border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white 
+                  focus:ring-2 focus:ring-primary focus:border-transparent transition-colors
+                  placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                placeholder={t('checkout.lastNamePlaceholder')}
+              />
+              {errors.lastName && (
+                <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">
+                  {errors.lastName.message}
+                </p>
+              )}
+            </motion.div>
+
             {/* Email lauks */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -463,7 +548,7 @@ function CheckoutForm() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
+              transition={{ delay: 0.15, duration: 0.3 }}
             >
               <label
                 htmlFor="phone"
@@ -484,7 +569,7 @@ function CheckoutForm() {
               className="md:col-span-2"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.3 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
             >
               <label
                 htmlFor="address"
@@ -512,7 +597,7 @@ function CheckoutForm() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.3 }}
+              transition={{ delay: 0.25, duration: 0.3 }}
             >
               <label
                 htmlFor="city"
@@ -540,7 +625,7 @@ function CheckoutForm() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.3 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
             >
               <label
                 htmlFor="postalCode"
@@ -569,7 +654,7 @@ function CheckoutForm() {
               className="md:col-span-2"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.3 }}
+              transition={{ delay: 0.35, duration: 0.3 }}
             >
               <label
                 htmlFor="country"
@@ -602,7 +687,7 @@ function CheckoutForm() {
                 className="md:col-span-2"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.3 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
               >
                 <label className="flex items-center space-x-2">
                   <input

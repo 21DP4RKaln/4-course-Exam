@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEmailConfig } from '@/lib/emailConfig';
+import { getEmailConfig } from '@/lib/mail/emailConfig';
 
 export async function GET(request: NextRequest) {
   try {

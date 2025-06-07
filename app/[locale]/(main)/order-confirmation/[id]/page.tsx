@@ -33,6 +33,8 @@ export default function OrderConfirmationPage() {
   // State mainīgie pasūtījuma datu un ielādes pārvaldībai
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   // useEffect hook pasūtījuma datu ielādei no API
   useEffect(() => {
@@ -55,6 +57,35 @@ export default function OrderConfirmationPage() {
 
     fetchOrder();
   }, [orderId, clearCart]);
+
+  // Function to manually send order confirmation email
+  const sendConfirmationEmail = async () => {
+    setEmailSending(true);
+    try {
+      const response = await fetch('/api/orders/confirm', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setEmailSent(true);
+        setOrder((prev: any) => ({ ...prev, status: 'PROCESSING' }));
+        alert('E-pasts nosūtīts veiksmīgi!');
+      } else {
+        alert('Kļūda nosūtot e-pastu: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Kļūda nosūtot e-pastu');
+    } finally {
+      setEmailSending(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -156,6 +187,30 @@ export default function OrderConfirmationPage() {
 
         {/* Darbību pogas */}
         <div className="mt-8 space-x-4">
+          {/* Poga e-pasta nosūtīšanai, ja pasūtījums ir PENDING */}
+          {order?.status === 'PENDING' && (
+            <button
+              onClick={sendConfirmationEmail}
+              disabled={emailSending}
+              className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 inline-block mb-4"
+            >
+              {emailSending ? 'Nosūta...' : 'Nosūtīt apstiprinājuma e-pastu'}
+            </button>
+          )}
+
+          {/* Status indikators */}
+          {order?.status === 'PROCESSING' && (
+            <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-md inline-block">
+              ✅ Pasūtījums apstrādāts un e-pasts nosūtīts
+            </div>
+          )}
+
+          {emailSent && (
+            <div className="mb-4 p-3 bg-blue-100 text-blue-800 rounded-md inline-block">
+              📧 E-pasts tikko nosūtīts!
+            </div>
+          )}
+
           {/* Poga pasūtījuma detaļu skatīšanai */}
           <Link
             href={`/${locale}/orders/${orderId}`}

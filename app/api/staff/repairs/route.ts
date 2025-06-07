@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import { verifyJWT, getJWTFromRequest } from '@/lib/auth/jwt';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
@@ -8,7 +8,7 @@ import {
   createUnauthorizedResponse,
   createServerErrorResponse,
 } from '@/lib/apiErrors';
-import { sendRepairRequestNotification, EmailConfig } from '@/lib/email';
+import { sendRepairRequestNotification, EmailConfig } from '@/lib/mail/email';
 
 export async function POST(request: NextRequest) {
   try {

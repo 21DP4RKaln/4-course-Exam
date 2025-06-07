@@ -14,6 +14,10 @@ import {
   Package,
   Wrench,
 } from 'lucide-react';
+import GpuIcon from '@/app/components/ui/icons/GpuIcon';
+import RamIcon from '@/app/components/ui/icons/RamIcon';
+import CaseIcon from '@/app/components/ui/icons/CaseIcon';
+import MotherboardIcon from '@/app/components/ui/icons/MotherboardIcon';
 import Image from 'next/image';
 import classNames from 'classnames';
 import Link from 'next/link';
@@ -66,17 +70,17 @@ const CategoryList: React.FC<Props> = ({
       case 'cpu':
         return <Cpu size={24} className={iconColor} />;
       case 'gpu':
-        return <Monitor size={24} className={iconColor} />;
+        return <GpuIcon size={24} className={iconColor} />;
       case 'ram':
-        return <HardDrive size={24} className={iconColor} />;
+        return <RamIcon size={24} className={iconColor} />;
       case 'motherboard':
-        return <Server size={24} className={iconColor} />;
+        return <MotherboardIcon size={24} className={iconColor} />;
       case 'psu':
         return <Zap size={24} className={iconColor} />;
       case 'cooling':
         return <Fan size={24} className={iconColor} />;
       case 'case':
-        return <Box size={24} className={iconColor} />;
+        return <CaseIcon size={24} className={iconColor} />;
       case 'storage':
         return <HardDrive size={24} className={iconColor} />;
       case 'services':

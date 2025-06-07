@@ -29,7 +29,7 @@ import {
 } from '@/app/hooks/useLoading';
 import PhoneInput from '@/app/components/ui/PhoneInput';
 import { Checkbox } from '@/components/ui/checkbox';
-import { analyzePasswordStrength } from '@/lib/passwordStrength';
+import { analyzePasswordStrength } from '@/lib/auth/passwordStrength';
 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

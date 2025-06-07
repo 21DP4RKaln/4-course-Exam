@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prismaService';
 import {
   createPasswordResetToken,
   sendVerificationCode,
-} from '@/lib/password-reset';
+} from '@/lib/auth/password-reset';
 import { z } from 'zod';
 
 const sendCodeSchema = z.object({

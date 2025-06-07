@@ -11,6 +11,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 interface ShippingAddress {
   name: string;
+  firstName?: string;
+  lastName?: string;
   address: string;
   city: string;
   postalCode: string;
@@ -120,10 +122,13 @@ export async function POST(request: NextRequest) {
             shippingAddress: `${shipping.address.address}, ${shipping.address.city}, ${shipping.address.country}, ${shipping.address.postalCode}`,
             paymentMethod: 'CARD',
             isGuestOrder: true,
-            shippingName: shipping.address.name,
+            shippingName:
+              shipping.address.name ||
+              `${shipping.address.firstName} ${shipping.address.lastName}`.trim(),
             shippingEmail: shipping.address.email,
             shippingPhone: shipping.address.phone,
             shippingCost: shipping.rate,
+            discount: promoDiscount,
             locale: locale as any,
           },
         });
@@ -160,12 +165,16 @@ export async function POST(request: NextRequest) {
           shippingAddress: `${shipping.address.address}, ${shipping.address.city}, ${shipping.address.country}, ${shipping.address.postalCode}`,
           shippingEmail: shipping.address.email,
           shippingName:
-            user.firstName && user.lastName
-              ? `${user.firstName} ${user.lastName}`.trim()
-              : shipping.address.name,
+            shipping.address.name ||
+            (shipping.address.firstName && shipping.address.lastName
+              ? `${shipping.address.firstName} ${shipping.address.lastName}`.trim()
+              : user.firstName && user.lastName
+                ? `${user.firstName} ${user.lastName}`.trim()
+                : ''),
           shippingPhone: shipping.address.phone,
           paymentMethod: 'CARD',
           shippingCost: shipping.rate,
+          discount: promoDiscount,
           isGuestOrder: false,
           locale: locale as any,
           user: { connect: { id: user.id } },

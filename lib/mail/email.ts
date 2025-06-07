@@ -114,8 +114,9 @@ export async function sendOrderConfirmationEmail(
     html,
     attachments: [
       {
-        filename: `IvaPro_Order_${orderData.id}_Receipt.pdf`,
-        content: fs.createReadStream(pdfPath),
+        filename: `IvaPro_Order_${orderData.id}_Receipt.txt`,
+        content: fs.readFileSync(pdfPath, 'utf8'),
+        contentType: 'text/plain',
       },
     ],
   };

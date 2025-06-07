@@ -6,7 +6,7 @@ import {
   createNotFoundResponse,
 } from '@/lib/apiErrors';
 import { prisma } from '@/lib/prismaService';
-import { sendOrderReceipt } from '@/lib/orderEmail';
+import { sendOrderReceipt } from '@/lib/mail/orderEmail';
 
 export async function POST(
   request: NextRequest,

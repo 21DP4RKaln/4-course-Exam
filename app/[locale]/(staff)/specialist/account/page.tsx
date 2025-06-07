@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { analyzePasswordStrength } from '@/lib/passwordStrength';
+import { analyzePasswordStrength } from '@/lib/auth/passwordStrength';
 import styled from 'styled-components';
 
 export default function SpecialistAccountPage() {

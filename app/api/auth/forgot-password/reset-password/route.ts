@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
-import { verifyResetCode, markTokenAsUsed } from '@/lib/password-reset';
+import { verifyResetCode, markTokenAsUsed } from '@/lib/auth/password-reset';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 

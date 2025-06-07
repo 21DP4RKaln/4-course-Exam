@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
 import { authenticate } from '@/lib/middleware/authMiddleware';
-import { sendOrderApprovalReceipt } from '@/lib/orderEmail';
+import { sendOrderApprovalReceipt } from '@/lib/mail/orderEmail';
 import {
   createUnauthorizedResponse,
   createServerErrorResponse,

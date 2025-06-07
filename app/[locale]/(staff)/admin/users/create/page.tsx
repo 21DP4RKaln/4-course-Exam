@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PhoneInput from '@/app/components/ui/PhoneInput';
-import { analyzePasswordStrength } from '@/lib/passwordStrength';
+import { analyzePasswordStrength } from '@/lib/auth/passwordStrength';
 
 const userSchema = z
   .object({

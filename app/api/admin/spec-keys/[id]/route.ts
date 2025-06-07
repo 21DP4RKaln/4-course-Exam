@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getJWTFromRequest, verifyJWT } from '@/lib/jwt';
+import { getJWTFromRequest, verifyJWT } from '@/lib/auth/jwt';
 import {
   createUnauthorizedResponse,
   createForbiddenResponse,

@@ -1887,9 +1887,12 @@
     "notesPlaceholder": "Enter notes about the status change...",
     "confirmDelete": "Are you sure you want to delete this repair?",
     "noProduct": "No product"
-  },
-  "checkout": {
+  },  "checkout": {
     "title": "Checkout",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNamePlaceholder": "Enter your last name",
     "email": "Email",
     "phone": "Phone",
     "promoDiscount": "Promo Code",

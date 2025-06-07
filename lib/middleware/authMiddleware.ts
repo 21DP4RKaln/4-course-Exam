@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import { verifyJWT, getJWTFromRequest } from '@/lib/auth/jwt';
 import {
   createUnauthorizedResponse,
   createForbiddenResponse,
 } from '@/lib/apiErrors';
-import { JWTPayload } from '@/lib/jwt';
+import { JWTPayload } from '@/lib/auth/jwt';
 
 /**
  * Authenticate a user from the request

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import { verifyJWT, getJWTFromRequest } from '@/lib/auth/jwt';
 import {
   createUnauthorizedResponse,
   createNotFoundResponse,

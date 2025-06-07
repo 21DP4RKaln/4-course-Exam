@@ -19,15 +19,22 @@ const createOrderSchema = z.object({
       quantity: z.number(),
     })
   ),
-  shippingAddress: z.object({
-    fullName: z.string(),
-    email: z.string().email(),
-    phone: z.string(),
-    address: z.string(),
-    city: z.string(),
-    postalCode: z.string(),
-    country: z.string(),
-  }),
+  shippingAddress: z
+    .object({
+      fullName: z.string().optional(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      email: z.string().email(),
+      phone: z.string(),
+      address: z.string(),
+      city: z.string(),
+      postalCode: z.string(),
+      country: z.string(),
+    })
+    .refine(data => data.fullName || (data.firstName && data.lastName), {
+      message:
+        'Either fullName or both firstName and lastName must be provided',
+    }),
   paymentMethod: z.enum(['card', 'cash']),
   shippingMethod: z.string(),
   promoCode: z.string().optional(),
@@ -112,6 +119,11 @@ export async function POST(request: NextRequest) {
         }
       }
     }
+    // Determine the shipping name from the available fields
+    const shippingName =
+      shippingAddress.fullName ||
+      `${shippingAddress.firstName} ${shippingAddress.lastName}`;
+
     const order = await prisma.order.create({
       data: {
         totalAmount: total,
@@ -119,9 +131,11 @@ export async function POST(request: NextRequest) {
         shippingAddress: `${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.country}, ${shippingAddress.postalCode}`,
         shippingEmail: shippingAddress.email,
         shippingPhone: shippingAddress.phone,
-        shippingName: shippingAddress.fullName,
+        shippingName: shippingName,
         paymentMethod: paymentMethod.toUpperCase(),
         shippingMethod: shippingMethod.toUpperCase(),
+        discount: discount,
+        shippingCost: shippingCost,
         isGuestOrder: isGuest,
         userId: userData?.userId || null,
         locale: locale as any, // Temporary cast until Prisma client regeneration
