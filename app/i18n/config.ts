@@ -1,7 +1,7 @@
 export const defaultLocale = 'en';
 export const locales = ['en', 'lv', 'ru'] as const;
 
-export type Locale = typeof locales[number];
+export type Locale = (typeof locales)[number];
 export interface LanguageInfo {
   name: string;
   nativeName: string;

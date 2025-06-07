@@ -11,7 +11,7 @@ import { WishlistProvider } from '@/app/contexts/WishlistContext';
 import SessionWrapper from '@/app/components/SessionWrapper';
 import ClientLayout from './ClientLayout';
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
   variable: '--font-inter',
 });
@@ -21,8 +21,15 @@ export const metadata: Metadata = {
     default: 'IvaPro PC Configurator',
     template: '%s | IvaPro PC Configurator',
   },
-  description: 'Build your custom PC or choose from our ready-made configurations. Professional computer building with quality components.',
-  keywords: ['PC configurator', 'custom PC', 'computer building', 'gaming PC', 'custom computer'],
+  description:
+    'Build your custom PC or choose from our ready-made configurations. Professional computer building with quality components.',
+  keywords: [
+    'PC configurator',
+    'custom PC',
+    'computer building',
+    'gaming PC',
+    'custom computer',
+  ],
   authors: [{ name: 'IvaPro' }],
   creator: 'IvaPro',
   publisher: 'IvaPro',
@@ -44,12 +51,9 @@ type Props = {
   };
 };
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: Props) {
+export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
-  
+
   const supportedLocales = ['en', 'lv', 'ru'];
   const safeLocale = supportedLocales.includes(locale) ? locale : 'en';
   const messages = await getMessages(safeLocale);
@@ -62,9 +66,7 @@ export default async function LocaleLayout({
               <AuthProvider>
                 <WishlistProvider>
                   <CartProvider>
-                    <ClientLayout>
-                      {children}
-                    </ClientLayout>
+                    <ClientLayout>{children}</ClientLayout>
                   </CartProvider>
                 </WishlistProvider>
               </AuthProvider>

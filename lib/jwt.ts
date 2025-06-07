@@ -1,27 +1,34 @@
-import { NextRequest } from 'next/server'
-import * as jose from 'jose'
+import { NextRequest } from 'next/server';
+import * as jose from 'jose';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || '7w4U4zcoBQgN9OEcAJDF8gNNc5B7h7du')
-const REFRESH_TOKEN_SECRET = new TextEncoder().encode(process.env.REFRESH_TOKEN_SECRET || 'refresh-token-secret')
-const ACCESS_TOKEN_EXPIRES_IN = '1h'
-const REFRESH_TOKEN_EXPIRES_IN = '7d'
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || '7w4U4zcoBQgN9OEcAJDF8gNNc5B7h7du'
+);
+const REFRESH_TOKEN_SECRET = new TextEncoder().encode(
+  process.env.REFRESH_TOKEN_SECRET || 'refresh-token-secret'
+);
+const ACCESS_TOKEN_EXPIRES_IN = '1h';
+const REFRESH_TOKEN_EXPIRES_IN = '7d';
 
 export interface JWTPayload {
-  userId: string
-  email: string
-  role: string
-  tokenType?: 'access' | 'refresh'
+  userId: string;
+  email: string;
+  role: string;
+  tokenType?: 'access' | 'refresh';
 }
 
 export interface TokenPair {
-  accessToken: string
-  refreshToken: string
+  accessToken: string;
+  refreshToken: string;
 }
 
 export class JWTError extends Error {
-  constructor(message: string, public originalError?: Error) {
-    super(message)
-    this.name = 'JWTError'
+  constructor(
+    message: string,
+    public originalError?: Error
+  ) {
+    super(message);
+    this.name = 'JWTError';
   }
 }
 
@@ -30,42 +37,48 @@ export async function signJWT(
   type: 'access' | 'refresh' = 'access'
 ): Promise<string> {
   try {
-    const secret = type === 'access' ? JWT_SECRET : REFRESH_TOKEN_SECRET
-    const expiresIn = type === 'access' ? ACCESS_TOKEN_EXPIRES_IN : REFRESH_TOKEN_EXPIRES_IN
+    const secret = type === 'access' ? JWT_SECRET : REFRESH_TOKEN_SECRET;
+    const expiresIn =
+      type === 'access' ? ACCESS_TOKEN_EXPIRES_IN : REFRESH_TOKEN_EXPIRES_IN;
 
     const jwt = await new jose.SignJWT({ ...payload, tokenType: type })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime(expiresIn)
       .setIssuedAt()
-      .sign(secret)
+      .sign(secret);
 
-    return jwt
+    return jwt;
   } catch (error) {
-    console.error(`JWT Sign Error (${type}):`, error)
-    throw new JWTError('Failed to sign token', error as Error)
+    console.error(`JWT Sign Error (${type}):`, error);
+    throw new JWTError('Failed to sign token', error as Error);
   }
 }
 
-export async function generateTokenPair(payload: Omit<JWTPayload, 'tokenType'>): Promise<TokenPair> {
+export async function generateTokenPair(
+  payload: Omit<JWTPayload, 'tokenType'>
+): Promise<TokenPair> {
   try {
     const [accessToken, refreshToken] = await Promise.all([
       signJWT(payload, 'access'),
-      signJWT(payload, 'refresh')
-    ])
-    return { accessToken, refreshToken }
+      signJWT(payload, 'refresh'),
+    ]);
+    return { accessToken, refreshToken };
   } catch (error) {
-    throw new JWTError('Failed to generate token pair', error as Error)
+    throw new JWTError('Failed to generate token pair', error as Error);
   }
 }
 
-export async function verifyJWT(token: string, type: 'access' | 'refresh' = 'access'): Promise<JWTPayload | null> {
+export async function verifyJWT(
+  token: string,
+  type: 'access' | 'refresh' = 'access'
+): Promise<JWTPayload | null> {
   try {
-    const secret = type === 'access' ? JWT_SECRET : REFRESH_TOKEN_SECRET
-    const { payload } = await jose.jwtVerify(token, secret)
-    
+    const secret = type === 'access' ? JWT_SECRET : REFRESH_TOKEN_SECRET;
+    const { payload } = await jose.jwtVerify(token, secret);
+
     if (payload.tokenType !== type) {
-      console.error(`Invalid token type. Expected ${type}`)
-      return null
+      console.error(`Invalid token type. Expected ${type}`);
+      return null;
     }
 
     if (
@@ -73,43 +86,51 @@ export async function verifyJWT(token: string, type: 'access' | 'refresh' = 'acc
       typeof payload.email !== 'string' ||
       typeof payload.role !== 'string'
     ) {
-      console.error('Invalid payload structure')
-      return null
+      console.error('Invalid payload structure');
+      return null;
     }
 
     return {
       userId: payload.userId,
       email: payload.email,
       role: payload.role,
-      tokenType: type
-    }
+      tokenType: type,
+    };
   } catch (error) {
-    console.error(`JWT Verification Error (${type}):`, error)
+    console.error(`JWT Verification Error (${type}):`, error);
     if ((error as Error).name === 'JWTExpired') {
-      console.log(`${type} token expired`)
+      console.log(`${type} token expired`);
     }
-    return null
+    return null;
   }
 }
 
-export function getJWTFromRequest(request: NextRequest, type: 'access' | 'refresh' = 'access'): string | undefined {
-  const cookieName = type === 'access' ? 'authToken' : 'refreshToken'
-  return request.cookies.get(cookieName)?.value
+export function getJWTFromRequest(
+  request: NextRequest,
+  type: 'access' | 'refresh' = 'access'
+): string | undefined {
+  const cookieName = type === 'access' ? 'authToken' : 'refreshToken';
+  return request.cookies.get(cookieName)?.value;
 }
 
-export async function refreshAccessToken(refreshToken: string): Promise<string | null> {
-  const payload = await verifyJWT(refreshToken, 'refresh')
-  if (!payload) return null
+export async function refreshAccessToken(
+  refreshToken: string
+): Promise<string | null> {
+  const payload = await verifyJWT(refreshToken, 'refresh');
+  if (!payload) return null;
 
   try {
-    const newAccessToken = await signJWT({
-      userId: payload.userId,
-      email: payload.email,
-      role: payload.role
-    }, 'access')
-    return newAccessToken
+    const newAccessToken = await signJWT(
+      {
+        userId: payload.userId,
+        email: payload.email,
+        role: payload.role,
+      },
+      'access'
+    );
+    return newAccessToken;
   } catch (error) {
-    console.error('Failed to refresh access token:', error)
-    return null
+    console.error('Failed to refresh access token:', error);
+    return null;
   }
 }

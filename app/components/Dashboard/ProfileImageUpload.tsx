@@ -1,26 +1,30 @@
-'use client'
+'use client';
 
-import { useRef } from 'react'
-import { Image, Upload, Trash2 } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { useTranslations } from 'next-intl'
-import { ProfileImageUploadProps } from './types'
+import { useRef } from 'react';
+import { Image, Upload, Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import { ProfileImageUploadProps } from './types';
 
-export default function ProfileImageUpload({ currentImage, onChange, onDelete }: ProfileImageUploadProps) {
-  const imageT = useTranslations('dashboard.profileImage')
-  const fileInputRef = useRef<HTMLInputElement>(null)
+export default function ProfileImageUpload({
+  currentImage,
+  onChange,
+  onDelete,
+}: ProfileImageUploadProps) {
+  const imageT = useTranslations('dashboard.profileImage');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const handleImageClick = () => {
-    fileInputRef.current?.click()
-  }
-  
+    fileInputRef.current?.click();
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      onChange(e.target.files[0])
+      onChange(e.target.files[0]);
     }
-  }
-  
+  };
+
   return (
-    <motion.div 
+    <motion.div
       className="flex flex-col items-center space-y-4 p-6 rounded-xl bg-blue-50/70 dark:bg-red-950/20"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -36,7 +40,7 @@ export default function ProfileImageUpload({ currentImage, onChange, onDelete }:
         whileTap={{ scale: 0.95 }}
       >
         {currentImage ? (
-          <img 
+          <img
             src={currentImage}
             alt={imageT('altText')}
             className="w-full h-full object-cover"
@@ -47,10 +51,12 @@ export default function ProfileImageUpload({ currentImage, onChange, onDelete }:
         <div className="absolute inset-0 bg-gradient-to-t from-blue-600/70 dark:from-red-600/70 to-transparent flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
           <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center justify-center">
             <Upload size={24} className="text-white mr-1" />
-            <span className="text-white text-sm font-medium">{imageT('upload')}</span>
+            <span className="text-white text-sm font-medium">
+              {imageT('upload')}
+            </span>
           </div>
         </div>
-        
+
         <input
           type="file"
           ref={fileInputRef}
@@ -58,7 +64,8 @@ export default function ProfileImageUpload({ currentImage, onChange, onDelete }:
           accept="image/*"
           className="hidden"
         />
-      </motion.div>      <motion.p 
+      </motion.div>{' '}
+      <motion.p
         className="text-sm text-blue-600 dark:text-red-400 font-medium mt-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -74,11 +81,11 @@ export default function ProfileImageUpload({ currentImage, onChange, onDelete }:
       >
         {imageT('helpText')}
       </motion.p>
-        {currentImage && onDelete && (
+      {currentImage && onDelete && (
         <div className="w-full flex justify-start">
           <motion.button
             type="button"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onDelete();
             }}
@@ -93,5 +100,5 @@ export default function ProfileImageUpload({ currentImage, onChange, onDelete }:
         </div>
       )}
     </motion.div>
-  )
+  );
 }

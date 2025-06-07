@@ -1,29 +1,39 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { Save, ArrowLeft, Send, Mail, AlertCircle, CheckCircle } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import {
+  Save,
+  ArrowLeft,
+  Send,
+  Mail,
+  AlertCircle,
+  CheckCircle,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface EmailTemplate {
-  id: string
-  name: string
-  subject: string
-  enabled: boolean
-  description: string
+  id: string;
+  name: string;
+  subject: string;
+  enabled: boolean;
+  description: string;
 }
 
 export default function EmailSettingsPage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  
-  const [isSaving, setIsSaving] = useState(false)
-  const [isTesting, setIsTesting] = useState(false)
-  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null)
-  const [testEmail, setTestEmail] = useState('')
+  const t = useTranslations();
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
+  const [testEmail, setTestEmail] = useState('');
   const [smtpConfig, setSmtpConfig] = useState({
     provider: 'custom',
     host: 'smtp.gmail.com',
@@ -33,9 +43,8 @@ export default function EmailSettingsPage() {
     secure: 'tls',
     fromEmail: '14dprkalninskvdarbs@gmail.com',
     fromName: 'IvaPro Support',
-    replyTo: 'support@ivapro.com'
-  })
-
+    replyTo: 'support@ivapro.com',
+  });
 
   const [templates, setTemplates] = useState<EmailTemplate[]>([
     {
@@ -43,63 +52,63 @@ export default function EmailSettingsPage() {
       name: 'Order Confirmation',
       subject: 'Order #{orderId} Confirmation - IvaPro',
       enabled: true,
-      description: 'Sent when a customer places an order'
+      description: 'Sent when a customer places an order',
     },
     {
       id: 'order_shipped',
       name: 'Order Shipped',
       subject: 'Your Order #{orderId} Has Been Shipped',
       enabled: true,
-      description: 'Sent when an order is marked as shipped'
+      description: 'Sent when an order is marked as shipped',
     },
     {
       id: 'order_delivered',
       name: 'Order Delivered',
       subject: 'Your Order #{orderId} Has Been Delivered',
       enabled: true,
-      description: 'Sent when an order is marked as delivered'
+      description: 'Sent when an order is marked as delivered',
     },
     {
       id: 'repair_status',
       name: 'Repair Status Update',
       subject: 'Repair #{repairId} Status Update',
       enabled: true,
-      description: 'Sent when repair status changes'
+      description: 'Sent when repair status changes',
     },
     {
       id: 'repair_completed',
       name: 'Repair Completed',
       subject: 'Your Repair #{repairId} is Complete',
       enabled: true,
-      description: 'Sent when repair is marked as complete'
+      description: 'Sent when repair is marked as complete',
     },
     {
       id: 'user_welcome',
       name: 'Welcome Email',
       subject: 'Welcome to IvaPro!',
       enabled: true,
-      description: 'Sent to new users after registration'
+      description: 'Sent to new users after registration',
     },
     {
       id: 'password_reset',
       name: 'Password Reset',
       subject: 'Reset Your Password',
       enabled: true,
-      description: 'Sent when user requests password reset'
+      description: 'Sent when user requests password reset',
     },
     {
       id: 'newsletter',
       name: 'Newsletter',
       subject: 'IvaPro Monthly Newsletter',
       enabled: false,
-      description: 'Monthly newsletter to subscribed users'
-    }
-  ])
+      description: 'Monthly newsletter to subscribed users',
+    },
+  ]);
 
   const handleSaveSettings = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSaving(true)
-    
+    e.preventDefault();
+    setIsSaving(true);
+
     try {
       const response = await fetch('/api/admin/settings/email', {
         method: 'POST',
@@ -108,32 +117,32 @@ export default function EmailSettingsPage() {
         },
         body: JSON.stringify({
           smtp: smtpConfig,
-          templates: templates
-        })
-      })
+          templates: templates,
+        }),
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to save settings')
+        throw new Error('Failed to save settings');
       }
 
-      alert('Email settings saved successfully!')
+      alert('Email settings saved successfully!');
     } catch (error) {
-      console.error('Error saving email settings:', error)
-      alert('Failed to save email settings')
+      console.error('Error saving email settings:', error);
+      alert('Failed to save email settings');
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   const handleTestEmail = async () => {
     if (!testEmail) {
-      alert('Please enter a test email address')
-      return
+      alert('Please enter a test email address');
+      return;
     }
-    
-    setIsTesting(true)
-    setTestResult(null)
-    
+
+    setIsTesting(true);
+    setTestResult(null);
+
     try {
       const response = await fetch('/api/admin/settings/email/test', {
         method: 'POST',
@@ -142,45 +151,50 @@ export default function EmailSettingsPage() {
         },
         body: JSON.stringify({
           to: testEmail,
-          config: smtpConfig
-        })
-      })
+          config: smtpConfig,
+        }),
+      });
 
-      const result = await response.json()
-      
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to send test email')
+        throw new Error(result.error || 'Failed to send test email');
       }
 
       setTestResult({
         success: true,
-        message: 'Test email sent successfully! Please check your inbox.'
-      })
+        message: 'Test email sent successfully! Please check your inbox.',
+      });
     } catch (error) {
       setTestResult({
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to send test email'
-      })
+        message:
+          error instanceof Error ? error.message : 'Failed to send test email',
+      });
     } finally {
-      setIsTesting(false)
+      setIsTesting(false);
     }
-  }
+  };
 
-  const handleSmtpChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
+  const handleSmtpChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
     setSmtpConfig(prev => ({
       ...prev,
-      [name]: value
-    }))
-  }
+      [name]: value,
+    }));
+  };
 
   const handleTemplateToggle = (templateId: string) => {
-    setTemplates(prev => prev.map(template => 
-      template.id === templateId 
-        ? { ...template, enabled: !template.enabled }
-        : template
-    ))
-  }
+    setTemplates(prev =>
+      prev.map(template =>
+        template.id === templateId
+          ? { ...template, enabled: !template.enabled }
+          : template
+      )
+    );
+  };
 
   const handleProviderChange = (provider: string) => {
     setSmtpConfig(prev => {
@@ -191,38 +205,38 @@ export default function EmailSettingsPage() {
             provider: 'gmail',
             host: 'smtp.gmail.com',
             port: '587',
-            secure: 'tls'
-          }
+            secure: 'tls',
+          };
         case 'outlook':
           return {
             ...prev,
             provider: 'outlook',
             host: 'smtp-mail.outlook.com',
             port: '587',
-            secure: 'tls'
-          }
+            secure: 'tls',
+          };
         case 'sendgrid':
           return {
             ...prev,
             provider: 'sendgrid',
             host: 'smtp.sendgrid.net',
             port: '587',
-            secure: 'tls'
-          }
+            secure: 'tls',
+          };
         default:
           return {
             ...prev,
-            provider: 'custom'
-          }
+            provider: 'custom',
+          };
       }
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center space-x-4">
-        <Link 
+        <Link
           href={`/${locale}/admin/settings`}
           className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg transition-colors"
         >
@@ -237,14 +251,14 @@ export default function EmailSettingsPage() {
         {/* SMTP Configuration */}
         <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">SMTP Configuration</h2>
-          
+
           {/* Provider Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
               Email Provider
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {['gmail', 'outlook', 'sendgrid', 'custom'].map((provider) => (
+              {['gmail', 'outlook', 'sendgrid', 'custom'].map(provider => (
                 <button
                   key={provider}
                   type="button"
@@ -275,7 +289,7 @@ export default function EmailSettingsPage() {
                 placeholder="smtp.example.com"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 SMTP Port
@@ -289,7 +303,7 @@ export default function EmailSettingsPage() {
                 placeholder="587"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 SMTP Username
@@ -303,7 +317,7 @@ export default function EmailSettingsPage() {
                 placeholder="username@example.com"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 SMTP Password
@@ -317,7 +331,7 @@ export default function EmailSettingsPage() {
                 placeholder="••••••••"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Security
@@ -333,7 +347,7 @@ export default function EmailSettingsPage() {
                 <option value="tls">TLS</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 From Email
@@ -347,7 +361,7 @@ export default function EmailSettingsPage() {
                 placeholder="noreply@example.com"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 From Name
@@ -361,7 +375,7 @@ export default function EmailSettingsPage() {
                 placeholder="Company Name"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Reply-To Email
@@ -382,11 +396,18 @@ export default function EmailSettingsPage() {
         <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Email Templates</h2>
           <div className="space-y-4">
-            {templates.map((template) => (
-              <div key={template.id} className="flex items-center justify-between p-4 border rounded-lg dark:border-neutral-700">
+            {templates.map(template => (
+              <div
+                key={template.id}
+                className="flex items-center justify-between p-4 border rounded-lg dark:border-neutral-700"
+              >
                 <div>
-                  <h3 className="font-medium text-neutral-900 dark:text-white">{template.name}</h3>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">{template.description}</p>
+                  <h3 className="font-medium text-neutral-900 dark:text-white">
+                    {template.name}
+                  </h3>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {template.description}
+                  </p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
                     Subject: {template.subject}
                   </p>
@@ -407,12 +428,14 @@ export default function EmailSettingsPage() {
 
         {/* Test Email */}
         <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-4">Test Email Configuration</h2>
+          <h2 className="text-lg font-semibold mb-4">
+            Test Email Configuration
+          </h2>
           <div className="flex space-x-4">
             <input
               type="email"
               value={testEmail}
-              onChange={(e) => setTestEmail(e.target.value)}
+              onChange={e => setTestEmail(e.target.value)}
               placeholder="Enter email address to send test"
               className="flex-1 px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -424,9 +447,25 @@ export default function EmailSettingsPage() {
             >
               {isTesting ? (
                 <>
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   <span>Sending...</span>
                 </>
@@ -438,13 +477,15 @@ export default function EmailSettingsPage() {
               )}
             </button>
           </div>
-          
+
           {testResult && (
-            <div className={`mt-4 p-4 rounded-lg flex items-center space-x-2 ${
-              testResult.success 
-                ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
-                : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-            }`}>
+            <div
+              className={`mt-4 p-4 rounded-lg flex items-center space-x-2 ${
+                testResult.success
+                  ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                  : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+              }`}
+            >
               {testResult.success ? (
                 <CheckCircle className="h-5 w-5" />
               ) : (
@@ -464,9 +505,25 @@ export default function EmailSettingsPage() {
           >
             {isSaving ? (
               <>
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 <span>Saving...</span>
               </>
@@ -480,5 +537,5 @@ export default function EmailSettingsPage() {
         </div>
       </form>
     </div>
-  )
+  );
 }

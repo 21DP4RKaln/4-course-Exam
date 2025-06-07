@@ -1,142 +1,141 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { DataTable, Column } from '../Common/DataTable'
-import { ProductActions } from './ProductActions'
-import { StatusBadge } from '../Common/StatusBadge'
-import { SearchBar } from '../Common/SearchBar'
-import { useTranslations } from 'next-intl'
-import { useRouter, usePathname } from 'next/navigation'
-import { Monitor, AlertCircle, Plus } from 'lucide-react'
-import { useTheme } from '@/app/contexts/ThemeContext'
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { DataTable, Column } from '../Common/DataTable';
+import { ProductActions } from './ProductActions';
+import { StatusBadge } from '../Common/StatusBadge';
+import { SearchBar } from '../Common/SearchBar';
+import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
+import { Monitor, AlertCircle, Plus } from 'lucide-react';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
 interface ReadyMadePC {
-  id: string
-  name: string
-  category: string
-  price: number
-  status: 'ACTIVE' | 'DRAFT' | 'ARCHIVED'
-  viewCount: number
-  createdAt: string
-  isPublic: boolean
-  imageUrl?: string
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  status: 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
+  viewCount: number;
+  createdAt: string;
+  isPublic: boolean;
+  imageUrl?: string;
 }
 
 export function ReadyMadeList() {
-  const t = useTranslations()
-  const router = useRouter()
-  const { user } = useAuth()
-  const { theme } = useTheme()
-  const [pcs, setPCs] = useState<ReadyMadePC[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const t = useTranslations();
+  const router = useRouter();
+  const { user } = useAuth();
+  const { theme } = useTheme();
+  const [pcs, setPCs] = useState<ReadyMadePC[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const isAdmin = user?.role === 'ADMIN'
+  const isAdmin = user?.role === 'ADMIN';
   const pathname = usePathname();
   const locale = pathname.split('/')[1] || 'en';
 
   useEffect(() => {
-    fetchReadyMadePCs()
-  }, [])
+    fetchReadyMadePCs();
+  }, []);
 
   const fetchReadyMadePCs = async () => {
     try {
-      setLoading(true)
-      const response = await fetch('/api/staff/products/ready-made')
-      
+      setLoading(true);
+      const response = await fetch('/api/staff/products/ready-made');
+
       if (!response.ok) {
-        throw new Error('Failed to fetch ready-made PCs')
+        throw new Error('Failed to fetch ready-made PCs');
       }
 
-      const data = await response.json()
-      setPCs(data)
+      const data = await response.json();
+      setPCs(data);
     } catch (error) {
-      console.error('Error fetching ready-made PCs:', error)
-      setError('Failed to load ready-made PCs')
+      console.error('Error fetching ready-made PCs:', error);
+      setError('Failed to load ready-made PCs');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this PC configuration?')) return
+    if (!confirm('Are you sure you want to delete this PC configuration?'))
+      return;
 
     try {
       const response = await fetch(`/api/staff/products/ready-made/${id}`, {
-        method: 'DELETE'
-      })
+        method: 'DELETE',
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to delete PC')
+        throw new Error('Failed to delete PC');
       }
 
-      setPCs(prev => prev.filter(item => item.id !== id))
+      setPCs(prev => prev.filter(item => item.id !== id));
     } catch (error) {
-      console.error('Error deleting PC:', error)
-      alert('Failed to delete PC')
+      console.error('Error deleting PC:', error);
+      alert('Failed to delete PC');
     }
-  }
+  };
 
   const handleCreateNew = () => {
-    router.push(`/${locale}/${user?.role.toLowerCase()}/configurations/create`)
-  }
+    router.push(`/${locale}/${user?.role.toLowerCase()}/configurations/create`);
+  };
 
-  const filteredPCs = pcs.filter(pc =>
-    pc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    pc.category.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredPCs = pcs.filter(
+    pc =>
+      pc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      pc.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const columns: Column<ReadyMadePC>[] = [
     {
       key: 'imageUrl' as keyof ReadyMadePC,
       label: 'Image',
-      render: (value: string) => value ? (
-        <img 
-          src={value} 
-          alt="PC" 
-          className="w-10 h-10 object-cover rounded"
-        />
-      ) : (
-        <div className="w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded flex items-center justify-center">
-          <Monitor size={20} className="text-neutral-400" />
-        </div>
-      )
+      render: (value: string) =>
+        value ? (
+          <img
+            src={value}
+            alt="PC"
+            className="w-10 h-10 object-cover rounded"
+          />
+        ) : (
+          <div className="w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded flex items-center justify-center">
+            <Monitor size={20} className="text-neutral-400" />
+          </div>
+        ),
     },
     {
       key: 'name' as keyof ReadyMadePC,
-      label: 'Name'
+      label: 'Name',
     },
     {
       key: 'category' as keyof ReadyMadePC,
       label: 'Category',
-      render: (value: string) => (
-        <span className="capitalize">{value}</span>
-      )
+      render: (value: string) => <span className="capitalize">{value}</span>,
     },
     {
       key: 'price' as keyof ReadyMadePC,
       label: 'Price',
-      render: (value: number) => `€${value.toFixed(2)}`
+      render: (value: number) => `€${value.toFixed(2)}`,
     },
     {
       key: 'status' as keyof ReadyMadePC,
       label: 'Status',
-      render: (value: ReadyMadePC['status']) => (
-        <StatusBadge status={value} />
-      )
+      render: (value: ReadyMadePC['status']) => <StatusBadge status={value} />,
     },
     {
       key: 'viewCount' as keyof ReadyMadePC,
-      label: 'Views'
+      label: 'Views',
     },
     {
       key: 'isPublic' as keyof ReadyMadePC,
       label: 'Visibility',
       render: (value: boolean) => (
         <StatusBadge status={value ? 'ACTIVE' : 'INACTIVE'} />
-      )
+      ),
     },
     {
       key: 'id' as keyof ReadyMadePC,
@@ -149,16 +148,16 @@ export function ReadyMadeList() {
           canEdit={true}
           canDelete={isAdmin}
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -169,7 +168,7 @@ export function ReadyMadeList() {
           <p className="text-red-800 dark:text-red-200">{error}</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -200,5 +199,5 @@ export function ReadyMadeList() {
         emptyMessage="No ready-made PCs found"
       />
     </div>
-  )
+  );
 }

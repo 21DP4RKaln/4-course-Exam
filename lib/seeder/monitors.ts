@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedMonitors(prisma: PrismaClient) {
   // Get all peripherals with subType 'monitors'
   const monitorPeripherals = await prisma.peripheral.findMany({
-    where: { subType: 'monitors' }
+    where: { subType: 'monitors' },
   });
 
   // Prepare Monitor entries
@@ -12,27 +12,33 @@ export async function seedMonitors(prisma: PrismaClient) {
   // For each Monitor peripheral, create a detailed Monitor entry
   for (let i = 0; i < monitorPeripherals.length; i++) {
     const peripheral = monitorPeripherals[i];
-    
+
     // Parse existing specifications if available
-    const specs = peripheral.specifications ? JSON.parse(peripheral.specifications.toString()) : {};
-    
+    const specs = peripheral.specifications
+      ? JSON.parse(peripheral.specifications.toString())
+      : {};
+
     // Get manufacturer from peripheral name or use default
-    const manufacturer = 
-      peripheral.name.includes('Dell') ? 'Dell' :
-      peripheral.name.includes('LG') ? 'LG' :
-      peripheral.name.includes('Samsung') ? 'Samsung' :
-      peripheral.name.includes('ASUS') ? 'ASUS' :
-      peripheral.name.includes('Acer') ? 'Acer' :
-      'Generic';
-    
+    const manufacturer = peripheral.name.includes('Dell')
+      ? 'Dell'
+      : peripheral.name.includes('LG')
+        ? 'LG'
+        : peripheral.name.includes('Samsung')
+          ? 'Samsung'
+          : peripheral.name.includes('ASUS')
+            ? 'ASUS'
+            : peripheral.name.includes('Acer')
+              ? 'Acer'
+              : 'Generic';
+
     // Screen sizes
     const screenSizes = [24.0, 27.0, 32.0, 34.0, 49.0];
     const size = specs.screenSize || screenSizes[i % screenSizes.length];
-    
+
     // Panel types
     const panelTypes = ['IPS', 'VA', 'TN', 'OLED', 'IPS'];
     const panelType = specs.panelType || panelTypes[i % panelTypes.length];
-    
+
     // Common resolutions
     let resolution;
     if (size === 34.0 || size === 49.0) {
@@ -40,53 +46,70 @@ export async function seedMonitors(prisma: PrismaClient) {
     } else {
       resolution = ['1920x1080', '2560x1440', '3840x2160'][i % 3];
     }
-    
+
     // Refresh rates
     const refreshRates = [60, 75, 144, 165, 240, 360];
     let refreshRate;
-    
-    if (resolution === '3840x2160') { // 4K
+
+    if (resolution === '3840x2160') {
+      // 4K
       refreshRate = [60, 120, 144][i % 3];
-    } else if (resolution === '2560x1440') { // 1440p
+    } else if (resolution === '2560x1440') {
+      // 1440p
       refreshRate = [144, 165, 240][i % 3];
-    } else { // 1080p or ultrawide
+    } else {
+      // 1080p or ultrawide
       refreshRate = [144, 165, 240, 360][i % 4];
     }
-    
+
     // Response times (convert string to float)
     const responseTimes = [1.0, 1.0, 2.0, 4.0, 0.5];
-    const responseTime = specs.responseTime ? parseFloat(specs.responseTime) : responseTimes[i % responseTimes.length];
-    
+    const responseTime = specs.responseTime
+      ? parseFloat(specs.responseTime)
+      : responseTimes[i % responseTimes.length];
+
     // Brightness (as integer, not string with "nits")
     const brightness = 250 + (i % 6) * 50;
-    
+
     // HDR support (boolean instead of string)
     const hdr = i % 3 === 0;
-    
+
     // Additional specs to store in specifications JSON
     const additionalSpecs = {
-      aspectRatio: resolution.includes('3440') || resolution.includes('5120') ? '21:9' : '16:9',
-      contrast: panelType === 'VA' ? '3000:1' : (panelType === 'OLED' ? '1000000:1' : '1000:1'),
+      aspectRatio:
+        resolution.includes('3440') || resolution.includes('5120')
+          ? '21:9'
+          : '16:9',
+      contrast:
+        panelType === 'VA'
+          ? '3000:1'
+          : panelType === 'OLED'
+            ? '1000000:1'
+            : '1000:1',
       colorGamut: `${90 + (i % 11) * 1}% DCI-P3`,
       hdrRating: i % 3 === 0 ? (i % 2 === 0 ? 'HDR400' : 'HDR600') : 'None',
       adjustable: i % 2 === 0,
-      mountType: 'VESA 100x100mm'
+      mountType: 'VESA 100x100mm',
     };
-    
+
     // Ports as JSON string
-    const ports = JSON.stringify(['HDMI 2.0', 'DisplayPort 1.4', ...(i % 4 === 0 ? ['USB-C'] : [])]);
-    
+    const ports = JSON.stringify([
+      'HDMI 2.0',
+      'DisplayPort 1.4',
+      ...(i % 4 === 0 ? ['USB-C'] : []),
+    ]);
+
     // Update peripheral specifications
     await prisma.peripheral.update({
       where: { id: peripheral.id },
       data: {
         specifications: JSON.stringify({
           ...specs,
-          ...additionalSpecs
-        })
-      }
+          ...additionalSpecs,
+        }),
+      },
     });
-    
+
     monitors.push({
       peripheralId: peripheral.id,
       manufacturer,
@@ -99,7 +122,7 @@ export async function seedMonitors(prisma: PrismaClient) {
       hdr,
       ports,
       speakers: i % 3 === 0,
-      curved: size >= 32.0 && i % 2 === 0
+      curved: size >= 32.0 && i % 2 === 0,
     });
   }
 
@@ -108,10 +131,10 @@ export async function seedMonitors(prisma: PrismaClient) {
     await prisma.monitor.upsert({
       where: { peripheralId: monitor.peripheralId },
       update: monitor,
-      create: monitor
+      create: monitor,
     });
   }
-  
+
   // Call the function to add 10 more monitors
   await addMoreMonitors(prisma);
 }
@@ -121,14 +144,14 @@ export async function seedMonitors(prisma: PrismaClient) {
  */
 async function addMoreMonitors(prisma: PrismaClient) {
   const category = await prisma.peripheralCategory.findFirst({
-    where: { slug: { contains: 'monitors' } }
+    where: { slug: { contains: 'monitors' } },
   });
-  
+
   if (!category) {
     console.error('Monitor category not found');
     return;
   }
-  
+
   // Define new monitor models with interesting specifications
   const newMonitorModels = [
     {
@@ -160,9 +183,9 @@ async function addMoreMonitors(prisma: PrismaClient) {
         adaptiveSync: 'G-Sync Compatible, FreeSync Premium Pro',
         dimensions: '1149.5mm x 537.2mm x 418.3mm',
         weight: '14.5kg',
-        connectivity: 'DisplayPort 1.4, HDMI 2.1, USB Hub'
+        connectivity: 'DisplayPort 1.4, HDMI 2.1, USB Hub',
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.1', 'USB-C', 'USB Hub 3.0']
+      ports: ['DisplayPort 1.4', 'HDMI 2.1', 'USB-C', 'USB Hub 3.0'],
     },
     {
       name: 'LG UltraGear 32GR93U',
@@ -193,9 +216,14 @@ async function addMoreMonitors(prisma: PrismaClient) {
         dimensions: '714.7mm x 603.8mm x 292.1mm',
         weight: '10.3kg',
         connectivity: 'DisplayPort 1.4, HDMI 2.1, USB Hub',
-        speakerPower: '10W x 2'
+        speakerPower: '10W x 2',
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.1 (2)', 'USB Hub 3.0', 'Headphone Out']
+      ports: [
+        'DisplayPort 1.4',
+        'HDMI 2.1 (2)',
+        'USB Hub 3.0',
+        'Headphone Out',
+      ],
     },
     {
       name: 'Dell Alienware AW3423DWF',
@@ -226,9 +254,14 @@ async function addMoreMonitors(prisma: PrismaClient) {
         adaptiveSync: 'FreeSync Premium Pro',
         dimensions: '810.5mm x 461.8mm x 257.2mm',
         weight: '9.7kg',
-        connectivity: 'DisplayPort 1.4, HDMI 2.0, USB Hub'
+        connectivity: 'DisplayPort 1.4, HDMI 2.0, USB Hub',
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.0 (2)', 'USB 3.2 Hub', 'Headphone Out']
+      ports: [
+        'DisplayPort 1.4',
+        'HDMI 2.0 (2)',
+        'USB 3.2 Hub',
+        'Headphone Out',
+      ],
     },
     {
       name: 'ASUS ROG Swift PG32UQX',
@@ -259,9 +292,14 @@ async function addMoreMonitors(prisma: PrismaClient) {
         dimensions: '748.96mm x 551.3mm x 297mm',
         weight: '13.5kg',
         connectivity: 'DisplayPort 1.4, HDMI 2.0, USB Hub',
-        liveDisplay: true
+        liveDisplay: true,
       },
-      ports: ['DisplayPort 1.4 DSC', 'HDMI 2.0 (3)', 'USB 3.0 Hub', 'Headphone Out']
+      ports: [
+        'DisplayPort 1.4 DSC',
+        'HDMI 2.0 (3)',
+        'USB 3.0 Hub',
+        'Headphone Out',
+      ],
     },
     {
       name: 'Gigabyte M32U',
@@ -292,9 +330,15 @@ async function addMoreMonitors(prisma: PrismaClient) {
         dimensions: '715.8mm x 586.7mm x 244.3mm',
         weight: '9.5kg',
         connectivity: 'DisplayPort 1.4, HDMI 2.1, USB-C, KVM Switch',
-        kvm: true
+        kvm: true,
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.1 (2)', 'USB-C', 'USB Hub 3.0', 'Headphone Out']
+      ports: [
+        'DisplayPort 1.4',
+        'HDMI 2.1 (2)',
+        'USB-C',
+        'USB Hub 3.0',
+        'Headphone Out',
+      ],
     },
     {
       name: 'MSI MPG ARTYMIS 343CQR',
@@ -326,9 +370,14 @@ async function addMoreMonitors(prisma: PrismaClient) {
         dimensions: '816.8mm x 505.9mm x 304.2mm',
         weight: '10.3kg',
         connectivity: 'DisplayPort 1.4, HDMI 2.0, USB Hub',
-        gameIntel: true
+        gameIntel: true,
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.0 (2)', 'USB 3.2 Hub', 'Headphone Out']
+      ports: [
+        'DisplayPort 1.4',
+        'HDMI 2.0 (2)',
+        'USB 3.2 Hub',
+        'Headphone Out',
+      ],
     },
     {
       name: 'ViewSonic ELITE XG270QG',
@@ -359,9 +408,9 @@ async function addMoreMonitors(prisma: PrismaClient) {
         dimensions: '614.5mm x 458.7mm x 265.2mm',
         weight: '8.6kg',
         connectivity: 'DisplayPort 1.4, HDMI 2.0, USB Hub',
-        rgbLighting: true
+        rgbLighting: true,
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.0', 'USB 3.0 Hub', 'Headphone Out']
+      ports: ['DisplayPort 1.4', 'HDMI 2.0', 'USB 3.0 Hub', 'Headphone Out'],
     },
     {
       name: 'BenQ MOBIUZ EX3210U',
@@ -393,9 +442,14 @@ async function addMoreMonitors(prisma: PrismaClient) {
         weight: '10.8kg',
         connectivity: 'DisplayPort 1.4, HDMI 2.1, USB Hub',
         speakerPower: '2.1 Channel (5W x 2 + 10W Woofer)',
-        remoteControl: true
+        remoteControl: true,
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.1 (2)', 'USB 3.0 Hub', 'Headphone Out']
+      ports: [
+        'DisplayPort 1.4',
+        'HDMI 2.1 (2)',
+        'USB 3.0 Hub',
+        'Headphone Out',
+      ],
     },
     {
       name: 'AOC AGON AG274QZM',
@@ -427,9 +481,14 @@ async function addMoreMonitors(prisma: PrismaClient) {
         weight: '8.5kg',
         connectivity: 'DisplayPort 1.4, HDMI 2.0, USB Hub',
         speakerPower: '5W x 2',
-        rgbLighting: true
+        rgbLighting: true,
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.0 (2)', 'USB 3.2 Hub', 'Headphone Out']
+      ports: [
+        'DisplayPort 1.4',
+        'HDMI 2.0 (2)',
+        'USB 3.2 Hub',
+        'Headphone Out',
+      ],
     },
     {
       name: 'Corsair XENEON 32UHD144',
@@ -461,19 +520,24 @@ async function addMoreMonitors(prisma: PrismaClient) {
         weight: '10kg',
         connectivity: 'DisplayPort 1.4, HDMI 2.1, USB-C',
         icueIntegration: true,
-        streamcamMount: true
+        streamcamMount: true,
       },
-      ports: ['DisplayPort 1.4', 'HDMI 2.1 (2)', 'USB-C (DP Alt Mode)', 'USB 3.0 Hub']
-    }
+      ports: [
+        'DisplayPort 1.4',
+        'HDMI 2.1 (2)',
+        'USB-C (DP Alt Mode)',
+        'USB 3.0 Hub',
+      ],
+    },
   ];
-  
+
   // Create new monitor peripherals and monitor entries
   for (let i = 0; i < newMonitorModels.length; i++) {
     const model = newMonitorModels[i];
-    
+
     // Generate a unique SKU
     const sku = `P-MON-${model.manufacturer.substring(0, 3).toUpperCase()}-${2000 + i}`;
-    
+
     // Create peripheral description
     let description = `${model.name} - ${model.size}" ${model.resolution} ${model.refreshRate}Hz ${model.panelType} gaming monitor`;
     if (model.hdr) {
@@ -482,7 +546,7 @@ async function addMoreMonitors(prisma: PrismaClient) {
     if (model.curved) {
       description += ' and curved display';
     }
-    
+
     // Create the peripheral entry
     const peripheral = await prisma.peripheral.create({
       data: {
@@ -495,9 +559,9 @@ async function addMoreMonitors(prisma: PrismaClient) {
         sku,
         subType: 'monitors',
         imageUrl: `/products/peripherals/monitors${(i % 3) + 1}.jpg`,
-      }
+      },
     });
-    
+
     // Create the monitor entry
     await prisma.monitor.create({
       data: {
@@ -512,12 +576,12 @@ async function addMoreMonitors(prisma: PrismaClient) {
         hdr: model.hdr,
         ports: JSON.stringify(model.ports),
         speakers: model.speakers,
-        curved: model.curved
-      }
+        curved: model.curved,
+      },
     });
-    
+
     console.log(`Added monitor: ${model.name}`);
   }
-  
+
   console.log('Added 10 additional monitors');
 }

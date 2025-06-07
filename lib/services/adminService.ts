@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prismaService'
+import { prisma } from '@/lib/prismaService';
 
 export interface AdminOverviewStats {
   totalUsers: number;
@@ -26,7 +26,7 @@ export async function getAdminOverview(): Promise<AdminOverviewStats> {
       activeUsers,
       totalRevenue,
       monthlyRevenue,
-      pendingOrders
+      pendingOrders,
     ] = await prisma.$transaction([
       prisma.user.count(),
       prisma.user.count({
@@ -34,24 +34,24 @@ export async function getAdminOverview(): Promise<AdminOverviewStats> {
           orders: {
             some: {
               createdAt: {
-                gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) 
-              }
-            }
-          }
-        }
+                gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+              },
+            },
+          },
+        },
       }),
       prisma.order.aggregate({
         where: { status: 'COMPLETED' },
-        _sum: { totalAmount: true }
+        _sum: { totalAmount: true },
       }),
       prisma.order.aggregate({
         where: {
           status: 'COMPLETED',
-          createdAt: { gte: startOfMonth }
+          createdAt: { gte: startOfMonth },
         },
-        _sum: { totalAmount: true }
+        _sum: { totalAmount: true },
       }),
-      prisma.order.count({ where: { status: 'PENDING' } })
+      prisma.order.count({ where: { status: 'PENDING' } }),
     ]);
 
     return {
@@ -63,8 +63,8 @@ export async function getAdminOverview(): Promise<AdminOverviewStats> {
       systemHealth: {
         cpuUsage: Math.random() * 100,
         memoryUsage: Math.random() * 100,
-        diskSpace: Math.random() * 100
-      }
+        diskSpace: Math.random() * 100,
+      },
     };
   } catch (error) {
     console.error('Error fetching admin overview:', error);
@@ -87,31 +87,31 @@ export async function manageUser(
           where: { id: userId },
           data: {
             isBlocked: true,
-            blockReason: data?.reason
-          }
+            blockReason: data?.reason,
+          },
         });
-      
+
       case 'UNBLOCK':
         return await prisma.user.update({
           where: { id: userId },
           data: {
             isBlocked: false,
-            blockReason: null
-          }
+            blockReason: null,
+          },
         });
-      
+
       case 'DELETE':
         return await prisma.user.delete({
-          where: { id: userId }
+          where: { id: userId },
         });
-      
+
       case 'CHANGE_ROLE':
         if (!data?.role) throw new Error('Role is required');
         return await prisma.user.update({
           where: { id: userId },
-          data: { role: data.role }
+          data: { role: data.role },
         });
-      
+
       default:
         throw new Error('Invalid action');
     }
@@ -129,24 +129,28 @@ export async function getSystemSettings() {
     general: {
       siteName: 'IvaPro PC Configurator',
       siteUrl: 'https://ivapro.com',
-      maintenanceMode: false
-    },    email: {
+      maintenanceMode: false,
+    },
+    email: {
       smtpHost: 'smtp.gmail.com',
       smtpPort: 587,
       smtpUser: '14dprkalninskvdarbs@gmail.com',
-      emailFrom: 'IvaPro <14dprkalninskvdarbs@gmail.com>'
+      emailFrom: 'IvaPro <14dprkalninskvdarbs@gmail.com>',
     },
     backup: {
       autoBackup: true,
       backupFrequency: 'daily',
-      retentionDays: 30
-    }
+      retentionDays: 30,
+    },
   };
 }
 
 /**
  * Update system settings
  */
-export async function updateSystemSettings(category: string, settings: Record<string, any>) {
+export async function updateSystemSettings(
+  category: string,
+  settings: Record<string, any>
+) {
   return settings;
 }

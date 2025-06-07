@@ -20,21 +20,28 @@ export interface FilterGroup {
  * @param components Array of components
  * @returns Map of spec key to display name
  */
-export const extractBrandOptions = (components: Component[]): Map<string, string> => {
+export const extractBrandOptions = (
+  components: Component[]
+): Map<string, string> => {
   const brandOptions = new Map<string, string>();
   components.forEach(component => {
     if (!component.specifications) return;
     // Check manufacturer field or specification keys
     const specs = component.specifications;
     if (specs['Manufacturer'] || specs['manufacturer'] || specs['brand']) {
-      const brand = specs['Manufacturer'] || specs['manufacturer'] || specs['brand'];
+      const brand =
+        specs['Manufacturer'] || specs['manufacturer'] || specs['brand'];
       if (brand) brandOptions.set(`brand=${brand}`, brand as string);
     }
     // Also scan specification entries for 'manufacturer' or 'brand'
     Object.entries(specs).forEach(([key, value]) => {
       if (!value) return;
       const keyLower = key.toLowerCase();
-      if (keyLower.includes('brand') || keyLower.includes('manufacturer') || keyLower === 'make') {
+      if (
+        keyLower.includes('brand') ||
+        keyLower.includes('manufacturer') ||
+        keyLower === 'make'
+      ) {
         brandOptions.set(`brand=${value}`, String(value));
       }
     });

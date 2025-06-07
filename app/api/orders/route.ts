@@ -1,19 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { authenticate } from '@/lib/middleware/authMiddleware'
-import { prisma } from '@/lib/prismaService'
-import { createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
-import { z } from 'zod'
-import { OrderStatus, ProductType } from '@prisma/client'
-import Stripe from 'stripe'
+import { NextRequest, NextResponse } from 'next/server';
+import { authenticate } from '@/lib/middleware/authMiddleware';
+import { prisma } from '@/lib/prismaService';
+import {
+  createBadRequestResponse,
+  createServerErrorResponse,
+} from '@/lib/apiErrors';
+import { z } from 'zod';
+import { OrderStatus, ProductType } from '@prisma/client';
+import Stripe from 'stripe';
 
 const createOrderSchema = z.object({
-  items: z.array(z.object({
-    id: z.string(),
-    type: z.string(),
-    name: z.string(),
-    price: z.number(),
-    quantity: z.number()
-  })),
+  items: z.array(
+    z.object({
+      id: z.string(),
+      type: z.string(),
+      name: z.string(),
+      price: z.number(),
+      quantity: z.number(),
+    })
+  ),
   shippingAddress: z.object({
     fullName: z.string(),
     email: z.string().email(),
@@ -21,7 +26,7 @@ const createOrderSchema = z.object({
     address: z.string(),
     city: z.string(),
     postalCode: z.string(),
-    country: z.string()
+    country: z.string(),
   }),
   paymentMethod: z.enum(['card', 'cash']),
   shippingMethod: z.string(),
@@ -31,8 +36,8 @@ const createOrderSchema = z.object({
   shippingCost: z.number(),
   taxAmount: z.number(),
   total: z.number(),
-  locale: z.string().optional().default('en') // Add locale field
-})
+  locale: z.string().optional().default('en'), // Add locale field
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,8 +49,12 @@ export async function POST(request: NextRequest) {
     const validationResult = createOrderSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return createBadRequestResponse('Invalid order data', validationResult.error.format());
-    }    const {
+      return createBadRequestResponse(
+        'Invalid order data',
+        validationResult.error.format()
+      );
+    }
+    const {
       items,
       shippingAddress,
       paymentMethod,
@@ -61,38 +70,49 @@ export async function POST(request: NextRequest) {
     for (const item of items) {
       if (item.type.toUpperCase() === 'COMPONENT') {
         const component = await prisma.component.findUnique({
-          where: { id: item.id }
+          where: { id: item.id },
         });
-        
+
         if (!component) {
-          return createBadRequestResponse(`Component with ID ${item.id} not found`);
+          return createBadRequestResponse(
+            `Component with ID ${item.id} not found`
+          );
         }
 
         if (component.quantity < item.quantity) {
-          return createBadRequestResponse(`Insufficient stock for ${item.name}`);
+          return createBadRequestResponse(
+            `Insufficient stock for ${item.name}`
+          );
         }
       } else if (item.type.toUpperCase() === 'PERIPHERAL') {
         const peripheral = await prisma.peripheral.findUnique({
-          where: { id: item.id }
+          where: { id: item.id },
         });
-        
+
         if (!peripheral) {
-          return createBadRequestResponse(`Peripheral with ID ${item.id} not found`);
+          return createBadRequestResponse(
+            `Peripheral with ID ${item.id} not found`
+          );
         }
 
         if (peripheral.quantity < item.quantity) {
-          return createBadRequestResponse(`Insufficient stock for ${item.name}`);
+          return createBadRequestResponse(
+            `Insufficient stock for ${item.name}`
+          );
         }
       } else if (item.type.toUpperCase() === 'CONFIGURATION') {
         const config = await prisma.configuration.findUnique({
-          where: { id: item.id }
+          where: { id: item.id },
         });
 
         if (!config) {
-          return createBadRequestResponse(`Configuration with ID ${item.id} not found`);
+          return createBadRequestResponse(
+            `Configuration with ID ${item.id} not found`
+          );
         }
       }
-    }    const order = await prisma.order.create({
+    }
+    const order = await prisma.order.create({
       data: {
         totalAmount: total,
         status: OrderStatus.PENDING,
@@ -106,31 +126,34 @@ export async function POST(request: NextRequest) {
         userId: userData?.userId || null,
         locale: locale as any, // Temporary cast until Prisma client regeneration
         orderItems: {
-          create: items.map((item) => ({
+          create: items.map(item => ({
             productId: item.id,
             productType: item.type.toUpperCase() as ProductType,
             quantity: item.quantity,
             price: item.price,
-            name: item.name
-          }))
-        }
-      }
+            name: item.name,
+          })),
+        },
+      },
     });
     for (const item of items) {
-      if (item.type.toUpperCase() === 'COMPONENT' || item.type.toUpperCase() === 'PERIPHERAL') {
+      if (
+        item.type.toUpperCase() === 'COMPONENT' ||
+        item.type.toUpperCase() === 'PERIPHERAL'
+      ) {
         await prisma.component.update({
           where: { id: item.id },
           data: {
             quantity: {
-              decrement: item.quantity
-            }
-          }
+              decrement: item.quantity,
+            },
+          },
         });
       }
     }
-      if (paymentMethod.toLowerCase() === 'cash') {
+    if (paymentMethod.toLowerCase() === 'cash') {
       try {
-        const { sendOrderReceipt } = require('@/lib/orderEmail');      
+        const { sendOrderReceipt } = require('@/lib/orderEmail');
         sendOrderReceipt(order.id, locale).catch((err: Error) => {
           console.error('Error sending order receipt email:', err);
         });
@@ -138,10 +161,10 @@ export async function POST(request: NextRequest) {
         console.error('Error sending order receipt email:', emailError);
       }
     }
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       id: order.id,
-      paymentMethod
+      paymentMethod,
     });
   } catch (error) {
     console.error('Error creating order:', error);
@@ -160,22 +183,22 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const skip = (page - 1) * limit;
-    
+
     const [orders, total] = await prisma.$transaction([
       prisma.order.findMany({
         where: { userId: authResult.userId },
-        include: { 
-          orderItems: true 
+        include: {
+          orderItems: true,
         },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: limit
+        take: limit,
       }),
       prisma.order.count({
-        where: { userId: authResult.userId }
-      })
+        where: { userId: authResult.userId },
+      }),
     ]);
-    
+
     const formattedOrders = orders.map(order => ({
       id: order.id,
       status: order.status,
@@ -189,12 +212,12 @@ export async function GET(request: NextRequest) {
         name: item.name,
         price: item.price,
         quantity: item.quantity,
-        productType: item.productType
-      }))
+        productType: item.productType,
+      })),
     }));
-    
+
     const totalPages = Math.ceil(total / limit);
-    
+
     return NextResponse.json({
       orders: formattedOrders,
       pagination: {
@@ -203,8 +226,8 @@ export async function GET(request: NextRequest) {
         total,
         totalPages,
         hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
-      }
+        hasPrevPage: page > 1,
+      },
     });
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -218,60 +241,67 @@ export async function PATCH(request: NextRequest) {
     if (authResult instanceof Response) {
       return authResult;
     }
-    
+
     const body = await request.json();
     if (!body.id) {
       return createBadRequestResponse('Order ID is required');
     }
-    
+
     if (!body.action) {
       return createBadRequestResponse('Action is required');
     }
-    
+
     if (body.action !== 'cancel') {
-      return createBadRequestResponse('Invalid action. Only "cancel" is supported');
+      return createBadRequestResponse(
+        'Invalid action. Only "cancel" is supported'
+      );
     }
-    
+
     const order = await prisma.order.findFirst({
       where: {
         id: body.id,
-        userId: authResult.userId
+        userId: authResult.userId,
       },
       include: {
-        orderItems: true
-      }
+        orderItems: true,
+      },
     });
-    
+
     if (!order) {
-      return createBadRequestResponse('Order not found or does not belong to the user');
+      return createBadRequestResponse(
+        'Order not found or does not belong to the user'
+      );
     }
-    
+
     if (order.status !== 'PENDING') {
       return createBadRequestResponse('Only pending orders can be cancelled');
     }
-    
-    await prisma.$transaction(async (tx) => {
+
+    await prisma.$transaction(async tx => {
       await tx.order.update({
         where: { id: order.id },
         data: {
           status: 'CANCELLED',
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       });
-      
+
       for (const item of order.orderItems) {
-        if (item.productType === 'COMPONENT' || item.productType === 'PERIPHERAL') {
+        if (
+          item.productType === 'COMPONENT' ||
+          item.productType === 'PERIPHERAL'
+        ) {
           await tx.component.update({
             where: { id: item.productId },
             data: {
               quantity: {
-                increment: item.quantity
-              }
-            }
+                increment: item.quantity,
+              },
+            },
           });
         }
       }
-      
+
       await tx.auditLog.create({
         data: {
           userId: authResult.userId,
@@ -280,18 +310,18 @@ export async function PATCH(request: NextRequest) {
           entityId: order.id,
           details: JSON.stringify({
             reason: body.reason || 'User cancelled',
-            previousStatus: order.status
+            previousStatus: order.status,
           }),
           ipAddress: request.headers.get('x-forwarded-for') || '',
-          userAgent: request.headers.get('user-agent') || ''
-        }
+          userAgent: request.headers.get('user-agent') || '',
+        },
       });
     });
-    
+
     return NextResponse.json({
       id: order.id,
       status: 'CANCELLED',
-      message: 'Order cancelled successfully'
+      message: 'Order cancelled successfully',
     });
   } catch (error) {
     console.error('Error updating order:', error);

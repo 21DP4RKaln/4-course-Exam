@@ -1,18 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prismaService'
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
-import { createUnauthorizedResponse, createForbiddenResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
-import { z } from 'zod'
-import * as bcrypt from 'bcryptjs'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prismaService';
+import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import {
+  createUnauthorizedResponse,
+  createForbiddenResponse,
+  createBadRequestResponse,
+  createServerErrorResponse,
+} from '@/lib/apiErrors';
+import { z } from 'zod';
+import * as bcrypt from 'bcryptjs';
 
 const getUsersQuerySchema = z.object({
-  page: z.string().optional().transform(val => (val ? parseInt(val, 10) : 1)),
-  limit: z.string().optional().transform(val => (val ? parseInt(val, 10) : 10)),
+  page: z
+    .string()
+    .optional()
+    .transform(val => (val ? parseInt(val, 10) : 1)),
+  limit: z
+    .string()
+    .optional()
+    .transform(val => (val ? parseInt(val, 10) : 10)),
   search: z.string().optional(),
   role: z.enum(['USER', 'ADMIN', 'SPECIALIST']).optional(),
-  sortBy: z.enum(['createdAt', 'email', 'name', 'role']).optional().default('createdAt'),
+  sortBy: z
+    .enum(['createdAt', 'email', 'name', 'role'])
+    .optional()
+    .default('createdAt'),
   order: z.enum(['asc', 'desc']).optional().default('desc'),
-})
+});
 
 const createUserSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -21,35 +35,39 @@ const createUserSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   phone: z.string().optional(),
   role: z.enum(['USER', 'ADMIN', 'SPECIALIST']).default('USER'),
-})
+});
 
 export async function GET(request: NextRequest) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
     if (payload.role !== 'ADMIN') {
-      return createForbiddenResponse('Admin privileges required')
+      return createForbiddenResponse('Admin privileges required');
     }
 
-    const { searchParams } = new URL(request.url)
-    const queryResult = getUsersQuerySchema.safeParse(Object.fromEntries(searchParams.entries()))
-    
+    const { searchParams } = new URL(request.url);
+    const queryResult = getUsersQuerySchema.safeParse(
+      Object.fromEntries(searchParams.entries())
+    );
+
     if (!queryResult.success) {
-      return createBadRequestResponse('Invalid query parameters', { errors: queryResult.error.flatten() })
+      return createBadRequestResponse('Invalid query parameters', {
+        errors: queryResult.error.flatten(),
+      });
     }
 
-    const { page, limit, search, role, sortBy, order } = queryResult.data
+    const { page, limit, search, role, sortBy, order } = queryResult.data;
 
-    const where: any = {}
-    
+    const where: any = {};
+
     if (search) {
       where.OR = [
         { email: { contains: search, mode: 'insensitive' } },
@@ -57,21 +75,21 @@ export async function GET(request: NextRequest) {
         { firstName: { contains: search, mode: 'insensitive' } },
         { lastName: { contains: search, mode: 'insensitive' } },
         { phone: { contains: search, mode: 'insensitive' } },
-      ]
-    }
-    
-    if (role) {
-      where.role = role
+      ];
     }
 
-    const skip = (page - 1) * limit
+    if (role) {
+      where.role = role;
+    }
+
+    const skip = (page - 1) * limit;
 
     const [users, totalCount] = await Promise.all([
       prisma.user.findMany({
         where,
         select: {
           id: true,
-          email: true, 
+          email: true,
           name: true,
           firstName: true,
           lastName: true,
@@ -89,11 +107,11 @@ export async function GET(request: NextRequest) {
         take: limit,
       }),
       prisma.user.count({ where }),
-    ])
+    ]);
 
-    const totalPages = Math.ceil(totalCount / limit)
-    const hasNextPage = page < totalPages
-    const hasPreviousPage = page > 1
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
 
     return NextResponse.json({
       users,
@@ -105,57 +123,60 @@ export async function GET(request: NextRequest) {
         hasNextPage,
         hasPreviousPage,
       },
-    })
+    });
   } catch (error) {
-    console.error('Error fetching users:', error)
-    return createServerErrorResponse('Failed to fetch users')
+    console.error('Error fetching users:', error);
+    return createServerErrorResponse('Failed to fetch users');
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
     if (payload.role !== 'ADMIN') {
-      return createForbiddenResponse('Admin privileges required')
+      return createForbiddenResponse('Admin privileges required');
     }
 
-    const body = await request.json()
-    const validationResult = createUserSchema.safeParse(body)
-    
+    const body = await request.json();
+    const validationResult = createUserSchema.safeParse(body);
+
     if (!validationResult.success) {
-      return createBadRequestResponse('Invalid user data', { errors: validationResult.error.flatten() })
+      return createBadRequestResponse('Invalid user data', {
+        errors: validationResult.error.flatten(),
+      });
     }
 
-    const { email, password, firstName, lastName, phone, role } = validationResult.data
+    const { email, password, firstName, lastName, phone, role } =
+      validationResult.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
-    })
+    });
 
     if (existingUser) {
-      return createBadRequestResponse('Email already in use')
+      return createBadRequestResponse('Email already in use');
     }
 
     if (phone) {
       const existingUserByPhone = await prisma.user.findFirst({
         where: { phone },
-      })
+      });
 
       if (existingUserByPhone) {
-        return createBadRequestResponse('Phone number already in use')
+        return createBadRequestResponse('Phone number already in use');
       }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
@@ -178,11 +199,11 @@ export async function POST(request: NextRequest) {
         profileImageUrl: true,
         createdAt: true,
       },
-    })
+    });
 
-    return NextResponse.json(user, { status: 201 })
+    return NextResponse.json(user, { status: 201 });
   } catch (error) {
-    console.error('Error creating user:', error)
-    return createServerErrorResponse('Failed to create user')
+    console.error('Error creating user:', error);
+    return createServerErrorResponse('Failed to create user');
   }
 }

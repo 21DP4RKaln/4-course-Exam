@@ -1,43 +1,47 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
-import { 
-  MoreVertical, 
-  Eye, 
-  Edit, 
-  CheckCircle, 
-  XCircle, 
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import {
+  MoreVertical,
+  Eye,
+  Edit,
+  CheckCircle,
+  XCircle,
   Trash2,
   MessageSquare,
-  Clock
-} from 'lucide-react'
+  Clock,
+} from 'lucide-react';
 
 interface RepairActionsProps {
   repair: {
-    id: string
-    status: string
-    title: string
-  }
-  onUpdate: () => void
-  userRole: 'ADMIN' | 'SPECIALIST' | 'USER'
+    id: string;
+    status: string;
+    title: string;
+  };
+  onUpdate: () => void;
+  userRole: 'ADMIN' | 'SPECIALIST' | 'USER';
 }
 
-export function RepairActions({ repair, onUpdate, userRole }: RepairActionsProps) {
-  const t = useTranslations()
-  const router = useRouter()
-  const [showMenu, setShowMenu] = useState(false)
-  const [loading, setLoading] = useState(false)
+export function RepairActions({
+  repair,
+  onUpdate,
+  userRole,
+}: RepairActionsProps) {
+  const t = useTranslations();
+  const router = useRouter();
+  const [showMenu, setShowMenu] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleView = () => {
-    router.push(`/${userRole.toLowerCase()}/repairs/${repair.id}`)
-  }
+    router.push(`/${userRole.toLowerCase()}/repairs/${repair.id}`);
+  };
 
   const handleStatusUpdate = async (newStatus: string) => {
-    if (loading) return
-    setLoading(true)
-    
+    if (loading) return;
+    setLoading(true);
+
     try {
       const response = await fetch(`/api/staff/repairs/${repair.id}`, {
         method: 'PATCH',
@@ -45,38 +49,38 @@ export function RepairActions({ repair, onUpdate, userRole }: RepairActionsProps
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ status: newStatus }),
-      })
+      });
 
-      if (!response.ok) throw new Error('Failed to update status')
-      
-      onUpdate()
+      if (!response.ok) throw new Error('Failed to update status');
+
+      onUpdate();
     } catch (error) {
-      console.error('Error updating status:', error)
+      console.error('Error updating status:', error);
     } finally {
-      setLoading(false)
-      setShowMenu(false)
+      setLoading(false);
+      setShowMenu(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!confirm(t('repairs.confirmDelete'))) return
-    
-    setLoading(true)
+    if (!confirm(t('repairs.confirmDelete'))) return;
+
+    setLoading(true);
     try {
       const response = await fetch(`/api/staff/repairs/${repair.id}`, {
         method: 'DELETE',
-      })
+      });
 
-      if (!response.ok) throw new Error('Failed to delete repair')
-      
-      onUpdate()
+      if (!response.ok) throw new Error('Failed to delete repair');
+
+      onUpdate();
     } catch (error) {
-      console.error('Error deleting repair:', error)
+      console.error('Error deleting repair:', error);
     } finally {
-      setLoading(false)
-      setShowMenu(false)
+      setLoading(false);
+      setShowMenu(false);
     }
-  }
+  };
 
   const menuItems = [
     {
@@ -88,19 +92,22 @@ export function RepairActions({ repair, onUpdate, userRole }: RepairActionsProps
     {
       label: t('repairs.updateStatus'),
       icon: Clock,
-      onClick: () => router.push(`/${userRole.toLowerCase()}/repairs/${repair.id}`),
+      onClick: () =>
+        router.push(`/${userRole.toLowerCase()}/repairs/${repair.id}`),
       show: repair.status !== 'COMPLETED' && repair.status !== 'CANCELLED',
     },
     {
       label: t('repairs.markInProgress'),
       icon: Edit,
       onClick: () => handleStatusUpdate('IN_PROGRESS'),
-      show: repair.status === 'DIAGNOSING' || repair.status === 'WAITING_FOR_PARTS',
+      show:
+        repair.status === 'DIAGNOSING' || repair.status === 'WAITING_FOR_PARTS',
     },
     {
       label: t('repairs.markCompleted'),
       icon: CheckCircle,
-      onClick: () => router.push(`/${userRole.toLowerCase()}/repairs/${repair.id}`),
+      onClick: () =>
+        router.push(`/${userRole.toLowerCase()}/repairs/${repair.id}`),
       show: repair.status === 'IN_PROGRESS',
     },
     {
@@ -116,7 +123,7 @@ export function RepairActions({ repair, onUpdate, userRole }: RepairActionsProps
       show: userRole === 'ADMIN',
       className: 'text-red-600 hover:text-red-700',
     },
-  ].filter(item => item.show)
+  ].filter(item => item.show);
 
   return (
     <div className="relative">
@@ -148,11 +155,8 @@ export function RepairActions({ repair, onUpdate, userRole }: RepairActionsProps
 
       {/* Click outside to close menu */}
       {showMenu && (
-        <div
-          className="fixed inset-0 z-0"
-          onClick={() => setShowMenu(false)}
-        />
+        <div className="fixed inset-0 z-0" onClick={() => setShowMenu(false)} />
       )}
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -12,13 +12,13 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
-    
+
     const timeout = setTimeout(() => {
       if (isMounted) {
         setLoading(false);
       }
     }, 500);
-    
+
     return () => {
       isMounted = false;
       clearTimeout(timeout);

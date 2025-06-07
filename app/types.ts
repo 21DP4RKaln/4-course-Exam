@@ -10,7 +10,8 @@ export interface Component {
   specifications: Record<string, string>;
   sku: string;
   brand?: string;
-  manufacturer?: string;  cpu?: {
+  manufacturer?: string;
+  cpu?: {
     brand: string;
     series: string;
     cores: number;

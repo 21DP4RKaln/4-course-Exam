@@ -1,86 +1,102 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import Link from 'next/link'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { useTheme } from '@/app/contexts/ThemeContext'
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import {
-  DollarSign, TrendingUp, TrendingDown, BarChart2,
-  PieChart, FileText, Download, Calendar, ArrowUp,
-  ArrowDown, ShoppingCart, Users, Package
-} from 'lucide-react'
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  BarChart2,
+  PieChart,
+  FileText,
+  Download,
+  Calendar,
+  ArrowUp,
+  ArrowDown,
+  ShoppingCart,
+  Users,
+  Package,
+} from 'lucide-react';
 
 type FinancialStats = {
-  totalRevenue: number
-  monthlyRevenue: number
-  weeklyRevenue: number
-  totalOrders: number
-  averageOrderValue: number
+  totalRevenue: number;
+  monthlyRevenue: number;
+  weeklyRevenue: number;
+  totalOrders: number;
+  averageOrderValue: number;
   topSellingProducts: Array<{
-    id: string
-    name: string
-    revenue: number
-    quantity: number
-  }>
+    id: string;
+    name: string;
+    revenue: number;
+    quantity: number;
+  }>;
   revenueByCategory: Array<{
-    category: string
-    revenue: number
-  }>
-  monthlyGrowth: number
-  weeklyGrowth: number
-}
+    category: string;
+    revenue: number;
+  }>;
+  monthlyGrowth: number;
+  weeklyGrowth: number;
+};
 
 export default function AdminFinancialPage() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  const { user } = useAuth()
-  const { theme } = useTheme()
-  const [stats, setStats] = useState<FinancialStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month')
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+  const { user } = useAuth();
+  const { theme } = useTheme();
+  const [stats, setStats] = useState<FinancialStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>(
+    'month'
+  );
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') {
-      router.push(`/${locale}/dashboard`)
-      return
+      router.push(`/${locale}/dashboard`);
+      return;
     }
-    fetchFinancialStats()
-  }, [user, timeRange])
+    fetchFinancialStats();
+  }, [user, timeRange]);
 
   const fetchFinancialStats = async () => {
     try {
-      setLoading(true)
-      const response = await fetch(`/api/admin/financial/stats?range=${timeRange}`)
-      const data = await response.json()
-      setStats(data)
+      setLoading(true);
+      const response = await fetch(
+        `/api/admin/financial/stats?range=${timeRange}`
+      );
+      const data = await response.json();
+      setStats(data);
     } catch (error) {
-      console.error('Error fetching financial stats:', error)
+      console.error('Error fetching financial stats:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const exportReport = (format: 'csv' | 'pdf') => {
     // Implement export functionality
-    console.log(`Exporting as ${format}`)
-  }
+    console.log(`Exporting as ${format}`);
+  };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   if (!stats) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-500 dark:text-neutral-400">Failed to load financial data</p>
+        <p className="text-neutral-500 dark:text-neutral-400">
+          Failed to load financial data
+        </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -93,7 +109,9 @@ export default function AdminFinancialPage() {
         <div className="flex space-x-3">
           <select
             value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value as 'week' | 'month' | 'year')}
+            onChange={e =>
+              setTimeRange(e.target.value as 'week' | 'month' | 'year')
+            }
             className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-stone-950"
           >
             <option value="week">This Week</option>
@@ -122,7 +140,9 @@ export default function AdminFinancialPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Total Revenue</p>
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                Total Revenue
+              </p>
               <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 €{stats.totalRevenue.toFixed(2)}
               </p>
@@ -136,12 +156,20 @@ export default function AdminFinancialPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Monthly Revenue</p>
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                Monthly Revenue
+              </p>
               <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 €{stats.monthlyRevenue.toFixed(2)}
               </p>
-              <p className={`text-sm ${stats.monthlyGrowth >= 0 ? 'text-green-600' : 'text-red-600'} flex items-center`}>
-                {stats.monthlyGrowth >= 0 ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
+              <p
+                className={`text-sm ${stats.monthlyGrowth >= 0 ? 'text-green-600' : 'text-red-600'} flex items-center`}
+              >
+                {stats.monthlyGrowth >= 0 ? (
+                  <ArrowUp className="w-4 h-4 mr-1" />
+                ) : (
+                  <ArrowDown className="w-4 h-4 mr-1" />
+                )}
                 {Math.abs(stats.monthlyGrowth)}%
               </p>
             </div>
@@ -154,7 +182,9 @@ export default function AdminFinancialPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Total Orders</p>
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                Total Orders
+              </p>
               <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {stats.totalOrders}
               </p>
@@ -168,7 +198,9 @@ export default function AdminFinancialPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Average Order Value</p>
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                Average Order Value
+              </p>
               <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 €{stats.averageOrderValue.toFixed(2)}
               </p>
@@ -185,7 +217,9 @@ export default function AdminFinancialPage() {
         {/* Top Selling Products */}
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
           <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-            <h3 className="text-lg font-medium text-neutral-900 dark:text-white">Top Selling Products</h3>
+            <h3 className="text-lg font-medium text-neutral-900 dark:text-white">
+              Top Selling Products
+            </h3>
           </div>
           <div className="p-6">
             <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -203,7 +237,7 @@ export default function AdminFinancialPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-                {stats.topSellingProducts.map((product) => (
+                {stats.topSellingProducts.map(product => (
                   <tr key={product.id}>
                     <td className="py-3">
                       <p className="text-sm font-medium text-neutral-900 dark:text-white">
@@ -230,20 +264,28 @@ export default function AdminFinancialPage() {
         {/* Revenue by Category */}
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow">
           <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-            <h3 className="text-lg font-medium text-neutral-900 dark:text-white">Revenue by Category</h3>
+            <h3 className="text-lg font-medium text-neutral-900 dark:text-white">
+              Revenue by Category
+            </h3>
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {stats.revenueByCategory.map((category) => (
+              {stats.revenueByCategory.map(category => (
                 <div key={category.category}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-neutral-900 dark:text-white">{category.category}</span>
-                    <span className="text-neutral-900 dark:text-white">€{category.revenue.toFixed(2)}</span>
+                    <span className="text-neutral-900 dark:text-white">
+                      {category.category}
+                    </span>
+                    <span className="text-neutral-900 dark:text-white">
+                      €{category.revenue.toFixed(2)}
+                    </span>
                   </div>
                   <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full"
-                      style={{ width: `${(category.revenue / stats.totalRevenue) * 100}%` }}
+                      style={{
+                        width: `${(category.revenue / stats.totalRevenue) * 100}%`,
+                      }}
                     ></div>
                   </div>
                 </div>
@@ -262,8 +304,12 @@ export default function AdminFinancialPage() {
           <div className="flex items-center">
             <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             <div className="ml-4">
-              <p className="text-lg font-medium text-neutral-900 dark:text-white">Financial Reports</p>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">View detailed reports</p>
+              <p className="text-lg font-medium text-neutral-900 dark:text-white">
+                Financial Reports
+              </p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                View detailed reports
+              </p>
             </div>
           </div>
         </Link>
@@ -275,8 +321,12 @@ export default function AdminFinancialPage() {
           <div className="flex items-center">
             <FileText className="w-8 h-8 text-green-600 dark:text-green-400" />
             <div className="ml-4">
-              <p className="text-lg font-medium text-neutral-900 dark:text-white">Invoices</p>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Manage invoices</p>
+              <p className="text-lg font-medium text-neutral-900 dark:text-white">
+                Invoices
+              </p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Manage invoices
+              </p>
             </div>
           </div>
         </Link>
@@ -288,12 +338,16 @@ export default function AdminFinancialPage() {
           <div className="flex items-center">
             <Package className="w-8 h-8 text-purple-600 dark:text-purple-400" />
             <div className="ml-4">
-              <p className="text-lg font-medium text-neutral-900 dark:text-white">Orders</p>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">View all orders</p>
+              <p className="text-lg font-medium text-neutral-900 dark:text-white">
+                Orders
+              </p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                View all orders
+              </p>
             </div>
           </div>
         </Link>
       </div>
     </div>
-  )
+  );
 }

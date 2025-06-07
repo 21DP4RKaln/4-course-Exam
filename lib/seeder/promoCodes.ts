@@ -1,6 +1,7 @@
 import { PrismaClient, PromoCodeScope } from '@prisma/client';
 
-export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  const promoCodes = [
+export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {
+  const promoCodes = [
     {
       code: 'WELCOME10',
       description: 'Welcome discount for new customers',
@@ -11,7 +12,7 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-12-31'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'GAMING20',
@@ -23,7 +24,7 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-08-31'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'SUMMER50',
@@ -35,7 +36,7 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-07-31'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'COMPONENTS15',
@@ -47,7 +48,7 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-10-31'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'BLACKFRIDAY',
@@ -59,7 +60,7 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-11-30'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'PERIPHERAL10',
@@ -71,7 +72,7 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-09-30'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'STUDENT',
@@ -83,11 +84,12 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-12-31'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'FIRSTBUILD',
-      description: 'First time PC builder discount - 10% off with max $75 discount',
+      description:
+        'First time PC builder discount - 10% off with max $75 discount',
       discountPercentage: 10,
       maxDiscountAmount: 75.0,
       minOrderValue: 400.0,
@@ -95,7 +97,7 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-11-15'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'UPGRADE25',
@@ -107,7 +109,7 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-08-15'),
-      scope: PromoCodeScope.ALL
+      scope: PromoCodeScope.ALL,
     },
     {
       code: 'LOYALTY',
@@ -119,8 +121,8 @@ export async function seedPromoCodes(prisma: PrismaClient): Promise<void> {  con
       usageCount: 0,
       isActive: true,
       expiresAt: new Date('2025-12-31'),
-      scope: PromoCodeScope.ALL
-    }
+      scope: PromoCodeScope.ALL,
+    },
   ];
 
   await prisma.promoCode.createMany({ data: promoCodes, skipDuplicates: true });

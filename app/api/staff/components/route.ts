@@ -1,26 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prismaService'
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
-import { createUnauthorizedResponse, createServerErrorResponse } from '@/lib/apiErrors'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prismaService';
+import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import {
+  createUnauthorizedResponse,
+  createServerErrorResponse,
+} from '@/lib/apiErrors';
 
 export async function GET(request: NextRequest) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
     if (!['ADMIN', 'SPECIALIST'].includes(payload.role)) {
-      return createUnauthorizedResponse('Insufficient permissions')
-    }    
+      return createUnauthorizedResponse('Insufficient permissions');
+    }
     const components = await prisma.component.findMany({
       where: {
-        quantity: { gt: 0 }
+        quantity: { gt: 0 },
       },
       select: {
         id: true,
@@ -29,26 +32,26 @@ export async function GET(request: NextRequest) {
         quantity: true,
         category: {
           select: {
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
       orderBy: {
-        name: 'asc'
-      }
-    })
+        name: 'asc',
+      },
+    });
 
     const formattedComponents = components.map(component => ({
       id: component.id,
       name: component.name,
       price: component.price,
       stock: component.quantity,
-      category: component.category.name
-    }))
+      category: component.category.name,
+    }));
 
-    return NextResponse.json(formattedComponents)
+    return NextResponse.json(formattedComponents);
   } catch (error) {
-    console.error('Error fetching components:', error)
-    return createServerErrorResponse('Failed to fetch components')
+    console.error('Error fetching components:', error);
+    return createServerErrorResponse('Failed to fetch components');
   }
 }

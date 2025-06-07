@@ -1,64 +1,68 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { X, Send, ImagePlus, AlertCircle } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useState } from 'react';
+import { X, Send, ImagePlus, AlertCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Configuration {
-  id: string
-  name: string
-  description?: string
-  totalPrice: number
+  id: string;
+  name: string;
+  description?: string;
+  totalPrice: number;
   components: Array<{
-    id: string
-    name: string
-    category: string
-    price: number
-    quantity: number
-  }>
+    id: string;
+    name: string;
+    category: string;
+    price: number;
+    quantity: number;
+  }>;
 }
 
 interface ConfigPublishFormProps {
-  configuration: Configuration
-  onClose: () => void
-  onPublished: () => void
+  configuration: Configuration;
+  onClose: () => void;
+  onPublished: () => void;
 }
 
-export function ConfigPublishForm({ configuration, onClose, onPublished }: ConfigPublishFormProps) {
-  const t = useTranslations()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export function ConfigPublishForm({
+  configuration,
+  onClose,
+  onPublished,
+}: ConfigPublishFormProps) {
+  const t = useTranslations();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: configuration.name,
     description: configuration.description || '',
     category: '',
     markup: 10, // Default 10% markup
     image: null as File | null,
-    imagePreview: ''
-  })
+    imagePreview: '',
+  });
 
   const categories = [
     { value: 'gaming', label: 'Gaming PC' },
     { value: 'workstation', label: 'Workstation' },
     { value: 'office', label: 'Office PC' },
-    { value: 'budget', label: 'Budget PC' }
-  ]
+    { value: 'budget', label: 'Budget PC' },
+  ];
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
       setFormData(prev => ({
         ...prev,
         image: file,
-        imagePreview: URL.createObjectURL(file)
-      }))
+        imagePreview: URL.createObjectURL(file),
+      }));
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     try {
       const payload = {
@@ -66,49 +70,57 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
         description: formData.description,
         category: formData.category,
         markupPercentage: formData.markup,
-        totalPrice: configuration.totalPrice * (1 + formData.markup / 100)
-      }
+        totalPrice: configuration.totalPrice * (1 + formData.markup / 100),
+      };
 
-      const response = await fetch(`/api/staff/configurations/${configuration.id}/publish`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
+      const response = await fetch(
+        `/api/staff/configurations/${configuration.id}/publish`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to publish configuration')
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to publish configuration');
       }
 
       // If we have an image, upload it separately
       if (formData.image) {
-        const imageFormData = new FormData()
-        imageFormData.append('image', formData.image)
+        const imageFormData = new FormData();
+        imageFormData.append('image', formData.image);
 
         await fetch(`/api/staff/configurations/${configuration.id}/image`, {
           method: 'POST',
-          body: imageFormData
-        })
+          body: imageFormData,
+        });
       }
 
-      onPublished()
+      onPublished();
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const finalPrice = configuration.totalPrice * (1 + formData.markup / 100)
+  const finalPrice = configuration.totalPrice * (1 + formData.markup / 100);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow-xl w-full max-w-2xl">
         <div className="px-6 py-4 border-b dark:border-neutral-700 flex items-center justify-between">
-          <h2 className="text-xl font-semibold dark:text-white">Publish Configuration to Shop</h2>
-          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
+          <h2 className="text-xl font-semibold dark:text-white">
+            Publish Configuration to Shop
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+          >
             <X size={24} />
           </button>
         </div>
@@ -128,7 +140,9 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              onChange={e =>
+                setFormData(prev => ({ ...prev, name: e.target.value }))
+              }
               className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               required
             />
@@ -140,7 +154,9 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
             </label>
             <select
               value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              onChange={e =>
+                setFormData(prev => ({ ...prev, category: e.target.value }))
+              }
               className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               required
             >
@@ -159,7 +175,9 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={e =>
+                setFormData(prev => ({ ...prev, description: e.target.value }))
+              }
               rows={4}
               className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               placeholder="Describe this PC configuration for potential customers..."
@@ -174,7 +192,12 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
               <input
                 type="number"
                 value={formData.markup}
-                onChange={(e) => setFormData(prev => ({ ...prev, markup: Number(e.target.value) }))}
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    markup: Number(e.target.value),
+                  }))
+                }
                 min="0"
                 max="100"
                 className="w-32 px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
@@ -182,7 +205,8 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
               <span className="text-neutral-500 dark:text-neutral-400">%</span>
             </div>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-              Base price: €{configuration.totalPrice.toFixed(2)} → Final price: €{finalPrice.toFixed(2)}
+              Base price: €{configuration.totalPrice.toFixed(2)} → Final price:
+              €{finalPrice.toFixed(2)}
             </p>
           </div>
 
@@ -193,14 +217,20 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
             <div className="mt-2">
               {formData.imagePreview ? (
                 <div className="relative w-full h-48 rounded-lg overflow-hidden">
-                  <img 
-                    src={formData.imagePreview} 
-                    alt="Preview" 
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
                     className="w-full h-full object-cover"
                   />
                   <button
                     type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, image: null, imagePreview: '' }))}
+                    onClick={() =>
+                      setFormData(prev => ({
+                        ...prev,
+                        image: null,
+                        imagePreview: '',
+                      }))
+                    }
                     className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
                   >
                     <X size={16} />
@@ -209,7 +239,9 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
               ) : (
                 <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-700">
                   <ImagePlus size={40} className="text-neutral-400" />
-                  <span className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Click to upload image</span>
+                  <span className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+                    Click to upload image
+                  </span>
                   <input
                     type="file"
                     className="hidden"
@@ -227,8 +259,11 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
               Components Included
             </h3>
             <div className="bg-neutral-50 dark:bg-neutral-700/50 p-4 rounded-lg space-y-2">
-              {configuration.components.map((component) => (
-                <div key={component.id} className="flex justify-between text-sm">
+              {configuration.components.map(component => (
+                <div
+                  key={component.id}
+                  className="flex justify-between text-sm"
+                >
                   <span className="text-neutral-600 dark:text-neutral-400">
                     {component.name} ({component.category})
                   </span>
@@ -260,5 +295,5 @@ export function ConfigPublishForm({ configuration, onClose, onPublished }: Confi
         </div>
       </div>
     </div>
-  )
+  );
 }

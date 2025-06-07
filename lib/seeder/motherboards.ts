@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedMotherboards(prisma: PrismaClient) {
   // Get all components with subType 'motherboard'
   const motherboardComponents = await prisma.component.findMany({
-    where: { subType: 'motherboard' }
+    where: { subType: 'motherboard' },
   });
 
   // Prepare motherboard entries
@@ -11,24 +11,35 @@ export async function seedMotherboards(prisma: PrismaClient) {
 
   // Define form factors
   const formFactors = ['ATX', 'mATX', 'E-ATX', 'ITX'];
-  
+
   // Define socket types
   const sockets = ['LGA1700', 'AM5', 'LGA1200', 'AM4', 'sTRX4'];
 
   // For each motherboard component, create a detailed motherboard entry
   for (let i = 0; i < motherboardComponents.length; i++) {
     const component = motherboardComponents[i];
-    
+
     // Parse existing specifications if available
-    const specs = component.specifications ? JSON.parse(component.specifications.toString()) : {};
-    
+    const specs = component.specifications
+      ? JSON.parse(component.specifications.toString())
+      : {};
+
     motherboards.push({
       componentId: component.id,
-      manufacturer: i % 3 === 0 ? 'ASUS' : (i % 3 === 1 ? 'Gigabyte' : 'MSI'),
+      manufacturer: i % 3 === 0 ? 'ASUS' : i % 3 === 1 ? 'Gigabyte' : 'MSI',
       socket: specs.socket || sockets[i % sockets.length],
-      chipset: i % 2 === 0 
-        ? (i % 4 === 0 ? 'Z790' : (i % 4 === 1 ? 'H770' : 'B760'))
-        : (i % 4 === 0 ? 'X670' : (i % 4 === 1 ? 'B650' : 'A620')),
+      chipset:
+        i % 2 === 0
+          ? i % 4 === 0
+            ? 'Z790'
+            : i % 4 === 1
+              ? 'H770'
+              : 'B760'
+          : i % 4 === 0
+            ? 'X670'
+            : i % 4 === 1
+              ? 'B650'
+              : 'A620',
       formFactor: formFactors[i % formFactors.length],
       memoryType: 'DDR5',
       memorySlots: 2 + (i % 3) * 2,
@@ -37,7 +48,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 1 + (i % 4),
       sataConnectors: 4 + (i % 4),
       wifiBuiltIn: i % 3 === 0,
-      bluetoothBuiltIn: i % 3 === 0
+      bluetoothBuiltIn: i % 3 === 0,
     });
   }
   // Add 10 more motherboards directly
@@ -54,7 +65,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 4,
       sataConnectors: 6,
       wifiBuiltIn: true,
-      bluetoothBuiltIn: true
+      bluetoothBuiltIn: true,
     },
     {
       manufacturer: 'Gigabyte',
@@ -68,7 +79,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 4,
       sataConnectors: 8,
       wifiBuiltIn: true,
-      bluetoothBuiltIn: true
+      bluetoothBuiltIn: true,
     },
     {
       manufacturer: 'MSI',
@@ -82,7 +93,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 2,
       sataConnectors: 6,
       wifiBuiltIn: false,
-      bluetoothBuiltIn: false
+      bluetoothBuiltIn: false,
     },
     {
       manufacturer: 'ASRock',
@@ -96,7 +107,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 2,
       sataConnectors: 4,
       wifiBuiltIn: false,
-      bluetoothBuiltIn: false
+      bluetoothBuiltIn: false,
     },
     {
       manufacturer: 'ASUS',
@@ -110,7 +121,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 3,
       sataConnectors: 8,
       wifiBuiltIn: true,
-      bluetoothBuiltIn: true
+      bluetoothBuiltIn: true,
     },
     {
       manufacturer: 'MSI',
@@ -124,7 +135,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 2,
       sataConnectors: 4,
       wifiBuiltIn: true,
-      bluetoothBuiltIn: true
+      bluetoothBuiltIn: true,
     },
     {
       manufacturer: 'Gigabyte',
@@ -138,7 +149,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 2,
       sataConnectors: 4,
       wifiBuiltIn: true,
-      bluetoothBuiltIn: true
+      bluetoothBuiltIn: true,
     },
     {
       manufacturer: 'EVGA',
@@ -152,7 +163,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 4,
       sataConnectors: 6,
       wifiBuiltIn: false,
-      bluetoothBuiltIn: false
+      bluetoothBuiltIn: false,
     },
     {
       manufacturer: 'ASRock',
@@ -166,7 +177,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 2,
       sataConnectors: 6,
       wifiBuiltIn: false,
-      bluetoothBuiltIn: false
+      bluetoothBuiltIn: false,
     },
     {
       manufacturer: 'ASUS',
@@ -180,38 +191,46 @@ export async function seedMotherboards(prisma: PrismaClient) {
       m2Slots: 5,
       sataConnectors: 8,
       wifiBuiltIn: true,
-      bluetoothBuiltIn: true
-    }
+      bluetoothBuiltIn: true,
+    },
   ];
-  
+
   // Create component entries for the new motherboards
   for (const motherboard of additionalMotherboards) {
     // Create a base component first
     const sku = `MB-${motherboard.manufacturer.toUpperCase()}-${motherboard.chipset}-${motherboard.formFactor}-${Date.now().toString().slice(-6)}`;
     const componentName = `${motherboard.manufacturer} ${motherboard.chipset} ${motherboard.formFactor} ${motherboard.socket}`;
-    
+
     const categories = await prisma.componentCategory.findMany();
     const motherboardCategory = categories.find(c => c.slug === 'motherboard');
     if (!motherboardCategory) {
       throw new Error('Motherboard category not found');
     }
-    
+
     // Calculate a reasonable price based on specs
     const basePrice = 120;
-    const chipsetMultiplier = 
-      motherboard.chipset.includes('Z7') ? 1.8 :
-      motherboard.chipset.includes('X6') ? 1.7 :
-      motherboard.chipset.includes('B6') || motherboard.chipset.includes('B7') ? 1.2 :
-      1.0;
-    
+    const chipsetMultiplier = motherboard.chipset.includes('Z7')
+      ? 1.8
+      : motherboard.chipset.includes('X6')
+        ? 1.7
+        : motherboard.chipset.includes('B6') ||
+            motherboard.chipset.includes('B7')
+          ? 1.2
+          : 1.0;
+
     const formFactorMultiplier =
-      motherboard.formFactor === 'E-ATX' ? 1.4 :
-      motherboard.formFactor === 'ATX' ? 1.2 :
-      motherboard.formFactor === 'ITX' ? 1.3 :
-      1.0;
-    
-    const price = Math.round(basePrice * chipsetMultiplier * formFactorMultiplier);
-    
+      motherboard.formFactor === 'E-ATX'
+        ? 1.4
+        : motherboard.formFactor === 'ATX'
+          ? 1.2
+          : motherboard.formFactor === 'ITX'
+            ? 1.3
+            : 1.0;
+
+    const price = Math.round(
+      basePrice * chipsetMultiplier * formFactorMultiplier
+    );
+
     const component = await prisma.component.create({
       data: {
         name: componentName,
@@ -227,15 +246,15 @@ export async function seedMotherboards(prisma: PrismaClient) {
           manufacturer: motherboard.manufacturer,
           socket: motherboard.socket,
           chipset: motherboard.chipset,
-          formFactor: motherboard.formFactor
-        })
-      }
+          formFactor: motherboard.formFactor,
+        }),
+      },
     });
-    
+
     // Add to motherboard entries
     motherboards.push({
       componentId: component.id,
-      ...motherboard
+      ...motherboard,
     });
   }
 
@@ -244,7 +263,7 @@ export async function seedMotherboards(prisma: PrismaClient) {
     await prisma.motherboard.upsert({
       where: { componentId: motherboard.componentId },
       update: motherboard,
-      create: motherboard
+      create: motherboard,
     });
   }
 }

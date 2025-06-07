@@ -1,33 +1,36 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { useTheme } from '@/app/contexts/ThemeContext'
-import LanguageSwitcher from '@/app/components/Header/LanguageSwitcher'
-import { Moon, Sun, Bell, Search } from 'lucide-react'
-import Image from 'next/image'
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import LanguageSwitcher from '@/app/components/Header/LanguageSwitcher';
+import { Moon, Sun, Bell, Search } from 'lucide-react';
+import Image from 'next/image';
 
 export function StaffHeader() {
-  const t = useTranslations()
-  const { user } = useAuth()
-  const { theme, toggleTheme } = useTheme()
-  const pathname = usePathname()
+  const t = useTranslations();
+  const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const pathname = usePathname();
 
   // Extract page title from pathname
   const getPageTitle = () => {
-    const segments = pathname.split('/')
-    const lastSegment = segments[segments.length - 1]
-    
+    const segments = pathname.split('/');
+    const lastSegment = segments[segments.length - 1];
+
     if (lastSegment === 'admin' || lastSegment === 'specialist') {
-      return t('staff.dashboard')
+      return t('staff.dashboard');
     }
-    
+
     // Try to get translation for the page
-    const translationKey = `staff.${lastSegment}`
-    return t(translationKey) || lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1)
-  }
+    const translationKey = `staff.${lastSegment}`;
+    return (
+      t(translationKey) ||
+      lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1)
+    );
+  };
 
   return (
     <header className="h-16 bg-white dark:bg-stone-950 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between px-6">
@@ -91,5 +94,5 @@ export function StaffHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }

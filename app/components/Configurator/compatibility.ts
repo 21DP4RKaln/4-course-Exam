@@ -1,22 +1,31 @@
 import { Component } from './types';
 
 // Helper function to check form factor compatibility
-export const checkFormFactorCompatibility = (caseFormFactor: string, motherboardFormFactor: string): boolean => {
+export const checkFormFactorCompatibility = (
+  caseFormFactor: string,
+  motherboardFormFactor: string
+): boolean => {
   if (!caseFormFactor || !motherboardFormFactor) return true;
-  
+
   const caseSize = caseFormFactor.toLowerCase();
   const mbSize = motherboardFormFactor.toLowerCase();
-  
+
   const normalizeMbSize = (size: string) => {
-    if (size.includes('mini-itx') || size.includes('mitx') || size === 'itx') return 'mini-itx';
-    if (size.includes('micro-atx') || size.includes('matx') || size.includes('m-atx')) return 'micro-atx';
+    if (size.includes('mini-itx') || size.includes('mitx') || size === 'itx')
+      return 'mini-itx';
+    if (
+      size.includes('micro-atx') ||
+      size.includes('matx') ||
+      size.includes('m-atx')
+    )
+      return 'micro-atx';
     if (size.includes('e-atx') || size.includes('eatx')) return 'e-atx';
     if (size.includes('atx')) return 'atx';
     return size;
   };
-  
+
   const normalizedMb = normalizeMbSize(mbSize);
-  
+
   if (caseSize.includes('full tower') || caseSize.includes('e-atx')) {
     return true;
   }
@@ -39,42 +48,61 @@ export const getCompatibilityIssues = (
   t: (key: string) => string
 ): string[] => {
   const issues: string[] = [];
-  
+
   // Check power consumption against PSU capacity
   if (selectedComponents.psu && totalPowerConsumption > 0) {
-    const psuPower = parseInt(selectedComponents.psu.specifications?.['Power'] || '0');
+    const psuPower = parseInt(
+      selectedComponents.psu.specifications?.['Power'] || '0'
+    );
     // Recommend 40% headroom for the PSU
     const recommendedPower = Math.ceil(totalPowerConsumption * 1.4);
-    
+
     if (psuPower < totalPowerConsumption) {
-      issues.push(`${t('configurator.compatibility.psuTooWeak')} (${totalPowerConsumption}W > ${psuPower}W)`);
+      issues.push(
+        `${t('configurator.compatibility.psuTooWeak')} (${totalPowerConsumption}W > ${psuPower}W)`
+      );
     } else if (psuPower < recommendedPower) {
-      issues.push(`${t('configurator.compatibility.psuLowHeadroom')} (${recommendedPower}W recommended)`);
+      issues.push(
+        `${t('configurator.compatibility.psuLowHeadroom')} (${recommendedPower}W recommended)`
+      );
     }
   }
-  
+
   // Example: CPU-Motherboard socket
   if (selectedComponents.cpu && selectedComponents.motherboard) {
     const cpuSocket = selectedComponents.cpu.specifications?.['Socket'];
-    const mbSocket = selectedComponents.motherboard.specifications?.['CPU Socket'] || selectedComponents.motherboard.specifications?.['Socket'];
+    const mbSocket =
+      selectedComponents.motherboard.specifications?.['CPU Socket'] ||
+      selectedComponents.motherboard.specifications?.['Socket'];
     if (cpuSocket && mbSocket && cpuSocket !== mbSocket) {
-      issues.push(`${t('configurator.compatibility.cpuSocketMismatch')} (${cpuSocket} ≠ ${mbSocket})`);
+      issues.push(
+        `${t('configurator.compatibility.cpuSocketMismatch')} (${cpuSocket} ≠ ${mbSocket})`
+      );
     }
     // ... other checks omitted for brevity
   }
 
   // PSU wattage check
   if (selectedComponents.psu && totalPowerConsumption > 0) {
-    const psuWattage = parseInt(selectedComponents.psu.specifications?.['Wattage'] || selectedComponents.psu.specifications?.['Power'] || '0', 10);
+    const psuWattage = parseInt(
+      selectedComponents.psu.specifications?.['Wattage'] ||
+        selectedComponents.psu.specifications?.['Power'] ||
+        '0',
+      10
+    );
     const recommendedW = Math.ceil(totalPowerConsumption * 1.3);
     if (!isNaN(psuWattage)) {
       if (psuWattage < totalPowerConsumption) {
-        issues.push(`${t('configurator.compatibility.psuCriticallyUnderpowered')} (${psuWattage}W < ${totalPowerConsumption}W)`);
+        issues.push(
+          `${t('configurator.compatibility.psuCriticallyUnderpowered')} (${psuWattage}W < ${totalPowerConsumption}W)`
+        );
       } else if (psuWattage < recommendedW) {
-        issues.push(`${t('configurator.compatibility.psuUnderpowered')} (${psuWattage}W < ${recommendedW}W recommended)`);
+        issues.push(
+          `${t('configurator.compatibility.psuUnderpowered')} (${psuWattage}W < ${recommendedW}W recommended)`
+        );
       }
     }
   }
-  
+
   return issues;
 };

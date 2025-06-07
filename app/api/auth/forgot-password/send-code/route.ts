@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
-import { createPasswordResetToken, sendVerificationCode } from '@/lib/password-reset';
+import {
+  createPasswordResetToken,
+  sendVerificationCode,
+} from '@/lib/password-reset';
 import { z } from 'zod';
 
 const sendCodeSchema = z.object({
@@ -37,10 +40,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Verification code sent successfully',
-      token: resetToken.token, 
-    });  } catch (error) {
+      token: resetToken.token,
+    });
+  } catch (error) {
     console.error('Error sending verification code:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid input', details: error.errors },
@@ -52,13 +56,13 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error) {
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
-      
+
       // Return more detailed error for debugging in production
       return NextResponse.json(
-        { 
+        {
           error: 'Failed to send verification code',
           details: error.message,
-          type: error.constructor.name
+          type: error.constructor.name,
         },
         { status: 500 }
       );

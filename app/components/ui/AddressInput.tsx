@@ -21,17 +21,23 @@ interface AddressInputProps {
 const POSTAL_CODE_PATTERNS = {
   LV: /^LV-\d{4}$/,
   LT: /^LT-\d{5}$/,
-  EE: /^\d{5}$/
+  EE: /^\d{5}$/,
 };
 
 const POSTAL_CODE_FORMATS = {
   LV: 'LV-1234',
   LT: 'LT-12345',
-  EE: '12345'
+  EE: '12345',
 };
 
-export default function AddressInput({ values, onChange, errors }: AddressInputProps) {
-  const [formattedPostalCode, setFormattedPostalCode] = useState(values.postalCode);
+export default function AddressInput({
+  values,
+  onChange,
+  errors,
+}: AddressInputProps) {
+  const [formattedPostalCode, setFormattedPostalCode] = useState(
+    values.postalCode
+  );
 
   useEffect(() => {
     setFormattedPostalCode(values.postalCode);
@@ -40,8 +46,8 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
   const formatPostalCode = (code: string, country: 'LV' | 'LT' | 'EE') => {
     // Remove any non-digit characters
     const digits = code.replace(/\D/g, '');
-    
-    switch(country) {
+
+    switch (country) {
       case 'LV':
         return digits ? `LV-${digits.slice(0, 4)}` : '';
       case 'LT':
@@ -58,7 +64,7 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
     setFormattedPostalCode(newPostalCode);
     onChange({
       ...values,
-      postalCode: newPostalCode
+      postalCode: newPostalCode,
     });
   };
 
@@ -69,39 +75,46 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
     onChange({
       ...values,
       country: newCountry,
-      postalCode: newPostalCode
+      postalCode: newPostalCode,
     });
   };
 
   return (
-    <div className="space-y-4">      <div>
+    <div className="space-y-4">
+      {' '}
+      <div>
         <label className="form-label">Street Address</label>
         <input
           type="text"
           value={values.street}
-          onChange={(e) => onChange({ ...values, street: e.target.value })}
+          onChange={e => onChange({ ...values, street: e.target.value })}
           className={`w-full px-4 py-2.5 border rounded-lg dark:bg-neutral-950 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 focus:border-transparent ${
             errors?.street ? 'border-red-500' : ''
           }`}
           placeholder="Enter street address"
         />
         {errors?.street && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.street}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {errors.street}
+          </p>
         )}
-      </div><div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <label className="form-label">City</label>
           <input
             type="text"
             value={values.city}
-            onChange={(e) => onChange({ ...values, city: e.target.value })}
+            onChange={e => onChange({ ...values, city: e.target.value })}
             className={`w-full px-4 py-2.5 border rounded-lg dark:bg-neutral-950 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 focus:border-transparent ${
               errors?.city ? 'border-red-500' : ''
             }`}
             placeholder="Enter city"
           />
           {errors?.city && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.city}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.city}
+            </p>
           )}
         </div>
 
@@ -117,10 +130,13 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
             placeholder={POSTAL_CODE_FORMATS[values.country]}
           />
           {errors?.postalCode && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.postalCode}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.postalCode}
+            </p>
           )}
         </div>
-      </div>      <div>
+      </div>{' '}
+      <div>
         <label className="form-label">Country</label>
         <select
           value={values.country}
@@ -132,7 +148,9 @@ export default function AddressInput({ values, onChange, errors }: AddressInputP
           <option value="EE">Estonia</option>
         </select>
         {errors?.country && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.country}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {errors.country}
+          </p>
         )}
       </div>
     </div>

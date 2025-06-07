@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
-const AuthPage = dynamic(() => import('./AuthPage'), { ssr: false })
+const AuthPage = dynamic(() => import('./AuthPage'), { ssr: false });
 
 export default function AuthRoute() {
-  return <AuthPage />
+  return <AuthPage />;
 }

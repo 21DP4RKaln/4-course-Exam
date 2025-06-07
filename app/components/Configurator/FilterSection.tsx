@@ -1,38 +1,38 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
-import { ChevronDown, ChevronUp } from 'lucide-react'
-import { useTheme } from '@/app/contexts/ThemeContext'
+import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
 interface FilterOption {
-  id: string
-  name: string
-  count?: number
-  translationKey?: string
+  id: string;
+  name: string;
+  count?: number;
+  translationKey?: string;
 }
 
 export interface FilterGroup {
-  title: string
-  options: FilterOption[]
-  titleTranslationKey?: string
+  title: string;
+  options: FilterOption[];
+  titleTranslationKey?: string;
 }
 
 interface Props {
-  filterGroups?: FilterGroup[]
-  activeFilters: Record<string, boolean>
-  onFiltersChange?: (filters: Record<string, boolean>) => void
-  onFilterChange?: (filters: Record<string, boolean>) => void
-  priceRange?: [number, number]
-  onPriceChange?: (range: [number, number]) => void
-  onPriceRangeChange?: (range: [number, number]) => void
-  activeCategory: string
-  minPrice?: number
-  maxPrice?: number
-  searchQuery?: string
-  onSearchChange?: (query: string) => void
-  availableSpecifications?: any[]
-  components?: any[]
+  filterGroups?: FilterGroup[];
+  activeFilters: Record<string, boolean>;
+  onFiltersChange?: (filters: Record<string, boolean>) => void;
+  onFilterChange?: (filters: Record<string, boolean>) => void;
+  priceRange?: [number, number];
+  onPriceChange?: (range: [number, number]) => void;
+  onPriceRangeChange?: (range: [number, number]) => void;
+  activeCategory: string;
+  minPrice?: number;
+  maxPrice?: number;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  availableSpecifications?: any[];
+  components?: any[];
 }
 
 const FilterSection: React.FC<Props> = ({
@@ -49,63 +49,73 @@ const FilterSection: React.FC<Props> = ({
   searchQuery = '',
   onSearchChange,
   availableSpecifications = [],
-  components = []
-}) => {  const t = useTranslations()
-  const { theme } = useTheme()
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+  components = [],
+}) => {
+  const t = useTranslations();
+  const { theme } = useTheme();
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({
     price: false, // Start collapsed for cleaner UI
     'specs.cores': false,
     'specs.threads': false,
     'specs.socket': false,
     'specs.speed': false,
-    'manufacturer': false,
-    'frequency': false,
-    'rgb': false
-  })
-    const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(priceRange)
-  
+    manufacturer: false,
+    frequency: false,
+    rgb: false,
+  });
+  const [localPriceRange, setLocalPriceRange] =
+    useState<[number, number]>(priceRange);
+
   // Update local price range when props change
   useEffect(() => {
-    setLocalPriceRange(priceRange)
-  }, [priceRange])
-    // Toggle filter option
+    setLocalPriceRange(priceRange);
+  }, [priceRange]);
+  // Toggle filter option
   const toggleFilter = (filterId: string) => {
-    const updatedFilters = { ...activeFilters }
-    updatedFilters[filterId] = !updatedFilters[filterId]
-    
+    const updatedFilters = { ...activeFilters };
+    updatedFilters[filterId] = !updatedFilters[filterId];
+
     // Use whichever callback is available
-    const callback = onFiltersChange || onFilterChange
+    const callback = onFiltersChange || onFilterChange;
     if (callback) {
-      callback(updatedFilters)
+      callback(updatedFilters);
     }
-  }
-  
+  };
+
   // Toggle expand section
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
-      [section]: !prev[section]
-    }))
-  }
-  
+      [section]: !prev[section],
+    }));
+  };
+
   // Handle min price change
   const handleMinPriceChange = (value: number) => {
-    const newRange: [number, number] = [Math.min(value, localPriceRange[1]), localPriceRange[1]]
-    setLocalPriceRange(newRange)
-  }
-  
+    const newRange: [number, number] = [
+      Math.min(value, localPriceRange[1]),
+      localPriceRange[1],
+    ];
+    setLocalPriceRange(newRange);
+  };
+
   // Handle max price change
   const handleMaxPriceChange = (value: number) => {
-    const newRange: [number, number] = [localPriceRange[0], Math.max(value, localPriceRange[0])]
-    setLocalPriceRange(newRange)
-  }
-    // Apply the price range
+    const newRange: [number, number] = [
+      localPriceRange[0],
+      Math.max(value, localPriceRange[0]),
+    ];
+    setLocalPriceRange(newRange);
+  };
+  // Apply the price range
   const applyPriceRange = () => {
-    const callback = onPriceChange || onPriceRangeChange
+    const callback = onPriceChange || onPriceRangeChange;
     if (callback) {
-      callback(localPriceRange)
+      callback(localPriceRange);
     }
-  }
+  };
   // Use dynamic filterGroups from props
 
   // Manufacturer filters for RAM
@@ -116,29 +126,33 @@ const FilterSection: React.FC<Props> = ({
     { id: 'g-skill', name: 'G.Skill', count: 66 },
     { id: 'geil', name: 'GeiL', count: 1 },
     { id: 'gigabyte', name: 'Gigabyte', count: 3 },
-    { id: 'kingston', name: 'Kingston', count: 57 }
-  ]
+    { id: 'kingston', name: 'Kingston', count: 57 },
+  ];
 
   // RAM frequency range
   const ramFrequencyRange = {
     min: 1600,
-    max: 8200
-  }
+    max: 8200,
+  };
 
   // RGB options
   const rgbOptions = [
     { id: 'argb', name: 'ARGB', count: 3 },
     { id: 'rgb', name: 'RGB', count: 31 },
     { id: 'yes', name: 'да', count: 1 },
-    { id: 'available', name: 'есть', count: 55 }
-  ]
+    { id: 'available', name: 'есть', count: 55 },
+  ];
 
   return (
-    <aside className={`flex flex-col h-full p-1 min-w-[220px] w-[240px] max-w-[260px] ${
-      theme === 'dark'
-        ? 'bg-stone-950 border-neutral-800'
-        : 'bg-white border-neutral-200'
-    } border transition-colors duration-200`}>      <div className="flex flex-col gap-4 mt-20">
+    <aside
+      className={`flex flex-col h-full p-1 min-w-[220px] w-[240px] max-w-[260px] ${
+        theme === 'dark'
+          ? 'bg-stone-950 border-neutral-800'
+          : 'bg-white border-neutral-200'
+      } border transition-colors duration-200`}
+    >
+      {' '}
+      <div className="flex flex-col gap-4 mt-20">
         {/* Price Range Filter */}
         <div className="flex flex-col gap-1 ">
           <button
@@ -156,9 +170,11 @@ const FilterSection: React.FC<Props> = ({
               <ChevronDown className="w-4 h-4" />
             )}
           </button>
-          
+
           {expandedSections.price && (
-            <div className="flex flex-col gap-1.5 px-1">              <div className="grid grid-cols-2 gap-1">
+            <div className="flex flex-col gap-1.5 px-1">
+              {' '}
+              <div className="grid grid-cols-2 gap-1">
                 <input
                   type="number"
                   min={minPrice}
@@ -203,7 +219,7 @@ const FilterSection: React.FC<Props> = ({
                 }`}
               >
                 {t('configurator.filters.apply')}
-                </button>
+              </button>
             </div>
           )}
         </div>
@@ -219,17 +235,21 @@ const FilterSection: React.FC<Props> = ({
                   : 'hover:bg-neutral-100 text-neutral-900'
               }`}
             >
-              <span>{group.titleTranslationKey ? t(group.titleTranslationKey) : t(group.title)}</span>
+              <span>
+                {group.titleTranslationKey
+                  ? t(group.titleTranslationKey)
+                  : t(group.title)}
+              </span>
               {expandedSections[group.title] ? (
                 <ChevronUp className="w-4 h-4" />
               ) : (
                 <ChevronDown className="w-4 h-4" />
               )}
             </button>
-            
+
             {expandedSections[group.title] && (
               <div className="flex flex-col gap-1 px-2">
-                {group.options.map((option) => (
+                {group.options.map(option => (
                   <label
                     key={option.id}
                     className={`flex items-center gap-1 p-1.5 rounded-lg cursor-pointer text-sm ${
@@ -246,17 +266,21 @@ const FilterSection: React.FC<Props> = ({
                         theme === 'dark'
                           ? 'border-neutral-700 text-brand-red-500'
                           : 'border-neutral-300 text-brand-blue-500'
-                      }`}  
+                      }`}
                     />
                     <span>
-                      {option.translationKey ? t(option.translationKey) : option.name}
+                      {option.translationKey
+                        ? t(option.translationKey)
+                        : option.name}
                     </span>
                     {option.count && (
-                      <span className={`ml-auto text-xs ${
-                        theme === 'dark'
-                          ? 'text-neutral-500'
-                          : 'text-neutral-400'
-                      }`}>
+                      <span
+                        className={`ml-auto text-xs ${
+                          theme === 'dark'
+                            ? 'text-neutral-500'
+                            : 'text-neutral-400'
+                        }`}
+                      >
                         ({option.count})
                       </span>
                     )}
@@ -268,7 +292,7 @@ const FilterSection: React.FC<Props> = ({
         ))}
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default FilterSection
+export default FilterSection;

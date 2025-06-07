@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
 export enum ErrorType {
   UNAUTHORIZED = 'unauthorized',
@@ -11,10 +11,10 @@ export enum ErrorType {
 
 export interface ApiError {
   error: {
-    type: ErrorType,
-    message: string,
-    details?: Record<string, unknown>
-  }
+    type: ErrorType;
+    message: string;
+    details?: Record<string, unknown>;
+  };
 }
 
 export function createErrorResponse(
@@ -32,7 +32,7 @@ export function createErrorResponse(
       },
     },
     { status }
-  )
+  );
 }
 
 /**
@@ -41,58 +41,69 @@ export function createErrorResponse(
 function getStatusCodeForErrorType(type: ErrorType): number {
   switch (type) {
     case ErrorType.UNAUTHORIZED:
-      return 401
+      return 401;
     case ErrorType.FORBIDDEN:
-      return 403
+      return 403;
     case ErrorType.NOT_FOUND:
-      return 404
+      return 404;
     case ErrorType.BAD_REQUEST:
     case ErrorType.VALIDATION_ERROR:
-      return 400
+      return 400;
     case ErrorType.INTERNAL_SERVER_ERROR:
     default:
-      return 500
+      return 500;
   }
 }
 
 /**
  * Creates a 401 Unauthorized response.
  */
-export function createUnauthorizedResponse(message = 'Authentication required') {
-  return createErrorResponse(ErrorType.UNAUTHORIZED, message)
+export function createUnauthorizedResponse(
+  message = 'Authentication required'
+) {
+  return createErrorResponse(ErrorType.UNAUTHORIZED, message);
 }
 
 /**
  * Creates a 403 Forbidden response.
  */
 export function createForbiddenResponse(message = 'No right of access') {
-  return createErrorResponse(ErrorType.FORBIDDEN, message)
+  return createErrorResponse(ErrorType.FORBIDDEN, message);
 }
 
 /**
  * Creates a 404 Not Found response.
  */
 export function createNotFoundResponse(message = 'Resource not found') {
-  return createErrorResponse(ErrorType.NOT_FOUND, message)
+  return createErrorResponse(ErrorType.NOT_FOUND, message);
 }
 
 /**
  * Creates a 400 Bad Request response.
  */
-export function createBadRequestResponse(message = 'Incorrect request', details?: Record<string, unknown>) {
-  return createErrorResponse(ErrorType.BAD_REQUEST, message, details)
+export function createBadRequestResponse(
+  message = 'Incorrect request',
+  details?: Record<string, unknown>
+) {
+  return createErrorResponse(ErrorType.BAD_REQUEST, message, details);
 }
 
 /**
  * Creates a 422 Validation Error response.
  */
-export function createValidationErrorResponse(message = 'Validation error', details?: Record<string, unknown>) {
-  return createErrorResponse(ErrorType.VALIDATION_ERROR, message, details)
+export function createValidationErrorResponse(
+  message = 'Validation error',
+  details?: Record<string, unknown>
+) {
+  return createErrorResponse(ErrorType.VALIDATION_ERROR, message, details);
 }
 
 /**
  * Creates a 500 Internal Server Error response.
  */
-export function createServerErrorResponse(message = 'Server error', details?: Record<string, unknown>) {
-  return createErrorResponse(ErrorType.INTERNAL_SERVER_ERROR, message, details)
+export function createServerErrorResponse(
+  message = 'Server error',
+  details?: Record<string, unknown>
+) {
+  return createErrorResponse(ErrorType.INTERNAL_SERVER_ERROR, message, details);
 }

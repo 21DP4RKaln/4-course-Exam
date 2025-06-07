@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
 import { getJWTFromRequest, verifyJWT } from '@/lib/jwt';
-import { createUnauthorizedResponse, createForbiddenResponse } from '@/lib/apiErrors';
+import {
+  createUnauthorizedResponse,
+  createForbiddenResponse,
+} from '@/lib/apiErrors';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,40 +19,38 @@ export async function GET(request: NextRequest) {
     }
 
     const specialistId = payload.userId;
-    
+
     const { searchParams } = new URL(request.url);
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
-    
-    const startDate = startDateParam 
-      ? new Date(startDateParam) 
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); 
-    
-    const endDate = endDateParam
-      ? new Date(endDateParam)
-      : new Date(); 
-    
+
+    const startDate = startDateParam
+      ? new Date(startDateParam)
+      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const endDate = endDateParam ? new Date(endDateParam) : new Date();
+
     const isAdmin = payload.role === 'ADMIN';
-    
+
     const repairWhereClause = isAdmin
       ? {
           createdAt: {
             gte: startDate,
-            lte: endDate
-          }
+            lte: endDate,
+          },
         }
       : {
           specialists: {
             some: {
-              specialistId
-            }
+              specialistId,
+            },
           },
           createdAt: {
             gte: startDate,
-            lte: endDate
-          }
+            lte: endDate,
+          },
         };
-    
+
     const [
       assignedRepairs,
       repairsByStatus,
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
       inProgressRepairs,
       completedRepairs,
       lowStockComponents,
-      recentRepairAssignments
+      recentRepairAssignments,
     ] = await Promise.all([
       isAdmin
         ? prisma.repair.count()
@@ -66,133 +67,139 @@ export async function GET(request: NextRequest) {
             where: {
               specialists: {
                 some: {
-                  specialistId
-                }
-              }
-            }
+                  specialistId,
+                },
+              },
+            },
           }),
-      
+
       prisma.repair.groupBy({
         by: ['status'],
         _count: true,
-        where: repairWhereClause
+        where: repairWhereClause,
       }),
-      
+
       prisma.repair.groupBy({
         by: ['priority'],
         _count: true,
-        where: repairWhereClause
+        where: repairWhereClause,
       }),
-      
+
       prisma.repair.findMany({
         where: {
           status: 'PENDING',
-          ...(isAdmin ? {} : {
-            specialists: {
-              some: {
-                specialistId
-              }
-            }
-          })
+          ...(isAdmin
+            ? {}
+            : {
+                specialists: {
+                  some: {
+                    specialistId,
+                  },
+                },
+              }),
         },
         include: {
           user: {
             select: {
               id: true,
               name: true,
-              email: true
-            }
+              email: true,
+            },
           },
           specialists: {
             include: {
               specialist: {
                 select: {
                   id: true,
-                  name: true
-                }
-              }
-            }
-          }
+                  name: true,
+                },
+              },
+            },
+          },
         },
         orderBy: {
-          createdAt: 'asc'
+          createdAt: 'asc',
         },
-        take: 10
+        take: 10,
       }),
-      
+
       prisma.repair.findMany({
         where: {
           status: 'IN_PROGRESS',
-          ...(isAdmin ? {} : {
-            specialists: {
-              some: {
-                specialistId
-              }
-            }
-          })
+          ...(isAdmin
+            ? {}
+            : {
+                specialists: {
+                  some: {
+                    specialistId,
+                  },
+                },
+              }),
         },
         include: {
           user: {
             select: {
               id: true,
               name: true,
-              email: true
-            }
+              email: true,
+            },
           },
           specialists: {
             include: {
               specialist: {
                 select: {
                   id: true,
-                  name: true
-                }
-              }
-            }
-          }
+                  name: true,
+                },
+              },
+            },
+          },
         },
         orderBy: {
-          createdAt: 'asc'
+          createdAt: 'asc',
         },
-        take: 10
+        take: 10,
       }),
-      
+
       prisma.repair.findMany({
         where: {
           status: 'COMPLETED',
-          ...(isAdmin ? {} : {
-            specialists: {
-              some: {
-                specialistId
-              }
-            }
-          }),
+          ...(isAdmin
+            ? {}
+            : {
+                specialists: {
+                  some: {
+                    specialistId,
+                  },
+                },
+              }),
           updatedAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
-          }
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          },
         },
         include: {
           user: {
             select: {
               id: true,
               name: true,
-              email: true
-            }
+              email: true,
+            },
           },
           specialists: {
             include: {
               specialist: {
                 select: {
                   id: true,
-                  name: true
-                }
-              }
-            }
-          }
+                  name: true,
+                },
+              },
+            },
+          },
         },
         orderBy: {
-          updatedAt: 'desc'
+          updatedAt: 'desc',
         },
-        take: 10
+        take: 10,
       }),
       prisma.component.findMany({
         where: { quantity: { lt: 10 } },
@@ -201,42 +208,44 @@ export async function GET(request: NextRequest) {
           name: true,
           quantity: true,
           category: {
-            select: { name: true }
-          }
-        },
-        orderBy: {
-          quantity: 'asc'
-        },
-        take: 20
-      }),
-      
-      isAdmin ? prisma.repairSpecialist.findMany({
-        take: 10,
-        orderBy: {
-          assignedAt: 'desc'
-        },
-        include: {
-          repair: {
-            select: {
-              id: true,
-              title: true,
-              status: true
-            }
+            select: { name: true },
           },
-          specialist: {
-            select: {
-              id: true,
-              name: true
-            }
-          }
-        }
-      }) : []
+        },
+        orderBy: {
+          quantity: 'asc',
+        },
+        take: 20,
+      }),
+
+      isAdmin
+        ? prisma.repairSpecialist.findMany({
+            take: 10,
+            orderBy: {
+              assignedAt: 'desc',
+            },
+            include: {
+              repair: {
+                select: {
+                  id: true,
+                  title: true,
+                  status: true,
+                },
+              },
+              specialist: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          })
+        : [],
     ]);
-    
+
     const formattedRepairsByStatus = Object.fromEntries(
       repairsByStatus.map(item => [item.status, item._count])
     );
-    
+
     const formattedRepairsByPriority = Object.fromEntries(
       repairsByPriority.map(item => [item.priority, item._count])
     );
@@ -244,28 +253,33 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       dateRange: {
         startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
+        endDate: endDate.toISOString(),
       },
       counts: {
         assignedRepairs,
         repairsByStatus: formattedRepairsByStatus,
-        repairsByPriority: formattedRepairsByPriority
+        repairsByPriority: formattedRepairsByPriority,
       },
       repairs: {
         pending: pendingRepairs,
         inProgress: inProgressRepairs,
-        completed: completedRepairs
+        completed: completedRepairs,
       },
       inventory: {
-        lowStockComponents
+        lowStockComponents,
       },
-      ...(isAdmin && { administration: {
-        recentAssignments: recentRepairAssignments
-      }}),
-      isAdmin
+      ...(isAdmin && {
+        administration: {
+          recentAssignments: recentRepairAssignments,
+        },
+      }),
+      isAdmin,
     });
   } catch (error) {
     console.error('Error fetching specialist dashboard data:', error);
-    return NextResponse.json({ error: 'Failed to fetch dashboard data' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch dashboard data' },
+      { status: 500 }
+    );
   }
 }

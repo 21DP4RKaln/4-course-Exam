@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedMicrophones(prisma: PrismaClient) {
   // Get all peripherals with subType 'microphones'
   const microphonePeripherals = await prisma.peripheral.findMany({
-    where: { subType: 'microphones' }
+    where: { subType: 'microphones' },
   });
 
   // Prepare Microphone entries
@@ -12,65 +12,88 @@ export async function seedMicrophones(prisma: PrismaClient) {
   // For each Microphone peripheral, create a detailed Microphone entry
   for (let i = 0; i < microphonePeripherals.length; i++) {
     const peripheral = microphonePeripherals[i];
-    
+
     // Parse existing specifications if available
-    const specs = peripheral.specifications ? JSON.parse(peripheral.specifications.toString()) : {};
-    
+    const specs = peripheral.specifications
+      ? JSON.parse(peripheral.specifications.toString())
+      : {};
+
     // Get manufacturer from specs or set a default
-    const manufacturer = specs.manufacturer || ['Blue', 'Audio-Technica', 'Shure', 'HyperX', 'Razer'][i % 5];
-    
+    const manufacturer =
+      specs.manufacturer ||
+      ['Blue', 'Audio-Technica', 'Shure', 'HyperX', 'Razer'][i % 5];
+
     // Types of microphones
-    const types = ['Condenser', 'Dynamic', 'USB Condenser', 'USB Dynamic', 'Lavalier'];
+    const types = [
+      'Condenser',
+      'Dynamic',
+      'USB Condenser',
+      'USB Dynamic',
+      'Lavalier',
+    ];
     const type = specs.type || types[i % types.length];
-    
+
     // Polar patterns
     const polarPatterns = [
-      'Cardioid', 
-      'Cardioid, Omnidirectional', 
+      'Cardioid',
+      'Cardioid, Omnidirectional',
       'Cardioid, Bidirectional, Omnidirectional',
-      'Cardioid, Figure-8, Omnidirectional, Stereo'
+      'Cardioid, Figure-8, Omnidirectional, Stereo',
     ];
-    const pattern = specs.polarPattern || polarPatterns[i % polarPatterns.length];
-    
+    const pattern =
+      specs.polarPattern || polarPatterns[i % polarPatterns.length];
+
     // Frequency response
     const frequencyResponses = [
       '20Hz - 20kHz',
       '40Hz - 18kHz',
       '30Hz - 20kHz',
       '20Hz - 22kHz',
-      '50Hz - 16kHz'
+      '50Hz - 16kHz',
     ];
-    const frequency = specs.frequencyResponse || frequencyResponses[i % frequencyResponses.length];
-    
+    const frequency =
+      specs.frequencyResponse ||
+      frequencyResponses[i % frequencyResponses.length];
+
     // Connection types
     const isUSB = type.includes('USB');
     const interfaceType = isUSB ? 'USB' : 'XLR';
-    
+
     // Sensitivity value
     const sensitivity = `${-50 - (i % 10) * 2}dB`;
-    
+
     // Additional specs to store in specifications JSON
     const additionalSpecs = {
-      samplingRate: isUSB ? ['44.1kHz', '48kHz', '96kHz', '192kHz'][i % 4] : null,
+      samplingRate: isUSB
+        ? ['44.1kHz', '48kHz', '96kHz', '192kHz'][i % 4]
+        : null,
       bitDepth: isUSB ? ['16-bit', '24-bit'][i % 2] : null,
       monitoring: isUSB && i % 2 === 0,
-      mountType: type !== 'Lavalier' ? (i % 2 === 0 ? 'Boom Arm' : 'Desktop Stand') : null,
+      mountType:
+        type !== 'Lavalier'
+          ? i % 2 === 0
+            ? 'Boom Arm'
+            : 'Desktop Stand'
+          : null,
       popFilter: type.includes('Condenser') && i % 2 === 0,
       shockMount: type !== 'Lavalier' && i % 2 === 0,
-      dimensions: type !== 'Lavalier' ? `${50 + (i % 10) * 10}mm x ${170 + (i % 5) * 20}mm` : `${8}mm x ${20}mm`
+      dimensions:
+        type !== 'Lavalier'
+          ? `${50 + (i % 10) * 10}mm x ${170 + (i % 5) * 20}mm`
+          : `${8}mm x ${20}mm`,
     };
-    
+
     // Update peripheral specifications
     await prisma.peripheral.update({
       where: { id: peripheral.id },
       data: {
         specifications: JSON.stringify({
           ...specs,
-          ...additionalSpecs
-        })
-      }
+          ...additionalSpecs,
+        }),
+      },
     });
-    
+
     microphones.push({
       peripheralId: peripheral.id,
       manufacturer,
@@ -79,7 +102,7 @@ export async function seedMicrophones(prisma: PrismaClient) {
       frequency,
       sensitivity,
       interface: interfaceType,
-      stand: type !== 'Lavalier' && i % 2 === 0
+      stand: type !== 'Lavalier' && i % 2 === 0,
     });
   }
 
@@ -88,10 +111,10 @@ export async function seedMicrophones(prisma: PrismaClient) {
     await prisma.microphone.upsert({
       where: { peripheralId: microphone.peripheralId },
       update: microphone,
-      create: microphone
+      create: microphone,
     });
   }
-  
+
   // Call the function to add 10 more microphones
   await addMoreMicrophones(prisma);
 }
@@ -99,15 +122,16 @@ export async function seedMicrophones(prisma: PrismaClient) {
 /**
  * Adds 10 additional microphone entries with unique specifications
  */
-async function addMoreMicrophones(prisma: PrismaClient) {  const category = await prisma.peripheralCategory.findFirst({
-    where: { slug: 'microphone' }
+async function addMoreMicrophones(prisma: PrismaClient) {
+  const category = await prisma.peripheralCategory.findFirst({
+    where: { slug: 'microphone' },
   });
-  
+
   if (!category) {
     console.error('Microphone category not found');
     return;
   }
-  
+
   // Define new microphone models with interesting specifications
   const newMicrophoneModels = [
     {
@@ -139,8 +163,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         broadcastQuality: true,
         airSuspensionShockIsolation: true,
         popFilter: true,
-        bassRolloff: true
-      }
+        bassRolloff: true,
+      },
     },
     {
       name: 'Rode NT1 5th Generation',
@@ -151,7 +175,7 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
       sensitivity: '-29dB',
       interface: 'XLR',
       stand: true,
-      price: 259.00,
+      price: 259.0,
       specs: {
         manufacturer: 'Rode',
         type: 'Condenser',
@@ -170,8 +194,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         dimensions: '187mm x 50mm',
         australianDesigned: true,
         revolutionaryAcousticDesign: true,
-        ultraLowNoise: true
-      }
+        ultraLowNoise: true,
+      },
     },
     {
       name: 'Elgato Wave:3',
@@ -202,8 +226,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         capacitiveMute: true,
         streamDeckIntegration: true,
         waveLink: true,
-        multiplatformCompatibility: true
-      }
+        multiplatformCompatibility: true,
+      },
     },
     {
       name: 'Audio-Technica AT2020USB+',
@@ -214,7 +238,7 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
       sensitivity: '-47dB',
       interface: 'USB',
       stand: true,
-      price: 129.00,
+      price: 129.0,
       specs: {
         manufacturer: 'Audio-Technica',
         type: 'USB Condenser',
@@ -234,8 +258,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         headphoneJack: true,
         mixControl: true,
         lowMass: true,
-        customEngineered: true
-      }
+        customEngineered: true,
+      },
     },
     {
       name: 'Rode Wireless GO II',
@@ -246,7 +270,7 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
       sensitivity: '-30dB',
       interface: 'USB',
       stand: false,
-      price: 299.00,
+      price: 299.0,
       specs: {
         manufacturer: 'Rode',
         type: 'Lavalier',
@@ -266,8 +290,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         encryption: '128-bit',
         safetyChannel: '-20dB',
         onboardCompressor: true,
-        multipleTransmitters: true
-      }
+        multipleTransmitters: true,
+      },
     },
     {
       name: 'HyperX QuadCast S',
@@ -299,8 +323,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         tapToMute: true,
         gainControl: true,
         rgbLighting: true,
-        customizableRGB: true
-      }
+        customizableRGB: true,
+      },
     },
     {
       name: 'Beyerdynamic M 70 Pro X',
@@ -311,7 +335,7 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
       sensitivity: '-57dB',
       interface: 'XLR',
       stand: true,
-      price: 299.00,
+      price: 299.0,
       specs: {
         manufacturer: 'Beyerdynamic',
         type: 'Dynamic',
@@ -331,8 +355,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         minimalProximityEffect: true,
         highFeedbackRejection: true,
         robustMetalConstruction: true,
-        streamingAndPodcasting: true
-      }
+        streamingAndPodcasting: true,
+      },
     },
     {
       name: 'AKG Pro Audio C214',
@@ -343,7 +367,7 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
       sensitivity: '-34dB',
       interface: 'XLR',
       stand: true,
-      price: 349.00,
+      price: 349.0,
       specs: {
         manufacturer: 'AKG',
         type: 'Condenser',
@@ -363,8 +387,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         maximumSPL: '156dB',
         selfNoise: '13dB-A',
         professionalStudioMic: true,
-        integratedSuspension: true
-      }
+        integratedSuspension: true,
+      },
     },
     {
       name: 'Blue Ember',
@@ -394,8 +418,8 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         excellentOffAxisRejection: true,
         handTunedCapacity: true,
         precisionAcoustics: true,
-        streamingFriendly: true
-      }
+        streamingFriendly: true,
+      },
     },
     {
       name: 'Razer Seiren V3 Pro',
@@ -427,18 +451,18 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         analogGainLimiter: true,
         highPassFilter: true,
         synapseSoftware: true,
-        chromeIntegration: true
-      }
-    }
+        chromeIntegration: true,
+      },
+    },
   ];
-  
+
   // Create new microphone peripherals and microphone entries
   for (let i = 0; i < newMicrophoneModels.length; i++) {
     const model = newMicrophoneModels[i];
-    
+
     // Generate a unique SKU
     const sku = `P-MIC-${model.manufacturer.substring(0, 3).toUpperCase()}-${2000 + i}`;
-    
+
     // Create peripheral description
     let description = `${model.name} - Professional ${model.type.toLowerCase()} microphone`;
     if (model.type.includes('USB')) {
@@ -449,7 +473,7 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
       description += ' for studio recording';
     }
     description += `. ${model.interface} connectivity with ${model.pattern.toLowerCase()} polar pattern.`;
-    
+
     // Create the peripheral entry
     const peripheral = await prisma.peripheral.create({
       data: {
@@ -462,9 +486,9 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         sku,
         subType: 'microphones',
         imageUrl: `/products/peripherals/microphones${(i % 3) + 1}.jpg`,
-      }
+      },
     });
-    
+
     // Create the microphone entry
     await prisma.microphone.create({
       data: {
@@ -475,12 +499,12 @@ async function addMoreMicrophones(prisma: PrismaClient) {  const category = awai
         frequency: model.frequency,
         sensitivity: model.sensitivity,
         interface: model.interface,
-        stand: model.stand
-      }
+        stand: model.stand,
+      },
     });
-    
+
     console.log(`Added microphone: ${model.name}`);
   }
-  
+
   console.log('Added 10 additional microphones');
 }

@@ -9,6 +9,26 @@ import { createPsuFilterGroups } from '@/app/components/CategoryPage/filters/psu
 import { createCaseFilterGroups } from '@/app/components/CategoryPage/filters/caseFilters';
 import { createCoolingFilterGroups } from '@/app/components/CategoryPage/filters/coolerFilters';
 
+// Import messages for server-side translation
+import enMessages from '@/lib/messages/en.json';
+import lvMessages from '@/lib/messages/lv.json';
+import ruMessages from '@/lib/messages/ru.json';
+
+// Server-side translation function
+const getServerTranslation = (locale: string) => {
+  const messages =
+    locale === 'lv' ? lvMessages : locale === 'ru' ? ruMessages : enMessages;
+
+  return (key: string) => {
+    const keys = key.split('.');
+    let value: any = messages;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || key;
+  };
+};
+
 interface FormattedComponent {
   id: string;
   name: string;
@@ -22,30 +42,35 @@ interface FormattedComponent {
   sku: string | null;
 }
 
-export async function GET(request: NextRequest) {  try {
+export async function GET(request: NextRequest) {
+  try {
     const { searchParams } = new URL(request.url);
     const categorySlug = searchParams.get('category');
+    const locale = searchParams.get('locale') || 'en'; // Extract locale from query params
+    const t = getServerTranslation(locale); // Create translation function
 
     let whereClause: any = {
       category: {
-        type: 'component'
+        type: 'component',
       },
-      quantity: { gt: 0 }
+      quantity: { gt: 0 },
     };
 
     let category;
-    if (categorySlug) {      category = await prisma.componentCategory.findFirst({
-        where: { 
-          slug: categorySlug
-        }
+    if (categorySlug) {
+      category = await prisma.componentCategory.findFirst({
+        where: {
+          slug: categorySlug,
+        },
       });
-      
+
       if (!category) {
         return NextResponse.json(
           { error: `Category not found for slug: ${categorySlug}` },
           { status: 404 }
         );
-      }      whereClause.categoryId = category.id;
+      }
+      whereClause.categoryId = category.id;
     }
 
     const components = await prisma.component.findMany({
@@ -60,12 +85,13 @@ export async function GET(request: NextRequest) {  try {
         psu: true,
         cooling: true,
         caseModel: true,
-      }
-    });    const formattedComponents = components.map((p: any) => {
+      },
+    });
+    const formattedComponents = components.map((p: any) => {
       let specifications: Record<string, string> = {};
-      
+
       if (p.subType) specifications['subType'] = p.subType;
-        if (p.cpu) {
+      if (p.cpu) {
         specifications['brand'] = p.cpu.brand;
         specifications['series'] = p.cpu.series;
         specifications['cores'] = p.cpu.cores.toString();
@@ -77,7 +103,8 @@ export async function GET(request: NextRequest) {  try {
         specifications['integratedGpu'] = p.cpu.integratedGpu ? 'Yes' : 'No';
       } else if (p.gpu) {
         specifications['brand'] = p.gpu.brand;
-        specifications['videoMemoryCapacity'] = p.gpu.videoMemoryCapacity.toString();
+        specifications['videoMemoryCapacity'] =
+          p.gpu.videoMemoryCapacity.toString();
         specifications['memoryType'] = p.gpu.memoryType;
         specifications['fanCount'] = p.gpu.fanCount.toString();
         specifications['chipType'] = p.gpu.chipType;
@@ -90,15 +117,26 @@ export async function GET(request: NextRequest) {  try {
         specifications['socket'] = p.motherboard.socket;
         specifications['memorySlots'] = p.motherboard.memorySlots.toString();
         specifications['processorSupport'] = p.motherboard.processorSupport;
-        specifications['memoryTypeSupported'] = p.motherboard.memoryTypeSupported;
-        specifications['maxRamCapacity'] = p.motherboard.maxRamCapacity.toString();
-        specifications['maxMemoryFrequency'] = p.motherboard.maxMemoryFrequency.toString();
-        specifications['maxVideoCards'] = p.motherboard.maxVideoCards.toString();
+        specifications['memoryTypeSupported'] =
+          p.motherboard.memoryTypeSupported;
+        specifications['maxRamCapacity'] =
+          p.motherboard.maxRamCapacity.toString();
+        specifications['maxMemoryFrequency'] =
+          p.motherboard.maxMemoryFrequency.toString();
+        specifications['maxVideoCards'] =
+          p.motherboard.maxVideoCards.toString();
         specifications['sataPorts'] = p.motherboard.sataPorts.toString();
         specifications['m2Slots'] = p.motherboard.m2Slots.toString();
-        specifications['sliCrossfireSupport'] = p.motherboard.sliCrossfireSupport ? 'Yes' : 'No';
-        specifications['wifiBluetooth'] = p.motherboard.wifiBluetooth ? 'Yes' : 'No';
-        specifications['nvmeSupport'] = p.motherboard.nvmeSupport ? 'Yes' : 'No';
+        specifications['sliCrossfireSupport'] = p.motherboard
+          .sliCrossfireSupport
+          ? 'Yes'
+          : 'No';
+        specifications['wifiBluetooth'] = p.motherboard.wifiBluetooth
+          ? 'Yes'
+          : 'No';
+        specifications['nvmeSupport'] = p.motherboard.nvmeSupport
+          ? 'Yes'
+          : 'No';
       } else if (p.ram) {
         specifications['brand'] = p.ram.brand;
         specifications['moduleCount'] = p.ram.moduleCount.toString();
@@ -122,7 +160,8 @@ export async function GET(request: NextRequest) {  try {
         specifications['pciEConnections'] = p.psu.pciEConnections.toString();
         specifications['pfc'] = p.psu.pfc ? 'Yes' : 'No';
         specifications['hasFan'] = p.psu.hasFan ? 'Yes' : 'No';
-        specifications['molexPataConnections'] = p.psu.molexPataConnections.toString();
+        specifications['molexPataConnections'] =
+          p.psu.molexPataConnections.toString();
       } else if (p.cooling) {
         specifications['brand'] = p.cooling.brand;
         specifications['socket'] = p.cooling.socket;
@@ -130,7 +169,9 @@ export async function GET(request: NextRequest) {  try {
         specifications['fanSpeed'] = p.cooling.fanSpeed.toString();
       } else if (p.caseModel) {
         specifications['brand'] = p.caseModel.brand;
-        specifications['powerSupplyIncluded'] = p.caseModel.powerSupplyIncluded ? 'Yes' : 'No';
+        specifications['powerSupplyIncluded'] = p.caseModel.powerSupplyIncluded
+          ? 'Yes'
+          : 'No';
         specifications['color'] = p.caseModel.color;
         specifications['material'] = p.caseModel.material;
         specifications['audioIn'] = p.caseModel.audioIn ? 'Yes' : 'No';
@@ -142,7 +183,9 @@ export async function GET(request: NextRequest) {  try {
         specifications['slots525'] = p.caseModel.slots525.toString();
         specifications['slots35'] = p.caseModel.slots35.toString();
         specifications['slots25'] = p.caseModel.slots25.toString();
-        specifications['waterCoolingSupport'] = p.caseModel.waterCoolingSupport ? 'Yes' : 'No';
+        specifications['waterCoolingSupport'] = p.caseModel.waterCoolingSupport
+          ? 'Yes'
+          : 'No';
       }
 
       return {
@@ -151,7 +194,7 @@ export async function GET(request: NextRequest) {  try {
         description: p.description,
         price: p.price,
         stock: p.quantity,
-        imageUrl: p.imagesUrl, 
+        imageUrl: p.imagesUrl,
         categoryId: p.categoryId,
         categoryName: p.category.name,
         specifications,
@@ -167,18 +210,20 @@ export async function GET(request: NextRequest) {  try {
         cooling: p.cooling,
         caseModel: p.caseModel,
       };
-    });    const categories = categorySlug 
+    });
+    const categories = categorySlug
       ? [category!]
       : await prisma.componentCategory.findMany({
           where: {
-            type: 'component'
-          }
-        });      let filterGroups: any[] = [];
+            type: 'component',
+          },
+        });
+    let filterGroups: any[] = [];
     if (category && formattedComponents.length > 0) {
       switch (category.slug) {
         case 'cpu':
         case 'processors':
-          filterGroups = createCpuFilterGroups(formattedComponents);
+          filterGroups = createCpuFilterGroups(formattedComponents, t);
           break;
         case 'gpu':
         case 'graphics-cards':
@@ -219,12 +264,14 @@ export async function GET(request: NextRequest) {  try {
       categories: categories || [],
       components: formattedComponents || [],
       specifications: [],
-      filterGroups: filterGroups
+      filterGroups: filterGroups,
     });
   } catch (error) {
     console.error('Error in components API:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
       { status: 500 }
     );
   }

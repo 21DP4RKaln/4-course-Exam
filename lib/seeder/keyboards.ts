@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedKeyboards(prisma: PrismaClient) {
   // Get all peripherals with subType 'keyboards'
   const keyboardPeripherals = await prisma.peripheral.findMany({
-    where: { subType: 'keyboards' }
+    where: { subType: 'keyboards' },
   });
 
   // Prepare Keyboard entries
@@ -12,36 +12,54 @@ export async function seedKeyboards(prisma: PrismaClient) {
   // For each Keyboard peripheral, create a detailed Keyboard entry
   for (let i = 0; i < keyboardPeripherals.length; i++) {
     const peripheral = keyboardPeripherals[i];
-    
+
     // Parse existing specifications if available
-    const specs = peripheral.specifications ? JSON.parse(peripheral.specifications.toString()) : {};
-    
+    const specs = peripheral.specifications
+      ? JSON.parse(peripheral.specifications.toString())
+      : {};
+
     // Get manufacturer from specs or set a default
-    const manufacturer = specs.manufacturer || ['Corsair', 'Logitech', 'Razer', 'SteelSeries', 'HyperX'][i % 5];
-    
+    const manufacturer =
+      specs.manufacturer ||
+      ['Corsair', 'Logitech', 'Razer', 'SteelSeries', 'HyperX'][i % 5];
+
     // Switch types
-    const switchTypes = ['Cherry MX Red', 'Cherry MX Blue', 'Cherry MX Brown', 'Razer Green', 'SteelSeries QX2', 'Logitech GX Blue', 'Corsair OPX'];
+    const switchTypes = [
+      'Cherry MX Red',
+      'Cherry MX Blue',
+      'Cherry MX Brown',
+      'Razer Green',
+      'SteelSeries QX2',
+      'Logitech GX Blue',
+      'Corsair OPX',
+    ];
     const switchType = specs.switchType || switchTypes[i % switchTypes.length];
-    
+
     // Layout types
     const layouts = ['Full-size', 'TKL', '75%', '65%', '60%'];
     const layout = specs.layout || layouts[i % layouts.length];
-    
+
     // Size types (required field in schema)
     const sizes = ['Full-size', 'TKL', 'Compact', 'Mini', '60%'];
     const size = specs.size || sizes[i % sizes.length];
-    
+
     // Connection types (required field in schema)
-    const connections = ['Wired', 'Wireless 2.4GHz', 'Bluetooth', 'Wireless 2.4GHz + Bluetooth', 'Wired USB-C'];
+    const connections = [
+      'Wired',
+      'Wireless 2.4GHz',
+      'Bluetooth',
+      'Wireless 2.4GHz + Bluetooth',
+      'Wired USB-C',
+    ];
     const connection = specs.connection || connections[i % connections.length];
-    
+
     // Backlight types
     const backlights = ['RGB', 'RGB', 'White', 'RGB', 'None'];
     const backlight = specs.backlight || backlights[i % backlights.length];
-    
+
     // Key rollover
     const keyRollover = specs.keyRollover || 'N-Key Rollover';
-    
+
     // Additional specs to store in specifications JSON
     const additionalSpecs = {
       backlight,
@@ -50,22 +68,22 @@ export async function seedKeyboards(prisma: PrismaClient) {
       passthrough: i % 4 === 0 ? 'USB 2.0' : null,
       polling: `${125 * Math.pow(2, i % 4)}Hz`,
       programmableKeys: i % 2 === 0,
-      macroKeys: i % 5 === 0 ? 5 : (i % 5 === 1 ? 3 : 0),
+      macroKeys: i % 5 === 0 ? 5 : i % 5 === 1 ? 3 : 0,
       dimensions: `${350 + (i % 10) * 10}mm x ${130 + (i % 5) * 5}mm x ${40 + (i % 3) * 2}mm`,
-      hotSwappable: i % 3 === 0
+      hotSwappable: i % 3 === 0,
     };
-    
+
     // Update peripheral specifications
     await prisma.peripheral.update({
       where: { id: peripheral.id },
       data: {
         specifications: JSON.stringify({
           ...specs,
-          ...additionalSpecs
-        })
-      }
+          ...additionalSpecs,
+        }),
+      },
     });
-    
+
     keyboards.push({
       peripheralId: peripheral.id,
       manufacturer,
@@ -75,7 +93,7 @@ export async function seedKeyboards(prisma: PrismaClient) {
       switchType,
       rgb: backlight === 'RGB',
       numpad: layout === 'Full-size',
-      multimedia: i % 2 === 0
+      multimedia: i % 2 === 0,
     });
   }
 
@@ -84,10 +102,10 @@ export async function seedKeyboards(prisma: PrismaClient) {
     await prisma.keyboard.upsert({
       where: { peripheralId: keyboard.peripheralId },
       update: keyboard,
-      create: keyboard
+      create: keyboard,
     });
   }
-  
+
   // Call the function to add 10 more keyboards
   await addMoreKeyboards(prisma);
 }
@@ -95,15 +113,16 @@ export async function seedKeyboards(prisma: PrismaClient) {
 /**
  * Adds 10 additional keyboard entries with unique specifications
  */
-async function addMoreKeyboards(prisma: PrismaClient) {  const category = await prisma.peripheralCategory.findFirst({
-    where: { slug: 'keyboard' }
+async function addMoreKeyboards(prisma: PrismaClient) {
+  const category = await prisma.peripheralCategory.findFirst({
+    where: { slug: 'keyboard' },
   });
-  
+
   if (!category) {
     console.error('Keyboard category not found');
     return;
   }
-  
+
   // Define new keyboard models with interesting specifications
   const newKeyboardModels = [
     {
@@ -138,8 +157,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         wirelessRange: '10m',
         batteryLife: '300 hours',
         knob: true,
-        caseType: 'CNC Aluminum'
-      }
+        caseType: 'CNC Aluminum',
+      },
     },
     {
       name: 'Wooting 60HE+',
@@ -172,8 +191,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         rapidTrigger: true,
         adjustableActuationPoint: true,
         dynamicActuation: true,
-        magneticHallEffect: true
-      }
+        magneticHallEffect: true,
+      },
     },
     {
       name: 'GMMK Pro',
@@ -206,8 +225,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         gasketMounted: true,
         qmkCompatable: true,
         plateOptions: 'Aluminum, Brass, Polycarbonate',
-        casingMaterial: 'CNC Machined Aluminum'
-      }
+        casingMaterial: 'CNC Machined Aluminum',
+      },
     },
     {
       name: 'Nuphy Air75 V2',
@@ -240,8 +259,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         multiDeviceSupport: true,
         batteryLife: '45 hours',
         ultraThin: true,
-        compatibleDevices: 'Windows, Mac, iOS, Android'
-      }
+        compatibleDevices: 'Windows, Mac, iOS, Android',
+      },
     },
     {
       name: 'Ducky One 3',
@@ -274,8 +293,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         triplelayerDamping: true,
         extraSilencing: true,
         noStabilizers: false,
-        onboardMemory: '3 profiles'
-      }
+        onboardMemory: '3 profiles',
+      },
     },
     {
       name: 'Epomaker TH96',
@@ -309,8 +328,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         southFacingLEDs: true,
         gasketMount: true,
         compatibilityModes: 'Windows, Mac',
-        foamInserts: true
-      }
+        foamInserts: true,
+      },
     },
     {
       name: 'Royal Kludge RK84',
@@ -342,8 +361,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         batteryLife: '200 hours',
         multiDeviceConnection: '3 devices',
         software: 'RK Software',
-        compatibilityModes: 'Windows, Mac, Android'
-      }
+        compatibilityModes: 'Windows, Mac, Android',
+      },
     },
     {
       name: 'AKKO ACR Pro 75',
@@ -377,8 +396,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         foamInserts: true,
         southFacingLEDs: true,
         plateMount: 'PC',
-        colorSchemes: 'Multiple available'
-      }
+        colorSchemes: 'Multiple available',
+      },
     },
     {
       name: 'Drop CTRL V2',
@@ -390,7 +409,7 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
       rgb: true,
       numpad: false,
       multimedia: true,
-      price: 250.00,
+      price: 250.0,
       specs: {
         manufacturer: 'Drop',
         connectivity: 'Wired',
@@ -412,8 +431,8 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         southFacingLEDs: true,
         dampingFoam: true,
         newStabilizers: true,
-        magnets: true
-      }
+        magnets: true,
+      },
     },
     {
       name: 'Leopold FC980M PD',
@@ -425,7 +444,7 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
       rgb: false,
       numpad: true,
       multimedia: false,
-      price: 139.00,
+      price: 139.0,
       specs: {
         manufacturer: 'Leopold',
         connectivity: 'Wired',
@@ -447,25 +466,25 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         dyeSubLegends: true,
         stepSculptureProfileKeycaps: true,
         premiumBuild: true,
-        noSoftware: true
-      }
-    }
+        noSoftware: true,
+      },
+    },
   ];
-  
+
   // Create new keyboard peripherals and keyboard entries
   for (let i = 0; i < newKeyboardModels.length; i++) {
     const model = newKeyboardModels[i];
-    
+
     // Generate a unique SKU
     const sku = `P-KBD-${model.manufacturer.substring(0, 3).toUpperCase()}-${2000 + i}`;
-    
+
     // Create peripheral description
     let description = `${model.name} - Premium ${model.layout} mechanical keyboard with ${model.switchType} switches`;
     if (model.rgb) {
       description += ' and RGB backlighting';
     }
     description += `. ${model.connection} connectivity.`;
-    
+
     // Create the peripheral entry
     const peripheral = await prisma.peripheral.create({
       data: {
@@ -478,9 +497,9 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         sku,
         subType: 'keyboards',
         imageUrl: `/products/peripherals/keyboards${(i % 3) + 1}.jpg`,
-      }
+      },
     });
-    
+
     // Create the keyboard entry
     await prisma.keyboard.create({
       data: {
@@ -492,12 +511,12 @@ async function addMoreKeyboards(prisma: PrismaClient) {  const category = await 
         connection: model.connection,
         rgb: model.rgb,
         numpad: model.numpad,
-        multimedia: model.multimedia
-      }
+        multimedia: model.multimedia,
+      },
     });
-    
+
     console.log(`Added keyboard: ${model.name}`);
   }
-  
+
   console.log('Added 10 additional keyboards');
 }

@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
-import { TrendingDown, TrendingUp } from 'lucide-react'
+import { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+import { TrendingDown, TrendingUp } from 'lucide-react';
 
 interface StatsCardProps {
-  title: string
-  value: string | number
-  icon: ReactNode
-  description?: string
+  title: string;
+  value: string | number;
+  icon: ReactNode;
+  description?: string;
   trend?: {
-    value: number
-    isPositive: boolean
-  }
-  className?: string
+    value: number;
+    isPositive: boolean;
+  };
+  className?: string;
 }
 
 export function StatsCard({
@@ -22,13 +22,15 @@ export function StatsCard({
   icon,
   description,
   trend,
-  className
+  className,
 }: StatsCardProps) {
   return (
-    <div className={cn(
-      "bg-white dark:bg-stone-950 rounded-lg shadow-sm p-6 border border-neutral-200 dark:border-neutral-700",
-      className
-    )}>
+    <div
+      className={cn(
+        'bg-white dark:bg-stone-950 rounded-lg shadow-sm p-6 border border-neutral-200 dark:border-neutral-700',
+        className
+      )}
+    >
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
@@ -39,10 +41,14 @@ export function StatsCard({
               {value}
             </p>
             {trend && (
-              <div className={cn(
-                "flex items-center text-sm font-medium",
-                trend.isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-              )}>
+              <div
+                className={cn(
+                  'flex items-center text-sm font-medium',
+                  trend.isPositive
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-red-600 dark:text-red-400'
+                )}
+              >
                 {trend.isPositive ? (
                   <TrendingUp className="w-4 h-4 mr-1" />
                 ) : (
@@ -59,16 +65,20 @@ export function StatsCard({
           )}
         </div>
         <div className="ml-4 flex-shrink-0">
-          <div className={cn(
-            "p-3 rounded-full",
-            trend?.isPositive ? "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400" :
-            trend?.isPositive === false ? "bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400" :
-            "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-          )}>
+          <div
+            className={cn(
+              'p-3 rounded-full',
+              trend?.isPositive
+                ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
+                : trend?.isPositive === false
+                  ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                  : 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+            )}
+          >
             {icon}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

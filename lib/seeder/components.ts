@@ -15,7 +15,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
   const cpuComponents = [
     {
       name: 'AMD Ryzen 9 7950X',
-      description: 'High-performance 16-core processor with exceptional multi-threading capabilities',
+      description:
+        'High-performance 16-core processor with exceptional multi-threading capabilities',
       price: priceWith99(600, 800),
       quantity: 15,
       imagesUrl: '/products/cpu/amd-7950x.jpg',
@@ -32,7 +33,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5200,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'AMD Ryzen 9 9950X',
@@ -53,7 +54,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5600,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'AMD Ryzen 7 9800X3D',
@@ -74,7 +75,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5200,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'AMD Ryzen 7 9700X',
@@ -95,7 +96,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5600,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'AMD Ryzen 5 9500',
@@ -116,7 +117,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5200,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'AMD Ryzen 5 9600X',
@@ -137,7 +138,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5600,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'Intel Core i9-14900K',
@@ -158,7 +159,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5600,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'Intel Core i9-13900K',
@@ -179,7 +180,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5600,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'Intel Core i7-14700K',
@@ -200,11 +201,12 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5600,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'Intel Core i5-14600K',
-      description: 'Powerful mid-range processor with overclocking capabilities',
+      description:
+        'Powerful mid-range processor with overclocking capabilities',
       price: priceWith99(320, 400),
       quantity: 25,
       imagesUrl: '/products/cpu/intel-14600k.jpg',
@@ -221,11 +223,12 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 5600,
         integratedGpu: true,
-      }
+      },
     },
     {
       name: 'Intel Core i5-14400F',
-      description: 'Excellent mid-range processor for gaming and content creation',
+      description:
+        'Excellent mid-range processor for gaming and content creation',
       price: priceWith99(200, 280),
       quantity: 30,
       imagesUrl: '/products/cpu/intel-14400f.jpg',
@@ -242,7 +245,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 4800,
         integratedGpu: false,
-      }
+      },
     },
     {
       name: 'Intel Core i3-14100F',
@@ -263,19 +266,21 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxRamCapacity: 128,
         maxRamFrequency: 4800,
         integratedGpu: false,
-      }
-    }
-  ];  // GPU Components
+      },
+    },
+  ]; // GPU Components
   const gpuComponents = [
     {
       name: 'ASUS ROG Strix RTX 4090',
-      description: 'Ultimate ASUS graphics card for 4K gaming and content creation',
+      description:
+        'Ultimate ASUS graphics card for 4K gaming and content creation',
       price: priceWith99(1500, 1800),
       quantity: 8,
       imagesUrl: '/products/gpu/rtx-4090.jpg',
       sku: 'GPU-ASUS-RTX-4090',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'ASUS',
         subBrand: 'NVIDIA',
         videoMemoryCapacity: 24,
@@ -287,7 +292,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RTX 4090',
-      }
+      },
     },
     {
       name: 'MSI Gaming X Trio RTX 4090 Ti',
@@ -297,7 +302,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/nvidia-geforce rtx 4090 ti.jpg',
       sku: 'GPU-MSI-RTX-4090TI',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'MSI',
         subBrand: 'NVIDIA',
         videoMemoryCapacity: 24,
@@ -309,7 +315,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RTX 4090 Ti',
-      }
+      },
     },
     {
       name: 'Gigabyte Windforce RTX 4080 Super',
@@ -319,7 +325,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/nvidia-geforce rtx 4080 super.jpg',
       sku: 'GPU-GIGABYTE-RTX-4080SUPER',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'Gigabyte',
         subBrand: 'NVIDIA',
         videoMemoryCapacity: 16,
@@ -331,7 +338,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RTX 4080 Super',
-      }
+      },
     },
     {
       name: 'EVGA FTW3 Ultra RTX 4070 Ti',
@@ -341,7 +348,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/nvidia-geforce rtx 4070 ti.jpg',
       sku: 'GPU-EVGA-RTX-4070TI',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'EVGA',
         subBrand: 'NVIDIA',
         videoMemoryCapacity: 12,
@@ -353,7 +361,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RTX 4070 Ti',
-      }
+      },
     },
     {
       name: 'Zotac Twin Edge RTX 4060 Ti',
@@ -363,7 +371,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/nvidia-geforce rtx 4060 ti.jpg',
       sku: 'GPU-ZOTAC-RTX-4060TI',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'Zotac',
         subBrand: 'NVIDIA',
         videoMemoryCapacity: 16,
@@ -375,7 +384,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RTX 4060 Ti',
-      }
+      },
     },
     {
       name: 'PNY Verto RTX 4060',
@@ -385,7 +394,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/nvidia-geforce rtx 4060.jpg',
       sku: 'GPU-PNY-RTX-4060',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'PNY',
         subBrand: 'NVIDIA',
         videoMemoryCapacity: 8,
@@ -397,7 +407,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RTX 4060',
-      }
+      },
     },
     {
       name: 'Sapphire Nitro+ RX 7900 XTX',
@@ -407,7 +417,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/rx-7900-xtx.jpg',
       sku: 'GPU-SAPPHIRE-RX-7900XTX',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'Sapphire',
         subBrand: 'AMD',
         videoMemoryCapacity: 24,
@@ -419,7 +430,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RX 7900 XTX',
-      }
+      },
     },
     {
       name: 'PowerColor Red Devil RX 7900 XT',
@@ -429,7 +440,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/amd-radeon rx 7900 xt.jpg',
       sku: 'GPU-POWERCOLOR-RX-7900XT',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'PowerColor',
         subBrand: 'AMD',
         videoMemoryCapacity: 20,
@@ -441,7 +453,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RX 7900 XT',
-      }
+      },
     },
     {
       name: 'ASRock Phantom Gaming RX 7800 XT',
@@ -451,7 +463,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/amd-radeon rx 7800 xt.jpg',
       sku: 'GPU-ASROCK-RX-7800XT',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'ASRock',
         subBrand: 'AMD',
         videoMemoryCapacity: 16,
@@ -463,7 +476,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RX 7800 XT',
-      }
+      },
     },
     {
       name: 'XFX Speedster MERC RX 7700 XT',
@@ -473,7 +486,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/amd-radeon rx 7700 xt.jpg',
       sku: 'GPU-XFX-RX-7700XT',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'XFX',
         subBrand: 'AMD',
         videoMemoryCapacity: 12,
@@ -485,7 +499,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RX 7700 XT',
-      }
+      },
     },
     {
       name: 'ASUS TUF Gaming RX 7600 XT',
@@ -495,7 +509,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/amd-radeon rx 7600 xt.jpg',
       sku: 'GPU-ASUS-RX-7600XT',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'ASUS',
         subBrand: 'AMD',
         videoMemoryCapacity: 16,
@@ -507,8 +522,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RX 7600 XT',
-      }
-    },    {
+      },
+    },
+    {
       name: 'MSI Gaming X RX 8000 XT',
       description: 'Next-generation AMD graphics card with advanced features',
       price: priceWith99(600, 750),
@@ -516,7 +532,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/amd-radeon rx 8000 xt.jpg',
       sku: 'GPU-MSI-RX-8000XT',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'MSI',
         subBrand: 'AMD',
         videoMemoryCapacity: 16,
@@ -528,7 +545,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RDNA 4',
-      }
+      },
     },
     {
       name: 'Gigabyte Aorus RTX 4070',
@@ -538,7 +555,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/gpu/nvidia-geforce rtx 4070.jpg',
       sku: 'GPU-GIGABYTE-RTX-4070',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'Gigabyte',
         subBrand: 'NVIDIA',
         videoMemoryCapacity: 12,
@@ -550,17 +568,19 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RTX 4070',
-      }
+      },
     },
     {
       name: 'EVGA Black Edition RTX 4050',
-      description: 'Budget-friendly entry-level graphics card for casual gaming',
+      description:
+        'Budget-friendly entry-level graphics card for casual gaming',
       price: priceWith99(200, 280),
       quantity: 30,
       imagesUrl: '/products/gpu/nvidia-geforce rtx 4050.jpg',
       sku: 'GPU-EVGA-RTX-4050',
       subType: 'discrete',
-      categoryId: gpuCategory.id,      gpu: {
+      categoryId: gpuCategory.id,
+      gpu: {
         brand: 'EVGA',
         subBrand: 'NVIDIA',
         videoMemoryCapacity: 6,
@@ -572,8 +592,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasDisplayPort: true,
         hasHDMI: true,
         architecture: 'RTX 4050',
-      }
-    }
+      },
+    },
   ];
   // RAM Components
   const ramComponents = [
@@ -585,7 +605,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/gskill-ddr4-rgb.jpg',
       sku: 'RAM-GSKILL-32GB-3600',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'G.Skill',
         moduleCount: 2,
         memoryType: 'DDR4',
@@ -593,7 +614,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: true,
         voltage: 1.35,
         gb: 32,
-      }
+      },
     },
     {
       name: 'G.Skill Trident Z RGB 32GB DDR5-6000',
@@ -603,7 +624,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/gskill-ddr5-rgb.jpg',
       sku: 'RAM-GSKILL-32GB-6000',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'G.Skill',
         moduleCount: 2,
         memoryType: 'DDR5',
@@ -611,7 +633,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: true,
         voltage: 1.35,
         gb: 32,
-      }
+      },
     },
     {
       name: 'Corsair Vengeance RGB Pro 32GB DDR4-3200',
@@ -621,7 +643,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/corsair-ddr4-rgb.jpg',
       sku: 'RAM-CORSAIR-32GB-3200',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Corsair',
         moduleCount: 2,
         memoryType: 'DDR4',
@@ -629,17 +652,19 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: true,
         voltage: 1.35,
         gb: 32,
-      }
+      },
     },
     {
       name: 'Corsair Dominator Platinum RGB 32GB DDR5-5600',
-      description: 'Premium DDR5 memory with advanced overclocking capabilities',
+      description:
+        'Premium DDR5 memory with advanced overclocking capabilities',
       price: priceWith99(200, 250),
       quantity: 20,
       imagesUrl: '/products/ram/corsair-ddr5-rgb.jpg',
       sku: 'RAM-CORSAIR-32GB-5600',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Corsair',
         moduleCount: 2,
         memoryType: 'DDR5',
@@ -647,7 +672,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: true,
         voltage: 1.1,
         gb: 32,
-      }
+      },
     },
     {
       name: 'Kingston Fury Beast 16GB DDR5-5600',
@@ -657,7 +682,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/kingston-ddr5-standard.jpg',
       sku: 'RAM-KINGSTON-16GB-5600',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Kingston',
         moduleCount: 2,
         memoryType: 'DDR5',
@@ -665,7 +691,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.1,
         gb: 16,
-      }
+      },
     },
     {
       name: 'Kingston Fury Beast 16GB DDR4-3200',
@@ -675,7 +701,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/kingston-ddr4-standard.jpg',
       sku: 'RAM-KINGSTON-16GB-3200',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Kingston',
         moduleCount: 2,
         memoryType: 'DDR4',
@@ -683,7 +710,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.2,
         gb: 16,
-      }
+      },
     },
     {
       name: 'Crucial Ballistix 16GB DDR4-3200',
@@ -693,7 +720,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/crucial-ddr4-standard.jpg',
       sku: 'RAM-CRUCIAL-16GB-3200',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Crucial',
         moduleCount: 2,
         memoryType: 'DDR4',
@@ -701,7 +729,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.2,
         gb: 16,
-      }
+      },
     },
     {
       name: 'Crucial Pro 32GB DDR5-5600',
@@ -711,7 +739,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/crucial-ddr5-standard.jpg',
       sku: 'RAM-CRUCIAL-32GB-5600',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Crucial',
         moduleCount: 2,
         memoryType: 'DDR5',
@@ -719,7 +748,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.1,
         gb: 32,
-      }
+      },
     },
     {
       name: 'Patriot Viper Steel 16GB DDR4-3600',
@@ -729,7 +758,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/patriot-ddr4-rgb.jpg',
       sku: 'RAM-PATRIOT-16GB-3600',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Patriot',
         moduleCount: 2,
         memoryType: 'DDR4',
@@ -737,7 +767,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.35,
         gb: 16,
-      }
+      },
     },
     {
       name: 'TeamGroup T-Force Delta RGB 32GB DDR5-6400',
@@ -747,7 +777,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/teamgroup-ddr5-rgb.jpg',
       sku: 'RAM-TEAMGROUP-32GB-6400',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'TeamGroup',
         moduleCount: 2,
         memoryType: 'DDR5',
@@ -755,7 +786,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: true,
         voltage: 1.4,
         gb: 32,
-      }
+      },
     },
     {
       name: 'G.Skill Ripjaws V 16GB DDR4-3200',
@@ -765,7 +796,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/gskill-ddr4-rgb.jpg',
       sku: 'RAM-GSKILL-16GB-3200',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'G.Skill',
         moduleCount: 2,
         memoryType: 'DDR4',
@@ -773,7 +805,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.35,
         gb: 16,
-      }
+      },
     },
     {
       name: 'Corsair Vengeance LPX 64GB DDR4-3200',
@@ -783,7 +815,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/corsair-ddr4-rgb.jpg',
       sku: 'RAM-CORSAIR-64GB-3200',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Corsair',
         moduleCount: 4,
         memoryType: 'DDR4',
@@ -791,7 +824,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.35,
         gb: 64,
-      }
+      },
     },
     {
       name: 'Kingston Fury Renegade 64GB DDR5-6000',
@@ -801,7 +834,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/kingston-ddr5-standard.jpg',
       sku: 'RAM-KINGSTON-64GB-6000',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Kingston',
         moduleCount: 4,
         memoryType: 'DDR5',
@@ -809,7 +843,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.35,
         gb: 64,
-      }
+      },
     },
     {
       name: 'Crucial Ballistix MAX 32GB DDR4-4000',
@@ -819,7 +853,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/ram/crucial-ddr4-standard.jpg',
       sku: 'RAM-CRUCIAL-32GB-4000',
       subType: 'desktop',
-      categoryId: ramCategory.id,      ram: {
+      categoryId: ramCategory.id,
+      ram: {
         brand: 'Crucial',
         moduleCount: 2,
         memoryType: 'DDR4',
@@ -827,8 +862,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         backlighting: false,
         voltage: 1.4,
         gb: 32,
-      }
-    }
+      },
+    },
   ];
   // Storage Components
   const storageComponents = [
@@ -850,8 +885,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 4.0',
         writeSpeed: 6900,
         readSpeed: 7000,
-        powerConsumption: 6.8
-      }
+        powerConsumption: 6.8,
+      },
     },
     {
       name: 'Samsung 980 PRO 2TB NVMe SSD',
@@ -871,8 +906,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 4.0',
         writeSpeed: 6900,
         readSpeed: 7000,
-        powerConsumption: 6.8
-      }
+        powerConsumption: 6.8,
+      },
     },
     {
       name: 'Western Digital Black SN850X 1TB',
@@ -892,8 +927,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 4.0',
         writeSpeed: 6600,
         readSpeed: 7300,
-        powerConsumption: 5.8
-      }
+        powerConsumption: 5.8,
+      },
     },
     {
       name: 'Western Digital Black SN850X 2TB',
@@ -913,8 +948,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 4.0',
         writeSpeed: 6600,
         readSpeed: 7300,
-        powerConsumption: 5.8
-      }
+        powerConsumption: 5.8,
+      },
     },
     {
       name: 'Crucial P5 Plus 1TB NVMe SSD',
@@ -934,8 +969,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 4.0',
         writeSpeed: 5000,
         readSpeed: 6600,
-        powerConsumption: 7.5
-      }
+        powerConsumption: 7.5,
+      },
     },
     {
       name: 'Corsair MP600 PRO 2TB NVMe SSD',
@@ -955,8 +990,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 4.0',
         writeSpeed: 6500,
         readSpeed: 7000,
-        powerConsumption: 6.0
-      }
+        powerConsumption: 6.0,
+      },
     },
     {
       name: 'Sabrent Rocket 4.0 1TB NVMe SSD',
@@ -976,8 +1011,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 4.0',
         writeSpeed: 6000,
         readSpeed: 5000,
-        powerConsumption: 6.2
-      }
+        powerConsumption: 6.2,
+      },
     },
     {
       name: 'Kioxia Exceria Pro 1TB NVMe SSD',
@@ -997,8 +1032,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 4.0',
         writeSpeed: 6400,
         readSpeed: 7300,
-        powerConsumption: 5.9
-      }
+        powerConsumption: 5.9,
+      },
     },
     {
       name: 'Kingston NV2 1TB NVMe SSD',
@@ -1018,8 +1053,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'PCIe 3.0',
         writeSpeed: 1700,
         readSpeed: 3500,
-        powerConsumption: 3.5
-      }
+        powerConsumption: 3.5,
+      },
     },
     {
       name: 'Seagate Barracuda 2TB HDD',
@@ -1039,8 +1074,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'SATA 6Gb/s',
         writeSpeed: 190,
         readSpeed: 220,
-        powerConsumption: 4.5
-      }
+        powerConsumption: 4.5,
+      },
     },
     {
       name: 'Seagate Barracuda 4TB HDD',
@@ -1060,8 +1095,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'SATA 6Gb/s',
         writeSpeed: 190,
         readSpeed: 220,
-        powerConsumption: 5.3
-      }
+        powerConsumption: 5.3,
+      },
     },
     {
       name: 'Western Digital Blue 1TB HDD',
@@ -1081,8 +1116,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'SATA 6Gb/s',
         writeSpeed: 150,
         readSpeed: 150,
-        powerConsumption: 3.8
-      }
+        powerConsumption: 3.8,
+      },
     },
     {
       name: 'Toshiba X300 6TB HDD',
@@ -1102,8 +1137,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'SATA 6Gb/s',
         writeSpeed: 180,
         readSpeed: 220,
-        powerConsumption: 6.4
-      }
+        powerConsumption: 6.4,
+      },
     },
     {
       name: 'Samsung 870 EVO 1TB SATA SSD',
@@ -1123,8 +1158,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'SATA 6Gb/s',
         writeSpeed: 530,
         readSpeed: 560,
-        powerConsumption: 2.1
-      }
+        powerConsumption: 2.1,
+      },
     },
     {
       name: 'Crucial MX4 2TB SATA SSD',
@@ -1144,9 +1179,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         compatibility: 'SATA 6Gb/s',
         writeSpeed: 510,
         readSpeed: 560,
-        powerConsumption: 2.5
-      }
-    }
+        powerConsumption: 2.5,
+      },
+    },
   ];
   // PSU Components
   const psuComponents = [
@@ -1158,7 +1193,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/corsair-1600.jpg',
       sku: 'PSU-CORSAIR-RM850X',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'Corsair',
         power: 850,
         sataConnections: 8,
@@ -1167,7 +1203,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 4,
         energyEfficiency: '80+ Gold',
-      }
+      },
     },
     {
       name: 'Corsair HX1600i 1600W 80+ Platinum',
@@ -1177,7 +1213,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/corsair-1600.jpg',
       sku: 'PSU-CORSAIR-HX1600I',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'Corsair',
         power: 1600,
         sataConnections: 12,
@@ -1186,7 +1223,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 6,
         energyEfficiency: '80+ Platinum',
-      }
+      },
     },
     {
       name: 'EVGA SuperNOVA 750W 80+ Platinum',
@@ -1196,7 +1233,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/evga-1300.jpg',
       sku: 'PSU-EVGA-750W-PLAT',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'EVGA',
         power: 750,
         sataConnections: 6,
@@ -1205,7 +1243,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 3,
         energyEfficiency: '80+ Platinum',
-      }
+      },
     },
     {
       name: 'EVGA SuperNOVA 1300W 80+ Gold',
@@ -1215,7 +1253,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/evga-1300.jpg',
       sku: 'PSU-EVGA-1300W-GOLD',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'EVGA',
         power: 1300,
         sataConnections: 10,
@@ -1224,7 +1263,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 5,
         energyEfficiency: '80+ Gold',
-      }
+      },
     },
     {
       name: 'Seasonic Focus GX-1000 1000W 80+ Gold',
@@ -1234,7 +1273,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/seasonic-1000.jpg',
       sku: 'PSU-SEASONIC-GX1000',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'Seasonic',
         power: 1000,
         sataConnections: 8,
@@ -1243,7 +1283,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 4,
         energyEfficiency: '80+ Gold',
-      }
+      },
     },
     {
       name: 'be quiet! Straight Power 11 750W 80+ Platinum',
@@ -1253,7 +1293,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/be-quiet-1200.jpg',
       sku: 'PSU-BEQUIET-SP11-750W',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'be quiet!',
         power: 750,
         sataConnections: 6,
@@ -1262,7 +1303,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 3,
         energyEfficiency: '80+ Platinum',
-      }
+      },
     },
     {
       name: 'be quiet! Dark Power Pro 12 1200W 80+ Titanium',
@@ -1272,7 +1313,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/be-quiet-1200.jpg',
       sku: 'PSU-BEQUIET-DPP12-1200W',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'be quiet!',
         power: 1200,
         sataConnections: 10,
@@ -1281,7 +1323,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 5,
         energyEfficiency: '80+ Titanium',
-      }
+      },
     },
     {
       name: 'Thermaltake Toughpower GF1 1500W 80+ Gold',
@@ -1291,7 +1333,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/thermaltake-1500.jpg',
       sku: 'PSU-THERMALTAKE-GF1-1500W',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'Thermaltake',
         power: 1500,
         sataConnections: 12,
@@ -1300,7 +1343,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 6,
         energyEfficiency: '80+ Gold',
-      }
+      },
     },
     {
       name: 'MSI MPG A1000G 1000W 80+ Gold',
@@ -1310,7 +1353,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/msi-1000.jpg',
       sku: 'PSU-MSI-A1000G',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'MSI',
         power: 1000,
         sataConnections: 8,
@@ -1319,7 +1363,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 4,
         energyEfficiency: '80+ Gold',
-      }
+      },
     },
     {
       name: 'Cooler Master V850 SFX 850W 80+ Gold',
@@ -1329,7 +1373,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/cooler-master-850.jpg',
       sku: 'PSU-CM-V850-SFX',
       subType: 'sfx',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'Cooler Master',
         power: 850,
         sataConnections: 6,
@@ -1338,7 +1383,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 2,
         energyEfficiency: '80+ Gold',
-      }
+      },
     },
     {
       name: 'SilverStone SX700-PT 700W 80+ Platinum',
@@ -1348,7 +1393,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/silverstone-700.jpg',
       sku: 'PSU-SILVERSTONE-SX700PT',
       subType: 'sfx-l',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'SilverStone',
         power: 700,
         sataConnections: 6,
@@ -1357,7 +1403,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 2,
         energyEfficiency: '80+ Platinum',
-      }
+      },
     },
     {
       name: 'Fractal Design Ion+ 860W 80+ Platinum',
@@ -1367,7 +1413,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/fractal-design-750.jpg',
       sku: 'PSU-FRACTAL-ION860',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'Fractal Design',
         power: 860,
         sataConnections: 8,
@@ -1376,7 +1423,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 4,
         energyEfficiency: '80+ Platinum',
-      }
+      },
     },
     {
       name: 'ASUS ROG Strix 1200W 80+ Gold',
@@ -1386,7 +1433,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/psu/asus-1200.jpg',
       sku: 'PSU-ASUS-STRIX1200',
       subType: 'modular',
-      categoryId: psuCategory.id,      psu: {
+      categoryId: psuCategory.id,
+      psu: {
         brand: 'ASUS',
         power: 1200,
         sataConnections: 10,
@@ -1395,14 +1443,15 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 5,
         energyEfficiency: '80+ Gold',
-      }
+      },
     },
     {
       name: 'Cooler Master MWE Gold 650W 80+ Gold',
       description: 'Budget-friendly modular PSU with solid performance',
       price: priceWith99(80, 120),
       quantity: 35,
-      imagesUrl: '/products/psu/cooler-master-850.jpg',      sku: 'PSU-CM-MWE650',
+      imagesUrl: '/products/psu/cooler-master-850.jpg',
+      sku: 'PSU-CM-MWE650',
       subType: 'modular',
       categoryId: psuCategory.id,
       psu: {
@@ -1414,14 +1463,15 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 3,
         energyEfficiency: '80+ Gold',
-      }
+      },
     },
     {
       name: 'Seasonic Prime TX-850 850W 80+ Titanium',
       description: 'Ultra-premium PSU with industry-leading efficiency',
       price: priceWith99(200, 260),
       quantity: 18,
-      imagesUrl: '/products/psu/seasonic-1000.jpg',      sku: 'PSU-SEASONIC-TX850',
+      imagesUrl: '/products/psu/seasonic-1000.jpg',
+      sku: 'PSU-SEASONIC-TX850',
       subType: 'modular',
       categoryId: psuCategory.id,
       psu: {
@@ -1433,8 +1483,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         hasFan: true,
         molexPataConnections: 4,
         energyEfficiency: '80+ Titanium',
-      }
-    }
+      },
+    },
   ];
   // Motherboard Components
   const motherboardComponents = [
@@ -1443,7 +1493,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       description: 'Feature-rich gaming motherboard for AMD Ryzen processors',
       price: priceWith99(200, 280),
       quantity: 20,
-      imagesUrl: '/products/motherboard/asus-z790-atx.jpg',      sku: 'MB-ASUS-B650E-GAMING',
+      imagesUrl: '/products/motherboard/asus-z790-atx.jpg',
+      sku: 'MB-ASUS-B650E-GAMING',
       subType: 'atx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1462,14 +1513,16 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         nvmeSupport: true,
         form: 'ATX',
         compatibility: 'AMD',
-      }
+      },
     },
     {
       name: 'ASUS ROG Maximus Z790-E Gaming',
-      description: 'Premium Intel Z790 motherboard with extreme overclocking features',
+      description:
+        'Premium Intel Z790 motherboard with extreme overclocking features',
       price: priceWith99(350, 450),
       quantity: 15,
-      imagesUrl: '/products/motherboard/asus-z790-e-atx.jpg',      sku: 'MB-ASUS-Z790E-MAXIMUS',
+      imagesUrl: '/products/motherboard/asus-z790-e-atx.jpg',
+      sku: 'MB-ASUS-Z790E-MAXIMUS',
       subType: 'e-atx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1488,14 +1541,15 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         nvmeSupport: true,
         form: 'E-ATX',
         compatibility: 'Intel',
-      }
+      },
     },
     {
       name: 'MSI Z790 Gaming Pro WiFi',
       description: 'Intel Z790 motherboard with advanced gaming features',
       price: priceWith99(180, 250),
       quantity: 22,
-      imagesUrl: '/products/motherboard/msi-z790-itx.jpg',      sku: 'MB-MSI-Z790-GAMING',
+      imagesUrl: '/products/motherboard/msi-z790-itx.jpg',
+      sku: 'MB-MSI-Z790-GAMING',
       subType: 'atx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1514,14 +1568,15 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         nvmeSupport: true,
         form: 'ATX',
         compatibility: 'Intel',
-      }
+      },
     },
     {
       name: 'MSI B760M Pro-B',
       description: 'Compact micro-ATX motherboard for budget builds',
       price: priceWith99(90, 130),
       quantity: 30,
-      imagesUrl: '/products/motherboard/msi-b760-matx.jpg',      sku: 'MB-MSI-B760M-PRO',
+      imagesUrl: '/products/motherboard/msi-b760-matx.jpg',
+      sku: 'MB-MSI-B760M-PRO',
       subType: 'micro-atx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1540,14 +1595,15 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         nvmeSupport: true,
         form: 'Micro-ATX',
         compatibility: 'Intel',
-      }
+      },
     },
     {
       name: 'Gigabyte B650I Aorus Ultra',
       description: 'Compact mini-ITX motherboard for small form factor builds',
       price: priceWith99(220, 280),
       quantity: 18,
-      imagesUrl: '/products/motherboard/gigabyte-b650i-itx.jpg',      sku: 'MB-GIGABYTE-B650I-AORUS',
+      imagesUrl: '/products/motherboard/gigabyte-b650i-itx.jpg',
+      sku: 'MB-GIGABYTE-B650I-AORUS',
       subType: 'mini-itx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1563,17 +1619,18 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         m2Slots: 2,
         sliCrossfireSupport: false,
         wifiBluetooth: true,
-        nvmeSupport: true,      
+        nvmeSupport: true,
         form: 'Mini-ITX',
         compatibility: 'AMD',
-      }
+      },
     },
     {
       name: 'Gigabyte X670E Aorus Master',
       description: 'High-end AMD motherboard with extensive connectivity',
       price: priceWith99(300, 400),
       quantity: 12,
-      imagesUrl: '/products/motherboard/gigabyte-x670e-atx.jpg',      sku: 'MB-GIGABYTE-X670E-MASTER',
+      imagesUrl: '/products/motherboard/gigabyte-x670e-atx.jpg',
+      sku: 'MB-GIGABYTE-X670E-MASTER',
       subType: 'atx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1592,14 +1649,15 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         nvmeSupport: true,
         form: 'ATX',
         compatibility: 'AMD',
-      }
+      },
     },
     {
       name: 'ASRock B650M Pro4',
       description: 'Value-oriented micro-ATX motherboard for AMD Ryzen',
       price: priceWith99(100, 140),
       quantity: 25,
-      imagesUrl: '/products/motherboard/asrock-b650-matx.jpg',      sku: 'MB-ASROCK-B650M-PRO4',
+      imagesUrl: '/products/motherboard/asrock-b650-matx.jpg',
+      sku: 'MB-ASROCK-B650M-PRO4',
       subType: 'micro-atx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1614,18 +1672,19 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         sataPorts: 6,
         m2Slots: 2,
         sliCrossfireSupport: false,
-        wifiBluetooth: false,       
+        wifiBluetooth: false,
         nvmeSupport: true,
         form: 'Micro-ATX',
         compatibility: 'AMD',
-      }
+      },
     },
     {
       name: 'ASRock H770 Pro RS',
       description: 'Solid Intel H770 motherboard for mainstream builds',
       price: priceWith99(120, 160),
       quantity: 28,
-      imagesUrl: '/products/motherboard/asrock-h770-atx.jpg',      sku: 'MB-ASROCK-H770-PRORS',
+      imagesUrl: '/products/motherboard/asrock-h770-atx.jpg',
+      sku: 'MB-ASROCK-H770-PRORS',
       subType: 'atx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1640,18 +1699,19 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         sataPorts: 6,
         m2Slots: 3,
         sliCrossfireSupport: false,
-        wifiBluetooth: false,       
+        wifiBluetooth: false,
         nvmeSupport: true,
         form: 'ATX',
         compatibility: 'Intel',
-      }
+      },
     },
     {
       name: 'ASUS Prime X570-P',
       description: 'Reliable AMD X570 motherboard with PCIe 4.0 support',
       price: priceWith99(140, 180),
       quantity: 20,
-      imagesUrl: '/products/motherboard/asus-x570-atx.jpg',      sku: 'MB-ASUS-X570-PRIME',
+      imagesUrl: '/products/motherboard/asus-x570-atx.jpg',
+      sku: 'MB-ASUS-X570-PRIME',
       subType: 'atx',
       categoryId: motherboardCategory.id,
       motherboard: {
@@ -1666,11 +1726,11 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         sataPorts: 8,
         m2Slots: 2,
         sliCrossfireSupport: true,
-        wifiBluetooth: false,        
+        wifiBluetooth: false,
         nvmeSupport: true,
         form: 'ATX',
         compatibility: 'AMD',
-      }
+      },
     },
     {
       name: 'EVGA Z690 Classified',
@@ -1694,10 +1754,10 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         m2Slots: 5,
         sliCrossfireSupport: true,
         wifiBluetooth: true,
-        nvmeSupport: true,        
+        nvmeSupport: true,
         form: 'E-ATX',
         compatibility: 'Intel',
-      }
+      },
     },
     {
       name: 'ASRock B650M Pro RS WiFi',
@@ -1720,11 +1780,11 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         sataPorts: 4,
         m2Slots: 2,
         sliCrossfireSupport: false,
-        wifiBluetooth: true,        
-        nvmeSupport: true,        
+        wifiBluetooth: true,
+        nvmeSupport: true,
         form: 'Micro-ATX',
         compatibility: 'AMD',
-      }
+      },
     },
     {
       name: 'ASUS ROG Strix Z790-I Gaming WiFi',
@@ -1747,11 +1807,11 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         sataPorts: 4,
         m2Slots: 2,
         sliCrossfireSupport: false,
-        wifiBluetooth: true,        
-        nvmeSupport: true,        
+        wifiBluetooth: true,
+        nvmeSupport: true,
         form: 'Mini-ITX',
         compatibility: 'Intel',
-      }
+      },
     },
     {
       name: 'MSI MAG B550 Tomahawk',
@@ -1774,15 +1834,16 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         sataPorts: 6,
         m2Slots: 2,
         sliCrossfireSupport: true,
-        wifiBluetooth: false,        
-        nvmeSupport: true,        
+        wifiBluetooth: false,
+        nvmeSupport: true,
         form: 'ATX',
         compatibility: 'AMD',
-      }
+      },
     },
     {
       name: 'Gigabyte X670E Aorus Master',
-      description: 'High-end motherboard with premium features for AMD Ryzen 7000',
+      description:
+        'High-end motherboard with premium features for AMD Ryzen 7000',
       price: priceWith99(300, 400),
       quantity: 12,
       imagesUrl: '/products/motherboard/gigabyte-x670-atx.jpg',
@@ -1800,25 +1861,27 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         maxVideoCards: 4,
         sataPorts: 8,
         m2Slots: 4,
-        sliCrossfireSupport: true,        
+        sliCrossfireSupport: true,
         wifiBluetooth: true,
         nvmeSupport: true,
         form: 'E-ATX',
         compatibility: 'AMD',
-      }
-    }
+      },
+    },
   ];
   // Cooling Components
   const coolingComponents = [
     {
       name: 'Noctua NH-D15 Chromax Black',
-      description: 'Premium air cooler with exceptional performance and all-black design',
+      description:
+        'Premium air cooler with exceptional performance and all-black design',
       price: priceWith99(90, 120),
       quantity: 25,
       imagesUrl: '/products/cooling/noctua-nh-d15 chromax.black.jpg',
       sku: 'COOL-NOCTUA-NHD15',
       subType: 'air',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'Noctua',
         socket: 'Universal',
         fanDiameter: 140,
@@ -1826,7 +1889,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Air Cooler',
         subCategory: 'Tower Cooler',
         radiatorSize: '140mm',
-      }
+      },
     },
     {
       name: 'Corsair iCUE H150i RGB Elite',
@@ -1836,7 +1899,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/cooling/corsair-icue h150i rgb elite.jpg',
       sku: 'COOL-CORSAIR-H150I',
       subType: 'liquid',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'Corsair',
         socket: 'Universal',
         fanDiameter: 120,
@@ -1844,17 +1908,19 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Liquid Cooler',
         subCategory: 'AIO Liquid Cooler',
         radiatorSize: '360mm',
-      }
+      },
     },
     {
       name: 'Arctic Freezer 34 eSports DUO',
-      description: 'Efficient dual-fan tower cooler with excellent price-to-performance ratio',
+      description:
+        'Efficient dual-fan tower cooler with excellent price-to-performance ratio',
       price: priceWith99(35, 50),
       quantity: 30,
       imagesUrl: '/products/cooling/arctic-freezer 34 esports duo.jpg',
       sku: 'COOL-ARCTIC-F34DUO',
       subType: 'air',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'Arctic',
         socket: 'Universal',
         fanDiameter: 120,
@@ -1862,7 +1928,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Air Cooler',
         subCategory: 'Tower Cooler',
         radiatorSize: '120mm',
-      }
+      },
     },
     {
       name: 'be quiet! Shadow Rock Slim 2',
@@ -1872,7 +1938,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/cooling/be-quiet-shadow rock slim 2.jpg',
       sku: 'COOL-BEQUIET-SRS2',
       subType: 'air',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'be quiet!',
         socket: 'Universal',
         fanDiameter: 120,
@@ -1880,7 +1947,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Air Cooler',
         subCategory: 'Tower Cooler',
         radiatorSize: '120mm',
-      }
+      },
     },
     {
       name: 'DeepCool AK620',
@@ -1890,7 +1957,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/cooling/deepcool-ak620.jpg',
       sku: 'COOL-DEEPCOOL-AK620',
       subType: 'air',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'DeepCool',
         socket: 'Universal',
         fanDiameter: 120,
@@ -1898,7 +1966,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Air Cooler',
         subCategory: ' Tower Cooler',
         radiatorSize: '120mm',
-      }
+      },
     },
     {
       name: 'EK-AIO Basic 240',
@@ -1908,7 +1976,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/cooling/ek-ek-aio basic 240.jpg',
       sku: 'COOL-EK-AIO240',
       subType: 'liquid',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'EK Water Blocks',
         socket: 'Universal',
         fanDiameter: 120,
@@ -1916,7 +1985,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Liquid Cooler',
         subCategory: 'AIO Liquid Cooler',
         radiatorSize: '240mm',
-      }
+      },
     },
     {
       name: 'Lian Li Galahad 360 SL',
@@ -1926,7 +1995,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/cooling/lian-li-galahad 360 sl.jpg',
       sku: 'COOL-LIANLI-GAL360',
       subType: 'liquid',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'Lian Li',
         socket: 'Universal',
         fanDiameter: 120,
@@ -1934,7 +2004,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Liquid Cooler',
         subCategory: 'AIO Liquid Cooler',
         radiatorSize: '360mm',
-      }
+      },
     },
     {
       name: 'NZXT Kraken X63 RGB',
@@ -1944,7 +2014,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/cooling/nzxt-kraken x63 rgb.jpg',
       sku: 'COOL-NZXT-X63RGB',
       subType: 'liquid',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'NZXT',
         socket: 'Universal',
         fanDiameter: 140,
@@ -1952,17 +2023,19 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Liquid Cooler',
         subCategory: 'AIO Liquid Cooler',
         radiatorSize: '280mm',
-      }
+      },
     },
     {
       name: 'Scythe Fuma 2',
-      description: 'High-performance dual-tower air cooler with asymmetrical design',
+      description:
+        'High-performance dual-tower air cooler with asymmetrical design',
       price: priceWith99(55, 75),
       quantity: 28,
       imagesUrl: '/products/cooling/scythe-fuma 2.jpg',
       sku: 'COOL-SCYTHE-FUMA2',
       subType: 'air',
-      categoryId: coolingCategory.id,      cooling: {
+      categoryId: coolingCategory.id,
+      cooling: {
         brand: 'Scythe',
         socket: 'Universal',
         fanDiameter: 120,
@@ -1970,10 +2043,12 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Air Cooler',
         subCategory: 'Tower Cooler',
         radiatorSize: '120mm',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Thermalright Peerless Assassin 120',
-      description: 'Budget-friendly dual-tower cooler with excellent cooling performance',
+      description:
+        'Budget-friendly dual-tower cooler with excellent cooling performance',
       price: priceWith99(30, 45),
       quantity: 35,
       imagesUrl: '/products/cooling/thermalright-peerless assassin 120.jpg',
@@ -1988,8 +2063,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Air Cooler',
         subCategory: 'Tower Cooler',
         radiatorSize: '120mm',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Corsair iCUE H100i RGB Elite',
       description: '240mm all-in-one liquid cooler with RGB lighting',
       price: priceWith99(100, 140),
@@ -2006,10 +2082,12 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Liquid Cooler',
         subCategory: 'AIO Liquid Cooler',
         radiatorSize: '240mm',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Arctic Liquid Freezer II 280',
-      description: '280mm AIO with thick radiator for maximum cooling performance',
+      description:
+        '280mm AIO with thick radiator for maximum cooling performance',
       price: priceWith99(90, 120),
       quantity: 16,
       imagesUrl: '/products/cooling/arctic-freezer 34 esports duo.jpg',
@@ -2024,8 +2102,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Liquid Cooler',
         subCategory: 'AIO Liquid Cooler',
         radiatorSize: '280mm',
-      }
-    },    {
+      },
+    },
+    {
       name: 'DeepCool LT720',
       description: '360mm AIO with infinity mirror pump cap and ARGB lighting',
       price: priceWith99(110, 150),
@@ -2042,7 +2121,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Liquid Cooler',
         subCategory: 'AIO Liquid Cooler',
         radiatorSize: '360mm',
-      }
+      },
     },
     {
       name: 'be quiet! Pure Rock 2',
@@ -2061,7 +2140,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Air Cooler',
         subCategory: 'Tower Cooler',
         radiatorSize: '120mm',
-      }
+      },
     },
     {
       name: 'NZXT Kraken Z73',
@@ -2080,13 +2159,15 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         category: 'Liquid Cooler',
         subCategory: ' AIO Liquid Cooler',
         radiatorSize: '360mm',
-      }
-    }
+      },
+    },
   ];
   // Case Components
-  const caseComponents = [    {
+  const caseComponents = [
+    {
       name: 'Fractal Design Torrent RGB',
-      description: 'High-performance mid-tower case with RGB lighting and exceptional airflow',
+      description:
+        'High-performance mid-tower case with RGB lighting and exceptional airflow',
       price: priceWith99(150, 200),
       quantity: 15,
       imagesUrl: '/products/case/fractal-design-torrent-rgb.jpg',
@@ -2109,8 +2190,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 8,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'NZXT H1 V2',
       description: 'Compact vertical ITX case with integrated AIO and PSU',
       price: priceWith99(300, 350),
@@ -2135,8 +2217,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 2,
         waterCoolingSupport: true,
         form: 'Mini-ITX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'be quiet! Pure Base 500DX',
       description: 'Silent mid-tower case with excellent cooling potential',
       price: priceWith99(90, 130),
@@ -2161,8 +2244,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 7,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Cooler Master MasterBox MB311L',
       description: 'Budget-friendly micro-ATX case with good airflow',
       price: priceWith99(40, 60),
@@ -2187,8 +2271,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 4,
         waterCoolingSupport: false,
         form: 'Micro-ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Corsair 7000D Airflow',
       description: 'Full-tower case with massive space and superior airflow',
       price: priceWith99(200, 280),
@@ -2213,10 +2298,12 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 18,
         waterCoolingSupport: true,
         form: 'E-ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'DeepCool CK560',
-      description: 'Modern mid-tower case with mesh front panel and RGB lighting',
+      description:
+        'Modern mid-tower case with mesh front panel and RGB lighting',
       price: priceWith99(70, 100),
       quantity: 18,
       imagesUrl: '/products/case/deepcool-ck560.jpg',
@@ -2239,10 +2326,12 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 6,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Lian Li O11 Air Mini',
-      description: 'Compact version of the popular O11 Dynamic with excellent airflow',
+      description:
+        'Compact version of the popular O11 Dynamic with excellent airflow',
       price: priceWith99(110, 150),
       quantity: 16,
       imagesUrl: '/products/case/lian-li-o11-air mini.jpg',
@@ -2265,8 +2354,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 6,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Phanteks Enthoo 719',
       description: 'Luxury full-tower case with premium build quality',
       price: priceWith99(180, 240),
@@ -2291,8 +2381,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 14,
         waterCoolingSupport: true,
         form: 'E-ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'SilverStone SG13',
       description: 'Ultra-compact mini-ITX case for small form factor builds',
       price: priceWith99(50, 70),
@@ -2317,10 +2408,12 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 2,
         waterCoolingSupport: false,
         form: 'Mini-ITX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Thermaltake View 37',
-      description: 'RGB gaming case with tempered glass panels and excellent cable management',
+      description:
+        'RGB gaming case with tempered glass panels and excellent cable management',
       price: priceWith99(120, 160),
       quantity: 14,
       imagesUrl: '/products/case/thermaltake-view-371.jpg',
@@ -2343,8 +2436,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 8,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Fractal Design Core 1000',
       description: 'Budget micro-ATX case with silent operation focus',
       price: priceWith99(35, 50),
@@ -2369,10 +2463,12 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 4,
         waterCoolingSupport: false,
         form: 'Micro-ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'NZXT H510 Elite',
-      description: 'Premium mid-tower case with tempered glass and smart device integration',
+      description:
+        'Premium mid-tower case with tempered glass and smart device integration',
       price: priceWith99(140, 180),
       quantity: 15,
       imagesUrl: '/products/case/nzxt-h1-v2.jpg',
@@ -2395,8 +2491,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 6,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Corsair iCUE 4000X RGB',
       description: 'Mid-tower case with iCUE RGB ecosystem integration',
       price: priceWith99(100, 140),
@@ -2421,8 +2518,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 8,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Phanteks Eclipse P300A',
       description: 'Budget-friendly mid-tower case with mesh front panel',
       price: priceWith99(55, 75),
@@ -2447,8 +2545,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 6,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    },    {
+      },
+    },
+    {
       name: 'Cooler Master MasterCase H500',
       description: 'High-airflow mid-tower case with dual 200mm intake fans',
       price: priceWith99(90, 120),
@@ -2473,8 +2572,8 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
         slots25: 8,
         waterCoolingSupport: true,
         form: 'ATX',
-      }
-    }
+      },
+    },
   ];
   // Services Components
   const serviceComponents = [
@@ -2486,17 +2585,18 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/services/windows-11-home.jpg',
       sku: 'SERVICE-WIN11-HOME',
       subType: 'operating-system',
-      categoryId: servicesCategory.id
+      categoryId: servicesCategory.id,
     },
     {
       name: 'Windows 11 Pro',
-      description: 'Microsoft Windows 11 Professional operating system license with advanced features',
+      description:
+        'Microsoft Windows 11 Professional operating system license with advanced features',
       price: priceWith99(180, 220),
       quantity: 999,
       imagesUrl: '/products/services/windows-11-pro.jpg',
       sku: 'SERVICE-WIN11-PRO',
       subType: 'operating-system',
-      categoryId: servicesCategory.id
+      categoryId: servicesCategory.id,
     },
     {
       name: 'TP-Link AC600 USB WiFi Adapter',
@@ -2506,7 +2606,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/services/tp-link-ac600.jpg',
       sku: 'SERVICE-WIFI-AC600',
       subType: 'wifi-adapter',
-      categoryId: servicesCategory.id
+      categoryId: servicesCategory.id,
     },
     {
       name: 'ASUS PCE-AX58BT WiFi 6 Card',
@@ -2516,7 +2616,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/services/asus-pce-ax58bt.jpg',
       sku: 'SERVICE-WIFI-AX58BT',
       subType: 'wifi-adapter',
-      categoryId: servicesCategory.id
+      categoryId: servicesCategory.id,
     },
     {
       name: 'Creative Sound Blaster Audigy FX',
@@ -2526,7 +2626,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/services/sound-blaster-fx.jpg',
       sku: 'SERVICE-SOUND-FX',
       subType: 'sound-card',
-      categoryId: servicesCategory.id
+      categoryId: servicesCategory.id,
     },
     {
       name: 'ASUS Xonar SE Sound Card',
@@ -2536,7 +2636,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/services/asus-xonar-se.jpg',
       sku: 'SERVICE-SOUND-SE',
       subType: 'sound-card',
-      categoryId: servicesCategory.id
+      categoryId: servicesCategory.id,
     },
     {
       name: 'PC Assembly Service',
@@ -2546,7 +2646,7 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/services/assembly-service.jpg',
       sku: 'SERVICE-ASSEMBLY',
       subType: 'assembly',
-      categoryId: servicesCategory.id
+      categoryId: servicesCategory.id,
     },
     {
       name: 'Extended 3-Year Warranty',
@@ -2556,18 +2656,19 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       imagesUrl: '/products/services/extended-warranty.jpg',
       sku: 'SERVICE-WARRANTY-3Y',
       subType: 'warranty',
-      categoryId: servicesCategory.id
+      categoryId: servicesCategory.id,
     },
     {
       name: 'Software Installation Service',
-      description: 'Professional installation of operating system and essential software',
+      description:
+        'Professional installation of operating system and essential software',
       price: priceWith99(30, 50),
       quantity: 999,
       imagesUrl: '/products/services/software-install.jpg',
       sku: 'SERVICE-SOFTWARE-INSTALL',
       subType: 'installation',
-      categoryId: servicesCategory.id
-    }
+      categoryId: servicesCategory.id,
+    },
   ];
   // Create all components
   for (const cpuData of cpuComponents) {
@@ -2575,11 +2676,13 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
     try {
       const component = await prisma.component.create({ data: componentData });
       await prisma.cPU.create({
-        data: { ...cpu, componentId: component.id }
+        data: { ...cpu, componentId: component.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ CPU component ${componentData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ CPU component ${componentData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -2590,11 +2693,13 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
     try {
       const component = await prisma.component.create({ data: componentData });
       await prisma.gPU.create({
-        data: { ...gpu, componentId: component.id }
+        data: { ...gpu, componentId: component.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ GPU component ${componentData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ GPU component ${componentData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -2605,11 +2710,13 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
     try {
       const component = await prisma.component.create({ data: componentData });
       await prisma.rAM.create({
-        data: { ...ram, componentId: component.id }
+        data: { ...ram, componentId: component.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ RAM component ${componentData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ RAM component ${componentData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -2620,11 +2727,13 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
     try {
       const component = await prisma.component.create({ data: componentData });
       await prisma.storage.create({
-        data: { ...storage, componentId: component.id }
+        data: { ...storage, componentId: component.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Storage component ${componentData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Storage component ${componentData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -2635,11 +2744,13 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
     try {
       const component = await prisma.component.create({ data: componentData });
       await prisma.pSU.create({
-        data: { ...psu, componentId: component.id }
+        data: { ...psu, componentId: component.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ PSU component ${componentData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ PSU component ${componentData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -2650,11 +2761,13 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
     try {
       const component = await prisma.component.create({ data: componentData });
       await prisma.motherboard.create({
-        data: { ...motherboard, componentId: component.id }
+        data: { ...motherboard, componentId: component.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Motherboard component ${componentData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Motherboard component ${componentData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -2665,25 +2778,30 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
     try {
       const component = await prisma.component.create({ data: componentData });
       await prisma.cooling.create({
-        data: { ...cooling, componentId: component.id }
+        data: { ...cooling, componentId: component.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Cooling component ${componentData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Cooling component ${componentData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
     }
-  }  for (const caseData of caseComponents) {
+  }
+  for (const caseData of caseComponents) {
     const { caseModel, ...componentData } = caseData;
     try {
       const component = await prisma.component.create({ data: componentData });
       await prisma.case.create({
-        data: { ...caseModel, componentId: component.id }
+        data: { ...caseModel, componentId: component.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Case component ${componentData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Case component ${componentData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -2695,7 +2813,9 @@ export async function seedComponents(prisma: PrismaClient): Promise<void> {
       await prisma.component.create({ data: serviceData });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Service component ${serviceData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Service component ${serviceData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }

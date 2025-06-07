@@ -1,131 +1,143 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
-import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { useTheme } from '@/app/contexts/ThemeContext'
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import {
-  Package, Eye, Edit, Trash2, Search, Filter,
-  ChevronLeft, ChevronRight, Calendar, DollarSign,
-  CheckCircle, Clock, XCircle, AlertCircle, Truck
-} from 'lucide-react'
-import Loading from '@/app/components/ui/Loading'
+  Package,
+  Eye,
+  Edit,
+  Trash2,
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  DollarSign,
+  CheckCircle,
+  Clock,
+  XCircle,
+  AlertCircle,
+  Truck,
+} from 'lucide-react';
+import Loading from '@/app/components/ui/Loading';
 
-type OrderStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED'
+type OrderStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED';
 
 type Order = {
-  id: string
-  userId: string
-  userName: string
-  userEmail: string
-  status: OrderStatus
-  totalAmount: number
-  shippingAddress: string
-  paymentMethod: string
-  createdAt: string
-  updatedAt: string
-  itemCount: number
-}
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  status: OrderStatus;
+  totalAmount: number;
+  shippingAddress: string;
+  paymentMethod: string;
+  createdAt: string;
+  updatedAt: string;
+  itemCount: number;
+};
 
 export default function AdminOrdersPage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  const { user } = useAuth()
-  const { theme } = useTheme()
-  const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'ALL'>('ALL')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const itemsPerPage = 10
+  const t = useTranslations();
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+  const { user } = useAuth();
+  const { theme } = useTheme();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'ALL'>('ALL');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') {
-      router.push(`/${locale}/dashboard`)
-      return
+      router.push(`/${locale}/dashboard`);
+      return;
     }
-    fetchOrders()
-  }, [user, currentPage, searchQuery, statusFilter])
+    fetchOrders();
+  }, [user, currentPage, searchQuery, statusFilter]);
 
   const fetchOrders = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: itemsPerPage.toString(),
         search: searchQuery,
-        status: statusFilter
-      })
+        status: statusFilter,
+      });
 
-      const response = await fetch(`/api/admin/orders?${params}`)
-      const data = await response.json()
-      
-      setOrders(data.orders)
-      setTotalPages(data.totalPages)
+      const response = await fetch(`/api/admin/orders?${params}`);
+      const data = await response.json();
+
+      setOrders(data.orders);
+      setTotalPages(data.totalPages);
     } catch (error) {
-      console.error('Error fetching orders:', error)
+      console.error('Error fetching orders:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDeleteOrder = async (orderId: string) => {
-    if (!confirm('Are you sure you want to delete this order?')) return
-    
+    if (!confirm('Are you sure you want to delete this order?')) return;
+
     try {
       const response = await fetch(`/api/admin/orders/${orderId}`, {
-        method: 'DELETE'
-      })
-      
+        method: 'DELETE',
+      });
+
       if (response.ok) {
-        fetchOrders()
+        fetchOrders();
       }
     } catch (error) {
-      console.error('Error deleting order:', error)
+      console.error('Error deleting order:', error);
     }
-  }
+  };
 
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
       case 'COMPLETED':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       case 'PROCESSING':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
       case 'CANCELLED':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
       default:
-        return 'bg-neutral-100 text-stone-950 dark:bg-neutral-700 dark:text-neutral-200'
+        return 'bg-neutral-100 text-stone-950 dark:bg-neutral-700 dark:text-neutral-200';
     }
-  }
+  };
 
   const getStatusIcon = (status: OrderStatus) => {
     switch (status) {
       case 'COMPLETED':
-        return <CheckCircle className="w-4 h-4" />
+        return <CheckCircle className="w-4 h-4" />;
       case 'PROCESSING':
-        return <Truck className="w-4 h-4" />
+        return <Truck className="w-4 h-4" />;
       case 'PENDING':
-        return <Clock className="w-4 h-4" />
+        return <Clock className="w-4 h-4" />;
       case 'CANCELLED':
-        return <XCircle className="w-4 h-4" />
+        return <XCircle className="w-4 h-4" />;
       default:
-        return <AlertCircle className="w-4 h-4" />
+        return <AlertCircle className="w-4 h-4" />;
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loading size="medium" />
       </div>
-    )
+    );
   }
 
   return (
@@ -145,7 +157,7 @@ export default function AdminOrdersPage() {
               type="text"
               placeholder="Search orders by ID or customer..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
             />
           </div>
@@ -153,7 +165,9 @@ export default function AdminOrdersPage() {
         <div className="flex gap-4">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'ALL')}
+            onChange={e =>
+              setStatusFilter(e.target.value as OrderStatus | 'ALL')
+            }
             className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
           >
             <option value="ALL">All Status</option>
@@ -204,21 +218,31 @@ export default function AdminOrdersPage() {
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-neutral-500 dark:text-neutral-400">
+                <td
+                  colSpan={7}
+                  className="px-6 py-4 text-center text-neutral-500 dark:text-neutral-400"
+                >
                   No orders found
                 </td>
               </tr>
             ) : (
-              orders.map((order) => (
-                <tr key={order.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700">
+              orders.map(order => (
+                <tr
+                  key={order.id}
+                  className="hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-neutral-900 dark:text-white">
                       #{order.id.slice(0, 8)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-neutral-900 dark:text-white">{order.userName}</div>
-                    <div className="text-sm text-neutral-500 dark:text-neutral-400">{order.userEmail}</div>
+                    <div className="text-sm text-neutral-900 dark:text-white">
+                      {order.userName}
+                    </div>
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                      {order.userEmail}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-neutral-900 dark:text-white">
@@ -229,7 +253,9 @@ export default function AdminOrdersPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}
+                    >
                       {getStatusIcon(order.status)}
                       <span className="ml-1">{order.status}</span>
                     </span>
@@ -287,7 +313,9 @@ export default function AdminOrdersPage() {
             Page {currentPage} of {totalPages}
           </span>
           <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage(prev => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
             className="px-3 py-1 rounded-md bg-white dark:bg-stone-950 border border-neutral-300 dark:border-neutral-600 disabled:opacity-50"
           >
@@ -296,5 +324,5 @@ export default function AdminOrdersPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

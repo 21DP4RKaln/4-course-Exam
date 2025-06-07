@@ -1,4 +1,4 @@
- /* Component specifications */
+/* Component specifications */
 export interface Component {
   id: string;
   name: string;
@@ -13,7 +13,8 @@ export interface Component {
   brand?: string;
   manufacturer?: string;
   rating?: number;
-  ratingCount?: number;  cpu?: {
+  ratingCount?: number;
+  cpu?: {
     brand: string;
     series: string;
     cores: number;
@@ -96,7 +97,100 @@ export interface Component {
     usbTypeC: number;
     slots525: number;
     slots35: number;
-    slots25: number;    waterCoolingSupport: boolean;
+    slots25: number;
+    waterCoolingSupport: boolean;
+  };
+  // Peripheral properties
+  keyboard?: {
+    brand: string;
+    switchType: string;
+    layout: string;
+    form: string;
+    connection: string;
+    rgb: boolean;
+    numpad: boolean;
+  };
+  mouse?: {
+    brand: string;
+    color: string;
+    category: string;
+    dpi: number;
+    buttons: number;
+    connection: string;
+    rgb: boolean;
+    weight: number;
+    sensor: string;
+    batteryType: string;
+    batteryLife: number;
+  };
+  microphone?: {
+    brand: string;
+    type: string;
+    pattern: string;
+    frequency: number;
+    sensitivity: number;
+    interface: string;
+    stand: boolean;
+  };
+  camera?: {
+    brand: string;
+    resolution: string;
+    fps: number;
+    fov: number;
+    microphone: boolean;
+    autofocus: boolean;
+    connection: string;
+  };
+  monitor?: {
+    brand: string;
+    size: number;
+    resolution: string;
+    refreshRate: number;
+    panelType: string;
+    responseTime: number;
+    brightness: number;
+    hdr: boolean;
+    ports: string;
+    speakers: boolean;
+    curved: boolean;
+  };
+  headphones?: {
+    brand: string;
+    type: string;
+    connection: string;
+    microphone: boolean;
+    impedance: number;
+    frequency: string;
+    weight: number;
+    noiseCancelling: boolean;
+    rgb: boolean;
+  };
+  speakers?: {
+    brand: string;
+    type: string;
+    totalWattage: number;
+    frequency: string;
+    connections: string;
+    bluetooth: boolean;
+    remote: boolean;
+  };
+  gamepad?: {
+    brand: string;
+    connection: string;
+    platform: string;
+    layout: string;
+    vibration: boolean;
+    rgb: boolean;
+    batteryLife: number;
+    programmable: boolean;
+  };
+  mousePad?: {
+    brand: string;
+    dimensions: string;
+    thickness: number;
+    material: string;
+    rgb: boolean;
+    surface: string;
   };
 }
 
@@ -200,7 +294,7 @@ export interface Specification {
   name: string;
   displayName: string;
   values: string[];
-  multiSelect?: boolean; 
+  multiSelect?: boolean;
 }
 
 export interface CategoryPageProps {

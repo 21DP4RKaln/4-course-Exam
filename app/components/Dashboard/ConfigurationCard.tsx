@@ -1,19 +1,27 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { Clock, Cpu, MemoryStick, HardDrive, Zap, Monitor, Heart } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import type { UserConfiguration } from '@/lib/services/dashboardService'
+import { motion } from 'framer-motion';
+import {
+  Clock,
+  Cpu,
+  MemoryStick,
+  HardDrive,
+  Zap,
+  Monitor,
+  Heart,
+} from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import type { UserConfiguration } from '@/lib/services/dashboardService';
 
 interface ConfigurationCardProps {
-  configuration: UserConfiguration
-  getStatusColor: (status: string) => string
-  formatDate: (date: string) => string
-  locale: string
-  onEdit?: (configId: string) => void
-  onOrder?: (configId: string) => void
+  configuration: UserConfiguration;
+  getStatusColor: (status: string) => string;
+  formatDate: (date: string) => string;
+  locale: string;
+  onEdit?: (configId: string) => void;
+  onOrder?: (configId: string) => void;
 }
 
 export default function ConfigurationCard({
@@ -22,58 +30,63 @@ export default function ConfigurationCard({
   formatDate,
   locale,
   onEdit,
-  onOrder
+  onOrder,
 }: ConfigurationCardProps) {
-  const t = useTranslations()
-  const router = useRouter()
-  const [imageError, setImageError] = useState(false)
+  const t = useTranslations();
+  const router = useRouter();
+  const [imageError, setImageError] = useState(false);
 
-  const caseComponent = configuration.components?.find(comp => 
-    comp.category?.toLowerCase() === 'case' || 
-    comp.category?.toLowerCase() === 'cases' ||
-    comp.name?.toLowerCase().includes('case')
-  )
+  const caseComponent = configuration.components?.find(
+    comp =>
+      comp.category?.toLowerCase() === 'case' ||
+      comp.category?.toLowerCase() === 'cases' ||
+      comp.name?.toLowerCase().includes('case')
+  );
 
-  const cpu = configuration.components?.find(comp => 
-    comp.category?.toLowerCase() === 'cpu' || 
-    comp.category?.toLowerCase() === 'processor'
-  )
-  const gpu = configuration.components?.find(comp => 
-    comp.category?.toLowerCase() === 'gpu' || 
-    comp.category?.toLowerCase() === 'graphics'
-  )
-  const ram = configuration.components?.find(comp => 
-    comp.category?.toLowerCase() === 'ram' || 
-    comp.category?.toLowerCase() === 'memory'
-  )
-  const storage = configuration.components?.find(comp => 
-    comp.category?.toLowerCase() === 'storage' ||
-    comp.category?.toLowerCase() === 'ssd' ||
-    comp.category?.toLowerCase() === 'hdd'
-  )
+  const cpu = configuration.components?.find(
+    comp =>
+      comp.category?.toLowerCase() === 'cpu' ||
+      comp.category?.toLowerCase() === 'processor'
+  );
+  const gpu = configuration.components?.find(
+    comp =>
+      comp.category?.toLowerCase() === 'gpu' ||
+      comp.category?.toLowerCase() === 'graphics'
+  );
+  const ram = configuration.components?.find(
+    comp =>
+      comp.category?.toLowerCase() === 'ram' ||
+      comp.category?.toLowerCase() === 'memory'
+  );
+  const storage = configuration.components?.find(
+    comp =>
+      comp.category?.toLowerCase() === 'storage' ||
+      comp.category?.toLowerCase() === 'ssd' ||
+      comp.category?.toLowerCase() === 'hdd'
+  );
   const getImageUrl = () => {
     if (caseComponent?.imageUrl && !imageError) {
-      return caseComponent.imageUrl
+      return caseComponent.imageUrl;
     }
-    
-    return '/products/case/corsair-7000d-airflow.jpg'
-  }
+
+    return '/products/case/corsair-7000d-airflow.jpg';
+  };
 
   const handleEdit = () => {
     if (onEdit) {
-      onEdit(configuration.id)
+      onEdit(configuration.id);
     } else {
-      router.push(`/${locale}/configurator?edit=${configuration.id}`)
+      router.push(`/${locale}/configurator?edit=${configuration.id}`);
     }
-  }
+  };
 
   const handleOrder = () => {
     if (onOrder) {
-      onOrder(configuration.id)
+      onOrder(configuration.id);
     } else if (configuration.status === 'APPROVED') {
-      router.push(`/${locale}/shop/product/${configuration.id}`)
+      router.push(`/${locale}/shop/product/${configuration.id}`);
     }
-  }
+  };
 
   return (
     <motion.div
@@ -91,17 +104,22 @@ export default function ConfigurationCard({
           className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
           onError={() => setImageError(true)}
         />
-        
+
         {/* Status Badge */}
         <div className="absolute top-3 left-3">
-          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(configuration.status)}`}>
+          <span
+            className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(configuration.status)}`}
+          >
             {configuration.status}
           </span>
         </div>
 
         {/* Heart Icon for Wishlist */}
         <button className="absolute top-3 right-3 p-2 rounded-full bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-neutral-800 transition-colors">
-          <Heart size={16} className="text-neutral-600 dark:text-neutral-400 hover:text-red-500" />
+          <Heart
+            size={16}
+            className="text-neutral-600 dark:text-neutral-400 hover:text-red-500"
+          />
         </button>
       </div>
 
@@ -122,7 +140,6 @@ export default function ConfigurationCard({
             {formatDate(configuration.createdAt)}
           </div>
         </div>
-
         {/* Specifications Grid */}
         <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
           {cpu && (
@@ -150,7 +167,6 @@ export default function ConfigurationCard({
             </div>
           )}
         </div>
-
         {/* Performance Indicator */}
         {(cpu || gpu) && (
           <div className="mb-4">
@@ -162,17 +178,19 @@ export default function ConfigurationCard({
               <span>85%</span>
             </div>
             <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full" style={{ width: '85%' }}></div>
+              <div
+                className="h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full"
+                style={{ width: '85%' }}
+              ></div>
             </div>
           </div>
         )}
-
         {/* Price and Actions */}
         <div className="flex items-center justify-between">
           <div className="text-xl font-bold text-neutral-900 dark:text-white">
             €{configuration.totalPrice.toFixed(2)}
           </div>
-          
+
           <div className="flex space-x-2">
             <button
               onClick={handleEdit}
@@ -180,7 +198,7 @@ export default function ConfigurationCard({
             >
               {t('common.edit')}
             </button>
-            
+
             {configuration.status === 'APPROVED' && (
               <button
                 onClick={handleOrder}
@@ -189,22 +207,28 @@ export default function ConfigurationCard({
                 {t('common.view')}
               </button>
             )}
-              {configuration.status === 'DRAFT' && (
+            {configuration.status === 'DRAFT' && (
               <button
-                onClick={() => router.push(`/${locale}/configurator?load=${configuration.id}`)}
+                onClick={() =>
+                  router.push(
+                    `/${locale}/configurator?load=${configuration.id}`
+                  )
+                }
                 className="px-3 py-1.5 text-xs bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
                 {t('dashboard.configurationCard.continueBuilding')}
               </button>
             )}
           </div>
-        </div>        {/* Component Count */}
+        </div>{' '}
+        {/* Component Count */}
         <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
           <p className="text-xs text-neutral-500 dark:text-neutral-400 text-center">
-            {configuration.components?.length || 0} {t('dashboard.configurationCard.components')}
+            {configuration.components?.length || 0}{' '}
+            {t('dashboard.configurationCard.components')}
           </p>
         </div>
       </div>
     </motion.div>
-  )
+  );
 }

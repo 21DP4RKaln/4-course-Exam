@@ -1,39 +1,51 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { useTranslations } from 'next-intl'
-import { Cpu, Monitor, HardDrive, Server, Zap, Fan, Box, X, AlertTriangle, Wrench, Check } from 'lucide-react'
-import { useTheme } from '@/app/contexts/ThemeContext'
+import React from 'react';
+import { useTranslations } from 'next-intl';
+import {
+  Cpu,
+  Monitor,
+  HardDrive,
+  Server,
+  Zap,
+  Fan,
+  Box,
+  X,
+  AlertTriangle,
+  Wrench,
+  Check,
+} from 'lucide-react';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
 interface Category {
-  id: string
-  name: string
-  slug: string
+  id: string;
+  name: string;
+  slug: string;
 }
 
 interface Component {
-  id: string
-  name: string
-  price: number
-  description: string
-  categoryId?: string
-  specifications?: any
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  categoryId?: string;
+  specifications?: any;
 }
 
 interface Props {
-  selectedComponents: Record<string, Component | Component[]>
-  componentCategories: Category[]
-  configName: string
-  setConfigName: (name: string) => void
-  totalPrice: number
-  compatibilityIssues: string[]
-  loading: boolean
-  onSetActiveCategory: (category: string) => void
-  onSaveConfiguration: () => void
-  onSubmitConfiguration: () => void
-  onAddToCart: () => void
-  totalPowerConsumption: number
-  getRecommendedPsuWattage: () => string
+  selectedComponents: Record<string, Component | Component[]>;
+  componentCategories: Category[];
+  configName: string;
+  setConfigName: (name: string) => void;
+  totalPrice: number;
+  compatibilityIssues: string[];
+  loading: boolean;
+  onSetActiveCategory: (category: string) => void;
+  onSaveConfiguration: () => void;
+  onSubmitConfiguration: () => void;
+  onAddToCart: () => void;
+  totalPowerConsumption: number;
+  getRecommendedPsuWattage: () => string;
 }
 
 const SelectedComponentsList: React.FC<Props> = ({
@@ -49,81 +61,100 @@ const SelectedComponentsList: React.FC<Props> = ({
   onSubmitConfiguration,
   onAddToCart,
   totalPowerConsumption,
-  getRecommendedPsuWattage
+  getRecommendedPsuWattage,
 }) => {
-  const t = useTranslations()
-  const { theme } = useTheme()
+  const t = useTranslations();
+  const { theme } = useTheme();
   // Get category icon based on category id
   const getCategoryIcon = (categoryId: string) => {
-    const iconColor = theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
+    const iconColor =
+      theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600';
     switch (categoryId) {
       case 'cpu':
-        return <Cpu size={20} className={iconColor} />
+        return <Cpu size={20} className={iconColor} />;
       case 'gpu':
-        return <Monitor size={20} className={iconColor} />
+        return <Monitor size={20} className={iconColor} />;
       case 'ram':
-        return <HardDrive size={20} className={iconColor} />
+        return <HardDrive size={20} className={iconColor} />;
       case 'motherboard':
-        return <Server size={20} className={iconColor} />
+        return <Server size={20} className={iconColor} />;
       case 'psu':
-        return <Zap size={20} className={iconColor} />
+        return <Zap size={20} className={iconColor} />;
       case 'cooling':
-        return <Fan size={20} className={iconColor} />
+        return <Fan size={20} className={iconColor} />;
       case 'case':
-        return <Box size={20} className={iconColor} />
+        return <Box size={20} className={iconColor} />;
       case 'storage':
-        return <HardDrive size={20} className={iconColor} />
+        return <HardDrive size={20} className={iconColor} />;
       case 'services':
-        return <Wrench size={20} className={iconColor} />
+        return <Wrench size={20} className={iconColor} />;
       default:
-        return <HardDrive size={20} className={iconColor} />
+        return <HardDrive size={20} className={iconColor} />;
     }
-  }
+  };
   // Only show relevant categories: exclude Optical and Network, and show Services only if selected
-  const visibleCategories = componentCategories.filter(cat => 
-    cat.id !== 'optical' && cat.id !== 'network' && 
-    (cat.id !== 'services' || (Array.isArray(selectedComponents.services) ? selectedComponents.services.length > 0 : !!selectedComponents.services))
-  )
-  
+  const visibleCategories = componentCategories.filter(
+    cat =>
+      cat.id !== 'optical' &&
+      cat.id !== 'network' &&
+      (cat.id !== 'services' ||
+        (Array.isArray(selectedComponents.services)
+          ? selectedComponents.services.length > 0
+          : !!selectedComponents.services))
+  );
+
   // Count selected across visible categories
   const selectedCount = Object.keys(selectedComponents).reduce((count, key) => {
     if (key === 'services' && Array.isArray(selectedComponents.services)) {
-      return count + selectedComponents.services.length
+      return count + selectedComponents.services.length;
     }
-    return count + (selectedComponents[key] ? 1 : 0)
-  }, 0)
-  const totalCategories = visibleCategories.length
+    return count + (selectedComponents[key] ? 1 : 0);
+  }, 0);
+  const totalCategories = visibleCategories.length;
   return (
-    <div className={`w-[320px] max-w-full rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${
-      theme === 'dark'
-        ? 'bg-stone-950 border border-neutral-800'
-        : 'bg-white border border-neutral-200'
-    }`}>
+    <div
+      className={`w-[320px] max-w-full rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${
+        theme === 'dark'
+          ? 'bg-stone-950 border border-neutral-800'
+          : 'bg-white border border-neutral-200'
+      }`}
+    >
       {/* Header */}
-      <div className={`p-4 border-b ${
-        theme === 'dark' ? 'border-neutral-800' : 'border-neutral-200'
-      }`}>
+      <div
+        className={`p-4 border-b ${
+          theme === 'dark' ? 'border-neutral-800' : 'border-neutral-200'
+        }`}
+      >
         <div className="flex items-center justify-between">
           <h3 className={theme === 'dark' ? 'text-white' : 'text-neutral-900'}>
             {t('configurator.selectedComponents')}
           </h3>
           <div className="flex items-center">
             <div className="text-sm">
-              <span className={`font-medium ${
-                theme === 'dark' ? 'text-white' : 'text-neutral-900'
-              }`}>{selectedCount}</span>
-              <span className={
-                theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'
-              }>/{totalCategories}</span>
+              <span
+                className={`font-medium ${
+                  theme === 'dark' ? 'text-white' : 'text-neutral-900'
+                }`}
+              >
+                {selectedCount}
+              </span>
+              <span
+                className={
+                  theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'
+                }
+              >
+                /{totalCategories}
+              </span>
             </div>
           </div>
         </div>
-
         <div className="mt-3">
-          <div className={`h-2 rounded-full overflow-hidden ${
-            theme === 'dark' ? 'bg-stone-800' : 'bg-neutral-100'
-          }`}>
-            <div 
+          <div
+            className={`h-2 rounded-full overflow-hidden ${
+              theme === 'dark' ? 'bg-stone-800' : 'bg-neutral-100'
+            }`}
+          >
+            <div
               className={`h-2 rounded-full transition-all ${
                 theme === 'dark'
                   ? 'bg-gradient-to-r from-brand-red-600 to-brand-red-400'
@@ -132,28 +163,33 @@ const SelectedComponentsList: React.FC<Props> = ({
               style={{ width: `${(selectedCount / totalCategories) * 100}%` }}
             />
           </div>
-        </div>        {/* Configuration Name Input */}
+        </div>{' '}
+        {/* Configuration Name Input */}
         <div className="mt-4">
           <input
             type="text"
             value={configName || 'PC'}
-            onChange={(e) => setConfigName(e.target.value || 'PC')}
+            onChange={e => setConfigName(e.target.value || 'PC')}
             placeholder="PC"
             className={`w-full p-2 rounded border text-sm transition-colors ${
               theme === 'dark'
                 ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500 focus:border-brand-red-500'
                 : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-brand-blue-500'
             } focus:outline-none`}
-          />                         
+          />
         </div>
-      </div>      {/* Component List */}
+      </div>{' '}
+      {/* Component List */}
       <div className="p-4 space-y-3 max-h-[800px] overflow-y-auto scrollbar-hide">
         {visibleCategories.map(category => {
-          const selected = selectedComponents[category.id]
-          const isSelected = category.id === 'services'
-            ? (Array.isArray(selected) ? selected.length > 0 : !!selected)
-            : !!selected
-          
+          const selected = selectedComponents[category.id];
+          const isSelected =
+            category.id === 'services'
+              ? Array.isArray(selected)
+                ? selected.length > 0
+                : !!selected
+              : !!selected;
+
           return (
             <button
               key={category.id}
@@ -168,100 +204,136 @@ const SelectedComponentsList: React.FC<Props> = ({
                     : 'border border-dashed border-neutral-200 hover:border-brand-blue-500/50'
               }`}
             >
-              <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                theme === 'dark'
-                  ? 'bg-stone-800'
-                  : 'bg-neutral-100'
-              }`}>
+              <span
+                className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                  theme === 'dark' ? 'bg-stone-800' : 'bg-neutral-100'
+                }`}
+              >
                 {getCategoryIcon(category.id)}
               </span>
-                <div className="flex-grow text-left min-w-0">
-                <div className={`text-sm font-medium truncate ${
-                  theme === 'dark' ? 'text-white' : 'text-neutral-900'
-                }`}>
+              <div className="flex-grow text-left min-w-0">
+                <div
+                  className={`text-sm font-medium truncate ${
+                    theme === 'dark' ? 'text-white' : 'text-neutral-900'
+                  }`}
+                >
                   {category.name}
                 </div>
                 {isSelected && category.id !== 'services' && (
-                  <div className={`text-xs truncate ${
-                    theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
-                  }`}>
+                  <div
+                    className={`text-xs truncate ${
+                      theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+                    }`}
+                  >
                     {(selected as Component).name}
                   </div>
                 )}
-                {isSelected && category.id === 'services' && Array.isArray(selected) && (
-                  <div className={`text-xs truncate ${
-                    theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
-                  }`}>
-                    {selected.map((c: Component) => c.name).join(', ')}
-                  </div>
-                )}
+                {isSelected &&
+                  category.id === 'services' &&
+                  Array.isArray(selected) && (
+                    <div
+                      className={`text-xs truncate ${
+                        theme === 'dark'
+                          ? 'text-neutral-400'
+                          : 'text-neutral-600'
+                      }`}
+                    >
+                      {selected.map((c: Component) => c.name).join(', ')}
+                    </div>
+                  )}
               </div>
-                {isSelected && category.id !== 'services' && (
+              {isSelected && category.id !== 'services' && (
                 <div className="flex items-center ml-2 flex-shrink-0">
-                  <div className={`text-sm font-medium ${
-                    theme === 'dark'
-                      ? 'text-brand-red-400'
-                      : 'text-brand-blue-600'
-                  }`}>
+                  <div
+                    className={`text-sm font-medium ${
+                      theme === 'dark'
+                        ? 'text-brand-red-400'
+                        : 'text-brand-blue-600'
+                    }`}
+                  >
                     €{(selected as Component).price.toFixed(2)}
                   </div>
                 </div>
-                )}
-                {isSelected && category.id === 'services' && Array.isArray(selected) && (
-                <div className="flex items-center ml-2 flex-shrink-0">
-                  <div className={`text-sm font-medium ${
-                    theme === 'dark'
-                      ? 'text-brand-red-400'
-                      : 'text-brand-blue-600'
-                  }`}>
-                    €{selected.reduce((sum: number, c: Component) => sum + c.price, 0).toFixed(2)}
+              )}
+              {isSelected &&
+                category.id === 'services' &&
+                Array.isArray(selected) && (
+                  <div className="flex items-center ml-2 flex-shrink-0">
+                    <div
+                      className={`text-sm font-medium ${
+                        theme === 'dark'
+                          ? 'text-brand-red-400'
+                          : 'text-brand-blue-600'
+                      }`}
+                    >
+                      €
+                      {selected
+                        .reduce((sum: number, c: Component) => sum + c.price, 0)
+                        .toFixed(2)}
+                    </div>
                   </div>
-                </div>
                 )}
-             </button>
-           )
-         })}
-      </div>      {/* Compatibility Issues */}
+            </button>
+          );
+        })}
+      </div>{' '}
+      {/* Compatibility Issues */}
       {compatibilityIssues.length > 0 && (
-        <div className={`mx-4 mb-4 p-3 rounded-lg ${
-          theme === 'dark'
-            ? 'bg-red-900/20 border border-red-800'
-            : 'bg-red-50 border border-red-200'
-        }`}>
-          <div className={`flex items-center gap-2 text-sm font-medium mb-1 ${
-            theme === 'dark' ? 'text-red-400' : 'text-red-600'
-          }`}>
+        <div
+          className={`mx-4 mb-4 p-3 rounded-lg ${
+            theme === 'dark'
+              ? 'bg-red-900/20 border border-red-800'
+              : 'bg-red-50 border border-red-200'
+          }`}
+        >
+          <div
+            className={`flex items-center gap-2 text-sm font-medium mb-1 ${
+              theme === 'dark' ? 'text-red-400' : 'text-red-600'
+            }`}
+          >
             <AlertTriangle size={16} className="flex-shrink-0" />
-            <span className="truncate">{t('configurator.compatibility.issuesFound')}</span>
+            <span className="truncate">
+              {t('configurator.compatibility.issuesFound')}
+            </span>
           </div>
-          <ul className={`text-xs space-y-1 max-h-20 overflow-y-auto scrollbar-hide ${
-            theme === 'dark' ? 'text-red-400' : 'text-red-600'
-          }`}>
+          <ul
+            className={`text-xs space-y-1 max-h-20 overflow-y-auto scrollbar-hide ${
+              theme === 'dark' ? 'text-red-400' : 'text-red-600'
+            }`}
+          >
             {compatibilityIssues.map((issue, index) => (
-              <li key={index} className="break-words">{issue}</li>
+              <li key={index} className="break-words">
+                {issue}
+              </li>
             ))}
           </ul>
         </div>
       )}
-
       {/* Summary & Actions */}
-      <div className={`p-4 border-t ${
-        theme === 'dark' ? 'border-neutral-800' : 'border-neutral-200'
-      }`}>
+      <div
+        className={`p-4 border-t ${
+          theme === 'dark' ? 'border-neutral-800' : 'border-neutral-200'
+        }`}
+      >
         <div className="space-y-4">
           {/* Total */}
           <div className="flex items-center justify-between">
-            <span className={
-              theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
-            }>Total:</span>
-            <span className={`text-lg font-bold ${
-              theme === 'dark'
-                ? 'text-brand-red-400'
-                : 'text-brand-blue-600'
-            }`}>
+            <span
+              className={
+                theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+              }
+            >
+              Total:
+            </span>
+            <span
+              className={`text-lg font-bold ${
+                theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
+              }`}
+            >
               €{totalPrice.toFixed(2)}
             </span>
-          </div>          {/* Action Buttons */}
+          </div>{' '}
+          {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={onSaveConfiguration}
@@ -288,7 +360,7 @@ const SelectedComponentsList: React.FC<Props> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SelectedComponentsList
+export default SelectedComponentsList;

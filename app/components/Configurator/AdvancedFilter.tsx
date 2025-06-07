@@ -1,45 +1,50 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
-import { Filter, Search, X, ChevronDown } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { Filter, Search, X, ChevronDown } from 'lucide-react';
 
 interface RangeFilter {
-  min: number
-  max: number
-  step?: number
-  unit?: string
+  min: number;
+  max: number;
+  step?: number;
+  unit?: string;
 }
 
 interface FilterOption {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface FilterGroup {
-  title: string
-  type: 'range' | 'checkbox' | 'radio'
-  options?: FilterOption[]
-  range?: RangeFilter
+  title: string;
+  type: 'range' | 'checkbox' | 'radio';
+  options?: FilterOption[];
+  range?: RangeFilter;
 }
 
 interface AdvancedFilterProps {
-  onFilterChange: (filters: Record<string, any>) => void
-  onSearchChange: (query: string) => void
-  activeCategory: string
-  filterGroups?: FilterGroup[]
+  onFilterChange: (filters: Record<string, any>) => void;
+  onSearchChange: (query: string) => void;
+  activeCategory: string;
+  filterGroups?: FilterGroup[];
 }
 
 export default function AdvancedFilter({
   onFilterChange,
   onSearchChange,
   activeCategory,
-  filterGroups
-}: AdvancedFilterProps) {  const t = useTranslations()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({}) // Start with collapsed sections for cleaner UI
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 5000 })
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({})
+  filterGroups,
+}: AdvancedFilterProps) {
+  const t = useTranslations();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({}); // Start with collapsed sections for cleaner UI
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 5000 });
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
+    {}
+  );
 
   const getFilterGroupsByCategory = (): FilterGroup[] => {
     const baseFilters: FilterGroup[] = [
@@ -50,10 +55,10 @@ export default function AdvancedFilter({
           min: 0,
           max: 5000,
           step: 10,
-          unit: '€'
-        }
-      }
-    ]
+          unit: '€',
+        },
+      },
+    ];
 
     switch (activeCategory) {
       case 'cpu':
@@ -64,8 +69,8 @@ export default function AdvancedFilter({
             type: 'radio',
             options: [
               { id: 'intel', name: 'Intel' },
-              { id: 'amd', name: 'AMD' }
-            ]
+              { id: 'amd', name: 'AMD' },
+            ],
           },
           {
             title: t('configurator.filters.cores'),
@@ -73,15 +78,13 @@ export default function AdvancedFilter({
             range: {
               min: 2,
               max: 32,
-              step: 2
-            }
+              step: 2,
+            },
           },
           {
             title: t('configurator.filters.threads'),
             type: 'checkbox',
-            options: [
-              { id: 'multi-threaded', name: 'Multi-threaded' }
-            ]
+            options: [{ id: 'multi-threaded', name: 'Multi-threaded' }],
           },
           {
             title: t('configurator.filters.socket'),
@@ -89,8 +92,8 @@ export default function AdvancedFilter({
             options: [
               { id: 'lga1700', name: 'LGA 1700' },
               { id: 'am5', name: 'AM5' },
-              { id: 'am4', name: 'AM4' }
-            ]
+              { id: 'am4', name: 'AM4' },
+            ],
           },
           {
             title: t('configurator.filters.frequency'),
@@ -99,8 +102,8 @@ export default function AdvancedFilter({
               min: 2,
               max: 6,
               step: 0.1,
-              unit: 'GHz'
-            }
+              unit: 'GHz',
+            },
           },
           {
             title: t('configurator.filters.maxRam'),
@@ -109,8 +112,8 @@ export default function AdvancedFilter({
               min: 32,
               max: 256,
               step: 32,
-              unit: 'GB'
-            }
+              unit: 'GB',
+            },
           },
           {
             title: t('configurator.filters.ramFrequency'),
@@ -119,8 +122,8 @@ export default function AdvancedFilter({
               min: 2400,
               max: 6000,
               step: 100,
-              unit: 'MHz'
-            }
+              unit: 'MHz',
+            },
           },
           {
             title: t('configurator.filters.techProcess'),
@@ -128,10 +131,10 @@ export default function AdvancedFilter({
             options: [
               { id: '5nm', name: '5nm' },
               { id: '7nm', name: '7nm' },
-              { id: '10nm', name: '10nm' }
-            ]
-          }
-        ]
+              { id: '10nm', name: '10nm' },
+            ],
+          },
+        ];
 
       case 'gpu':
         return [
@@ -141,8 +144,8 @@ export default function AdvancedFilter({
             type: 'radio',
             options: [
               { id: 'nvidia', name: 'NVIDIA' },
-              { id: 'amd', name: 'AMD' }
-            ]
+              { id: 'amd', name: 'AMD' },
+            ],
           },
           {
             title: t('configurator.filters.vram'),
@@ -151,8 +154,8 @@ export default function AdvancedFilter({
               min: 4,
               max: 24,
               step: 2,
-              unit: 'GB'
-            }
+              unit: 'GB',
+            },
           },
           {
             title: t('configurator.filters.cooling'),
@@ -160,10 +163,10 @@ export default function AdvancedFilter({
             options: [
               { id: 'triple-fan', name: '3 Fans' },
               { id: 'dual-fan', name: '2 Fans' },
-              { id: 'single-fan', name: '1 Fan' }
-            ]
-          }
-        ]
+              { id: 'single-fan', name: '1 Fan' },
+            ],
+          },
+        ];
 
       case 'ram':
         return [
@@ -175,8 +178,8 @@ export default function AdvancedFilter({
               { id: 'corsair', name: 'Corsair' },
               { id: 'gskill', name: 'G.Skill' },
               { id: 'kingston', name: 'Kingston' },
-              { id: 'crucial', name: 'Crucial' }
-            ]
+              { id: 'crucial', name: 'Crucial' },
+            ],
           },
           {
             title: t('configurator.filters.frequency'),
@@ -185,17 +188,15 @@ export default function AdvancedFilter({
               min: 2400,
               max: 6000,
               step: 100,
-              unit: 'MHz'
-            }
+              unit: 'MHz',
+            },
           },
           {
             title: t('configurator.filters.rgb'),
             type: 'checkbox',
-            options: [
-              { id: 'rgb', name: 'RGB Lighting' }
-            ]
-          }
-        ]
+            options: [{ id: 'rgb', name: 'RGB Lighting' }],
+          },
+        ];
 
       case 'motherboard':
         return [
@@ -207,8 +208,8 @@ export default function AdvancedFilter({
               { id: 'asus', name: 'ASUS' },
               { id: 'msi', name: 'MSI' },
               { id: 'gigabyte', name: 'Gigabyte' },
-              { id: 'asrock', name: 'ASRock' }
-            ]
+              { id: 'asrock', name: 'ASRock' },
+            ],
           },
           {
             title: t('configurator.filters.socket'),
@@ -216,8 +217,8 @@ export default function AdvancedFilter({
             options: [
               { id: 'lga1700', name: 'LGA 1700' },
               { id: 'am5', name: 'AM5' },
-              { id: 'am4', name: 'AM4' }
-            ]
+              { id: 'am4', name: 'AM4' },
+            ],
           },
           {
             title: t('configurator.filters.memorySlots'),
@@ -225,24 +226,24 @@ export default function AdvancedFilter({
             range: {
               min: 2,
               max: 8,
-              step: 2
-            }
+              step: 2,
+            },
           },
           {
             title: t('configurator.filters.cpuSupport'),
             type: 'radio',
             options: [
               { id: 'intel', name: 'Intel' },
-              { id: 'amd', name: 'AMD' }
-            ]
+              { id: 'amd', name: 'AMD' },
+            ],
           },
           {
             title: t('configurator.filters.memoryType'),
             type: 'checkbox',
             options: [
               { id: 'ddr5', name: 'DDR5' },
-              { id: 'ddr4', name: 'DDR4' }
-            ]
+              { id: 'ddr4', name: 'DDR4' },
+            ],
           },
           {
             title: t('configurator.filters.maxRam'),
@@ -251,8 +252,8 @@ export default function AdvancedFilter({
               min: 32,
               max: 256,
               step: 32,
-              unit: 'GB'
-            }
+              unit: 'GB',
+            },
           },
           {
             title: t('configurator.filters.ramFrequency'),
@@ -261,8 +262,8 @@ export default function AdvancedFilter({
               min: 2400,
               max: 6000,
               step: 100,
-              unit: 'MHz'
-            }
+              unit: 'MHz',
+            },
           },
           {
             title: t('configurator.filters.gpuSlots'),
@@ -270,8 +271,8 @@ export default function AdvancedFilter({
             range: {
               min: 1,
               max: 4,
-              step: 1
-            }
+              step: 1,
+            },
           },
           {
             title: t('configurator.filters.sataPorts'),
@@ -279,8 +280,8 @@ export default function AdvancedFilter({
             range: {
               min: 2,
               max: 8,
-              step: 1
-            }
+              step: 1,
+            },
           },
           {
             title: t('configurator.filters.m2Slots'),
@@ -288,8 +289,8 @@ export default function AdvancedFilter({
             range: {
               min: 1,
               max: 4,
-              step: 1
-            }
+              step: 1,
+            },
           },
           {
             title: t('configurator.filters.features'),
@@ -297,8 +298,8 @@ export default function AdvancedFilter({
             options: [
               { id: 'sli-crossfire', name: 'SLI/CrossFire' },
               { id: 'wifi-bt', name: 'Wi-Fi + Bluetooth' },
-              { id: 'nvme', name: 'NVMe Support' }
-            ]
+              { id: 'nvme', name: 'NVMe Support' },
+            ],
           },
           {
             title: t('configurator.filters.format'),
@@ -306,10 +307,10 @@ export default function AdvancedFilter({
             options: [
               { id: 'atx', name: 'ATX' },
               { id: 'micro-atx', name: 'Micro-ATX' },
-              { id: 'mini-itx', name: 'Mini-ITX' }
-            ]
-          }
-        ]
+              { id: 'mini-itx', name: 'Mini-ITX' },
+            ],
+          },
+        ];
 
       case 'storage':
         return [
@@ -321,8 +322,8 @@ export default function AdvancedFilter({
               { id: 'samsung', name: 'Samsung' },
               { id: 'crucial', name: 'Crucial' },
               { id: 'western-digital', name: 'Western Digital' },
-              { id: 'seagate', name: 'Seagate' }
-            ]
+              { id: 'seagate', name: 'Seagate' },
+            ],
           },
           {
             title: t('configurator.filters.capacity'),
@@ -331,17 +332,15 @@ export default function AdvancedFilter({
               min: 250,
               max: 4000,
               step: 250,
-              unit: 'GB'
-            }
+              unit: 'GB',
+            },
           },
           {
             title: t('configurator.filters.nvme'),
             type: 'checkbox',
-            options: [
-              { id: 'nvme', name: 'NVMe Drive' }
-            ]
-          }
-        ]
+            options: [{ id: 'nvme', name: 'NVMe Drive' }],
+          },
+        ];
 
       case 'cooling':
         return [
@@ -353,8 +352,8 @@ export default function AdvancedFilter({
               { id: 'noctua', name: 'Noctua' },
               { id: 'corsair', name: 'Corsair' },
               { id: 'be-quiet', name: 'be quiet!' },
-              { id: 'cooler-master', name: 'Cooler Master' }
-            ]
+              { id: 'cooler-master', name: 'Cooler Master' },
+            ],
           },
           {
             title: t('configurator.filters.tdp'),
@@ -363,8 +362,8 @@ export default function AdvancedFilter({
               min: 65,
               max: 360,
               step: 5,
-              unit: 'W'
-            }
+              unit: 'W',
+            },
           },
           {
             title: t('configurator.filters.heatpipes'),
@@ -372,10 +371,10 @@ export default function AdvancedFilter({
             range: {
               min: 2,
               max: 8,
-              step: 1
-            }
-          }
-        ]
+              step: 1,
+            },
+          },
+        ];
 
       case 'psu':
         return [
@@ -387,8 +386,8 @@ export default function AdvancedFilter({
               { id: 'corsair', name: 'Corsair' },
               { id: 'seasonic', name: 'Seasonic' },
               { id: 'evga', name: 'EVGA' },
-              { id: 'be-quiet', name: 'be quiet!' }
-            ]
+              { id: 'be-quiet', name: 'be quiet!' },
+            ],
           },
           {
             title: t('configurator.filters.wattage'),
@@ -397,10 +396,10 @@ export default function AdvancedFilter({
               min: 450,
               max: 1600,
               step: 50,
-              unit: 'W'
-            }
-          }
-        ]
+              unit: 'W',
+            },
+          },
+        ];
 
       case 'case':
         return [
@@ -412,17 +411,15 @@ export default function AdvancedFilter({
               { id: 'lian-li', name: 'Lian Li' },
               { id: 'phanteks', name: 'Phanteks' },
               { id: 'fractal', name: 'Fractal Design' },
-              { id: 'corsair', name: 'Corsair' }
-            ]
+              { id: 'corsair', name: 'Corsair' },
+            ],
           },
           {
             title: t('configurator.filters.watercooling'),
             type: 'checkbox',
-            options: [
-              { id: 'water-cooling', name: 'Water Cooling Support' }
-            ]
-          }
-        ]
+            options: [{ id: 'water-cooling', name: 'Water Cooling Support' }],
+          },
+        ];
 
       case 'additional-services':
         return [
@@ -433,56 +430,65 @@ export default function AdvancedFilter({
               { id: 'assembly', name: 'PC Assembly' },
               { id: 'warranty', name: 'Extended Warranty' },
               { id: 'overclocking', name: 'Overclocking Setup' },
-              { id: 'windows', name: 'Windows Installation' }
-            ]
-          }
-        ]
+              { id: 'windows', name: 'Windows Installation' },
+            ],
+          },
+        ];
 
       default:
-        return baseFilters
+        return baseFilters;
     }
-  }
+  };
 
   useEffect(() => {
-    setSelectedFilters({})
-    setSearchQuery('')
-  }, [activeCategory])
+    setSelectedFilters({});
+    setSearchQuery('');
+  }, [activeCategory]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      onSearchChange(searchQuery)
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [searchQuery, onSearchChange])
+      onSearchChange(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, onSearchChange]);
 
   const handleFilterChange = (groupTitle: string, value: any) => {
     setSelectedFilters(prev => {
       const newFilters = {
         ...prev,
-        [groupTitle]: value
-      }
-      onFilterChange(newFilters)
-      return newFilters
-    })
-  }
+        [groupTitle]: value,
+      };
+      onFilterChange(newFilters);
+      return newFilters;
+    });
+  };
 
   const toggleSection = (title: string) => {
     setExpandedSections(prev => ({
       ...prev,
-      [title]: !prev[title]
-    }))
-  }
+      [title]: !prev[title],
+    }));
+  };
 
   const renderFilterGroup = (group: FilterGroup) => {
     switch (group.type) {
       case 'range':
-        if (!group.range) return null
-        const currentRange = selectedFilters[group.title] || { min: group.range.min, max: group.range.max }
+        if (!group.range) return null;
+        const currentRange = selectedFilters[group.title] || {
+          min: group.range.min,
+          max: group.range.max,
+        };
         return (
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>{currentRange.min}{group.range.unit}</span>
-              <span>{currentRange.max}{group.range.unit}</span>
+              <span>
+                {currentRange.min}
+                {group.range.unit}
+              </span>
+              <span>
+                {currentRange.max}
+                {group.range.unit}
+              </span>
             </div>
             <div className="flex gap-2">
               <input
@@ -491,10 +497,12 @@ export default function AdvancedFilter({
                 max={group.range.max}
                 step={group.range.step}
                 value={currentRange.min}
-                onChange={(e) => handleFilterChange(group.title, {
-                  ...currentRange,
-                  min: Number(e.target.value)
-                })}
+                onChange={e =>
+                  handleFilterChange(group.title, {
+                    ...currentRange,
+                    min: Number(e.target.value),
+                  })
+                }
                 className="w-full"
               />
               <input
@@ -503,48 +511,60 @@ export default function AdvancedFilter({
                 max={group.range.max}
                 step={group.range.step}
                 value={currentRange.max}
-                onChange={(e) => handleFilterChange(group.title, {
-                  ...currentRange,
-                  max: Number(e.target.value)
-                })}
+                onChange={e =>
+                  handleFilterChange(group.title, {
+                    ...currentRange,
+                    max: Number(e.target.value),
+                  })
+                }
                 className="w-full"
               />
             </div>
           </div>
-        )
+        );
 
       case 'checkbox':
       case 'radio':
-        if (!group.options) return null
-        const selectedValues = selectedFilters[group.title] || []
+        if (!group.options) return null;
+        const selectedValues = selectedFilters[group.title] || [];
         return (
           <div className="space-y-1">
             {group.options.map(option => (
               <label key={option.id} className="flex items-center space-x-2">
                 <input
                   type={group.type}
-                  checked={group.type === 'radio' 
-                    ? selectedValues === option.id 
-                    : selectedValues.includes(option.id)}
+                  checked={
+                    group.type === 'radio'
+                      ? selectedValues === option.id
+                      : selectedValues.includes(option.id)
+                  }
                   onChange={() => {
                     if (group.type === 'radio') {
-                      handleFilterChange(group.title, option.id)
+                      handleFilterChange(group.title, option.id);
                     } else {
-                      const newValues: string[] = selectedValues.includes(option.id)
-                        ? selectedValues.filter((id: string) => id !== option.id)
-                        : [...selectedValues, option.id]
-                      handleFilterChange(group.title, newValues)
+                      const newValues: string[] = selectedValues.includes(
+                        option.id
+                      )
+                        ? selectedValues.filter(
+                            (id: string) => id !== option.id
+                          )
+                        : [...selectedValues, option.id];
+                      handleFilterChange(group.title, newValues);
                     }
                   }}
-                  className={group.type === 'radio' ? 'form-radio' : 'form-checkbox'}
+                  className={
+                    group.type === 'radio' ? 'form-radio' : 'form-checkbox'
+                  }
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">{option.name}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  {option.name}
+                </span>
               </label>
             ))}
           </div>
-        )
+        );
     }
-  }
+  };
 
   return (
     <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm p-4">
@@ -556,7 +576,7 @@ export default function AdvancedFilter({
         <input
           type="text"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           placeholder={t('configurator.search')}
           className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
         />
@@ -572,8 +592,11 @@ export default function AdvancedFilter({
 
       {/* Filter groups */}
       <div className="space-y-4">
-        {(filterGroups || getFilterGroupsByCategory()).map((group) => (
-          <div key={group.title} className="border-t border-gray-200 dark:border-gray-700 pt-4">
+        {(filterGroups || getFilterGroupsByCategory()).map(group => (
+          <div
+            key={group.title}
+            className="border-t border-gray-200 dark:border-gray-700 pt-4"
+          >
             <button
               onClick={() => toggleSection(group.title)}
               className="flex items-center justify-between w-full"
@@ -588,13 +611,11 @@ export default function AdvancedFilter({
               />
             </button>
             {expandedSections[group.title] && (
-              <div className="mt-2">
-                {renderFilterGroup(group)}
-              </div>
+              <div className="mt-2">{renderFilterGroup(group)}</div>
             )}
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }

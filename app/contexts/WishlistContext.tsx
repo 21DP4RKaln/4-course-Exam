@@ -1,59 +1,69 @@
-'use client'
+'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useAuth } from './AuthContext'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
+import { useAuth } from './AuthContext';
 
 interface WishlistItem {
-  id: string
-  productId: string
-  productType: 'COMPONENT' | 'CONFIGURATION' | 'PERIPHERAL'
-  name: string
-  price: number
-  imageUrl: string | null
-  createdAt: string
+  id: string;
+  productId: string;
+  productType: 'COMPONENT' | 'CONFIGURATION' | 'PERIPHERAL';
+  name: string;
+  price: number;
+  imageUrl: string | null;
+  createdAt: string;
 }
 
 interface WishlistContextType {
-  items: WishlistItem[]
-  isInWishlist: (productId: string, productType: string) => boolean
-  addToWishlist: (productId: string, productType: string) => Promise<void>
-  removeFromWishlist: (productId: string, productType: string) => Promise<void>
-  loading: boolean
+  items: WishlistItem[];
+  isInWishlist: (productId: string, productType: string) => boolean;
+  addToWishlist: (productId: string, productType: string) => Promise<void>;
+  removeFromWishlist: (productId: string, productType: string) => Promise<void>;
+  loading: boolean;
 }
 
-const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
+const WishlistContext = createContext<WishlistContextType | undefined>(
+  undefined
+);
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<WishlistItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const { isAuthenticated } = useAuth()
+  const [items, setItems] = useState<WishlistItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchWishlist()
+      fetchWishlist();
     } else {
-      setItems([])
-      setLoading(false)
+      setItems([]);
+      setLoading(false);
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated]);
 
   const fetchWishlist = async () => {
     try {
-      const response = await fetch('/api/wishlist')
+      const response = await fetch('/api/wishlist');
       if (response.ok) {
-        const data = await response.json()
-        setItems(data)
+        const data = await response.json();
+        setItems(data);
       }
     } catch (error) {
-      console.error('Error fetching wishlist:', error)
+      console.error('Error fetching wishlist:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const isInWishlist = (productId: string, productType: string) => {
-    return items.some(item => item.productId === productId && item.productType === productType)
-  }
+    return items.some(
+      item => item.productId === productId && item.productType === productType
+    );
+  };
 
   const addToWishlist = async (productId: string, productType: string) => {
     try {
@@ -63,15 +73,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ productId, productType }),
-      })
+      });
 
       if (response.ok) {
-        await fetchWishlist()
+        await fetchWishlist();
       }
     } catch (error) {
-      console.error('Error adding to wishlist:', error)
+      console.error('Error adding to wishlist:', error);
     }
-  }
+  };
 
   const removeFromWishlist = async (productId: string, productType: string) => {
     try {
@@ -81,15 +91,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ productId, productType }),
-      })
+      });
 
       if (response.ok) {
-        await fetchWishlist()
+        await fetchWishlist();
       }
     } catch (error) {
-      console.error('Error removing from wishlist:', error)
+      console.error('Error removing from wishlist:', error);
     }
-  }
+  };
 
   const value = {
     items,
@@ -97,15 +107,19 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     addToWishlist,
     removeFromWishlist,
     loading,
-  }
+  };
 
-  return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>
+  return (
+    <WishlistContext.Provider value={value}>
+      {children}
+    </WishlistContext.Provider>
+  );
 }
 
 export const useWishlist = () => {
-  const context = useContext(WishlistContext)
+  const context = useContext(WishlistContext);
   if (context === undefined) {
-    throw new Error('useWishlist must be used within a WishlistProvider')
+    throw new Error('useWishlist must be used within a WishlistProvider');
   }
-  return context
-}
+  return context;
+};

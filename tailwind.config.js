@@ -126,10 +126,11 @@ module.exports = {
       },
       backdropBlur: {
         'xs': '2px',
-      },
-      backgroundImage: {
+      },      backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'primary-to-background': 'linear-gradient(to right, var(--primary), var(--background))',
+        'primary-to-muted': 'linear-gradient(to right, var(--primary), var(--muted))',
         'red-to-black': 'linear-gradient(to right, #dc2626, #0a0a0a)',
         'blue-to-white': 'linear-gradient(to right, #0066CC, #ffffff)',
         'neutral-gradient': 'linear-gradient(to right, #64748b, #94a3b8)',

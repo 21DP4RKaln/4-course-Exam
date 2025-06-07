@@ -9,14 +9,17 @@ import { getEmailConfig } from './emailConfig';
  * @param locale The locale to use for the email (defaults to 'en')
  * @returns True if the email was sent successfully, false otherwise
  */
-export async function sendOrderReceipt(orderId: string, locale: string = 'en'): Promise<boolean> {
+export async function sendOrderReceipt(
+  orderId: string,
+  locale: string = 'en'
+): Promise<boolean> {
   try {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
         orderItems: true,
-        user: true 
-      }
+        user: true,
+      },
     });
 
     if (!order) {
@@ -24,10 +27,13 @@ export async function sendOrderReceipt(orderId: string, locale: string = 'en'): 
       return false;
     }
 
-    const subtotal = order.orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    
-    const shippingCost = order.totalAmount * 0.05; 
-    const taxRate = 0.21; 
+    const subtotal = order.orderItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+
+    const shippingCost = order.totalAmount * 0.05;
+    const taxRate = 0.21;
     const preTaxAmount = order.totalAmount / (1 + taxRate);
     const taxAmount = order.totalAmount - preTaxAmount;
     const discount = subtotal + shippingCost - preTaxAmount;
@@ -46,49 +52,55 @@ export async function sendOrderReceipt(orderId: string, locale: string = 'en'): 
         name: item.name,
         price: item.price,
         quantity: item.quantity,
-        productType: item.productType
+        productType: item.productType,
       })),
       subtotal,
       shippingCost,
       discount,
       taxAmount,
-      totalAmount: order.totalAmount
-    };  
-    
+      totalAmount: order.totalAmount,
+    };
+
     const pdfPath = await generateOrderPDF(orderData);
     const emailConfig = await getEmailConfig();
 
     if (order.shippingEmail) {
-      const customerName = order.shippingName || 
-        (order.user ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim() : 'Customer');
-        await sendOrderConfirmationEmail(
+      const customerName =
+        order.shippingName ||
+        (order.user
+          ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim()
+          : 'Customer');
+      await sendOrderConfirmationEmail(
         order.shippingEmail,
         orderData,
         pdfPath,
         emailConfig,
-        locale, 
+        locale,
         customerName || 'Customer'
       );
     } else {
-      console.log(`No shipping email provided for order ${order.id}, skipping email sending`);
+      console.log(
+        `No shipping email provided for order ${order.id}, skipping email sending`
+      );
     }
 
-    await cleanupPDF(pdfPath);    
+    await cleanupPDF(pdfPath);
     if (order.shippingEmail) {
       await prisma.auditLog.create({
         data: {
           action: 'EMAIL_SENT',
           entityType: 'ORDER',
-          entityId: order.id,          details: JSON.stringify({
+          entityId: order.id,
+          details: JSON.stringify({
             type: 'order_confirmation',
             recipient: order.shippingEmail,
-            locale: locale, 
-            sentAt: new Date()
+            locale: locale,
+            sentAt: new Date(),
           }),
           ipAddress: '',
           userAgent: '',
-          user: { connect: { id: "system" } }
-        }
+          user: { connect: { id: 'system' } },
+        },
       });
     }
 
@@ -105,14 +117,17 @@ export async function sendOrderReceipt(orderId: string, locale: string = 'en'): 
  * @param locale The locale to use for the email (defaults to 'en')
  * @returns True if the email was sent successfully, false otherwise
  */
-export async function sendOrderApprovalReceipt(orderId: string, locale: string = 'en'): Promise<boolean> {
+export async function sendOrderApprovalReceipt(
+  orderId: string,
+  locale: string = 'en'
+): Promise<boolean> {
   try {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
         orderItems: true,
-        user: true
-      }
+        user: true,
+      },
     });
 
     if (!order) {
@@ -122,13 +137,18 @@ export async function sendOrderApprovalReceipt(orderId: string, locale: string =
 
     // Only send approval email if order status is PROCESSING
     if (order.status !== 'PROCESSING') {
-      console.log(`Order ${orderId} is not in PROCESSING status, skipping approval email`);
+      console.log(
+        `Order ${orderId} is not in PROCESSING status, skipping approval email`
+      );
       return false;
     }
 
-    const subtotal = order.orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const shippingCost = order.totalAmount * 0.05; 
-    const taxRate = 0.21; 
+    const subtotal = order.orderItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+    const shippingCost = order.totalAmount * 0.05;
+    const taxRate = 0.21;
     const preTaxAmount = order.totalAmount / (1 + taxRate);
     const taxAmount = order.totalAmount - preTaxAmount;
     const discount = subtotal + shippingCost - preTaxAmount;
@@ -147,26 +167,29 @@ export async function sendOrderApprovalReceipt(orderId: string, locale: string =
         name: item.name,
         price: item.price,
         quantity: item.quantity,
-        productType: item.productType
+        productType: item.productType,
       })),
       subtotal,
       shippingCost,
       discount,
       taxAmount,
-      totalAmount: order.totalAmount
+      totalAmount: order.totalAmount,
     };
 
     const emailConfig = await getEmailConfig();
 
     if (order.shippingEmail) {
       // Get customer name for email
-      const customerName = order.shippingName || 
-        (order.user ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim() : 'Customer');
-        await sendOrderApprovalEmail(
+      const customerName =
+        order.shippingName ||
+        (order.user
+          ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim()
+          : 'Customer');
+      await sendOrderApprovalEmail(
         order.shippingEmail,
         orderData,
         emailConfig,
-        locale, 
+        locale,
         customerName || 'Customer'
       );
 
@@ -174,21 +197,24 @@ export async function sendOrderApprovalReceipt(orderId: string, locale: string =
         data: {
           action: 'EMAIL_SENT',
           entityType: 'ORDER',
-          entityId: order.id,          details: JSON.stringify({
+          entityId: order.id,
+          details: JSON.stringify({
             type: 'order_approval',
             recipient: order.shippingEmail,
-            locale: locale, 
-            sentAt: new Date()
+            locale: locale,
+            sentAt: new Date(),
           }),
           ipAddress: '',
           userAgent: '',
-          user: { connect: { id: "system" } }
-        }
+          user: { connect: { id: 'system' } },
+        },
       });
 
       return true;
     } else {
-      console.log(`No shipping email provided for order ${order.id}, skipping approval email sending`);
+      console.log(
+        `No shipping email provided for order ${order.id}, skipping approval email sending`
+      );
       return false;
     }
   } catch (error) {

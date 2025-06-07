@@ -1,30 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prismaService'
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
-import { createUnauthorizedResponse, createNotFoundResponse, createServerErrorResponse } from '@/lib/apiErrors'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prismaService';
+import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import {
+  createUnauthorizedResponse,
+  createNotFoundResponse,
+  createServerErrorResponse,
+} from '@/lib/apiErrors';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
-      select: { role: true }
-    })
+      select: { role: true },
+    });
 
     if (!user || !['ADMIN', 'SPECIALIST'].includes(user.role)) {
-      return createUnauthorizedResponse('Unauthorized access')
+      return createUnauthorizedResponse('Unauthorized access');
     }
 
     const repair = await prisma.repair.findUnique({
@@ -35,8 +39,8 @@ export async function GET(
             id: true,
             name: true,
             email: true,
-            phone: true
-          }
+            phone: true,
+          },
         },
         peripheral: {
           select: {
@@ -44,16 +48,16 @@ export async function GET(
             name: true,
             category: {
               select: {
-                name: true
-              }
-            }
-          }
+                name: true,
+              },
+            },
+          },
         },
         configuration: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         parts: {
           include: {
@@ -61,16 +65,16 @@ export async function GET(
               select: {
                 id: true,
                 name: true,
-                price: true
-              }
-            }
-          }
-        }
-      }
-    })
+                price: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
     if (!repair) {
-      return createNotFoundResponse('Repair not found')
+      return createNotFoundResponse('Repair not found');
     }
 
     const formattedRepair = {
@@ -90,31 +94,35 @@ export async function GET(
         id: repair.user.id,
         name: repair.user.name,
         email: repair.user.email,
-        phone: repair.user.phone
+        phone: repair.user.phone,
       },
       parts: repair.parts.map(part => ({
         id: part.id,
         componentId: part.componentId,
         componentName: part.component.name,
         price: part.price || part.component.price,
-        quantity: part.quantity
+        quantity: part.quantity,
       })),
-      product: repair.peripheral ? {
-        type: 'peripheral' as const,
-        id: repair.peripheral.id,
-        name: repair.peripheral.name,
-        category: repair.peripheral.category.name
-      } : repair.configuration ? {
-        type: 'configuration' as const,
-        id: repair.configuration.id,
-        name: repair.configuration.name
-      } : undefined
-    }
+      product: repair.peripheral
+        ? {
+            type: 'peripheral' as const,
+            id: repair.peripheral.id,
+            name: repair.peripheral.name,
+            category: repair.peripheral.category.name,
+          }
+        : repair.configuration
+          ? {
+              type: 'configuration' as const,
+              id: repair.configuration.id,
+              name: repair.configuration.name,
+            }
+          : undefined,
+    };
 
-    return NextResponse.json(formattedRepair)
+    return NextResponse.json(formattedRepair);
   } catch (error) {
-    console.error('Error fetching repair details:', error)
-    return createServerErrorResponse('Failed to fetch repair details')
+    console.error('Error fetching repair details:', error);
+    return createServerErrorResponse('Failed to fetch repair details');
   }
 }
 
@@ -123,44 +131,51 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
-      select: { role: true }
-    })
+      select: { role: true },
+    });
 
     if (!user || !['ADMIN', 'SPECIALIST'].includes(user.role)) {
-      return createUnauthorizedResponse('Unauthorized access')
+      return createUnauthorizedResponse('Unauthorized access');
     }
 
-    const data = await request.json()
+    const data = await request.json();
 
-    const allowedFields = ['status', 'priority', 'estimatedCost', 'finalCost', 'diagnosticNotes', 'completionDate']
-    const updateData: any = {}
+    const allowedFields = [
+      'status',
+      'priority',
+      'estimatedCost',
+      'finalCost',
+      'diagnosticNotes',
+      'completionDate',
+    ];
+    const updateData: any = {};
 
     for (const field of allowedFields) {
       if (field in data && data[field] !== undefined) {
-        updateData[field] = data[field]
+        updateData[field] = data[field];
       }
     }
 
     const updatedRepair = await prisma.repair.update({
       where: { id: params.id },
-      data: updateData
-    })
+      data: updateData,
+    });
 
-    return NextResponse.json(updatedRepair)
+    return NextResponse.json(updatedRepair);
   } catch (error) {
-    console.error('Error updating repair:', error)
-    return createServerErrorResponse('Failed to update repair')
+    console.error('Error updating repair:', error);
+    return createServerErrorResponse('Failed to update repair');
   }
 }

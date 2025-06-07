@@ -1,32 +1,29 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { useTheme } from '@/app/contexts/ThemeContext'
-import { 
-  ArrowLeft,
-  AlertTriangle
-} from 'lucide-react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import Link from 'next/link';
 
 interface Product {
-  id: string
-  name: string
-  price: number
-  type: 'CONFIGURATION' | 'COMPONENT' | 'PERIPHERAL'
+  id: string;
+  name: string;
+  price: number;
+  type: 'CONFIGURATION' | 'COMPONENT' | 'PERIPHERAL';
 }
 
 export default function CreatePromoCodePage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const { user } = useAuth()
-  const { theme } = useTheme()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [products, setProducts] = useState<Product[]>([])
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+  const t = useTranslations();
+  const router = useRouter();
+  const { user } = useAuth();
+  const { theme } = useTheme();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
     code: '',
@@ -37,34 +34,36 @@ export default function CreatePromoCodePage() {
     isActive: true,
     maxUsage: '1000',
     scope: 'ALL' as 'ALL' | 'SPECIFIC_PRODUCTS',
-    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 30 days from now
-  })
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0], // 30 days from now
+  });
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') {
-      router.push('/')
-      return
+      router.push('/');
+      return;
     }
 
     // Fetch products for specific product scope
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/admin/products/all')
-        if (!response.ok) throw new Error('Failed to fetch products')
-        const data = await response.json()
-        setProducts(data)
+        const response = await fetch('/api/admin/products/all');
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const data = await response.json();
+        setProducts(data);
       } catch (error) {
-        console.error('Error fetching products:', error)
+        console.error('Error fetching products:', error);
       }
-    }
+    };
 
-    fetchProducts()
-  }, [user, router])
+    fetchProducts();
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await fetch('/api/admin/marketing/promo-codes', {
@@ -75,51 +74,66 @@ export default function CreatePromoCodePage() {
         body: JSON.stringify({
           ...formData,
           discountPercentage: parseInt(formData.discountPercentage),
-          maxDiscountAmount: formData.maxDiscountAmount ? parseFloat(formData.maxDiscountAmount) : undefined,
-          minOrderValue: formData.minOrderValue ? parseFloat(formData.minOrderValue) : undefined,
+          maxDiscountAmount: formData.maxDiscountAmount
+            ? parseFloat(formData.maxDiscountAmount)
+            : undefined,
+          minOrderValue: formData.minOrderValue
+            ? parseFloat(formData.minOrderValue)
+            : undefined,
           maxUsage: parseInt(formData.maxUsage),
           expiresAt: new Date(formData.expiresAt).toISOString(),
-          products: formData.scope === 'SPECIFIC_PRODUCTS' ? selectedProducts : undefined
-        })
-      })
+          products:
+            formData.scope === 'SPECIFIC_PRODUCTS'
+              ? selectedProducts
+              : undefined,
+        }),
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to create promo code')
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create promo code');
       }
 
-      router.push(`/${usePathname().split('/')[1]}/admin/marketing/promo-codes`)
+      router.push(
+        `/${usePathname().split('/')[1]}/admin/marketing/promo-codes`
+      );
     } catch (error) {
-      console.error('Error creating promo code:', error)
-      setError(error instanceof Error ? error.message : 'Failed to create promo code')
+      console.error('Error creating promo code:', error);
+      setError(
+        error instanceof Error ? error.message : 'Failed to create promo code'
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
-    
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
+
     if (type === 'checkbox') {
-      const target = e.target as HTMLInputElement
-      setFormData(prev => ({ ...prev, [name]: target.checked }))
+      const target = e.target as HTMLInputElement;
+      setFormData(prev => ({ ...prev, [name]: target.checked }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }))
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
-  }
+  };
 
   const handleProductSelection = (productId: string) => {
-    setSelectedProducts(prev => 
-      prev.includes(productId) 
+    setSelectedProducts(prev =>
+      prev.includes(productId)
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
-    )
-  }
+    );
+  };
 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
-        <Link 
+        <Link
           href={`/${usePathname().split('/')[1]}/admin/marketing/promo-codes`}
           className="inline-flex items-center text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
         >
@@ -154,7 +168,10 @@ export default function CreatePromoCodePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="code" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              <label
+                htmlFor="code"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+              >
                 Promo Code *
               </label>
               <input
@@ -173,7 +190,10 @@ export default function CreatePromoCodePage() {
             </div>
 
             <div>
-              <label htmlFor="discountPercentage" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              <label
+                htmlFor="discountPercentage"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+              >
                 Discount Percentage *
               </label>
               <input
@@ -194,7 +214,10 @@ export default function CreatePromoCodePage() {
             </div>
 
             <div>
-              <label htmlFor="maxDiscountAmount" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              <label
+                htmlFor="maxDiscountAmount"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+              >
                 Max Discount Amount (Optional)
               </label>
               <input
@@ -214,7 +237,10 @@ export default function CreatePromoCodePage() {
             </div>
 
             <div>
-              <label htmlFor="minOrderValue" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              <label
+                htmlFor="minOrderValue"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+              >
                 Minimum Order Value (Optional)
               </label>
               <input
@@ -234,7 +260,10 @@ export default function CreatePromoCodePage() {
             </div>
 
             <div>
-              <label htmlFor="maxUsage" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              <label
+                htmlFor="maxUsage"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+              >
                 Maximum Usage *
               </label>
               <input
@@ -254,7 +283,10 @@ export default function CreatePromoCodePage() {
             </div>
 
             <div>
-              <label htmlFor="expiresAt" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              <label
+                htmlFor="expiresAt"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+              >
                 Expiration Date *
               </label>
               <input
@@ -274,7 +306,10 @@ export default function CreatePromoCodePage() {
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+            >
               Description (Optional)
             </label>
             <textarea
@@ -292,7 +327,10 @@ export default function CreatePromoCodePage() {
           </div>
 
           <div>
-            <label htmlFor="scope" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label
+              htmlFor="scope"
+              className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+            >
               Applies To *
             </label>
             <select
@@ -313,8 +351,11 @@ export default function CreatePromoCodePage() {
                 Select Products
               </label>
               <div className="border rounded-md dark:border-neutral-600 max-h-64 overflow-y-auto">
-                {products.map((product) => (
-                  <label key={product.id} className="flex items-center p-3 hover:bg-neutral-50 dark:hover:bg-neutral-700">
+                {products.map(product => (
+                  <label
+                    key={product.id}
+                    className="flex items-center p-3 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                  >
                     <input
                       type="checkbox"
                       checked={selectedProducts.includes(product.id)}
@@ -342,7 +383,10 @@ export default function CreatePromoCodePage() {
               onChange={handleInputChange}
               className="h-4 w-4 text-red-600 focus:ring-red-500 border-neutral-300 rounded"
             />
-            <label htmlFor="isActive" className="ml-2 text-sm text-neutral-700 dark:text-neutral-300">
+            <label
+              htmlFor="isActive"
+              className="ml-2 text-sm text-neutral-700 dark:text-neutral-300"
+            >
               Active
             </label>
           </div>
@@ -365,5 +409,5 @@ export default function CreatePromoCodePage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

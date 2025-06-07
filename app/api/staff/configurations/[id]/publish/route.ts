@@ -1,62 +1,71 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prismaService'
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
-import { createUnauthorizedResponse, createNotFoundResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
-import { z } from 'zod'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prismaService';
+import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import {
+  createUnauthorizedResponse,
+  createNotFoundResponse,
+  createBadRequestResponse,
+  createServerErrorResponse,
+} from '@/lib/apiErrors';
+import { z } from 'zod';
 
 const publishConfigurationSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
   price: z.number().positive().optional(),
   category: z.string().optional(),
-  imageUrl: z.string().optional()
-})
+  imageUrl: z.string().optional(),
+});
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
     if (!['ADMIN', 'SPECIALIST'].includes(payload.role)) {
-      return createUnauthorizedResponse('Insufficient permissions')
+      return createUnauthorizedResponse('Insufficient permissions');
     }
 
-    const body = await request.json()
-    const validationResult = publishConfigurationSchema.safeParse(body)
+    const body = await request.json();
+    const validationResult = publishConfigurationSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return createBadRequestResponse('Invalid publish data', validationResult.error.flatten())
+      return createBadRequestResponse(
+        'Invalid publish data',
+        validationResult.error.flatten()
+      );
     }
 
-    const { name, description, price, category, imageUrl } = validationResult.data
+    const { name, description, price, category, imageUrl } =
+      validationResult.data;
 
     const configuration = await prisma.configuration.findUnique({
       where: { id: params.id },
       include: {
         components: {
           include: {
-            component: true
-          }
-        }
-      }
-    })
+            component: true,
+          },
+        },
+      },
+    });
 
     if (!configuration) {
-      return createNotFoundResponse('Configuration not found')
+      return createNotFoundResponse('Configuration not found');
     }
 
     if (configuration.isTemplate && configuration.isPublic) {
-      return createBadRequestResponse('Configuration is already published')
+      return createBadRequestResponse('Configuration is already published');
     }
 
     const updatedConfiguration = await prisma.configuration.update({
@@ -70,20 +79,20 @@ export async function POST(
         status: 'APPROVED',
         isTemplate: true,
         isPublic: true,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       include: {
         components: {
           include: {
             component: {
               include: {
-                category: true
-              }
-            }
-          }
-        }
-      }
-    })
+                category: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
     return NextResponse.json({
       id: updatedConfiguration.id,
@@ -100,12 +109,12 @@ export async function POST(
         name: item.component.name,
         category: item.component.category.name,
         quantity: item.quantity,
-        price: item.component.price
+        price: item.component.price,
       })),
-      publishedAt: updatedConfiguration.updatedAt.toISOString()
-    })
+      publishedAt: updatedConfiguration.updatedAt.toISOString(),
+    });
   } catch (error) {
-    console.error('Error publishing configuration:', error)
-    return createServerErrorResponse('Failed to publish configuration')
+    console.error('Error publishing configuration:', error);
+    return createServerErrorResponse('Failed to publish configuration');
   }
 }

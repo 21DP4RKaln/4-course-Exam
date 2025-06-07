@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedMousePads(prisma: PrismaClient) {
   // Get all peripherals with subType 'mousepads'
   const mousePadPeripherals = await prisma.peripheral.findMany({
-    where: { subType: 'mousepads' }
+    where: { subType: 'mousepads' },
   });
 
   // Prepare MousePad entries
@@ -12,35 +12,41 @@ export async function seedMousePads(prisma: PrismaClient) {
   // For each MousePad peripheral, create a detailed MousePad entry
   for (let i = 0; i < mousePadPeripherals.length; i++) {
     const peripheral = mousePadPeripherals[i];
-    
+
     // Parse existing specifications if available
-    const specs = peripheral.specifications ? JSON.parse(peripheral.specifications.toString()) : {};
-    
+    const specs = peripheral.specifications
+      ? JSON.parse(peripheral.specifications.toString())
+      : {};
+
     // Get manufacturer from peripheral name or use default
-    const manufacturer = 
-      peripheral.name.includes('Logitech') ? 'Logitech' :
-      peripheral.name.includes('Razer') ? 'Razer' :
-      peripheral.name.includes('SteelSeries') ? 'SteelSeries' :
-      peripheral.name.includes('Corsair') ? 'Corsair' :
-      peripheral.name.includes('HyperX') ? 'HyperX' :
-      'Generic';
-    
+    const manufacturer = peripheral.name.includes('Logitech')
+      ? 'Logitech'
+      : peripheral.name.includes('Razer')
+        ? 'Razer'
+        : peripheral.name.includes('SteelSeries')
+          ? 'SteelSeries'
+          : peripheral.name.includes('Corsair')
+            ? 'Corsair'
+            : peripheral.name.includes('HyperX')
+              ? 'HyperX'
+              : 'Generic';
+
     // Size types
     const sizes = ['Small', 'Medium', 'Large', 'XL', 'XXL', 'Extended'];
     const size = specs.size || sizes[i % sizes.length];
-    
+
     // Surface types
     const surfaces = ['Cloth', 'Hard Plastic', 'Hybrid', 'Soft', 'Glass'];
     const surface = specs.surface || surfaces[i % surfaces.length];
-    
+
     // Material types (required by schema)
     const materials = ['Microfiber', 'Polyester', 'Silicon', 'Rubber', 'Nylon'];
     const material = specs.material || materials[i % materials.length];
-    
+
     // Base types
     const bases = ['Rubber', 'Silicone', 'Foam'];
     const base = specs.base || bases[i % bases.length];
-    
+
     // Dimensions based on size
     let dimensions;
     switch (size) {
@@ -65,30 +71,30 @@ export async function seedMousePads(prisma: PrismaClient) {
       default:
         dimensions = `400mm x 400mm x 3mm`;
     }
-    
+
     // Thickness as integer (not string with "mm")
     const thickness = 2 + (i % 5);
-    
+
     // Additional specs to store in specifications JSON
     const additionalSpecs = {
       size,
       base,
       stitchedEdges: i % 2 === 0,
       washable: i % 5 !== 0,
-      reversible: i % 10 === 0
+      reversible: i % 10 === 0,
     };
-    
+
     // Update peripheral specifications
     await prisma.peripheral.update({
       where: { id: peripheral.id },
       data: {
         specifications: JSON.stringify({
           ...specs,
-          ...additionalSpecs
-        })
-      }
+          ...additionalSpecs,
+        }),
+      },
     });
-    
+
     mousePads.push({
       peripheralId: peripheral.id,
       manufacturer,
@@ -96,7 +102,7 @@ export async function seedMousePads(prisma: PrismaClient) {
       thickness,
       material,
       surface,
-      rgb: i % 3 === 0
+      rgb: i % 3 === 0,
     });
   }
 
@@ -105,10 +111,10 @@ export async function seedMousePads(prisma: PrismaClient) {
     await prisma.mousePad.upsert({
       where: { peripheralId: mousePad.peripheralId },
       update: mousePad,
-      create: mousePad
+      create: mousePad,
     });
   }
-  
+
   // Call the function to add 10 more mousepads
   await addMoreMousePads(prisma);
 }
@@ -118,14 +124,14 @@ export async function seedMousePads(prisma: PrismaClient) {
  */
 async function addMoreMousePads(prisma: PrismaClient) {
   const category = await prisma.peripheralCategory.findFirst({
-    where: { slug: 'mousepad' }
+    where: { slug: 'mousepad' },
   });
 
   if (!category) {
     console.error('MousePad category not found');
     return;
   }
-  
+
   // Define new mousepad models with interesting specifications
   const newMousePadModels = [
     {
@@ -154,8 +160,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         handcrafted: true,
         madein: 'Japan',
         specialEdition: true,
-        premium: true
-      }
+        premium: true,
+      },
     },
     {
       name: 'Logitech G Powerplay Wireless Charging',
@@ -183,8 +189,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         powerModule: 'Integrated Powercore',
         lightingZones: 1,
         powerDelivery: '5W',
-        dualSurfaceDesign: true
-      }
+        dualSurfaceDesign: true,
+      },
     },
     {
       name: 'Razer Strider Chroma',
@@ -213,8 +219,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         toughened: true,
         rollable: false,
         syncsWithGames: true,
-        microTexturedSurface: true
-      }
+        microTexturedSurface: true,
+      },
     },
     {
       name: 'SteelSeries QcK Prism XL',
@@ -243,8 +249,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         microWovenSurface: true,
         optimizedForAllSensors: true,
         durability: 'Heavy-duty',
-        mouseMovementType: 'Medium-fast'
-      }
+        mouseMovementType: 'Medium-fast',
+      },
     },
     {
       name: 'Corsair MM700 RGB',
@@ -273,8 +279,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         spillProof: true,
         surfaceCalibration: true,
         precision: 'High-accuracy',
-        glideVelocity: 'Medium-fast'
-      }
+        glideVelocity: 'Medium-fast',
+      },
     },
     {
       name: 'Pulsar ParaSpeed V2',
@@ -303,8 +309,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         highPrecision: true,
         ultraSmooth: true,
         lowFriction: true,
-        specialCoating: 'Anti-humidity'
-      }
+        specialCoating: 'Anti-humidity',
+      },
     },
     {
       name: 'Glorious Elements Ice',
@@ -333,8 +339,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         compatibleSensors: 'All optical sensors',
         durabilityRating: 'Ultra high',
         temperatureResistant: true,
-        cleaningKit: 'Included'
-      }
+        cleaningKit: 'Included',
+      },
     },
     {
       name: 'XTRFY GP4',
@@ -362,8 +368,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         waterResistant: true,
         odorProtection: true,
         controlSurface: true,
-        proDeveloped: true
-      }
+        proDeveloped: true,
+      },
     },
     {
       name: 'LGG Saturn Pro',
@@ -391,8 +397,8 @@ async function addMoreMousePads(prisma: PrismaClient) {
         competitiveGaming: true,
         specialty: 'Balanced Speed/Control',
         communityDeveloped: true,
-        esportsFocused: true
-      }
+        esportsFocused: true,
+      },
     },
     {
       name: 'Endgame Gear MPC890 Cordura',
@@ -421,25 +427,25 @@ async function addMoreMousePads(prisma: PrismaClient) {
         abrasionResistance: 'Military grade',
         accelerationControlled: true,
         mouseCompatibility: 'All mice types',
-        specialCorduraWeave: '1000D'
-      }
-    }
+        specialCorduraWeave: '1000D',
+      },
+    },
   ];
-  
+
   // Create new mousepad peripherals and mousepad entries
   for (let i = 0; i < newMousePadModels.length; i++) {
     const model = newMousePadModels[i];
-    
+
     // Generate a unique SKU
     const sku = `P-PAD-${model.manufacturer.substring(0, 3).toUpperCase()}-${2000 + i}`;
-    
+
     // Create peripheral description
     let description = `${model.name} - Premium ${model.size} gaming mousepad with ${model.surface.toLowerCase()} surface`;
     if (model.rgb) {
       description += ' and RGB lighting';
     }
     description += `. Made of high-quality ${model.material.toLowerCase()} material.`;
-    
+
     // Create the peripheral entry
     const peripheral = await prisma.peripheral.create({
       data: {
@@ -452,9 +458,9 @@ async function addMoreMousePads(prisma: PrismaClient) {
         sku,
         subType: 'mousepads',
         imageUrl: `/products/peripherals/mousepads${(i % 3) + 1}.jpg`,
-      }
+      },
     });
-    
+
     // Create the mousepad entry
     await prisma.mousePad.create({
       data: {
@@ -464,12 +470,12 @@ async function addMoreMousePads(prisma: PrismaClient) {
         thickness: model.thickness,
         material: model.material,
         rgb: model.rgb,
-        surface: model.surface
-      }
+        surface: model.surface,
+      },
     });
-    
+
     console.log(`Added mousepad: ${model.name}`);
   }
-  
+
   console.log('Added 10 additional mousepads');
 }

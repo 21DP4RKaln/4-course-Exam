@@ -10,9 +10,9 @@ export async function GET(
     const { params } = context;
     const id = params.id;
     console.log('Fetching peripheral with ID:', id);
-      const peripheral = await prisma.peripheral.findUnique({
+    const peripheral = await prisma.peripheral.findUnique({
       where: {
-        id
+        id,
       },
       include: {
         category: true,
@@ -24,8 +24,8 @@ export async function GET(
         headphones: true,
         speakers: true,
         gamepad: true,
-        mousePad: true
-      }
+        mousePad: true,
+      },
     });
 
     if (!peripheral) {
@@ -33,11 +33,11 @@ export async function GET(
         { error: 'Peripheral not found' },
         { status: 404 }
       );
-    }    
+    }
     const specs = extractPeripheralSpecifications(peripheral);
-    
+
     console.log('Peripheral specifications:', specs);
-    
+
     let discountPrice = null;
     if (peripheral.discountPrice && peripheral.discountExpiresAt) {
       const now = new Date();
@@ -46,26 +46,31 @@ export async function GET(
       }
     } else if (peripheral.discountPrice) {
       discountPrice = peripheral.discountPrice;
-    }    return NextResponse.json({
+    }
+    return NextResponse.json({
       id: peripheral.id,
-      type: 'peripheral', 
+      type: 'peripheral',
       name: peripheral.name,
       category: peripheral.category.name,
       description: peripheral.description || '',
       specifications: specs,
       price: peripheral.price,
       discountPrice: discountPrice,
-      discountExpiresAt: peripheral.discountExpiresAt,      imageUrl: peripheral.imagesUrl,
-      stock: peripheral.quantity, 
+      discountExpiresAt: peripheral.discountExpiresAt,
+      imageUrl: peripheral.imagesUrl,
+      stock: peripheral.quantity,
       rating: peripheral.rating || 0,
       ratingCount: peripheral.ratingCount || 0,
       ratings: {
         average: peripheral.rating || 0,
-        count: peripheral.ratingCount || 0
-      }
+        count: peripheral.ratingCount || 0,
+      },
     });
   } catch (error) {
-    console.error(`Error fetching peripheral with ID ${context.params.id}:`, error);
+    console.error(
+      `Error fetching peripheral with ID ${context.params.id}:`,
+      error
+    );
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -12,9 +12,14 @@ export interface EmailTemplateData {
 /**
  * Generate localized order confirmation email HTML
  */
-export async function generateOrderConfirmationEmail(data: EmailTemplateData): Promise<{ subject: string; html: string }> {
+export async function generateOrderConfirmationEmail(
+  data: EmailTemplateData
+): Promise<{ subject: string; html: string }> {
   const locale = data.locale || 'en';
-  const t = await getTranslations({ locale, namespace: 'emails.orderConfirmation' });
+  const t = await getTranslations({
+    locale,
+    namespace: 'emails.orderConfirmation',
+  });
 
   const subject = t('subject', { orderId: data.orderId });
 
@@ -222,14 +227,18 @@ export async function generateOrderConfirmationEmail(data: EmailTemplateData): P
               </tr>
             </thead>
             <tbody>
-              ${data.orderData.items.map(item => `
+              ${data.orderData.items
+                .map(
+                  item => `
                 <tr>
                   <td>${item.name}</td>
                   <td>${item.quantity}</td>
                   <td>€${item.price.toFixed(2)}</td>
                   <td>€${(item.price * item.quantity).toFixed(2)}</td>
                 </tr>
-              `).join('')}
+              `
+                )
+                .join('')}
             </tbody>
           </table>
 
@@ -242,12 +251,16 @@ export async function generateOrderConfirmationEmail(data: EmailTemplateData): P
               <span>${t('shipping')}:</span>
               <span>€${data.orderData.shippingCost.toFixed(2)}</span>
             </div>
-            ${data.orderData.discount > 0 ? `
+            ${
+              data.orderData.discount > 0
+                ? `
             <div class="total-row">
               <span>${t('discount')}:</span>
               <span>-€${data.orderData.discount.toFixed(2)}</span>
             </div>
-            ` : ''}
+            `
+                : ''
+            }
             <div class="total-row">
               <span>${t('tax')}:</span>
               <span>€${data.orderData.taxAmount.toFixed(2)}</span>
@@ -281,9 +294,14 @@ export async function generateOrderConfirmationEmail(data: EmailTemplateData): P
 /**
  * Generate localized order approval email HTML
  */
-export async function generateOrderApprovalEmail(data: EmailTemplateData): Promise<{ subject: string; html: string }> {
+export async function generateOrderApprovalEmail(
+  data: EmailTemplateData
+): Promise<{ subject: string; html: string }> {
   const locale = data.locale || 'en';
-  const t = await getTranslations({ locale, namespace: 'emails.orderApproval' });
+  const t = await getTranslations({
+    locale,
+    namespace: 'emails.orderApproval',
+  });
 
   const subject = t('subject', { orderId: data.orderId });
 

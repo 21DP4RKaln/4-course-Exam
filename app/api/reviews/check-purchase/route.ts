@@ -1,32 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
-import { createUnauthorizedResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/apiErrors'
-import { prisma } from '@/lib/prismaService'
-import { ProductType } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import {
+  createUnauthorizedResponse,
+  createBadRequestResponse,
+  createServerErrorResponse,
+} from '@/lib/apiErrors';
+import { prisma } from '@/lib/prismaService';
+import { ProductType } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
-    const userId = payload.userId
+    const userId = payload.userId;
 
-    const { searchParams } = new URL(request.url)
-    const productId = searchParams.get('productId')
-    const productType = searchParams.get('productType')
-    
+    const { searchParams } = new URL(request.url);
+    const productId = searchParams.get('productId');
+    const productType = searchParams.get('productType');
+
     if (!productId || !productType) {
-      return createBadRequestResponse('Product ID and type are required')
+      return createBadRequestResponse('Product ID and type are required');
     }
 
-    let hasPurchased = false
+    let hasPurchased = false;
 
     if (productType === 'CONFIGURATION') {
       const order = await prisma.order.findFirst({
@@ -34,36 +38,36 @@ export async function GET(request: NextRequest) {
           userId,
           configurationId: productId,
           status: {
-            in: ['COMPLETED', 'PROCESSING']
-          }
-        }
-      })
-      
-      hasPurchased = !!order
+            in: ['COMPLETED', 'PROCESSING'],
+          },
+        },
+      });
+
+      hasPurchased = !!order;
     } else {
       const orders = await prisma.order.findMany({
         where: {
           userId,
           status: {
-            in: ['COMPLETED', 'PROCESSING']
-          }
+            in: ['COMPLETED', 'PROCESSING'],
+          },
         },
         include: {
           orderItems: {
             where: {
               productId: productId,
-              productType: productType as ProductType
-            }
-          }
-        }
-      })
-      
-      hasPurchased = orders.some(order => order.orderItems.length > 0)
+              productType: productType as ProductType,
+            },
+          },
+        },
+      });
+
+      hasPurchased = orders.some(order => order.orderItems.length > 0);
     }
 
-    return NextResponse.json({ hasPurchased })
+    return NextResponse.json({ hasPurchased });
   } catch (error) {
-    console.error('Error checking purchase status:', error)
-    return createServerErrorResponse('Failed to check purchase status')
+    console.error('Error checking purchase status:', error);
+    return createServerErrorResponse('Failed to check purchase status');
   }
 }

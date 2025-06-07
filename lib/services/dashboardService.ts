@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prismaService'
+import { prisma } from '@/lib/prismaService';
 
 export interface UserConfiguration {
   id: string;
@@ -16,13 +16,15 @@ export interface UserOrder {
   totalAmount: number;
   createdAt: string;
   configurationName?: string;
-  items: any[]; 
+  items: any[];
 }
 
 /**
  * Gets all configurations for a specific user
  */
-export async function getUserConfigurations(userId: string): Promise<UserConfiguration[]> {
+export async function getUserConfigurations(
+  userId: string
+): Promise<UserConfiguration[]> {
   try {
     const configurations = await prisma.configuration.findMany({
       where: {
@@ -73,18 +75,18 @@ export async function getUserOrders(userId: string): Promise<UserOrder[]> {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { email: true }
+      select: { email: true },
     });
 
     const orders = await prisma.order.findMany({
       where: {
         OR: [
-          { userId: userId }, 
+          { userId: userId },
           {
             isGuestOrder: true,
             shippingEmail: user?.email,
-          }
-        ]
+          },
+        ],
       },
       include: {
         orderItems: true,
@@ -109,21 +111,22 @@ export async function getUserOrders(userId: string): Promise<UserOrder[]> {
       totalAmount: order.totalAmount,
       createdAt: order.createdAt.toISOString(),
       configurationName: order.configuration?.name,
-      items: order.orderItems.length > 0 ? 
-        order.orderItems.map(item => ({
-          id: item.productId,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          productType: item.productType
-        })) : 
-        (order.configuration?.components.map(item => ({
-          id: item.component.id,
-          name: item.component.name,
-          price: item.component.price,
-          quantity: item.quantity,
-          productType: 'COMPONENT' as any,
-        })) || []),
+      items:
+        order.orderItems.length > 0
+          ? order.orderItems.map(item => ({
+              id: item.productId,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              productType: item.productType,
+            }))
+          : order.configuration?.components.map(item => ({
+              id: item.component.id,
+              name: item.component.name,
+              price: item.component.price,
+              quantity: item.quantity,
+              productType: 'COMPONENT' as any,
+            })) || [],
     }));
   } catch (error) {
     console.error('Error fetching user orders:', error);
@@ -134,7 +137,10 @@ export async function getUserOrders(userId: string): Promise<UserOrder[]> {
 /**
  * Gets a specific configuration by ID
  */
-export async function getConfigurationById(configId: string, userId: string): Promise<UserConfiguration | null> {
+export async function getConfigurationById(
+  configId: string,
+  userId: string
+): Promise<UserConfiguration | null> {
   try {
     const configuration = await prisma.configuration.findFirst({
       where: {
@@ -182,11 +188,14 @@ export async function getConfigurationById(configId: string, userId: string): Pr
 /**
  * Gets a specific order by ID
  */
-export async function getOrderById(orderId: string, userId: string): Promise<UserOrder | null> {
+export async function getOrderById(
+  orderId: string,
+  userId: string
+): Promise<UserOrder | null> {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { email: true }
+      select: { email: true },
     });
 
     const order = await prisma.order.findFirst({
@@ -197,8 +206,8 @@ export async function getOrderById(orderId: string, userId: string): Promise<Use
           {
             isGuestOrder: true,
             shippingEmail: user?.email,
-          }
-        ]
+          },
+        ],
       },
       include: {
         orderItems: true,
@@ -216,26 +225,28 @@ export async function getOrderById(orderId: string, userId: string): Promise<Use
 
     if (!order) {
       return null;
-    }    return {
+    }
+    return {
       id: order.id,
       status: order.status,
       totalAmount: order.totalAmount,
       createdAt: order.createdAt.toISOString(),
       configurationName: order.configuration?.name,
-      items: order.orderItems?.length > 0 ?
-        order.orderItems.map(item => ({
-          id: item.productId,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          productType: item.productType
-        })) :
-        order.configuration?.components.map(item => ({
-          id: item.component.id,
-          name: item.component.name,
-          price: item.component.price,
-          quantity: item.quantity,
-        })) || [],
+      items:
+        order.orderItems?.length > 0
+          ? order.orderItems.map(item => ({
+              id: item.productId,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              productType: item.productType,
+            }))
+          : order.configuration?.components.map(item => ({
+              id: item.component.id,
+              name: item.component.name,
+              price: item.component.price,
+              quantity: item.quantity,
+            })) || [],
     };
   } catch (error) {
     console.error(`Error fetching order with ID ${orderId}:`, error);
@@ -247,11 +258,11 @@ export async function getOrderById(orderId: string, userId: string): Promise<Use
  * Create a new configuration
  */
 export async function createConfiguration(
-  userId: string, 
-  data: { 
-    name: string; 
-    description?: string; 
-    components: { id: string; quantity: number }[] 
+  userId: string,
+  data: {
+    name: string;
+    description?: string;
+    components: { id: string; quantity: number }[];
   }
 ): Promise<UserConfiguration | null> {
   try {
@@ -259,16 +270,16 @@ export async function createConfiguration(
     const components = await prisma.component.findMany({
       where: {
         id: {
-          in: componentIds
-        }
-      }
+          in: componentIds,
+        },
+      },
     });
-    
+
     const totalPrice = data.components.reduce((total, comp) => {
       const component = components.find(c => c.id === comp.id);
       return total + (component ? component.price * comp.quantity : 0);
     }, 0);
-    
+
     const configuration = await prisma.configuration.create({
       data: {
         name: data.name,
@@ -281,25 +292,25 @@ export async function createConfiguration(
             quantity: comp.quantity,
             component: {
               connect: {
-                id: comp.id
-              }
-            }
-          }))
-        }
+                id: comp.id,
+              },
+            },
+          })),
+        },
       },
       include: {
         components: {
           include: {
             component: {
               include: {
-                category: true
-              }
-            }
-          }
-        }
-      }
+                category: true,
+              },
+            },
+          },
+        },
+      },
     });
-    
+
     return {
       id: configuration.id,
       name: configuration.name,
@@ -324,7 +335,10 @@ export async function createConfiguration(
 /**
  * Submit configuration for review
  */
-export async function submitConfiguration(configId: string, userId: string): Promise<boolean> {
+export async function submitConfiguration(
+  configId: string,
+  userId: string
+): Promise<boolean> {
   try {
     const config = await prisma.configuration.findFirst({
       where: {

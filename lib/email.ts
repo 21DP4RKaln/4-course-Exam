@@ -1,6 +1,10 @@
 import nodemailer from 'nodemailer';
 import { OrderPDFData } from './pdf';
-import { generateOrderConfirmationEmail, generateOrderApprovalEmail, EmailTemplateData } from './emailTemplates';
+import {
+  generateOrderConfirmationEmail,
+  generateOrderApprovalEmail,
+  EmailTemplateData,
+} from './emailTemplates';
 import fs from 'fs';
 
 export interface EmailConfig {
@@ -38,13 +42,15 @@ export async function sendPasswordResetEmail(
       port: config.port,
       secure: config.secure,
       user: config.auth.user,
-      hasPassword: !!config.auth.pass
+      hasPassword: !!config.auth.pass,
     });
-    
+
     const transporter = await createEmailTransporter(config);
 
     const mailOptions = {
-      from: config.fromEmail ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>` : config.auth.user,
+      from: config.fromEmail
+        ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>`
+        : config.auth.user,
       to,
       subject: 'Password Reset Verification Code',
       html: `
@@ -70,7 +76,7 @@ export async function sendPasswordResetEmail(
     console.log('Sending email to:', to);
     const result = await transporter.sendMail(mailOptions);
     console.log('Email sent successfully, messageId:', result.messageId);
-    
+
     return result;
   } catch (error) {
     console.error('Error in sendPasswordResetEmail:', error);
@@ -94,22 +100,24 @@ export async function sendOrderConfirmationEmail(
     orderId: orderData.id,
     orderDate: orderData.createdAt.toLocaleDateString(),
     orderData,
-    locale
+    locale,
   };
 
   const { subject, html } = await generateOrderConfirmationEmail(templateData);
 
   const mailOptions = {
-    from: config.fromEmail ? `"${config.fromName || 'IvaPro Order System'}" <${config.fromEmail}>` : config.auth.user,
+    from: config.fromEmail
+      ? `"${config.fromName || 'IvaPro Order System'}" <${config.fromEmail}>`
+      : config.auth.user,
     to,
     subject,
     html,
     attachments: [
       {
         filename: `IvaPro_Order_${orderData.id}_Receipt.pdf`,
-        content: fs.createReadStream(pdfPath)
-      }
-    ]
+        content: fs.createReadStream(pdfPath),
+      },
+    ],
   };
 
   await transporter.sendMail(mailOptions);
@@ -132,16 +140,18 @@ export async function sendOrderApprovalEmail(
     orderId: orderData.id,
     orderDate: orderData.createdAt.toLocaleDateString(),
     orderData,
-    locale
+    locale,
   };
 
   const { subject, html } = await generateOrderApprovalEmail(templateData);
 
   const mailOptions = {
-    from: config.fromEmail ? `"${config.fromName || 'IvaPro Order System'}" <${config.fromEmail}>` : config.auth.user,
+    from: config.fromEmail
+      ? `"${config.fromName || 'IvaPro Order System'}" <${config.fromEmail}>`
+      : config.auth.user,
     to,
     subject,
-    html
+    html,
   };
 
   await transporter.sendMail(mailOptions);
@@ -170,7 +180,9 @@ export async function sendRepairCompletionEmail(
 ) {
   const transporter = await createEmailTransporter(config);
 
-  const partsHtml = repairData.parts.length > 0 ? `
+  const partsHtml =
+    repairData.parts.length > 0
+      ? `
     <h3 style="color: #333; margin: 20px 0 10px 0;">Parts Used:</h3>
     <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
       <thead>
@@ -182,27 +194,36 @@ export async function sendRepairCompletionEmail(
         </tr>
       </thead>
       <tbody>
-        ${repairData.parts.map(part => `
+        ${repairData.parts
+          .map(
+            part => `
           <tr>
             <td style="padding: 10px; border: 1px solid #ddd;">${part.name}</td>
             <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">${part.quantity}</td>
             <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">€${part.price.toFixed(2)}</td>
             <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">€${(part.price * part.quantity).toFixed(2)}</td>
           </tr>
-        `).join('')}
+        `
+          )
+          .join('')}
       </tbody>
     </table>
-  ` : '';
+  `
+      : '';
 
-  const completionImageHtml = repairData.completionImage ? `
+  const completionImageHtml = repairData.completionImage
+    ? `
     <div style="margin: 20px 0;">
       <h3 style="color: #333; margin: 10px 0;">Completion Image:</h3>
       <p>You can view the completion image <a href="${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}${repairData.completionImage}" style="color: #007bff; text-decoration: none;">here</a>.</p>
     </div>
-  ` : '';
+  `
+    : '';
 
   const mailOptions = {
-    from: config.fromEmail ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>` : config.auth.user,
+    from: config.fromEmail
+      ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>`
+      : config.auth.user,
     to,
     subject: `Repair Completed - ${repairData.title}`,
     html: `
@@ -232,12 +253,16 @@ export async function sendRepairCompletionEmail(
             <td style="padding: 8px 0; font-weight: bold; color: #333;">Repair ID:</td>
             <td style="padding: 8px 0; font-family: monospace;">#${repairData.repairId.slice(0, 8)}</td>
           </tr>
-          ${repairData.productName ? `
+          ${
+            repairData.productName
+              ? `
           <tr>
             <td style="padding: 8px 0; font-weight: bold; color: #333;">Product:</td>
             <td style="padding: 8px 0;">${repairData.productName} (${repairData.productType})</td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
           <tr>
             <td style="padding: 8px 0; font-weight: bold; color: #333;">Final Cost:</td>
             <td style="padding: 8px 0; font-size: 18px; font-weight: bold; color: #007bff;">€${repairData.finalCost.toFixed(2)}</td>
@@ -273,7 +298,7 @@ export async function sendRepairCompletionEmail(
           </p>
         </div>
       </div>
-    `
+    `,
   };
 
   await transporter.sendMail(mailOptions);
@@ -299,15 +324,20 @@ export async function sendRepairRequestNotification(
 ) {
   const transporter = await createEmailTransporter(config);
 
-  const imageSection = repairData.hasImage && repairData.imageUrl ? `
+  const imageSection =
+    repairData.hasImage && repairData.imageUrl
+      ? `
     <div style="margin: 20px 0;">
       <h3 style="color: #333; margin: 10px 0;">Issue Image:</h3>
       <p>Customer provided image: <a href="${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}${repairData.imageUrl}" style="color: #007bff; text-decoration: none;">View Image</a></p>
     </div>
-  ` : '';
+  `
+      : '';
 
   const mailOptions = {
-    from: config.fromEmail ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>` : config.auth.user,
+    from: config.fromEmail
+      ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>`
+      : config.auth.user,
     to,
     subject: `New Repair Request - ${repairData.serviceType}`,
     html: `
@@ -337,12 +367,16 @@ export async function sendRepairRequestNotification(
             <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Email:</td>
             <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><a href="mailto:${repairData.customerEmail}" style="color: #007bff;">${repairData.customerEmail}</a></td>
           </tr>
-          ${repairData.customerPhone ? `
+          ${
+            repairData.customerPhone
+              ? `
           <tr>
             <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Phone:</td>
             <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><a href="tel:${repairData.customerPhone}" style="color: #007bff;">${repairData.customerPhone}</a></td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
           <tr>
             <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Service Type:</td>
             <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${repairData.serviceType}</td>
@@ -384,7 +418,7 @@ export async function sendRepairRequestNotification(
           </p>
         </div>
       </div>
-    `
+    `,
   };
 
   await transporter.sendMail(mailOptions);

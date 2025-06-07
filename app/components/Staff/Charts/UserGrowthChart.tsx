@@ -1,45 +1,58 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { useTheme } from '@/app/contexts/ThemeContext'
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
 
 interface UserGrowthData {
-  date: string
-  newUsers: number
-  totalUsers: number
+  date: string;
+  newUsers: number;
+  totalUsers: number;
 }
 
 export function UserGrowthChart() {
-  const t = useTranslations()
-  const { theme } = useTheme()
-  const [data, setData] = useState<UserGrowthData[]>([])
-  const [loading, setLoading] = useState(true)
+  const t = useTranslations();
+  const { theme } = useTheme();
+  const [data, setData] = useState<UserGrowthData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchUserGrowthData()
-  }, [])
+    fetchUserGrowthData();
+  }, []);
 
   const fetchUserGrowthData = async () => {
     try {
-      const response = await fetch('/api/admin/analytics/users')
+      const response = await fetch('/api/admin/analytics/users');
       if (response.ok) {
-        const growthData = await response.json()
-        setData(growthData)
+        const growthData = await response.json();
+        setData(growthData);
       }
     } catch (error) {
-      console.error('Error fetching user growth data:', error)
+      console.error('Error fetching user growth data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const chartColors = {
     newUsers: theme === 'dark' ? '#10b981' : '#059669',
-    totalUsers: theme === 'dark' ? '#3b82f6' : '#2563eb'
-  }
+    totalUsers: theme === 'dark' ? '#3b82f6' : '#2563eb',
+  };
 
   if (loading) {
     return (
@@ -53,7 +66,7 @@ export function UserGrowthChart() {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -64,21 +77,25 @@ export function UserGrowthChart() {
       <CardContent>
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#374151' : '#e5e7eb'} />
-              <XAxis 
-                dataKey="date" 
+            <AreaChart
+              data={data}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={theme === 'dark' ? '#374151' : '#e5e7eb'}
+              />
+              <XAxis
+                dataKey="date"
                 stroke={theme === 'dark' ? '#9ca3af' : '#4b5563'}
               />
-              <YAxis 
-                stroke={theme === 'dark' ? '#9ca3af' : '#4b5563'}
-              />
+              <YAxis stroke={theme === 'dark' ? '#9ca3af' : '#4b5563'} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
                   border: `1px solid ${theme === 'dark' ? '#374151' : '#e5e7eb'}`,
                   borderRadius: '0.5rem',
-                  color: theme === 'dark' ? '#f3f4f6' : '#111827'
+                  color: theme === 'dark' ? '#f3f4f6' : '#111827',
                 }}
               />
               <Area
@@ -104,5 +121,5 @@ export function UserGrowthChart() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

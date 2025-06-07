@@ -6,7 +6,9 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
   const configurations = await prisma.configuration.findMany({ take: 5 });
 
   if (users.length === 0 || configurations.length === 0) {
-    throw new Error('Users and configurations not found. Please seed users and configurations first.');
+    throw new Error(
+      'Users and configurations not found. Please seed users and configurations first.'
+    );
   }
   const orders = [
     {
@@ -23,7 +25,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'John Doe',
       shippingPhone: '+1-555-0101',
       createdAt: new Date('2025-05-01'),
-      updatedAt: new Date('2025-05-05')
+      updatedAt: new Date('2025-05-05'),
     },
     {
       userId: users[1]?.id,
@@ -39,7 +41,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'Jane Smith',
       shippingPhone: '+1-555-0102',
       createdAt: new Date('2025-05-15'),
-      updatedAt: new Date('2025-05-20')
+      updatedAt: new Date('2025-05-20'),
     },
     {
       userId: users[2]?.id,
@@ -55,7 +57,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'Mike Johnson',
       shippingPhone: '+1-555-0103',
       createdAt: new Date('2025-05-20'),
-      updatedAt: new Date('2025-05-22')
+      updatedAt: new Date('2025-05-22'),
     },
     {
       userId: users[3]?.id,
@@ -71,7 +73,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'Sarah Wilson',
       shippingPhone: '+1-555-0104',
       createdAt: new Date('2025-05-25'),
-      updatedAt: new Date('2025-05-25')
+      updatedAt: new Date('2025-05-25'),
     },
     {
       userId: users[4]?.id,
@@ -87,7 +89,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'David Brown',
       shippingPhone: '+1-555-0105',
       createdAt: new Date('2025-05-10'),
-      updatedAt: new Date('2025-05-12')
+      updatedAt: new Date('2025-05-12'),
     },
     {
       userId: users[0]?.id,
@@ -103,7 +105,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'John Doe',
       shippingPhone: '+1-555-0101',
       createdAt: new Date('2025-04-20'),
-      updatedAt: new Date('2025-04-25')
+      updatedAt: new Date('2025-04-25'),
     },
     {
       userId: users[1]?.id,
@@ -119,7 +121,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'Jane Smith',
       shippingPhone: '+1-555-0102',
       createdAt: new Date('2025-05-18'),
-      updatedAt: new Date('2025-05-23')
+      updatedAt: new Date('2025-05-23'),
     },
     {
       userId: users[2]?.id,
@@ -135,7 +137,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'Mike Johnson',
       shippingPhone: '+1-555-0103',
       createdAt: new Date('2025-05-22'),
-      updatedAt: new Date('2025-05-24')
+      updatedAt: new Date('2025-05-24'),
     },
     {
       userId: users[3]?.id,
@@ -151,7 +153,7 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'Sarah Wilson',
       shippingPhone: '+1-555-0104',
       createdAt: new Date('2025-05-26'),
-      updatedAt: new Date('2025-05-26')
+      updatedAt: new Date('2025-05-26'),
     },
     {
       isGuestOrder: true,
@@ -167,8 +169,8 @@ export async function seedOrders(prisma: PrismaClient): Promise<void> {
       shippingName: 'Guest Customer',
       shippingPhone: '+1-555-0199',
       createdAt: new Date('2025-05-05'),
-      updatedAt: new Date('2025-05-10')
-    }
+      updatedAt: new Date('2025-05-10'),
+    },
   ];
 
   await prisma.order.createMany({ data: orders, skipDuplicates: true });

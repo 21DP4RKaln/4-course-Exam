@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedHeadphones(prisma: PrismaClient) {
   // Get all peripherals with subType 'headphones'
   const headphonePeripherals = await prisma.peripheral.findMany({
-    where: { subType: 'headphones' }
+    where: { subType: 'headphones' },
   });
 
   // Prepare Headphone entries
@@ -12,50 +12,54 @@ export async function seedHeadphones(prisma: PrismaClient) {
   // For each Headphone peripheral, create a detailed Headphone entry
   for (let i = 0; i < headphonePeripherals.length; i++) {
     const peripheral = headphonePeripherals[i];
-    
+
     // Parse existing specifications if available
-    const specs = peripheral.specifications ? JSON.parse(peripheral.specifications.toString()) : {};
-    
+    const specs = peripheral.specifications
+      ? JSON.parse(peripheral.specifications.toString())
+      : {};
+
     // Get or set manufacturer from specs or parent peripheral
-    const manufacturer = specs.manufacturer || "Audio Tech";
-    
+    const manufacturer = specs.manufacturer || 'Audio Tech';
+
     // Types of headphones
     const types = ['Over-ear', 'Over-ear', 'On-ear', 'In-ear'];
     const type = specs.type || types[i % types.length];
-    
+
     // Connection types
     const connections = [
       'Wired - 3.5mm',
       'Wired - USB',
       'Wireless - 2.4GHz',
       'Wireless - Bluetooth',
-      'Wireless - 2.4GHz + Bluetooth'
+      'Wireless - 2.4GHz + Bluetooth',
     ];
     const connection = specs.connection || connections[i % connections.length];
-    
+
     // Determine if wireless based on connection type
     const isWireless = connection.includes('Wireless');
-    
+
     // Frequency response
     const frequencyResponses = [
       '20Hz - 20kHz',
       '15Hz - 22kHz',
       '10Hz - 30kHz',
       '20Hz - 40kHz',
-      '7Hz - 28kHz'
+      '7Hz - 28kHz',
     ];
-    const frequency = specs.frequencyResponse || frequencyResponses[i % frequencyResponses.length];
-    
+    const frequency =
+      specs.frequencyResponse ||
+      frequencyResponses[i % frequencyResponses.length];
+
     // Impedance (mostly for wired headphones)
     const impedances = [32, 50, 64, 80, 16, 250];
     const impedance = !isWireless ? impedances[i % impedances.length] : null;
-    
+
     // Battery life (only for wireless)
     const batteryLife = isWireless ? 15 + (i % 10) * 5 : null;
-    
+
     // Weight in grams as integer
     const weight = 200 + (i % 12) * 10;
-    
+
     // Additional specs to store in the specifications JSON
     const additionalSpecs = {
       driver: `${40 + (i % 4) * 5}mm`,
@@ -63,31 +67,32 @@ export async function seedHeadphones(prisma: PrismaClient) {
       surroundSound: i % 2 === 0 ? '7.1 Virtual Surround' : null,
       foldable: type !== 'In-ear' && i % 2 === 0,
     };
-    
+
     // Update specifications JSON with additional specs
     const updatedSpecifications = {
       ...specs,
-      ...additionalSpecs
+      ...additionalSpecs,
     };
-    
+
     // Update the peripheral record with the specifications
     await prisma.peripheral.update({
       where: { id: peripheral.id },
       data: {
-        specifications: JSON.stringify(updatedSpecifications)
-      }
+        specifications: JSON.stringify(updatedSpecifications),
+      },
     });
-    
+
     headphones.push({
       peripheralId: peripheral.id,
       manufacturer,
       type,
-      connection,      impedance,
+      connection,
+      impedance,
       frequency,
       weight,
       microphone: i % 5 !== 4,
       noiseCancelling: i % 3 === 0,
-      rgb: !isWireless && i % 3 === 0
+      rgb: !isWireless && i % 3 === 0,
     });
   }
 
@@ -96,10 +101,10 @@ export async function seedHeadphones(prisma: PrismaClient) {
     await prisma.headphones.upsert({
       where: { peripheralId: headphone.peripheralId },
       update: headphone,
-      create: headphone
+      create: headphone,
     });
   }
-  
+
   // Call the function to add 10 more headphones
   await addMoreHeadphones(prisma);
 }
@@ -107,15 +112,16 @@ export async function seedHeadphones(prisma: PrismaClient) {
 /**
  * Adds 10 additional headphone entries with unique specifications
  */
-async function addMoreHeadphones(prisma: PrismaClient) {  const category = await prisma.peripheralCategory.findFirst({
-    where: { slug: 'headphones' }
+async function addMoreHeadphones(prisma: PrismaClient) {
+  const category = await prisma.peripheralCategory.findFirst({
+    where: { slug: 'headphones' },
   });
-  
+
   if (!category) {
     console.error('Headphone category not found');
     return;
   }
-  
+
   // Define new headphone models with interesting specifications
   const newHeadphoneModels = [
     {
@@ -148,8 +154,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         touchControls: true,
         multiPointConnection: true,
         speakToChat: true,
-        adaptiveNoiseCancelling: true
-      }
+        adaptiveNoiseCancelling: true,
+      },
     },
     {
       name: 'Sennheiser HD 660 S2',
@@ -180,8 +186,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         impedance: '300 ohm',
         cableLength: '1.8m',
         replacableCable: true,
-        velourEarpads: true
-      }
+        velourEarpads: true,
+      },
     },
     {
       name: 'Apple AirPods Pro 2',
@@ -212,8 +218,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         adaptiveEQ: true,
         transparencyMode: true,
         wirelessChargingCase: true,
-        findMySupport: true
-      }
+        findMySupport: true,
+      },
     },
     {
       name: 'HyperX Cloud Alpha Wireless',
@@ -244,8 +250,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         detachableMicrophone: true,
         memoryFoamEarpads: true,
         dualChamberDrivers: true,
-        durableAluminumFrame: true
-      }
+        durableAluminumFrame: true,
+      },
     },
     {
       name: 'Logitech G Pro X 2 Lightspeed',
@@ -277,8 +283,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         memoryFoamEarpads: true,
         dts: true,
         switchablePlatforms: true,
-        rgbLighting: true
-      }
+        rgbLighting: true,
+      },
     },
     {
       name: 'Razer BlackShark V2 Pro',
@@ -309,8 +315,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         detachableMicrophone: true,
         flowKnitMemoryFoamEarcushions: true,
         ultraSoftHeadband: true,
-        titaniumCoatedDrivers: true
-      }
+        titaniumCoatedDrivers: true,
+      },
     },
     {
       name: 'Beyerdynamic DT 990 Pro',
@@ -341,8 +347,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         studioGrade: true,
         cableLength: '3m coiled',
         madeInGermany: true,
-        replacableParts: true
-      }
+        replacableParts: true,
+      },
     },
     {
       name: 'SteelSeries Arctis Nova Pro',
@@ -375,8 +381,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         multiSystemConnect: true,
         parametricEQ: true,
         activeNoiseCancellation: true,
-        simultaneousDualAudio: true
-      }
+        simultaneousDualAudio: true,
+      },
     },
     {
       name: 'Bose QuietComfort Ultra',
@@ -408,8 +414,8 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         noiseCancellationLevels: '11 levels',
         siriGoogleAssistant: true,
         spotifyTapControl: true,
-        premiumCarryCase: true
-      }
+        premiumCarryCase: true,
+      },
     },
     {
       name: 'EPOS H6PRO',
@@ -438,22 +444,23 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         closedAcoustics: true,
         liftToMute: true,
         detachableMicrophone: true,
-        memoryFoamEarpads: true,        studioGradeAudio: true,
-        cableLength: '2.5m detachable'
-      }
-    }
+        memoryFoamEarpads: true,
+        studioGradeAudio: true,
+        cableLength: '2.5m detachable',
+      },
+    },
   ];
-  
+
   // Create new headphone peripherals and headphone entries
   for (let i = 0; i < newHeadphoneModels.length; i++) {
     const model = newHeadphoneModels[i];
-    
+
     // Generate a unique SKU
     const sku = `P-HPH-${model.manufacturer.substring(0, 3).toUpperCase()}-${2000 + i}`;
-    
+
     // Determine if wireless based on connection type
     const isWireless = model.connection.includes('Wireless');
-    
+
     // Create peripheral description
     let description = `${model.name} - Premium ${model.type.toLowerCase()} headphones`;
     if (model.noiseCancelling) {
@@ -463,7 +470,7 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
       description += ` and ${model.batteryLife}-hour battery life`;
     }
     description += `. ${model.connection} connectivity.`;
-    
+
     // Create the peripheral entry
     const peripheral = await prisma.peripheral.create({
       data: {
@@ -476,9 +483,9 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         sku,
         subType: 'headphones',
         imageUrl: `/products/peripherals/headphones${(i % 3) + 1}.jpg`,
-      }
+      },
     });
-    
+
     // Create the headphone entry
     await prisma.headphones.create({
       data: {
@@ -491,12 +498,12 @@ async function addMoreHeadphones(prisma: PrismaClient) {  const category = await
         frequency: model.frequency,
         weight: model.weight,
         noiseCancelling: model.noiseCancelling,
-        rgb: model.rgb
-      }
+        rgb: model.rgb,
+      },
     });
-    
+
     console.log(`Added headphone: ${model.name}`);
   }
-  
+
   console.log('Added 10 additional headphones');
 }

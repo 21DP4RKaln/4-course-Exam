@@ -12,18 +12,20 @@ export async function getEmailConfig(): Promise<EmailConfig> {
       SMTP_USER: process.env.SMTP_USER,
       SMTP_PASS: process.env.SMTP_PASS ? '***' : 'not set',
       SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL,
-      SMTP_FROM_NAME: process.env.SMTP_FROM_NAME
+      SMTP_FROM_NAME: process.env.SMTP_FROM_NAME,
     });
-    
+
     // Check if required environment variables are present
     const requiredVars = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'];
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
-    
+
     if (missingVars.length > 0) {
       console.warn('Missing required environment variables:', missingVars);
-      throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+      throw new Error(
+        `Missing required environment variables: ${missingVars.join(', ')}`
+      );
     }
-    
+
     const config = {
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
@@ -33,9 +35,9 @@ export async function getEmailConfig(): Promise<EmailConfig> {
         pass: process.env.SMTP_PASS || '',
       },
       fromEmail: process.env.SMTP_FROM_EMAIL || '14dprkalninskvdarbs@gmail.com',
-      fromName: process.env.SMTP_FROM_NAME || 'IvaPro Support'
+      fromName: process.env.SMTP_FROM_NAME || 'IvaPro Support',
     };
-    
+
     console.log('Email config created:', {
       host: config.host,
       port: config.port,
@@ -43,13 +45,13 @@ export async function getEmailConfig(): Promise<EmailConfig> {
       user: config.auth.user,
       hasPassword: !!config.auth.pass,
       fromEmail: config.fromEmail,
-      fromName: config.fromName
+      fromName: config.fromName,
     });
-    
+
     return config;
   } catch (error) {
     console.error('Error getting email config:', error);
-    
+
     const fallbackConfig = {
       host: 'smtp.gmail.com',
       port: 587,
@@ -59,9 +61,9 @@ export async function getEmailConfig(): Promise<EmailConfig> {
         pass: 'egku zbeo xaao xcsj',
       },
       fromEmail: '14dprkalninskvdarbs@gmail.com',
-      fromName: 'IvaPro Support'
+      fromName: 'IvaPro Support',
     };
-    
+
     console.log('Using fallback email config');
     return fallbackConfig;
   }

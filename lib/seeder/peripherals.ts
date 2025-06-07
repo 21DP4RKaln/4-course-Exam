@@ -18,7 +18,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   const keyboardPeripherals = [
     {
       name: 'Logitech G Pro X Mechanical Gaming Keyboard',
-      description: 'Professional mechanical keyboard with hot-swappable switches',
+      description:
+        'Professional mechanical keyboard with hot-swappable switches',
       price: priceWith99(120, 160),
       quantity: 25,
       imagesUrl: '/products/peripherals/keyboards1.jpg',
@@ -32,12 +33,13 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         form: 'TKL',
         connection: 'USB-C',
         rgb: true,
-        numpad: false
-      }
+        numpad: false,
+      },
     },
     {
       name: 'Corsair K95 RGB Platinum XT',
-      description: 'Premium mechanical keyboard with macro keys and media controls',
+      description:
+        'Premium mechanical keyboard with macro keys and media controls',
       price: priceWith99(180, 220),
       quantity: 20,
       imagesUrl: '/products/peripherals/keyboards2.jpg',
@@ -51,12 +53,13 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         form: 'Full Size',
         connection: 'USB',
         rgb: true,
-        numpad: true
-      }
+        numpad: true,
+      },
     },
     {
       name: 'Razer Huntsman V3 Pro',
-      description: 'Ultra-fast optical mechanical keyboard for competitive gaming',
+      description:
+        'Ultra-fast optical mechanical keyboard for competitive gaming',
       price: priceWith99(200, 250),
       quantity: 18,
       imagesUrl: '/products/peripherals/keyboards3.jpg',
@@ -70,9 +73,9 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         form: 'TKL',
         connection: 'USB-C',
         rgb: true,
-        numpad: false
-      }
-    }
+        numpad: false,
+      },
+    },
   ];
 
   // Mouse Peripherals
@@ -97,8 +100,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         weight: 63.0,
         sensor: 'HERO 25K',
         batteryType: 'Built-in',
-        batteryLife: 70
-      }
+        batteryLife: 70,
+      },
     },
     {
       name: 'Razer DeathAdder V3 Pro',
@@ -120,8 +123,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         weight: 88.0,
         sensor: 'Focus Pro 30K',
         batteryType: 'Built-in',
-        batteryLife: 90
-      }
+        batteryLife: 90,
+      },
     },
     {
       name: 'SteelSeries Rival 650 Wireless',
@@ -143,9 +146,9 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         weight: 153.0,
         sensor: 'TrueMove3+',
         batteryType: 'Built-in',
-        batteryLife: 24
-      }
-    }
+        batteryLife: 24,
+      },
+    },
   ];
 
   // MousePad Peripherals
@@ -165,8 +168,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         thickness: 2.0,
         material: 'Cloth',
         rgb: false,
-        surface: 'Smooth'
-      }
+        surface: 'Smooth',
+      },
     },
     {
       name: 'Corsair MM700 RGB Extended',
@@ -183,8 +186,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         thickness: 4.0,
         material: 'Micro-textured',
         rgb: true,
-        surface: 'Speed'
-      }
+        surface: 'Speed',
+      },
     },
     {
       name: 'Razer Goliathus Extended Chroma',
@@ -201,9 +204,9 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         thickness: 3.0,
         material: 'Micro-weave cloth',
         rgb: true,
-        surface: 'Control'
-      }
-    }
+        surface: 'Control',
+      },
+    },
   ];
 
   // Monitor Peripherals
@@ -228,8 +231,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         hdr: true,
         ports: 'DisplayPort, HDMI, USB',
         speakers: false,
-        curved: false
-      }
+        curved: false,
+      },
     },
     {
       name: 'Samsung Odyssey G7 32"',
@@ -251,8 +254,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         hdr: true,
         ports: 'DisplayPort, HDMI',
         speakers: false,
-        curved: true
-      }
+        curved: true,
+      },
     },
     {
       name: 'LG UltraGear 27GN950-B',
@@ -274,9 +277,9 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         hdr: true,
         ports: 'DisplayPort, HDMI, USB',
         speakers: false,
-        curved: false
-      }
-    }
+        curved: false,
+      },
+    },
   ];
 
   // Headphones Peripherals
@@ -299,8 +302,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: '10Hz-40kHz',
         weight: 374.0,
         noiseCancelling: false,
-        rgb: true
-      }
+        rgb: true,
+      },
     },
     {
       name: 'Audio-Technica ATH-M50xBT2',
@@ -320,8 +323,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: '15Hz-28kHz',
         weight: 307.0,
         noiseCancelling: false,
-        rgb: false
-      }
+        rgb: false,
+      },
     },
     {
       name: 'HyperX Cloud Alpha Wireless',
@@ -341,9 +344,9 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: '15Hz-21kHz',
         weight: 335.0,
         noiseCancelling: false,
-        rgb: false
-      }
-    }
+        rgb: false,
+      },
+    },
   ];
 
   // Microphone Peripherals
@@ -364,8 +367,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: 20000,
         sensitivity: -38.0,
         interface: 'USB',
-        stand: true
-      }
+        stand: true,
+      },
     },
     {
       name: 'Audio-Technica AT2020USB+',
@@ -383,8 +386,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: 20000,
         sensitivity: -37.0,
         interface: 'USB',
-        stand: false
-      }
+        stand: false,
+      },
     },
     {
       name: 'Shure SM7B Dynamic Microphone',
@@ -402,9 +405,9 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: 20000,
         sensitivity: -59.0,
         interface: 'XLR',
-        stand: false
-      }
-    }
+        stand: false,
+      },
+    },
   ];
 
   // Camera Peripherals
@@ -425,8 +428,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         fov: 78.0,
         microphone: true,
         autofocus: true,
-        connection: 'USB'
-      }
+        connection: 'USB',
+      },
     },
     {
       name: 'Razer Kiyo Pro Ultra',
@@ -444,8 +447,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         fov: 90.0,
         microphone: false,
         autofocus: true,
-        connection: 'USB-C'
-      }
+        connection: 'USB-C',
+      },
     },
     {
       name: 'Elgato Facecam Pro',
@@ -463,9 +466,9 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         fov: 82.0,
         microphone: false,
         autofocus: true,
-        connection: 'USB-C'
-      }
-    }
+        connection: 'USB-C',
+      },
+    },
   ];
 
   // Speakers Peripherals
@@ -486,8 +489,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: '35Hz-20kHz',
         connections: '3.5mm, RCA',
         bluetooth: false,
-        remote: true
-      }
+        remote: true,
+      },
     },
     {
       name: 'Creative Pebble V3',
@@ -505,8 +508,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: '20Hz-20kHz',
         connections: 'USB-C, Bluetooth',
         bluetooth: true,
-        remote: false
-      }
+        remote: false,
+      },
     },
     {
       name: 'Audioengine A2+ Desktop Speakers',
@@ -524,9 +527,9 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         frequency: '65Hz-22kHz',
         connections: '3.5mm, USB, Bluetooth',
         bluetooth: true,
-        remote: true
-      }
-    }
+        remote: true,
+      },
+    },
   ];
 
   // Gamepad Peripherals
@@ -548,8 +551,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         vibration: true,
         rgb: false,
         batteryLife: 40,
-        programmable: false
-      }
+        programmable: false,
+      },
     },
     {
       name: 'PlayStation 5 DualSense Controller',
@@ -568,8 +571,8 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         vibration: true,
         rgb: true,
         batteryLife: 12,
-        programmable: false
-      }
+        programmable: false,
+      },
     },
     {
       name: 'Razer Wolverine V2 Pro',
@@ -588,21 +591,25 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
         vibration: true,
         rgb: true,
         batteryLife: 28,
-        programmable: true
-      }
-    }
+        programmable: true,
+      },
+    },
   ];
   // Create all peripherals
   for (const keyboardData of keyboardPeripherals) {
     const { keyboard, ...peripheralData } = keyboardData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.keyboard.create({
-        data: { ...keyboard, peripheralId: peripheral.id }
+        data: { ...keyboard, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Keyboard peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Keyboard peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -612,13 +619,17 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   for (const mouseData of mousePeripherals) {
     const { mouse, ...peripheralData } = mouseData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.mouse.create({
-        data: { ...mouse, peripheralId: peripheral.id }
+        data: { ...mouse, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Mouse peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Mouse peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -628,13 +639,17 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   for (const mousePadData of mousePadPeripherals) {
     const { mousePad, ...peripheralData } = mousePadData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.mousePad.create({
-        data: { ...mousePad, peripheralId: peripheral.id }
+        data: { ...mousePad, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Mouse pad peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Mouse pad peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -644,13 +659,17 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   for (const monitorData of monitorPeripherals) {
     const { monitor, ...peripheralData } = monitorData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.monitor.create({
-        data: { ...monitor, peripheralId: peripheral.id }
+        data: { ...monitor, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Monitor peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Monitor peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -660,13 +679,17 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   for (const headphonesData of headphonesPeripherals) {
     const { headphones, ...peripheralData } = headphonesData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.headphones.create({
-        data: { ...headphones, peripheralId: peripheral.id }
+        data: { ...headphones, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Headphones peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Headphones peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -676,13 +699,17 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   for (const microphoneData of microphonePeripherals) {
     const { microphone, ...peripheralData } = microphoneData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.microphone.create({
-        data: { ...microphone, peripheralId: peripheral.id }
+        data: { ...microphone, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Microphone peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Microphone peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -692,13 +719,17 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   for (const cameraData of cameraPeripherals) {
     const { camera, ...peripheralData } = cameraData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.camera.create({
-        data: { ...camera, peripheralId: peripheral.id }
+        data: { ...camera, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Camera peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Camera peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -708,13 +739,17 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   for (const speakersData of speakersPeripherals) {
     const { speakers, ...peripheralData } = speakersData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.speakers.create({
-        data: { ...speakers, peripheralId: peripheral.id }
+        data: { ...speakers, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Speakers peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Speakers peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }
@@ -724,13 +759,17 @@ export async function seedPeripherals(prisma: PrismaClient): Promise<void> {
   for (const gamepadData of gamepadPeripherals) {
     const { gamepad, ...peripheralData } = gamepadData;
     try {
-      const peripheral = await prisma.peripheral.create({ data: peripheralData });
+      const peripheral = await prisma.peripheral.create({
+        data: peripheralData,
+      });
       await prisma.gamepad.create({
-        data: { ...gamepad, peripheralId: peripheral.id }
+        data: { ...gamepad, peripheralId: peripheral.id },
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        console.log(`⚠️ Gamepad peripheral ${peripheralData.sku} already exists, skipping...`);
+        console.log(
+          `⚠️ Gamepad peripheral ${peripheralData.sku} already exists, skipping...`
+        );
       } else {
         throw error;
       }

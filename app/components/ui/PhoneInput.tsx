@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { parsePhoneNumber, isValidPhoneNumber, AsYouType } from 'libphonenumber-js';
+import {
+  parsePhoneNumber,
+  isValidPhoneNumber,
+  AsYouType,
+} from 'libphonenumber-js';
 
 interface PhoneInputProps {
   value: string;
@@ -20,7 +24,7 @@ export default function PhoneInput({
   className = '',
   error,
   placeholder = '',
-  defaultCountry = 'LV'
+  defaultCountry = 'LV',
 }: PhoneInputProps) {
   const [selectedCountry, setSelectedCountry] = useState(defaultCountry);
   const [isValid, setIsValid] = useState(true);
@@ -39,7 +43,7 @@ export default function PhoneInput({
         setIsValid(false);
       }
     } else {
-      setIsValid(true); 
+      setIsValid(true);
     }
   };
 
@@ -58,7 +62,9 @@ export default function PhoneInput({
       <div className="flex items-center gap-2">
         <select
           value={selectedCountry}
-          onChange={(e) => setSelectedCountry(e.target.value as 'LV' | 'LT' | 'EE')}
+          onChange={e =>
+            setSelectedCountry(e.target.value as 'LV' | 'LT' | 'EE')
+          }
           className="px-2 py-2.5 border rounded-lg dark:bg-neutral-950 dark:border-neutral-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 focus:border-transparent"
         >
           <option value="LV">+371 (LV)</option>
@@ -81,7 +87,9 @@ export default function PhoneInput({
           Please enter a valid phone number for {selectedCountry}
         </p>
       )}
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+      )}
     </div>
   );
 }

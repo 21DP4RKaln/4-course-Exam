@@ -1,6 +1,15 @@
-import CategoryPage from '@/app/components/CategoryPage/CategoryPage'
+import CategoryPage from '@/app/components/CategoryPage/CategoryPage';
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-  return <CategoryPage params={Promise.resolve({ category: slug })} type="component" />
+  return (
+    <CategoryPage
+      params={Promise.resolve({ category: slug })}
+      type="component"
+    />
+  );
 }

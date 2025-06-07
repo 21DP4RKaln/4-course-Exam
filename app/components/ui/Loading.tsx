@@ -1,32 +1,34 @@
-'use client'
+'use client';
 
-import React from 'react'
-import styled from 'styled-components'
-import { useTheme } from '@/app/contexts/ThemeContext'
+import React from 'react';
+import styled from 'styled-components';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
 interface LoadingProps {
-  size?: 'small' | 'medium' | 'large'
-  text?: string
-  fullScreen?: boolean
-  className?: string
+  size?: 'small' | 'medium' | 'large';
+  text?: string;
+  fullScreen?: boolean;
+  className?: string;
 }
 
-export default function Loading({ 
-  size = 'medium', 
-  text = 'Loading...', 
+export default function Loading({
+  size = 'medium',
+  text = ' ',
   fullScreen = false,
-  className = ''
+  className = '',
 }: LoadingProps) {
-  const { theme } = useTheme()
+  const { theme } = useTheme();
 
   const sizeMap = {
     small: 32,
     medium: 48,
-    large: 64
-  }
+    large: 64,
+  };
 
   return (
-    <LoadingWrapper className={`${fullScreen ? 'full-screen' : ''} ${className}`}>
+    <LoadingWrapper
+      className={`${fullScreen ? 'full-screen' : ''} ${className}`}
+    >
       <StyledWrapper className={size}>
         <div id="ghost">
           <div id={theme === 'dark' ? 'red' : 'blue'}>
@@ -69,7 +71,7 @@ export default function Loading({
       </StyledWrapper>
       {text && <LoadingText theme={theme}>{text}</LoadingText>}
     </LoadingWrapper>
-  )
+  );
 }
 
 const LoadingWrapper = styled.div`
@@ -78,7 +80,7 @@ const LoadingWrapper = styled.div`
   align-items: center;
   justify-content: center;
   gap: 16px;
-  
+
   &.full-screen {
     position: fixed;
     top: 0;
@@ -89,33 +91,34 @@ const LoadingWrapper = styled.div`
     backdrop-filter: blur(5px);
     z-index: 9999;
   }
-`
+`;
 
 const LoadingText = styled.div<{ theme: string }>`
-  color: ${props => props.theme === 'dark' ? '#fff' : '#000'};
+  color: ${props => (props.theme === 'dark' ? '#fff' : '#000')};
   font-size: 14px;
   font-weight: 500;
   text-align: center;
-`
+`;
 
 const StyledWrapper = styled.div`
   &.small #ghost {
     scale: 0.6;
   }
-  
+
   &.medium #ghost {
     scale: 0.8;
   }
-  
+
   &.large #ghost {
     scale: 1;
   }
-  
+
   #ghost {
     position: relative;
   }
 
-  #red, #blue {
+  #red,
+  #blue {
     animation: upNDown infinite 0.5s;
     position: relative;
     width: 140px;
@@ -126,20 +129,20 @@ const StyledWrapper = styled.div`
     grid-column-gap: 0px;
     grid-row-gap: 0px;
     grid-template-areas:
-      "a1  a2  a3  a4  a5  top0  top0  top0  top0  a10 a11 a12 a13 a14"
-      "b1  b2  b3  top1 top1 top1 top1 top1 top1 top1 top1 b12 b13 b14"
-      "c1 c2 top2 top2 top2 top2 top2 top2 top2 top2 top2 top2 c13 c14"
-      "d1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 d14"
-      "e1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 e14"
-      "f1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 f14"
-      "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-      "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-      "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-      "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-      "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-      "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-      "st0 st0 an4 st1 an7 st2 an10 an10 st3 an13 st4 an16 st5 st5"
-      "an1 an2 an3 an5 an6 an8 an9 an9 an11 an12 an14 an15 an17 an18";
+      'a1  a2  a3  a4  a5  top0  top0  top0  top0  a10 a11 a12 a13 a14'
+      'b1  b2  b3  top1 top1 top1 top1 top1 top1 top1 top1 b12 b13 b14'
+      'c1 c2 top2 top2 top2 top2 top2 top2 top2 top2 top2 top2 c13 c14'
+      'd1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 d14'
+      'e1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 e14'
+      'f1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 f14'
+      'top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4'
+      'top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4'
+      'top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4'
+      'top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4'
+      'top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4'
+      'top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4'
+      'st0 st0 an4 st1 an7 st2 an10 an10 st3 an13 st4 an16 st5 st5'
+      'an1 an2 an3 an5 an6 an8 an9 an9 an11 an12 an14 an15 an17 an18';
   }
 
   @keyframes upNDown {
@@ -170,7 +173,7 @@ const StyledWrapper = styled.div`
   #red {
     color: #dc2626;
   }
-  
+
   #blue {
     color: #0066cc;
   }
@@ -330,7 +333,7 @@ const StyledWrapper = styled.div`
   }
 
   #eye::before {
-    content: "";
+    content: '';
     background-color: white;
     width: 20px;
     height: 50px;
@@ -340,7 +343,7 @@ const StyledWrapper = styled.div`
   }
 
   #eye::after {
-    content: "";
+    content: '';
     background-color: white;
     width: 40px;
     height: 30px;
@@ -358,7 +361,7 @@ const StyledWrapper = styled.div`
   }
 
   #eye1::before {
-    content: "";
+    content: '';
     background-color: white;
     width: 20px;
     height: 50px;
@@ -368,7 +371,7 @@ const StyledWrapper = styled.div`
   }
 
   #eye1::after {
-    content: "";
+    content: '';
     background-color: white;
     width: 40px;
     height: 30px;
@@ -434,4 +437,5 @@ const StyledWrapper = styled.div`
     100% {
       opacity: 0.2;
     }
-  }`
+  }
+`;

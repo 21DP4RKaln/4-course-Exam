@@ -1,72 +1,83 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { X, Upload, Camera } from 'lucide-react'
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { X, Upload, Camera } from 'lucide-react';
 
 interface RepairCompletionFormProps {
   repair: {
-    id: string
-    title: string
-    estimatedCost: number | null
-  }
-  onClose: () => void
-  onComplete: () => void
+    id: string;
+    title: string;
+    estimatedCost: number | null;
+  };
+  onClose: () => void;
+  onComplete: () => void;
 }
 
-export function RepairCompletionForm({ repair, onClose, onComplete }: RepairCompletionFormProps) {
-  const t = useTranslations()
-  const [finalCost, setFinalCost] = useState(repair.estimatedCost?.toString() || '')
-  const [completionNotes, setCompletionNotes] = useState('')
-  const [image, setImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+export function RepairCompletionForm({
+  repair,
+  onClose,
+  onComplete,
+}: RepairCompletionFormProps) {
+  const t = useTranslations();
+  const [finalCost, setFinalCost] = useState(
+    repair.estimatedCost?.toString() || ''
+  );
+  const [completionNotes, setCompletionNotes] = useState('');
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      setImage(file)
-      const reader = new FileReader()
+      setImage(file);
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const formData = new FormData()
-      formData.append('finalCost', finalCost)
-      formData.append('completionNotes', completionNotes)
+      const formData = new FormData();
+      formData.append('finalCost', finalCost);
+      formData.append('completionNotes', completionNotes);
       if (image) {
-        formData.append('image', image)
+        formData.append('image', image);
       }
 
       const response = await fetch(`/api/staff/repairs/${repair.id}/complete`, {
         method: 'POST',
         body: formData,
-      })
+      });
 
-      if (!response.ok) throw new Error('Failed to complete repair')
+      if (!response.ok) throw new Error('Failed to complete repair');
 
-      onComplete()
+      onComplete();
     } catch (error) {
-      console.error('Error completing repair:', error)
+      console.error('Error completing repair:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-stone-950 rounded-lg p-6 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">{t('repairs.completeRepair')}</h3>
-          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700">
+          <h3 className="text-lg font-semibold">
+            {t('repairs.completeRepair')}
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-neutral-500 hover:text-neutral-700"
+          >
             <X size={20} />
           </button>
         </div>
@@ -77,11 +88,13 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
               {t('repairs.finalCost')}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">€</span>
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                €
+              </span>
               <input
                 type="number"
                 value={finalCost}
-                onChange={(e) => setFinalCost(e.target.value)}
+                onChange={e => setFinalCost(e.target.value)}
                 className="w-full border rounded-lg pl-8 pr-3 py-2 dark:bg-neutral-700 dark:border-neutral-600"
                 step="0.01"
                 min="0"
@@ -101,7 +114,7 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
             </label>
             <textarea
               value={completionNotes}
-              onChange={(e) => setCompletionNotes(e.target.value)}
+              onChange={e => setCompletionNotes(e.target.value)}
               className="w-full border rounded-lg px-3 py-2 dark:bg-neutral-700 dark:border-neutral-600"
               rows={4}
               placeholder={t('repairs.completionNotesPlaceholder')}
@@ -124,8 +137,8 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
                   <button
                     type="button"
                     onClick={() => {
-                      setImage(null)
-                      setImagePreview(null)
+                      setImage(null);
+                      setImagePreview(null);
                     }}
                     className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
                   >
@@ -175,5 +188,5 @@ export function RepairCompletionForm({ repair, onClose, onComplete }: RepairComp
         </form>
       </div>
     </div>
-  )
+  );
 }

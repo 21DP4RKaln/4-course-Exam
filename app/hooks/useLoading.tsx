@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import React from 'react'
-import Loading from '@/app/components/ui/Loading'
+import React from 'react';
+import Loading from '@/app/components/ui/Loading';
 
 interface UseLoadingOptions {
-  size?: 'small' | 'medium' | 'large'
-  text?: string
-  fullScreen?: boolean
-  className?: string
+  size?: 'small' | 'medium' | 'large';
+  text?: string;
+  fullScreen?: boolean;
+  className?: string;
 }
 
 export function useLoading(loading: boolean, options: UseLoadingOptions = {}) {
@@ -15,8 +15,8 @@ export function useLoading(loading: boolean, options: UseLoadingOptions = {}) {
     size = 'medium',
     text = '',
     fullScreen = false,
-    className = ''
-  } = options
+    className = '',
+  } = options;
 
   const loadingComponent = React.useMemo(() => {
     if (loading) {
@@ -27,22 +27,34 @@ export function useLoading(loading: boolean, options: UseLoadingOptions = {}) {
           fullScreen={fullScreen}
           className={className}
         />
-      )
+      );
     }
-    return null
-  }, [loading, size, text, fullScreen, className])
+    return null;
+  }, [loading, size, text, fullScreen, className]);
 
-  return loadingComponent
+  return loadingComponent;
 }
 
-export function LoadingSpinner({ size = 'small', className = '' }: { size?: 'small' | 'medium' | 'large', className?: string }) {
-  return <Loading size={size} className={className} />
+export function LoadingSpinner({
+  size = 'small',
+  className = '',
+}: {
+  size?: 'small' | 'medium' | 'large';
+  className?: string;
+}) {
+  return <Loading size={size} className={className} />;
 }
 
 export function FullPageLoading({ text = 'Loading...' }: { text?: string }) {
-  return <Loading size="large" text={text} fullScreen />
+  return <Loading size="large" text={text} fullScreen />;
 }
 
-export function ButtonLoading({ size = 'small', className = '' }: { size?: 'small' | 'medium' | 'large', className?: string }) {
-  return <Loading size={size} className={`inline-flex ${className}`} />
+export function ButtonLoading({
+  size = 'small',
+  className = '',
+}: {
+  size?: 'small' | 'medium' | 'large';
+  className?: string;
+}) {
+  return <Loading size={size} className={`inline-flex ${className}`} />;
 }

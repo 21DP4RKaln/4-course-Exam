@@ -3,7 +3,11 @@ import { useTranslations } from 'next-intl';
 export function useTranslationWithFallback() {
   const t = useTranslations();
 
-  const safeTranslate = (key: string, fallback: string, params?: Record<string, any>) => {
+  const safeTranslate = (
+    key: string,
+    fallback: string,
+    params?: Record<string, any>
+  ) => {
     try {
       return t(key, params);
     } catch (error) {

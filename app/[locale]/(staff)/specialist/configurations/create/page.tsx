@@ -1,20 +1,25 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
-import { Button } from '@/app/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 export default function CreateConfigurationPage() {
-  const router = useRouter()
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await fetch('/api/specialist/configurations', {
@@ -25,20 +30,20 @@ export default function CreateConfigurationPage() {
         body: JSON.stringify({
           name,
           description,
-          components: []
-        })
-      })
+          components: [],
+        }),
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        router.push(`/specialist/configurations/${data.id}/edit`)
+        const data = await response.json();
+        router.push(`/specialist/configurations/${data.id}/edit`);
       }
     } catch (error) {
-      console.error('Error creating configuration:', error)
+      console.error('Error creating configuration:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -63,7 +68,7 @@ export default function CreateConfigurationPage() {
                 type="text"
                 className="w-full border rounded-lg px-3 py-2"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={e => setName(e.target.value)}
                 required
               />
             </div>
@@ -76,7 +81,7 @@ export default function CreateConfigurationPage() {
                 className="w-full border rounded-lg px-3 py-2"
                 rows={4}
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={e => setDescription(e.target.value)}
               />
             </div>
 
@@ -87,5 +92,5 @@ export default function CreateConfigurationPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

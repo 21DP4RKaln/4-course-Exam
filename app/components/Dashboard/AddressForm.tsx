@@ -1,16 +1,20 @@
-'use client'
+'use client';
 
-import { MapPin, Globe } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { useTranslations } from 'next-intl'
-import AddressInput from '@/app/components/ui/AddressInput'
-import { AddressFormProps } from './types'
+import { MapPin, Globe } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import AddressInput from '@/app/components/ui/AddressInput';
+import { AddressFormProps } from './types';
 
-export default function AddressForm({ data, error, onChange }: AddressFormProps) {
-  const profileT = useTranslations('dashboard.profileSection')
+export default function AddressForm({
+  data,
+  error,
+  onChange,
+}: AddressFormProps) {
+  const profileT = useTranslations('dashboard.profileSection');
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -24,16 +28,12 @@ export default function AddressForm({ data, error, onChange }: AddressFormProps)
       </div>
 
       <div>
-        <AddressInput
-          values={data}
-          onChange={onChange}
-          errors={{}}
-        />
+        <AddressInput values={data} onChange={onChange} errors={{}} />
       </div>
-      
+
       {error && (
         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
       )}
     </motion.div>
-  )
+  );
 }

@@ -1,41 +1,46 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import { ArrowLeft, Save } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import PhoneInput from '@/app/components/ui/PhoneInput'
-import { analyzePasswordStrength } from '@/lib/passwordStrength'
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { ArrowLeft, Save } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import PhoneInput from '@/app/components/ui/PhoneInput';
+import { analyzePasswordStrength } from '@/lib/passwordStrength';
 
-const userSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .refine((password) => {
-      const analysis = analyzePasswordStrength(password);
-      return analysis.isValid;
-    }, 'Password must have at least 3 of the following: lowercase letter, uppercase letter, number, or special character'),
-  confirmPassword: z.string(),
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  phone: z.string().optional(),
-  role: z.enum(['USER', 'SPECIALIST', 'ADMIN']),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+const userSchema = z
+  .object({
+    email: z.string().email('Invalid email address'),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .refine(password => {
+        const analysis = analyzePasswordStrength(password);
+        return analysis.isValid;
+      }, 'Password must have at least 3 of the following: lowercase letter, uppercase letter, number, or special character'),
+    confirmPassword: z.string(),
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
+    phone: z.string().optional(),
+    role: z.enum(['USER', 'SPECIALIST', 'ADMIN']),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
-type UserFormData = z.infer<typeof userSchema>
+type UserFormData = z.infer<typeof userSchema>;
 
 export default function CreateUserPage() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  
-  const [loading, setLoading] = useState(false)
-  const [passwordAnalysis, setPasswordAnalysis] = useState(analyzePasswordStrength(''))
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+
+  const [loading, setLoading] = useState(false);
+  const [passwordAnalysis, setPasswordAnalysis] = useState(
+    analyzePasswordStrength('')
+  );
 
   const {
     register,
@@ -48,16 +53,16 @@ export default function CreateUserPage() {
     defaultValues: {
       role: 'USER',
     },
-  })
-  
+  });
+
   // Atjauno paroles stipruma analīzi, kad mainās parole
-  const password = watch('password')
+  const password = watch('password');
   useEffect(() => {
-    setPasswordAnalysis(analyzePasswordStrength(password || ''))
-  }, [password])
+    setPasswordAnalysis(analyzePasswordStrength(password || ''));
+  }, [password]);
 
   const onSubmit = async (data: UserFormData) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch('/api/admin/users', {
         method: 'POST',
@@ -72,17 +77,17 @@ export default function CreateUserPage() {
           phone: data.phone,
           role: data.role,
         }),
-      })
+      });
 
       if (response.ok) {
-        router.push(`/${locale}/admin/users`)
+        router.push(`/${locale}/admin/users`);
       }
     } catch (error) {
-      console.error('Error creating user:', error)
+      console.error('Error creating user:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -111,7 +116,9 @@ export default function CreateUserPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.firstName && (
-                <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
 
@@ -125,7 +132,9 @@ export default function CreateUserPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.lastName && (
-                <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.lastName.message}
+                </p>
               )}
             </div>
 
@@ -139,7 +148,9 @@ export default function CreateUserPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -149,7 +160,7 @@ export default function CreateUserPage() {
               </label>
               <PhoneInput
                 value={watch('phone') || ''}
-                onChange={(value) => setValue('phone', value)}
+                onChange={value => setValue('phone', value)}
                 error={errors.phone?.message}
               />
             </div>
@@ -164,9 +175,11 @@ export default function CreateUserPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
               )}
-              
+
               {watch('password') && (
                 <div className="mt-2 space-y-3">
                   <div className="space-y-1">
@@ -174,19 +187,28 @@ export default function CreateUserPage() {
                       <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                         Password Strength
                       </span>
-                      <span className={`text-xs font-bold ${
-                        passwordAnalysis.score <= 2 ? 'text-red-500' : 
-                        passwordAnalysis.score <= 3 ? 'text-yellow-500' : 
-                        passwordAnalysis.score <= 4 ? 'text-blue-500' : 
-                        'text-green-500'
-                      }`}>
-                        {passwordAnalysis.score <= 2 ? 'Weak' : 
-                         passwordAnalysis.score <= 3 ? 'Fair' : 
-                         passwordAnalysis.score <= 4 ? 'Good' : 'Strong'}
+                      <span
+                        className={`text-xs font-bold ${
+                          passwordAnalysis.score <= 2
+                            ? 'text-red-500'
+                            : passwordAnalysis.score <= 3
+                              ? 'text-yellow-500'
+                              : passwordAnalysis.score <= 4
+                                ? 'text-blue-500'
+                                : 'text-green-500'
+                        }`}
+                      >
+                        {passwordAnalysis.score <= 2
+                          ? 'Weak'
+                          : passwordAnalysis.score <= 3
+                            ? 'Fair'
+                            : passwordAnalysis.score <= 4
+                              ? 'Good'
+                              : 'Strong'}
                       </span>
                     </div>
                     <div className="flex space-x-1">
-                      {[1, 2, 3, 4, 5].map((level) => (
+                      {[1, 2, 3, 4, 5].map(level => (
                         <div
                           key={level}
                           className={`h-2 flex-1 rounded-full transition-all duration-300 ${
@@ -194,58 +216,100 @@ export default function CreateUserPage() {
                               ? passwordAnalysis.score <= 2
                                 ? 'bg-red-500'
                                 : passwordAnalysis.score <= 3
-                                ? 'bg-yellow-500'
-                                : passwordAnalysis.score <= 4
-                                ? 'bg-blue-500'
-                                : 'bg-green-500'
+                                  ? 'bg-yellow-500'
+                                  : passwordAnalysis.score <= 4
+                                    ? 'bg-blue-500'
+                                    : 'bg-green-500'
                               : 'bg-gray-200 dark:bg-gray-700'
                           }`}
                         />
                       ))}
                     </div>
                   </div>
-                  
+
                   <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-3 space-y-2">
-                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Requirements:</p>
+                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                      Requirements:
+                    </p>
                     <div className="grid grid-cols-2 gap-1">
-                      <div className={`flex items-center space-x-1 text-xs ${
-                        passwordAnalysis.requirements.minLength ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${
-                          passwordAnalysis.requirements.minLength ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`} />
+                      <div
+                        className={`flex items-center space-x-1 text-xs ${
+                          passwordAnalysis.requirements.minLength
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            passwordAnalysis.requirements.minLength
+                              ? 'bg-green-500'
+                              : 'bg-gray-300 dark:bg-gray-600'
+                          }`}
+                        />
                         <span>8+ characters</span>
                       </div>
-                      <div className={`flex items-center space-x-1 text-xs ${
-                        passwordAnalysis.requirements.hasLowercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${
-                          passwordAnalysis.requirements.hasLowercase ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`} />
+                      <div
+                        className={`flex items-center space-x-1 text-xs ${
+                          passwordAnalysis.requirements.hasLowercase
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            passwordAnalysis.requirements.hasLowercase
+                              ? 'bg-green-500'
+                              : 'bg-gray-300 dark:bg-gray-600'
+                          }`}
+                        />
                         <span>Lowercase letter</span>
                       </div>
-                      <div className={`flex items-center space-x-1 text-xs ${
-                        passwordAnalysis.requirements.hasUppercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${
-                          passwordAnalysis.requirements.hasUppercase ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`} />
+                      <div
+                        className={`flex items-center space-x-1 text-xs ${
+                          passwordAnalysis.requirements.hasUppercase
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            passwordAnalysis.requirements.hasUppercase
+                              ? 'bg-green-500'
+                              : 'bg-gray-300 dark:bg-gray-600'
+                          }`}
+                        />
                         <span>Uppercase letter</span>
                       </div>
-                      <div className={`flex items-center space-x-1 text-xs ${
-                        passwordAnalysis.requirements.hasNumber ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${
-                          passwordAnalysis.requirements.hasNumber ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`} />
+                      <div
+                        className={`flex items-center space-x-1 text-xs ${
+                          passwordAnalysis.requirements.hasNumber
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            passwordAnalysis.requirements.hasNumber
+                              ? 'bg-green-500'
+                              : 'bg-gray-300 dark:bg-gray-600'
+                          }`}
+                        />
                         <span>Number</span>
                       </div>
-                      <div className={`flex items-center space-x-1 text-xs ${
-                        passwordAnalysis.requirements.hasSpecialChar ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${
-                          passwordAnalysis.requirements.hasSpecialChar ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`} />
+                      <div
+                        className={`flex items-center space-x-1 text-xs ${
+                          passwordAnalysis.requirements.hasSpecialChar
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            passwordAnalysis.requirements.hasSpecialChar
+                              ? 'bg-green-500'
+                              : 'bg-gray-300 dark:bg-gray-600'
+                          }`}
+                        />
                         <span>Special character</span>
                       </div>
                     </div>
@@ -264,7 +328,9 @@ export default function CreateUserPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
@@ -281,7 +347,9 @@ export default function CreateUserPage() {
                 <option value="ADMIN">Admin</option>
               </select>
               {errors.role && (
-                <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.role.message}
+                </p>
               )}
             </div>
           </div>
@@ -306,5 +374,5 @@ export default function CreateUserPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

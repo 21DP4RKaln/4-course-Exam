@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prismaService'
+import { prisma } from '@/lib/prismaService';
 
 export interface AuditLogEntry {
   id: string;
@@ -41,10 +41,10 @@ export async function createAuditLog(data: {
         entityId: data.entityId || '',
         details: JSON.stringify(data.details || {}),
         ipAddress: data.ipAddress || '',
-        userAgent: data.userAgent || ''
-      }
+        userAgent: data.userAgent || '',
+      },
     });
-    
+
     return auditLog;
   } catch (error) {
     console.error('Error creating audit log:', error);
@@ -55,20 +55,23 @@ export async function createAuditLog(data: {
 /**
  * Get audit logs with filters
  */
-export async function getAuditLogs(filters?: AuditFilters, pagination?: { page: number; limit: number }) {
+export async function getAuditLogs(
+  filters?: AuditFilters,
+  pagination?: { page: number; limit: number }
+) {
   try {
     const where: any = {};
-    
+
     if (filters?.userId) where.userId = filters.userId;
     if (filters?.action) where.action = filters.action;
     if (filters?.entityType) where.entityType = filters.entityType;
     if (filters?.dateRange) {
       where.createdAt = {
         gte: filters.dateRange.start,
-        lte: filters.dateRange.end
+        lte: filters.dateRange.end,
       };
     }
-    
+
     const [logs, total] = await prisma.$transaction([
       prisma.auditLog.findMany({
         where,
@@ -76,17 +79,17 @@ export async function getAuditLogs(filters?: AuditFilters, pagination?: { page: 
           user: {
             select: {
               name: true,
-              email: true
-            }
-          }
+              email: true,
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip: pagination ? (pagination.page - 1) * pagination.limit : 0,
-        take: pagination?.limit || 100
+        take: pagination?.limit || 100,
       }),
-      prisma.auditLog.count({ where })
+      prisma.auditLog.count({ where }),
     ]);
-    
+
     const formattedLogs = logs.map(log => ({
       id: log.id,
       userId: log.userId,
@@ -97,14 +100,14 @@ export async function getAuditLogs(filters?: AuditFilters, pagination?: { page: 
       details: JSON.parse(log.details as string),
       ipAddress: log.ipAddress,
       userAgent: log.userAgent,
-      createdAt: log.createdAt
+      createdAt: log.createdAt,
     }));
-    
+
     return {
       logs: formattedLogs,
       total,
       page: pagination?.page || 1,
-      totalPages: Math.ceil(total / (pagination?.limit || 100))
+      totalPages: Math.ceil(total / (pagination?.limit || 100)),
     };
   } catch (error) {
     console.error('Error fetching audit logs:', error);
@@ -115,73 +118,74 @@ export async function getAuditLogs(filters?: AuditFilters, pagination?: { page: 
 /**
  * Get audit log statistics
  */
-export async function getAuditStatistics(dateRange: { start: Date; end: Date }) {
+export async function getAuditStatistics(dateRange: {
+  start: Date;
+  end: Date;
+}) {
   try {
-    const [
-      actionCounts,
-      entityTypeCounts,
-      userActivityCounts
-    ] = await prisma.$transaction([      prisma.auditLog.groupBy({
-        by: ['action'],
-        where: {
-          createdAt: { gte: dateRange.start, lte: dateRange.end }
-        },
-        _count: true,
-        orderBy: {
-          _count: {
-            action: 'desc'
-          }
-        }
-      }),
-      prisma.auditLog.groupBy({
-        by: ['entityType'],
-        where: {
-          createdAt: { gte: dateRange.start, lte: dateRange.end }
-        },
-        _count: true,
-        orderBy: {
-          _count: {
-            entityType: 'desc'
-          }
-        }
-      }),
-      prisma.auditLog.groupBy({
-        by: ['userId'],
-        where: {
-          createdAt: { gte: dateRange.start, lte: dateRange.end }
-        },
-        _count: true,
-        orderBy: {
-          _count: {
-            userId: 'desc'
-          }
-        },
-        take: 10
-      })
-    ]);
-    
+    const [actionCounts, entityTypeCounts, userActivityCounts] =
+      await prisma.$transaction([
+        prisma.auditLog.groupBy({
+          by: ['action'],
+          where: {
+            createdAt: { gte: dateRange.start, lte: dateRange.end },
+          },
+          _count: true,
+          orderBy: {
+            _count: {
+              action: 'desc',
+            },
+          },
+        }),
+        prisma.auditLog.groupBy({
+          by: ['entityType'],
+          where: {
+            createdAt: { gte: dateRange.start, lte: dateRange.end },
+          },
+          _count: true,
+          orderBy: {
+            _count: {
+              entityType: 'desc',
+            },
+          },
+        }),
+        prisma.auditLog.groupBy({
+          by: ['userId'],
+          where: {
+            createdAt: { gte: dateRange.start, lte: dateRange.end },
+          },
+          _count: true,
+          orderBy: {
+            _count: {
+              userId: 'desc',
+            },
+          },
+          take: 10,
+        }),
+      ]);
+
     const userIds = userActivityCounts.map(item => item.userId);
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
-      select: { id: true, name: true }
+      select: { id: true, name: true },
     });
-    
+
     const userMap = new Map(users.map(user => [user.id, user.name]));
-    
+
     return {
       actionCounts: actionCounts.map(item => ({
         action: item.action,
-        count: item._count
+        count: item._count,
       })),
       entityTypeCounts: entityTypeCounts.map(item => ({
         entityType: item.entityType,
-        count: item._count
+        count: item._count,
       })),
       topActiveUsers: userActivityCounts.map(item => ({
         userId: item.userId,
         userName: userMap.get(item.userId) || 'Unknown User',
-        count: item._count
-      }))
+        count: item._count,
+      })),
     };
   } catch (error) {
     console.error('Error fetching audit statistics:', error);
@@ -192,16 +196,29 @@ export async function getAuditStatistics(dateRange: { start: Date; end: Date }) 
 /**
  * Export audit logs
  */
-export async function exportAuditLogs(filters?: AuditFilters, format: 'csv' | 'json' = 'json') {
+export async function exportAuditLogs(
+  filters?: AuditFilters,
+  format: 'csv' | 'json' = 'json'
+) {
   try {
     const logs = await getAuditLogs(filters);
-    
+
     if (format === 'json') {
       return JSON.stringify(logs.logs, null, 2);
     } else {
-      const headers = ['ID', 'User ID', 'User Name', 'Action', 'Entity Type', 'Entity ID', 'Details', 'IP Address', 'Date'];
+      const headers = [
+        'ID',
+        'User ID',
+        'User Name',
+        'Action',
+        'Entity Type',
+        'Entity ID',
+        'Details',
+        'IP Address',
+        'Date',
+      ];
       const csvRows = [headers.join(',')];
-      
+
       logs.logs.forEach(log => {
         const row = [
           log.id,
@@ -212,11 +229,11 @@ export async function exportAuditLogs(filters?: AuditFilters, format: 'csv' | 'j
           log.entityId || '',
           JSON.stringify(log.details || {}),
           log.ipAddress || '',
-          log.createdAt.toISOString()
+          log.createdAt.toISOString(),
         ];
         csvRows.push(row.map(value => `"${value}"`).join(','));
       });
-      
+
       return csvRows.join('\n');
     }
   } catch (error) {
@@ -239,7 +256,7 @@ export async function logAction(
   try {
     const ipAddress = request?.ip;
     const userAgent = request?.headers?.['user-agent'];
-    
+
     await createAuditLog({
       userId,
       action,
@@ -247,7 +264,7 @@ export async function logAction(
       entityId,
       details,
       ipAddress,
-      userAgent
+      userAgent,
     });
   } catch (error) {
     console.error('Error logging action:', error);

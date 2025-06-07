@@ -1,27 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
-import { createUnauthorizedResponse, createForbiddenResponse, createServerErrorResponse } from '@/lib/apiErrors'
-import { prisma } from '@/lib/prismaService'
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import {
+  createUnauthorizedResponse,
+  createForbiddenResponse,
+  createServerErrorResponse,
+} from '@/lib/apiErrors';
+import { prisma } from '@/lib/prismaService';
 
 export async function GET(request: NextRequest) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
     if (payload.role !== 'ADMIN') {
-      return createForbiddenResponse('Admin access required')
-    }    
-    const now = new Date()
-    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+      return createForbiddenResponse('Admin access required');
+    }
+    const now = new Date();
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
     const [
       totalUsers,
@@ -38,102 +42,103 @@ export async function GET(request: NextRequest) {
       lastMonthRevenue,
       thisMonthRevenue,
       lastMonthRepairs,
-      thisMonthRepairs
+      thisMonthRepairs,
     ] = await prisma.$transaction([
       prisma.user.count(),
       prisma.order.count(),
       prisma.repair.count(),
       prisma.order.aggregate({
         where: { status: 'COMPLETED' },
-        _sum: { totalAmount: true }
+        _sum: { totalAmount: true },
       }),
       prisma.configuration.count({
-        where: { status: 'SUBMITTED' }
+        where: { status: 'SUBMITTED' },
       }),
       prisma.repair.count({
-        where: { 
-          status: { in: ['PENDING', 'IN_PROGRESS', 'WAITING_FOR_PARTS'] }
-        }      }),
+        where: {
+          status: { in: ['PENDING', 'IN_PROGRESS', 'WAITING_FOR_PARTS'] },
+        },
+      }),
       prisma.component.count({
-        where: { quantity: { lt: 10 } }
+        where: { quantity: { lt: 10 } },
       }),
       prisma.order.count({
         where: {
           createdAt: {
             gte: lastMonthStart,
-            lte: lastMonthEnd
-          }
-        }
+            lte: lastMonthEnd,
+          },
+        },
       }),
       prisma.order.count({
         where: {
           createdAt: {
-            gte: thisMonthStart
-          }
-        }
+            gte: thisMonthStart,
+          },
+        },
       }),
       prisma.user.count({
         where: {
           createdAt: {
             gte: lastMonthStart,
-            lte: lastMonthEnd
-          }
-        }
+            lte: lastMonthEnd,
+          },
+        },
       }),
       prisma.user.count({
         where: {
           createdAt: {
-            gte: thisMonthStart
-          }
-        }
+            gte: thisMonthStart,
+          },
+        },
       }),
       prisma.order.aggregate({
-        where: { 
+        where: {
           status: 'COMPLETED',
           createdAt: {
             gte: lastMonthStart,
-            lte: lastMonthEnd
-          }
+            lte: lastMonthEnd,
+          },
         },
-        _sum: { totalAmount: true }
+        _sum: { totalAmount: true },
       }),
       prisma.order.aggregate({
-        where: { 
+        where: {
           status: 'COMPLETED',
           createdAt: {
-            gte: thisMonthStart
-          }
+            gte: thisMonthStart,
+          },
         },
-        _sum: { totalAmount: true }
+        _sum: { totalAmount: true },
       }),
       prisma.repair.count({
         where: {
           createdAt: {
             gte: lastMonthStart,
-            lte: lastMonthEnd
-          }
-        }
+            lte: lastMonthEnd,
+          },
+        },
       }),
       prisma.repair.count({
         where: {
           createdAt: {
-            gte: thisMonthStart
-          }
-        }
-      })
-    ])    
+            gte: thisMonthStart,
+          },
+        },
+      }),
+    ]);
     const calculateGrowth = (current: number, previous: number): number => {
-      if (previous === 0) return current > 0 ? 100 : 0
-      return Math.round(((current - previous) / previous) * 100 * 10) / 10
-    }
+      if (previous === 0) return current > 0 ? 100 : 0;
+      return Math.round(((current - previous) / previous) * 100 * 10) / 10;
+    };
 
-    const userGrowth = calculateGrowth(thisMonthUsers, lastMonthUsers)
-    const orderGrowth = calculateGrowth(thisMonthOrders, lastMonthOrders)
+    const userGrowth = calculateGrowth(thisMonthUsers, lastMonthUsers);
+    const orderGrowth = calculateGrowth(thisMonthOrders, lastMonthOrders);
     const revenueGrowth = calculateGrowth(
-      thisMonthRevenue._sum.totalAmount || 0, 
+      thisMonthRevenue._sum.totalAmount || 0,
       lastMonthRevenue._sum.totalAmount || 0
-    )
-    const repairGrowth = calculateGrowth(thisMonthRepairs, lastMonthRepairs)
+    );
+    const repairGrowth = calculateGrowth(thisMonthRepairs, lastMonthRepairs);
 
     return NextResponse.json({
       totalUsers,
@@ -148,11 +153,11 @@ export async function GET(request: NextRequest) {
         users: userGrowth,
         orders: orderGrowth,
         revenue: revenueGrowth,
-        repairs: repairGrowth
-      }
-    })
+        repairs: repairGrowth,
+      },
+    });
   } catch (error) {
-    console.error('Error fetching admin dashboard stats:', error)
-    return createServerErrorResponse('Failed to fetch dashboard stats')
+    console.error('Error fetching admin dashboard stats:', error);
+    return createServerErrorResponse('Failed to fetch dashboard stats');
   }
 }

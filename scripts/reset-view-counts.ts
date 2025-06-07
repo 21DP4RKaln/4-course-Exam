@@ -1,39 +1,44 @@
-import fetch from 'node-fetch'
+import fetch from 'node-fetch';
 
 /**
  * Reset product view counts across all product types
  */
 async function resetViewCounts() {
   try {
-    const apiKey = process.env.RESET_VIEWS_API_KEY
-    
+    const apiKey = process.env.RESET_VIEWS_API_KEY;
+
     if (!apiKey) {
-      console.error('API key is missing. Set RESET_VIEWS_API_KEY environment variable.')
-      process.exit(1)
+      console.error(
+        'API key is missing. Set RESET_VIEWS_API_KEY environment variable.'
+      );
+      process.exit(1);
     }
-    
-    const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
-    
-    const response = await fetch(`${baseUrl}/api/shop/product/view?apiKey=${apiKey}`, {
-      method: 'PUT',
-    })
-    
+
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+
+    const response = await fetch(
+      `${baseUrl}/api/shop/product/view?apiKey=${apiKey}`,
+      {
+        method: 'PUT',
+      }
+    );
+
     if (!response.ok) {
-      const error = await response.json()
-      const errorMessage = (error as { error?: string }).error || 'Unknown error';
-      throw new Error(`Failed to reset view counts: ${errorMessage}`)
+      const error = await response.json();
+      const errorMessage =
+        (error as { error?: string }).error || 'Unknown error';
+      throw new Error(`Failed to reset view counts: ${errorMessage}`);
     }
-    
-    const result = await response.json() as { resetCounts: number }
-    console.log('Successfully reset view counts:', result.resetCounts)
+
+    const result = (await response.json()) as { resetCounts: number };
+    console.log('Successfully reset view counts:', result.resetCounts);
   } catch (error) {
-    console.error('Error resetting view counts:', error)
-    process.exit(1)
+    console.error('Error resetting view counts:', error);
+    process.exit(1);
   }
 }
 
-resetViewCounts()
-
+resetViewCounts();
 
 // package.json script addition:
 // "scripts": {

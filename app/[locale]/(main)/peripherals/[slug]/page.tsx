@@ -1,11 +1,18 @@
-'use client'
+'use client';
 
-import CategoryPage from '@/app/components/CategoryPage/CategoryPage'
+import CategoryPage from '@/app/components/CategoryPage/CategoryPage';
 
 interface PeripheralCategoryPageProps {
-  params: { slug: string }
+  params: { slug: string };
 }
 
-export default function PeripheralCategoryPage({ params }: PeripheralCategoryPageProps) {
-  return <CategoryPage params={Promise.resolve({ category: params.slug })} type="peripheral" />
+export default function PeripheralCategoryPage({
+  params,
+}: PeripheralCategoryPageProps) {
+  return (
+    <CategoryPage
+      params={Promise.resolve({ category: params.slug })}
+      type="peripheral"
+    />
+  );
 }

@@ -1,5 +1,9 @@
-import UniversalProductPage from '@/app/components/Products/UniversalProductPage'
+import UniversalProductPage from '@/app/components/Products/UniversalProductPage';
 
-export default function Page({ params }: { params: { slug: string; id: string } }) {
-  return <UniversalProductPage productId={params.id} />
+export default function Page({
+  params,
+}: {
+  params: { slug: string; id: string };
+}) {
+  return <UniversalProductPage productId={params.id} />;
 }

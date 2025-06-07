@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/prismaService'
-import { ConfigStatus } from '@prisma/client'
+import { prisma } from '@/lib/prismaService';
+import { ConfigStatus } from '@prisma/client';
 
 export interface ConfigurationFilters {
   status?: ConfigStatus;
@@ -18,12 +18,13 @@ export async function getConfigurations(filters?: ConfigurationFilters) {
 
     if (filters?.status) where.status = filters.status;
     if (filters?.userId) where.userId = filters.userId;
-    if (filters?.isTemplate !== undefined) where.isTemplate = filters.isTemplate;
+    if (filters?.isTemplate !== undefined)
+      where.isTemplate = filters.isTemplate;
     if (filters?.isPublic !== undefined) where.isPublic = filters.isPublic;
     if (filters?.dateRange) {
       where.createdAt = {
         gte: filters.dateRange.start,
-        lte: filters.dateRange.end
+        lte: filters.dateRange.end,
       };
     }
 
@@ -34,20 +35,20 @@ export async function getConfigurations(filters?: ConfigurationFilters) {
           select: {
             id: true,
             name: true,
-            email: true
-          }
+            email: true,
+          },
         },
         components: {
           include: {
             component: {
               include: {
-                category: true
-              }
-            }
-          }
-        }
+                category: true,
+              },
+            },
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
 
     return configurations;
@@ -68,23 +69,23 @@ export async function reviewConfiguration(
   try {
     const existingConfiguration = await prisma.configuration.findUnique({
       where: { id: configId },
-      select: { description: true } 
+      select: { description: true },
     });
 
     if (!existingConfiguration) {
       throw new Error(`Configuration with ID ${configId} not found.`);
     }
 
-    const newDescription = comment 
-      ? `${existingConfiguration.description || ''}\n\nReview comment: ${comment}` 
+    const newDescription = comment
+      ? `${existingConfiguration.description || ''}\n\nReview comment: ${comment}`
       : existingConfiguration.description;
 
     const configuration = await prisma.configuration.update({
       where: { id: configId },
       data: {
         status: action,
-        description: newDescription
-      }
+        description: newDescription,
+      },
     });
 
     return configuration;
@@ -114,8 +115,8 @@ export async function publishConfiguration(
         ...data,
         isTemplate: true,
         isPublic: true,
-        status: 'APPROVED'
-      }
+        status: 'APPROVED',
+      },
     });
 
     return configuration;
@@ -142,7 +143,7 @@ export async function createCustomConfiguration(
   try {
     const componentIds = data.components.map(c => c.componentId);
     const components = await prisma.component.findMany({
-      where: { id: { in: componentIds } }
+      where: { id: { in: componentIds } },
     });
 
     const totalPrice = data.components.reduce((total, item) => {
@@ -160,17 +161,17 @@ export async function createCustomConfiguration(
         components: {
           create: data.components.map(item => ({
             componentId: item.componentId,
-            quantity: item.quantity
-          }))
-        }
+            quantity: item.quantity,
+          })),
+        },
       },
       include: {
         components: {
           include: {
-            component: true
-          }
-        }
-      }
+            component: true,
+          },
+        },
+      },
     });
 
     return configuration;
@@ -196,11 +197,11 @@ export async function updateConfiguration(
 ) {
   try {
     let totalPrice: number | undefined;
-    
+
     if (data.components) {
       const componentIds = data.components.map(c => c.componentId);
       const components = await prisma.component.findMany({
-        where: { id: { in: componentIds } }
+        where: { id: { in: componentIds } },
       });
 
       totalPrice = data.components.reduce((total, item) => {
@@ -215,21 +216,21 @@ export async function updateConfiguration(
         name: data.name,
         description: data.description,
         totalPrice: totalPrice,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     });
 
     if (data.components) {
       await prisma.configItem.deleteMany({
-        where: { configurationId: configId }
+        where: { configurationId: configId },
       });
 
       await prisma.configItem.createMany({
         data: data.components.map(item => ({
           configurationId: configId,
           componentId: item.componentId,
-          quantity: item.quantity
-        }))
+          quantity: item.quantity,
+        })),
       });
     }
 

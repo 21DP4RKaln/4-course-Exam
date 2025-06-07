@@ -2,10 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const cleanupPaths = [
-  '.next',
-  'node_modules/.cache',
-];
+const cleanupPaths = ['.next', 'node_modules/.cache'];
 
 try {
   cleanupPaths.forEach(dir => {

@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prismaService'
+import { prisma } from '@/lib/prismaService';
 
 export interface SpecialistTask {
   id: string;
@@ -13,32 +13,31 @@ export interface SpecialistTask {
 /**
  * Get tasks assigned to specialist
  */
-export async function getSpecialistTasks(specialistId: string): Promise<SpecialistTask[]> {
+export async function getSpecialistTasks(
+  specialistId: string
+): Promise<SpecialistTask[]> {
   try {
     const [repairs, configurations] = await prisma.$transaction([
       prisma.repair.findMany({
         where: {
           specialists: {
             some: {
-              specialistId: specialistId
-            }
+              specialistId: specialistId,
+            },
           },
           status: {
-            in: ['PENDING', 'DIAGNOSING', 'IN_PROGRESS']
-          }
+            in: ['PENDING', 'DIAGNOSING', 'IN_PROGRESS'],
+          },
         },
-        orderBy: [
-          { priority: 'desc' },
-          { createdAt: 'asc' }
-        ]
+        orderBy: [{ priority: 'desc' }, { createdAt: 'asc' }],
       }),
       prisma.configuration.findMany({
         where: {
           status: 'SUBMITTED',
-          isTemplate: false
+          isTemplate: false,
         },
-        orderBy: { createdAt: 'asc' }
-      })
+        orderBy: { createdAt: 'asc' },
+      }),
     ]);
 
     const tasks: SpecialistTask[] = [
@@ -49,7 +48,7 @@ export async function getSpecialistTasks(specialistId: string): Promise<Speciali
         priority: repair.priority,
         status: repair.status,
         assignedAt: repair.createdAt,
-        dueDate: repair.updatedAt
+        dueDate: repair.updatedAt,
       })),
       ...configurations.map(config => ({
         id: config.id,
@@ -57,8 +56,8 @@ export async function getSpecialistTasks(specialistId: string): Promise<Speciali
         title: config.name,
         priority: 'NORMAL',
         status: config.status,
-        assignedAt: config.createdAt
-      }))
+        assignedAt: config.createdAt,
+      })),
     ];
 
     return tasks;
@@ -71,58 +70,69 @@ export async function getSpecialistTasks(specialistId: string): Promise<Speciali
 /**
  * Get specialist performance metrics
  */
-export async function getSpecialistMetrics(specialistId: string, dateRange?: { start: Date; end: Date }) {
+export async function getSpecialistMetrics(
+  specialistId: string,
+  dateRange?: { start: Date; end: Date }
+) {
   try {
-    const whereClause = dateRange ? {
-      AND: [
-        { createdAt: { gte: dateRange.start } },
-        { createdAt: { lte: dateRange.end } }
-      ]
-    } : {};
+    const whereClause = dateRange
+      ? {
+          AND: [
+            { createdAt: { gte: dateRange.start } },
+            { createdAt: { lte: dateRange.end } },
+          ],
+        }
+      : {};
 
     const metrics = await prisma.$transaction([
       prisma.repair.count({
         where: {
           specialists: {
-            some: { specialistId }
+            some: { specialistId },
           },
           status: 'COMPLETED',
-          ...whereClause
-        }
+          ...whereClause,
+        },
       }),
       prisma.repair.findMany({
         where: {
           specialists: {
-            some: { specialistId }
+            some: { specialistId },
           },
           status: 'COMPLETED',
           completionDate: { not: null },
-          ...whereClause
+          ...whereClause,
         },
         select: {
           createdAt: true,
-          completionDate: true
-        }
+          completionDate: true,
+        },
       }),
       prisma.configuration.count({
         where: {
           status: { in: ['APPROVED', 'REJECTED'] },
-          updatedAt: whereClause.AND ? { gte: dateRange!.start, lte: dateRange!.end } : undefined
-        }
-      })
+          updatedAt: whereClause.AND
+            ? { gte: dateRange!.start, lte: dateRange!.end }
+            : undefined,
+        },
+      }),
     ]);
 
-    const avgRepairTime = metrics[1].length > 0
-      ? metrics[1].reduce((acc, repair) => {
-          const duration = repair.completionDate!.getTime() - repair.createdAt.getTime();
-          return acc + duration;
-        }, 0) / metrics[1].length / (1000 * 60 * 60 * 24) 
-      : 0;
+    const avgRepairTime =
+      metrics[1].length > 0
+        ? metrics[1].reduce((acc, repair) => {
+            const duration =
+              repair.completionDate!.getTime() - repair.createdAt.getTime();
+            return acc + duration;
+          }, 0) /
+          metrics[1].length /
+          (1000 * 60 * 60 * 24)
+        : 0;
 
     return {
       repairsCompleted: metrics[0],
-      averageRepairTime: Math.round(avgRepairTime * 10) / 10, 
-      configurationsReviewed: metrics[2]
+      averageRepairTime: Math.round(avgRepairTime * 10) / 10,
+      configurationsReviewed: metrics[2],
     };
   } catch (error) {
     console.error('Error fetching specialist metrics:', error);

@@ -14,38 +14,38 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting database seeding...');
-  
+
   try {
     await seedUsers(prisma);
     console.log('✅ Users seeded successfully');
-    
+
     await seedComponentCategories(prisma);
     console.log('✅ Component categories seeded successfully');
-    
+
     await seedPeripheralCategories(prisma);
     console.log('✅ Peripheral categories seeded successfully');
-    
+
     await seedComponents(prisma);
     console.log('✅ Components (with specifications) seeded successfully');
-    
+
     await seedPeripherals(prisma);
     console.log('✅ Peripherals (with specifications) seeded successfully');
-    
+
     await seedConfigurations(prisma);
     console.log('✅ Configurations seeded successfully');
-    
+
     await seedPromoCodes(prisma);
     console.log('✅ Promo codes seeded successfully');
-    
+
     await seedOrders(prisma);
     console.log('✅ Orders seeded successfully');
-    
+
     await seedRepairs(prisma);
     console.log('✅ Repairs seeded successfully');
-    
+
     await seedReviews(prisma);
     console.log('✅ Reviews seeded successfully');
-    
+
     console.log('🎉 Database seeded successfully!');
   } catch (error) {
     console.error('❌ Error seeding database:', error);
@@ -54,8 +54,7 @@ async function main() {
   }
 }
 
-main()
-  .catch((error) => {
-    console.error('Unhandled error during seeding:', error);
-    process.exit(1);
-  });
+main().catch(error => {
+  console.error('Unhandled error during seeding:', error);
+  process.exit(1);
+});

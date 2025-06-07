@@ -1,9 +1,8 @@
+'use client';
 
-'use client'
-
-import React from 'react'
-import { useTranslations } from 'next-intl'
-import { Gauge } from 'lucide-react'
+import React from 'react';
+import { useTranslations } from 'next-intl';
+import { Gauge } from 'lucide-react';
 
 interface CompatibilityCheckerProps {
   totalPowerConsumption: number;
@@ -12,10 +11,10 @@ interface CompatibilityCheckerProps {
 
 const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({
   totalPowerConsumption,
-  compatibilityIssues
+  compatibilityIssues,
 }) => {
-  const t = useTranslations()
-  
+  const t = useTranslations();
+
   return (
     <div className="flex flex-col items-end">
       {/* Power consumption indicator */}
@@ -23,12 +22,13 @@ const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({
         <div className="flex items-center bg-gray-100 dark:bg-stone-950 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700">
           <Gauge size={18} className="text-gray-600 dark:text-gray-400 mr-2" />
           <span className="text-sm font-medium text-stone-950 dark:text-gray-300">
-            {t('configurator.compatibility.estimatedPower')}: {totalPowerConsumption}W
+            {t('configurator.compatibility.estimatedPower')}:{' '}
+            {totalPowerConsumption}W
           </span>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CompatibilityChecker
+export default CompatibilityChecker;

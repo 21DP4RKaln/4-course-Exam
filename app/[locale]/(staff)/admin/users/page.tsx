@@ -1,116 +1,132 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
-import { usePathname, useRouter } from 'next/navigation'
-import { Plus, Edit, Trash2, Eye, Search, UserCheck, UserX } from 'lucide-react'
-import { DataTable, Column } from '@/app/components/Staff/Common/DataTable'
-import { ActionButtons } from '@/app/components/Staff/Common/ActionButtons'
-import { SearchBar } from '@/app/components/Staff/Common/SearchBar'
-import { StatusBadge } from '@/app/components/Staff/Common/StatusBadge'
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { usePathname, useRouter } from 'next/navigation';
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Search,
+  UserCheck,
+  UserX,
+} from 'lucide-react';
+import { DataTable, Column } from '@/app/components/Staff/Common/DataTable';
+import { ActionButtons } from '@/app/components/Staff/Common/ActionButtons';
+import { SearchBar } from '@/app/components/Staff/Common/SearchBar';
+import { StatusBadge } from '@/app/components/Staff/Common/StatusBadge';
 
 interface User {
-  id: string
-  email: string
-  name: string
-  role: 'USER' | 'ADMIN' | 'SPECIALIST'
-  isBlocked: boolean
-  createdAt: string
+  id: string;
+  email: string;
+  name: string;
+  role: 'USER' | 'ADMIN' | 'SPECIALIST';
+  isBlocked: boolean;
+  createdAt: string;
 }
 
 export default function UsersPage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
+  const t = useTranslations();
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    fetchUsers();
+  }, []);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/admin/users')
+      const response = await fetch('/api/admin/users');
       if (response.ok) {
-        const data = await response.json()
-        setUsers(data)
+        const data = await response.json();
+        setUsers(data);
       }
     } catch (error) {
-      console.error('Error fetching users:', error)
+      console.error('Error fetching users:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleToggleBlock = async (user: User) => {
     try {
       const response = await fetch(`/api/admin/users/${user.id}/toggle-block`, {
         method: 'POST',
-      })
-      
+      });
+
       if (response.ok) {
-        setUsers(users.map(u => 
-          u.id === user.id ? { ...u, isBlocked: !u.isBlocked } : u
-        ))
+        setUsers(
+          users.map(u =>
+            u.id === user.id ? { ...u, isBlocked: !u.isBlocked } : u
+          )
+        );
       }
     } catch (error) {
-      console.error('Error toggling user block status:', error)
+      console.error('Error toggling user block status:', error);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return
+    if (!confirm('Are you sure you want to delete this user?')) return;
 
     try {
       const response = await fetch(`/api/admin/users/${id}`, {
         method: 'DELETE',
-      })
-      
+      });
+
       if (response.ok) {
-        setUsers(users.filter(user => user.id !== id))
+        setUsers(users.filter(user => user.id !== id));
       }
     } catch (error) {
-      console.error('Error deleting user:', error)
+      console.error('Error deleting user:', error);
     }
-  }
+  };
 
   const columns: Column<User>[] = [
-    { 
-      key: 'name' as keyof User, 
-      label: 'Name' 
+    {
+      key: 'name' as keyof User,
+      label: 'Name',
     },
-    { 
-      key: 'email' as keyof User, 
-      label: 'Email' 
+    {
+      key: 'email' as keyof User,
+      label: 'Email',
     },
-    { 
-      key: 'role' as keyof User, 
+    {
+      key: 'role' as keyof User,
       label: 'Role',
       render: (value: User['role']) => (
-        <StatusBadge 
-          status={value} 
-          variant={value === 'ADMIN' ? 'danger' : value === 'SPECIALIST' ? 'warning' : 'info'}
+        <StatusBadge
+          status={value}
+          variant={
+            value === 'ADMIN'
+              ? 'danger'
+              : value === 'SPECIALIST'
+                ? 'warning'
+                : 'info'
+          }
         />
-      )
+      ),
     },
-    { 
-      key: 'isBlocked' as keyof User, 
+    {
+      key: 'isBlocked' as keyof User,
       label: 'Status',
       render: (value: boolean) => (
-        <StatusBadge 
-          status={value ? 'Blocked' : 'Active'} 
+        <StatusBadge
+          status={value ? 'Blocked' : 'Active'}
           variant={value ? 'danger' : 'success'}
         />
-      )
+      ),
     },
-    { 
-      key: 'createdAt' as keyof User, 
+    {
+      key: 'createdAt' as keyof User,
       label: 'Joined',
-      render: (value: string) => new Date(value).toLocaleDateString()
+      render: (value: string) => new Date(value).toLocaleDateString(),
     },
     {
       key: 'id' as keyof User,
@@ -125,23 +141,28 @@ export default function UsersPage() {
           <button
             onClick={() => handleToggleBlock(user)}
             className={`p-2 rounded-lg ${
-              user.isBlocked 
+              user.isBlocked
                 ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
                 : 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
             }`}
             title={user.isBlocked ? 'Unblock User' : 'Block User'}
           >
-            {user.isBlocked ? <UserCheck className="w-4 h-4" /> : <UserX className="w-4 h-4" />}
+            {user.isBlocked ? (
+              <UserCheck className="w-4 h-4" />
+            ) : (
+              <UserX className="w-4 h-4" />
+            )}
           </button>
         </div>
       ),
     },
-  ]
+  ];
 
-  const filteredUsers = users.filter(user =>
-    user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredUsers = users.filter(
+    user =>
+      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -166,13 +187,9 @@ export default function UsersPage() {
             placeholder="Search users..."
           />
         </div>
-        
-        <DataTable
-          columns={columns}
-          data={filteredUsers}
-          loading={loading}
-        />
+
+        <DataTable columns={columns} data={filteredUsers} loading={loading} />
       </div>
     </div>
-  )
+  );
 }

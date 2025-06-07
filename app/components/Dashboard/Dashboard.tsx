@@ -1,109 +1,120 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { CheckCircle, AlertTriangle } from 'lucide-react'
-import ProfileSection from './ProfileSection'
-import LoadingSkeleton from './LoadingSkeleton'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
+import ProfileSection from './ProfileSection';
+import LoadingSkeleton from './LoadingSkeleton';
+import { AnimatePresence, motion } from 'framer-motion';
 
-type CountryCode = 'LV' | 'LT' | 'EE'
+type CountryCode = 'LV' | 'LT' | 'EE';
 
 interface AddressData {
-  street: string
-  city: string
-  postalCode: string
-  country: CountryCode
+  street: string;
+  city: string;
+  postalCode: string;
+  country: CountryCode;
 }
 
 interface FormData {
-  firstName?: string
-  lastName?: string
-  email?: string
-  phone?: string
-  password?: string
-  confirmPassword?: string
-  address?: AddressData
-  profileImage?: File | null
-  deleteProfileImage?: boolean
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  password?: string;
+  confirmPassword?: string;
+  address?: AddressData;
+  profileImage?: File | null;
+  deleteProfileImage?: boolean;
 }
 
 interface UpdateData {
-  firstName?: string
-  lastName?: string
-  email?: string
-  phone?: string
-  password?: string
-  shippingAddress?: string
-  shippingCity?: string
-  shippingPostalCode?: string
-  shippingCountry?: CountryCode
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  password?: string;
+  shippingAddress?: string;
+  shippingCity?: string;
+  shippingPostalCode?: string;
+  shippingCountry?: CountryCode;
 }
 
 export default function ProfileTab() {
-  const { user, loading, updateProfile } = useAuth()
-  const t = useTranslations('dashboard')
-  const validationT = useTranslations('dashboard.validation')
+  const { user, loading, updateProfile } = useAuth();
+  const t = useTranslations('dashboard');
+  const validationT = useTranslations('dashboard.validation');
 
-  const [successMessage, setSuccessMessage] = useState('')
-  const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState('');
   const handleUpdateProfile = async (formData: FormData) => {
-    setError('')
-    setSuccessMessage('')
-      try {
-      const { password, confirmPassword, address, profileImage, deleteProfileImage, ...basicData } = formData
-      const updateData: UpdateData = { ...basicData }
+    setError('');
+    setSuccessMessage('');
+    try {
+      const {
+        password,
+        confirmPassword,
+        address,
+        profileImage,
+        deleteProfileImage,
+        ...basicData
+      } = formData;
+      const updateData: UpdateData = { ...basicData };
 
       if (!updateData.email && !updateData.phone) {
-        throw new Error(validationT('emailOrPhone'))
+        throw new Error(validationT('emailOrPhone'));
       }
 
-      if (updateData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updateData.email)) {
-        throw new Error(validationT('emailInvalid'))
+      if (
+        updateData.email &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updateData.email)
+      ) {
+        throw new Error(validationT('emailInvalid'));
       }
 
       if (password || confirmPassword) {
         if (password !== confirmPassword) {
-          throw new Error(validationT('passwordMismatch'))
+          throw new Error(validationT('passwordMismatch'));
         }
         if (password && password.length < 8) {
-          throw new Error(validationT('passwordLength'))
+          throw new Error(validationT('passwordLength'));
         }
-        updateData.password = password
+        updateData.password = password;
       }
 
       if (address) {
-        updateData.shippingAddress = address.street
-        updateData.shippingCity = address.city
-        updateData.shippingPostalCode = address.postalCode
-        updateData.shippingCountry = address.country
+        updateData.shippingAddress = address.street;
+        updateData.shippingCity = address.city;
+        updateData.shippingPostalCode = address.postalCode;
+        updateData.shippingCountry = address.country;
 
         if (address.postalCode) {
           const postalCodePatterns: Record<CountryCode, RegExp> = {
             LV: /^LV-\d{4}$/,
             LT: /^LT-\d{5}$/,
-            EE: /^\d{5}$/
-          }
+            EE: /^\d{5}$/,
+          };
 
           if (!postalCodePatterns[address.country].test(address.postalCode)) {
-            throw new Error(validationT('invalidPostalCode'))
-          }        }
+            throw new Error(validationT('invalidPostalCode'));
+          }
+        }
       }
-      
-      await updateProfile(updateData, profileImage, deleteProfileImage)
-      setSuccessMessage(t('updateSuccess'))
+
+      await updateProfile(updateData, profileImage, deleteProfileImage);
+      setSuccessMessage(t('updateSuccess'));
 
       setTimeout(() => {
-        setSuccessMessage('')
-      }, 3000)
+        setSuccessMessage('');
+      }, 3000);
     } catch (err: any) {
-      setError(err.message || validationT('profileError'))
+      setError(err.message || validationT('profileError'));
     }
-  }
+  };
 
   if (loading) {
-    return <LoadingSkeleton />
+    return <LoadingSkeleton />;
   }
 
   return (
@@ -136,7 +147,7 @@ export default function ProfileTab() {
         )}
 
         {/* Missing contact info alert */}
-        {(!user?.email && !user?.phone) && (
+        {!user?.email && !user?.phone && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -147,10 +158,14 @@ export default function ProfileTab() {
             <div>
               <p className="font-medium">{t('complete')}</p>
               <p className="text-sm mt-1">
-                {t('completeMessage', { 
-                  field: !user?.email ? t('email') : '' + 
-                         (!user?.email && !user?.phone ? ' and ' : '') + 
-                         !user?.phone ? t('phone') : ''
+                {t('completeMessage', {
+                  field: !user?.email
+                    ? t('email')
+                    : '' +
+                        (!user?.email && !user?.phone ? ' and ' : '') +
+                        !user?.phone
+                      ? t('phone')
+                      : '',
                 })}
               </p>
             </div>
@@ -159,17 +174,20 @@ export default function ProfileTab() {
       </AnimatePresence>
 
       {user && (
-        <ProfileSection 
+        <ProfileSection
           user={{
             ...user,
-            shippingCountry: (user.shippingCountry === 'LV' || user.shippingCountry === 'LT' || user.shippingCountry === 'EE')
-              ? user.shippingCountry
-              : undefined
+            shippingCountry:
+              user.shippingCountry === 'LV' ||
+              user.shippingCountry === 'LT' ||
+              user.shippingCountry === 'EE'
+                ? user.shippingCountry
+                : undefined,
           }}
-          onUpdate={handleUpdateProfile} 
-          loading={loading} 
+          onUpdate={handleUpdateProfile}
+          loading={loading}
         />
       )}
     </div>
-  )
+  );
 }

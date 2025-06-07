@@ -4,19 +4,17 @@ import { prisma } from '@/lib/prismaService';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const categorySlug = searchParams.get('category');    let whereClause: any = {
-      quantity: { gt: 0 }
+    const categorySlug = searchParams.get('category');
+    let whereClause: any = {
+      quantity: { gt: 0 },
     };
 
     let category;
     if (categorySlug) {
       category = await prisma.peripheralCategory.findFirst({
         where: {
-          OR: [
-            { slug: categorySlug },
-            { id: categorySlug }
-          ]
-        }
+          OR: [{ slug: categorySlug }, { id: categorySlug }],
+        },
       });
 
       if (!category) {
@@ -27,7 +25,8 @@ export async function GET(request: NextRequest) {
       }
 
       whereClause.categoryId = category.id;
-    }      const peripherals = await prisma.peripheral.findMany({
+    }
+    const peripherals = await prisma.peripheral.findMany({
       where: whereClause,
       include: {
         category: true,
@@ -39,14 +38,14 @@ export async function GET(request: NextRequest) {
         headphones: true,
         speakers: true,
         gamepad: true,
-        mousePad: true
-      }
-    });    
+        mousePad: true,
+      },
+    });
     const components = peripherals.map((p: any) => {
       let specifications: Record<string, string> = {};
-      
+
       if (p.subType) specifications['subType'] = p.subType;
-      
+
       if (p.keyboard) {
         specifications['brand'] = p.keyboard.brand;
         specifications['switchType'] = p.keyboard.switchType;
@@ -103,7 +102,9 @@ export async function GET(request: NextRequest) {
         specifications['impedance'] = p.headphones.impedance.toString();
         specifications['frequency'] = p.headphones.frequency;
         specifications['weight'] = p.headphones.weight.toString();
-        specifications['noiseCancelling'] = p.headphones.noiseCancelling ? 'Yes' : 'No';
+        specifications['noiseCancelling'] = p.headphones.noiseCancelling
+          ? 'Yes'
+          : 'No';
         specifications['rgb'] = p.headphones.rgb ? 'Yes' : 'No';
       } else if (p.speakers) {
         specifications['brand'] = p.speakers.brand;
@@ -130,14 +131,14 @@ export async function GET(request: NextRequest) {
         specifications['rgb'] = p.mousePad.rgb ? 'Yes' : 'No';
         specifications['surface'] = p.mousePad.surface;
       }
-      
+
       return {
         id: p.id,
         name: p.name,
         description: p.description,
         price: p.price,
-        stock: p.quantity, 
-        imageUrl: p.imagesUrl, 
+        stock: p.quantity,
+        imageUrl: p.imagesUrl,
         categoryId: p.categoryId,
         categoryName: p.category.name,
         specifications,
@@ -152,17 +153,17 @@ export async function GET(request: NextRequest) {
         headphones: p.headphones,
         speakers: p.speakers,
         gamepad: p.gamepad,
-        mousePad: p.mousePad
+        mousePad: p.mousePad,
       };
     });
-    const categories = categorySlug 
+    const categories = categorySlug
       ? [category!]
       : await prisma.peripheralCategory.findMany();
 
     return NextResponse.json({
       categories,
       components,
-      specifications: [] 
+      specifications: [],
     });
   } catch (error) {
     console.error('Error fetching peripherals:', error);

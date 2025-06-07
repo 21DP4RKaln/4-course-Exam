@@ -1,71 +1,78 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import Link from 'next/link'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { useTheme } from '@/app/contexts/ThemeContext'
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import {
-  FileText, Download, Calendar, Filter, ArrowLeft,
-  BarChart2, TrendingUp, DollarSign, Search
-} from 'lucide-react'
+  FileText,
+  Download,
+  Calendar,
+  Filter,
+  ArrowLeft,
+  BarChart2,
+  TrendingUp,
+  DollarSign,
+  Search,
+} from 'lucide-react';
 
-type ReportType = 'sales' | 'revenue' | 'profit' | 'tax'
-type TimeFrame = 'monthly' | 'quarterly' | 'yearly'
+type ReportType = 'sales' | 'revenue' | 'profit' | 'tax';
+type TimeFrame = 'monthly' | 'quarterly' | 'yearly';
 
 type Report = {
-  id: string
-  type: ReportType
-  timeFrame: TimeFrame
-  period: string
-  generatedAt: string
-  fileUrl: string
-  fileSize: string
-  status: 'ready' | 'generating' | 'failed'
-}
+  id: string;
+  type: ReportType;
+  timeFrame: TimeFrame;
+  period: string;
+  generatedAt: string;
+  fileUrl: string;
+  fileSize: string;
+  status: 'ready' | 'generating' | 'failed';
+};
 
 export default function AdminFinancialReportsPage() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  const { user } = useAuth()
-  const { theme } = useTheme()
-  const [reports, setReports] = useState<Report[]>([])
-  const [loading, setLoading] = useState(true)
-  const [generating, setGenerating] = useState(false)
-  const [reportType, setReportType] = useState<ReportType>('sales')
-  const [timeFrame, setTimeFrame] = useState<TimeFrame>('monthly')
-  const [period, setPeriod] = useState('')
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+  const { user } = useAuth();
+  const { theme } = useTheme();
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [reportType, setReportType] = useState<ReportType>('sales');
+  const [timeFrame, setTimeFrame] = useState<TimeFrame>('monthly');
+  const [period, setPeriod] = useState('');
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') {
-      router.push(`/${locale}/dashboard`)
-      return
+      router.push(`/${locale}/dashboard`);
+      return;
     }
-    fetchReports()
-  }, [user])
+    fetchReports();
+  }, [user]);
 
   const fetchReports = async () => {
     try {
-      setLoading(true)
-      const response = await fetch('/api/admin/financial/reports')
-      const data = await response.json()
-      setReports(data)
+      setLoading(true);
+      const response = await fetch('/api/admin/financial/reports');
+      const data = await response.json();
+      setReports(data);
     } catch (error) {
-      console.error('Error fetching reports:', error)
+      console.error('Error fetching reports:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const generateReport = async () => {
     if (!period) {
-      alert('Please select a period')
-      return
+      alert('Please select a period');
+      return;
     }
 
     try {
-      setGenerating(true)
+      setGenerating(true);
       const response = await fetch('/api/admin/financial/reports/generate', {
         method: 'POST',
         headers: {
@@ -74,36 +81,36 @@ export default function AdminFinancialReportsPage() {
         body: JSON.stringify({
           type: reportType,
           timeFrame,
-          period
+          period,
         }),
-      })
+      });
 
       if (response.ok) {
-        fetchReports()
+        fetchReports();
       }
     } catch (error) {
-      console.error('Error generating report:', error)
+      console.error('Error generating report:', error);
     } finally {
-      setGenerating(false)
+      setGenerating(false);
     }
-  }
+  };
 
   const downloadReport = (fileUrl: string) => {
-    window.open(fileUrl, '_blank')
-  }
+    window.open(fileUrl, '_blank');
+  };
 
   const getReportIcon = (type: ReportType) => {
     switch (type) {
       case 'sales':
-        return <BarChart2 className="w-5 h-5" />
+        return <BarChart2 className="w-5 h-5" />;
       case 'revenue':
-        return <TrendingUp className="w-5 h-5" />
+        return <TrendingUp className="w-5 h-5" />;
       case 'profit':
-        return <DollarSign className="w-5 h-5" />
+        return <DollarSign className="w-5 h-5" />;
       case 'tax':
-        return <FileText className="w-5 h-5" />
+        return <FileText className="w-5 h-5" />;
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -134,7 +141,7 @@ export default function AdminFinancialReportsPage() {
             </label>
             <select
               value={reportType}
-              onChange={(e) => setReportType(e.target.value as ReportType)}
+              onChange={e => setReportType(e.target.value as ReportType)}
               className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
             >
               <option value="sales">Sales Report</option>
@@ -149,7 +156,7 @@ export default function AdminFinancialReportsPage() {
             </label>
             <select
               value={timeFrame}
-              onChange={(e) => setTimeFrame(e.target.value as TimeFrame)}
+              onChange={e => setTimeFrame(e.target.value as TimeFrame)}
               className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
             >
               <option value="monthly">Monthly</option>
@@ -164,7 +171,7 @@ export default function AdminFinancialReportsPage() {
             <input
               type="month"
               value={period}
-              onChange={(e) => setPeriod(e.target.value)}
+              onChange={e => setPeriod(e.target.value)}
               className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
             />
           </div>
@@ -225,24 +232,29 @@ export default function AdminFinancialReportsPage() {
                 </tr>
               ) : reports.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-neutral-500 dark:text-neutral-400">
+                  <td
+                    colSpan={7}
+                    className="px-6 py-4 text-center text-neutral-500 dark:text-neutral-400"
+                  >
                     No reports generated yet
                   </td>
                 </tr>
               ) : (
-                reports.map((report) => (
+                reports.map(report => (
                   <tr key={report.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         {getReportIcon(report.type)}
                         <span className="ml-2 text-sm text-neutral-900 dark:text-white">
-                          {report.type.charAt(0).toUpperCase() + report.type.slice(1)}
+                          {report.type.charAt(0).toUpperCase() +
+                            report.type.slice(1)}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm text-neutral-900 dark:text-white">
-                        {report.timeFrame.charAt(0).toUpperCase() + report.timeFrame.slice(1)}
+                        {report.timeFrame.charAt(0).toUpperCase() +
+                          report.timeFrame.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -261,11 +273,15 @@ export default function AdminFinancialReportsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        report.status === 'ready' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                        report.status === 'generating' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                        'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                      }`}>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          report.status === 'ready'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                            : report.status === 'generating'
+                              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        }`}
+                      >
                         {report.status}
                       </span>
                     </td>
@@ -287,5 +303,5 @@ export default function AdminFinancialReportsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

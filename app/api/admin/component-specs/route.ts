@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
 import { getJWTFromRequest, verifyJWT } from '@/lib/jwt';
-import { createUnauthorizedResponse, createForbiddenResponse, createBadRequestResponse } from '@/lib/apiErrors';
+import {
+  createUnauthorizedResponse,
+  createForbiddenResponse,
+  createBadRequestResponse,
+} from '@/lib/apiErrors';
 import { z } from 'zod';
 
 const componentSpecSchema = z.object({
@@ -27,7 +31,7 @@ export async function GET(request: NextRequest) {
     if (!componentId) {
       return createBadRequestResponse('Component ID is required');
     }
-    
+
     const component = await prisma.component.findUnique({
       where: { id: componentId },
       select: {
@@ -39,23 +43,29 @@ export async function GET(request: NextRequest) {
         categoryId: true,
         category: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     });
 
     if (!component) {
-      return NextResponse.json({ error: 'Component not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Component not found' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
       componentId,
-      specs: [] 
+      specs: [],
     });
   } catch (error) {
     console.error('Error fetching components:', error);
-    return NextResponse.json({ error: 'Failed to fetch component specifications' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch component specifications' },
+      { status: 500 }
+    );
   }
 }
 
@@ -72,29 +82,40 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
+
     const validationResult = componentSpecSchema.safeParse(body);
     if (!validationResult.success) {
-      return createBadRequestResponse('Validation failed', { errors: validationResult.error.errors });
+      return createBadRequestResponse('Validation failed', {
+        errors: validationResult.error.errors,
+      });
     }
 
     const { componentId } = validationResult.data;
-    
+
     const component = await prisma.component.findUnique({
-      where: { id: componentId }
+      where: { id: componentId },
     });
-    
+
     if (!component) {
-      return NextResponse.json({ error: 'Component not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Component not found' },
+        { status: 404 }
+      );
     }
-    
-    return NextResponse.json({
-      id: "placeholder-spec-id",
-      message: 'Specification created successfully',
-      success: true
-    }, { status: 201 });
+
+    return NextResponse.json(
+      {
+        id: 'placeholder-spec-id',
+        message: 'Specification created successfully',
+        success: true,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error creating component specification:', error);
-    return NextResponse.json({ error: 'Failed to create component specification' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create component specification' },
+      { status: 500 }
+    );
   }
 }

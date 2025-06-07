@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { Eye, Edit, Trash2, MoreVertical } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
+import { Eye, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 
 interface ActionButtonsProps {
-  onView?: () => void
-  onEdit?: () => void
-  onDelete?: () => void
+  onView?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   customActions?: {
-    label: string
-    icon?: React.ReactNode
-    onClick: () => void
-    variant?: 'default' | 'danger'
-  }[]
-  dropdown?: boolean
+    label: string;
+    icon?: React.ReactNode;
+    onClick: () => void;
+    variant?: 'default' | 'danger';
+  }[];
+  dropdown?: boolean;
 }
 
 export function ActionButtons({
@@ -21,28 +21,44 @@ export function ActionButtons({
   onEdit,
   onDelete,
   customActions = [],
-  dropdown = false
+  dropdown = false,
 }: ActionButtonsProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const actions = [
-    ...(onView ? [{ label: 'View', icon: <Eye size={16} />, onClick: onView }] : []),
-    ...(onEdit ? [{ label: 'Edit', icon: <Edit size={16} />, onClick: onEdit }] : []),
-    ...(onDelete ? [{ label: 'Delete', icon: <Trash2 size={16} />, onClick: onDelete, variant: 'danger' as const }] : []),
-    ...customActions
-  ]
+    ...(onView
+      ? [{ label: 'View', icon: <Eye size={16} />, onClick: onView }]
+      : []),
+    ...(onEdit
+      ? [{ label: 'Edit', icon: <Edit size={16} />, onClick: onEdit }]
+      : []),
+    ...(onDelete
+      ? [
+          {
+            label: 'Delete',
+            icon: <Trash2 size={16} />,
+            onClick: onDelete,
+            variant: 'danger' as const,
+          },
+        ]
+      : []),
+    ...customActions,
+  ];
 
   if (dropdown) {
     return (
@@ -53,7 +69,7 @@ export function ActionButtons({
         >
           <MoreVertical size={20} />
         </button>
-        
+
         {isOpen && (
           <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-stone-950 ring-1 ring-black ring-opacity-5 z-10">
             <div className="py-1">
@@ -61,8 +77,8 @@ export function ActionButtons({
                 <button
                   key={index}
                   onClick={() => {
-                    action.onClick()
-                    setIsOpen(false)
+                    action.onClick();
+                    setIsOpen(false);
                   }}
                   className={`flex items-center w-full px-4 py-2 text-sm ${
                     action.variant === 'danger'
@@ -78,7 +94,7 @@ export function ActionButtons({
           </div>
         )}
       </div>
-    )
+    );
   }
 
   return (
@@ -98,5 +114,5 @@ export function ActionButtons({
         </button>
       ))}
     </div>
-  )
+  );
 }

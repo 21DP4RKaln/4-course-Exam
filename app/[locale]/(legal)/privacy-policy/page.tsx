@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import PrivacyPolicyPage from '@/app/components/Legal/PrivacyPolicy'
+import PrivacyPolicyPage from '@/app/components/Legal/PrivacyPolicy';
 
 export default function PrivacyPolicy() {
-  return <PrivacyPolicyPage />
+  return <PrivacyPolicyPage />;
 }

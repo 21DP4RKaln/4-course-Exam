@@ -1,28 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prismaService'
-import { verifyJWT, getJWTFromRequest } from '@/lib/jwt'
-import { createUnauthorizedResponse, createServerErrorResponse } from '@/lib/apiErrors'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prismaService';
+import { verifyJWT, getJWTFromRequest } from '@/lib/jwt';
+import {
+  createUnauthorizedResponse,
+  createServerErrorResponse,
+} from '@/lib/apiErrors';
 
 export async function GET(request: NextRequest) {
   try {
-    const token = getJWTFromRequest(request)
+    const token = getJWTFromRequest(request);
     if (!token) {
-      return createUnauthorizedResponse('Authentication required')
+      return createUnauthorizedResponse('Authentication required');
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return createUnauthorizedResponse('Invalid token')
+      return createUnauthorizedResponse('Invalid token');
     }
 
     if (!['ADMIN', 'SPECIALIST'].includes(payload.role)) {
-      return createUnauthorizedResponse('Insufficient permissions')
+      return createUnauthorizedResponse('Insufficient permissions');
     }
 
     const pendingConfigurations = await prisma.configuration.findMany({
       where: {
         status: 'SUBMITTED',
-        isTemplate: false
+        isTemplate: false,
       },
       include: {
         user: {
@@ -30,23 +33,23 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             email: true,
-            phone: true
-          }
+            phone: true,
+          },
         },
         components: {
           include: {
             component: {
               include: {
-                category: true
-              }
-            }
-          }
-        }
+                category: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
+        createdAt: 'desc',
+      },
+    });
 
     const formattedConfigurations = pendingConfigurations.map(config => ({
       id: config.id,
@@ -58,22 +61,23 @@ export async function GET(request: NextRequest) {
         id: config.user?.id,
         name: config.user?.name || 'Anonymous',
         email: config.user?.email,
-        phone: config.user?.phone
-      },      components: config.components.map(item => ({
+        phone: config.user?.phone,
+      },
+      components: config.components.map(item => ({
         id: item.component.id,
         name: item.component.name,
         category: item.component.category.name,
         quantity: item.quantity,
         price: item.component.price,
-        stock: item.component.quantity
+        stock: item.component.quantity,
       })),
       createdAt: config.createdAt.toISOString(),
-      updatedAt: config.updatedAt.toISOString()
-    }))
+      updatedAt: config.updatedAt.toISOString(),
+    }));
 
-    return NextResponse.json(formattedConfigurations)
+    return NextResponse.json(formattedConfigurations);
   } catch (error) {
-    console.error('Error fetching pending configurations:', error)
-    return createServerErrorResponse('Failed to fetch pending configurations')
+    console.error('Error fetching pending configurations:', error);
+    return createServerErrorResponse('Failed to fetch pending configurations');
   }
 }

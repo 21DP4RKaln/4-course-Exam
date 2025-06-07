@@ -1,63 +1,76 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
-import { Wrench, Package, Cpu, Monitor, CheckCircle, Clock, AlertCircle } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useAuth } from '@/app/contexts/AuthContext';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import {
+  Wrench,
+  Package,
+  Cpu,
+  Monitor,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface DashboardStats {
   repairs: {
-    pendingRepairs: number
-    activeRepairs: number
-    completedRepairs: number
-    totalRepairs: number
-  }
+    pendingRepairs: number;
+    activeRepairs: number;
+    completedRepairs: number;
+    totalRepairs: number;
+  };
   configurations: {
-    pendingConfigurations: number
-    approvedConfigurations: number
-    totalConfigurations: number
-  }
+    pendingConfigurations: number;
+    approvedConfigurations: number;
+    totalConfigurations: number;
+  };
   inventory: {
-    components: number
-    lowStock: number
-    peripherals: number
-  }
+    components: number;
+    lowStock: number;
+    peripherals: number;
+  };
 }
 
 export default function SpecialistDashboard() {
-  const t = useTranslations()
-  const { user } = useAuth()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [loading, setLoading] = useState(true)
+  const t = useTranslations();
+  const { user } = useAuth();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchDashboardStats()
-  }, [])
+    fetchDashboardStats();
+  }, []);
   const fetchDashboardStats = async () => {
     try {
-      const response = await fetch('/api/staff/stats')
+      const response = await fetch('/api/staff/stats');
       if (response.ok) {
-        const data = await response.json()
-        setStats(data)
+        const data = await response.json();
+        setStats(data);
       }
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error)
+      console.error('Error fetching dashboard stats:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   const quickLinks = [
@@ -67,7 +80,7 @@ export default function SpecialistDashboard() {
       href: `/${locale}/specialist/repairs`,
       icon: Wrench,
       color: 'text-blue-600',
-      bgColor: 'bg-blue-100'
+      bgColor: 'bg-blue-100',
     },
     {
       title: 'Configurations',
@@ -75,7 +88,7 @@ export default function SpecialistDashboard() {
       href: `/${locale}/specialist/configurations`,
       icon: Package,
       color: 'text-green-600',
-      bgColor: 'bg-green-100'
+      bgColor: 'bg-green-100',
     },
     {
       title: 'Components',
@@ -83,7 +96,7 @@ export default function SpecialistDashboard() {
       href: `/${locale}/specialist/components`,
       icon: Cpu,
       color: 'text-purple-600',
-      bgColor: 'bg-purple-100'
+      bgColor: 'bg-purple-100',
     },
     {
       title: 'Ready-Made PCs',
@@ -91,9 +104,9 @@ export default function SpecialistDashboard() {
       href: `/${locale}/specialist/ready-made`,
       icon: Monitor,
       color: 'text-orange-600',
-      bgColor: 'bg-orange-100'
-    }
-  ]
+      bgColor: 'bg-orange-100',
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -110,10 +123,15 @@ export default function SpecialistDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Repairs</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Repairs
+            </CardTitle>
             <AlertCircle className="h-4 w-4 text-yellow-600" />
-          </CardHeader>          <CardContent>
-            <div className="text-2xl font-bold">{stats?.repairs?.pendingRepairs || 0}</div>
+          </CardHeader>{' '}
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {stats?.repairs?.pendingRepairs || 0}
+            </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Awaiting action
             </p>
@@ -122,10 +140,15 @@ export default function SpecialistDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Repairs</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Repairs
+            </CardTitle>
             <Clock className="h-4 w-4 text-blue-600" />
-          </CardHeader>          <CardContent>
-            <div className="text-2xl font-bold">{stats?.repairs?.activeRepairs || 0}</div>
+          </CardHeader>{' '}
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {stats?.repairs?.activeRepairs || 0}
+            </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               In progress
             </p>
@@ -134,10 +157,15 @@ export default function SpecialistDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Configs</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Configs
+            </CardTitle>
             <Package className="h-4 w-4 text-orange-600" />
-          </CardHeader>          <CardContent>
-            <div className="text-2xl font-bold">{stats?.configurations?.pendingConfigurations || 0}</div>
+          </CardHeader>{' '}
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {stats?.configurations?.pendingConfigurations || 0}
+            </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Need review
             </p>
@@ -146,10 +174,15 @@ export default function SpecialistDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed Today</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Completed Today
+            </CardTitle>
             <CheckCircle className="h-4 w-4 text-green-600" />
-          </CardHeader>          <CardContent>
-            <div className="text-2xl font-bold">{stats?.repairs?.completedRepairs || 0}</div>
+          </CardHeader>{' '}
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {stats?.repairs?.completedRepairs || 0}
+            </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Repairs finished
             </p>
@@ -163,11 +196,13 @@ export default function SpecialistDashboard() {
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {quickLinks.map((link) => (
+          {quickLinks.map(link => (
             <Link key={link.href} href={link.href}>
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardContent className="p-6">
-                  <div className={`${link.bgColor} w-12 h-12 rounded-lg flex items-center justify-center mb-4`}>
+                  <div
+                    className={`${link.bgColor} w-12 h-12 rounded-lg flex items-center justify-center mb-4`}
+                  >
                     <link.icon className={`h-6 w-6 ${link.color}`} />
                   </div>
                   <h3 className="font-semibold text-neutral-900 dark:text-white mb-1">
@@ -221,5 +256,5 @@ export default function SpecialistDashboard() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

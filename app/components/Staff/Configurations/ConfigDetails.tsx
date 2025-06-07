@@ -1,61 +1,80 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { X, Monitor, Package, DollarSign, Calendar, User, CheckCircle, XCircle } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useState } from 'react';
+import {
+  X,
+  Monitor,
+  Package,
+  DollarSign,
+  Calendar,
+  User,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Configuration {
-  id: string
-  name: string
-  userId: string
-  userName?: string
-  userEmail?: string
-  status: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED'
-  totalPrice: number
-  createdAt: string
-  description?: string
-  isTemplate: boolean
-  isPublic: boolean
+  id: string;
+  name: string;
+  userId: string;
+  userName?: string;
+  userEmail?: string;
+  status: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+  totalPrice: number;
+  createdAt: string;
+  description?: string;
+  isTemplate: boolean;
+  isPublic: boolean;
   components: Array<{
-    id: string
-    name: string
-    category: string
-    price: number
-    quantity: number
-  }>
+    id: string;
+    name: string;
+    category: string;
+    price: number;
+    quantity: number;
+  }>;
 }
 
 interface ConfigDetailsProps {
-  configuration: Configuration
-  onClose: () => void
+  configuration: Configuration;
+  onClose: () => void;
 }
 
 export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
-  const t = useTranslations()
-  const [activeTab, setActiveTab] = useState<'overview' | 'components' | 'history'>('overview')
+  const t = useTranslations();
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'components' | 'history'
+  >('overview');
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'DRAFT':
-        return <span className="px-3 py-1 bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 rounded-full text-sm">
-          {t('admin.charts.draft')}
-        </span>
+        return (
+          <span className="px-3 py-1 bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 rounded-full text-sm">
+            {t('admin.charts.draft')}
+          </span>
+        );
       case 'SUBMITTED':
-        return <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full text-sm">
-          {t('admin.charts.pendingReview')}
-        </span>
+        return (
+          <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full text-sm">
+            {t('admin.charts.pendingReview')}
+          </span>
+        );
       case 'APPROVED':
-        return <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-sm">
-          {t('admin.charts.approved')}
-        </span>
+        return (
+          <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-sm">
+            {t('admin.charts.approved')}
+          </span>
+        );
       case 'REJECTED':
-        return <span className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full text-sm">
-          {t('admin.charts.rejected')}
-        </span>
+        return (
+          <span className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full text-sm">
+            {t('admin.charts.rejected')}
+          </span>
+        );
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -65,11 +84,18 @@ export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
           <div className="flex items-center gap-3">
             <Monitor className="text-primary" size={24} />
             <div>
-              <h2 className="text-xl font-semibold dark:text-white">{configuration.name}</h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('admin.charts.configurationDetail')}</p>
+              <h2 className="text-xl font-semibold dark:text-white">
+                {configuration.name}
+              </h2>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                {t('admin.charts.configurationDetail')}
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
+          <button
+            onClick={onClose}
+            className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+          >
             <X size={24} />
           </button>
         </div>
@@ -111,54 +137,81 @@ export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto scrollbar-hide" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+        <div
+          className="p-6 overflow-y-auto scrollbar-hide"
+          style={{ maxHeight: 'calc(90vh - 180px)' }}
+        >
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Status and Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('admin.charts.status')}</h3>
-                    <div className="mt-1">{getStatusBadge(configuration.status)}</div>
+                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      {t('admin.charts.status')}
+                    </h3>
+                    <div className="mt-1">
+                      {getStatusBadge(configuration.status)}
+                    </div>
                   </div>
-                  
+
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('admin.charts.totalPrice')}</h3>
-                    <div className="mt-1 text-2xl font-bold dark:text-white">€{configuration.totalPrice.toFixed(2)}</div>
+                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      {t('admin.charts.totalPrice')}
+                    </h3>
+                    <div className="mt-1 text-2xl font-bold dark:text-white">
+                      €{configuration.totalPrice.toFixed(2)}
+                    </div>
                   </div>
-                  
+
                   {configuration.description && (
                     <div>
-                      <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('admin.charts.description')}</h3>
-                      <p className="mt-1 text-neutral-900 dark:text-white">{configuration.description}</p>
+                      <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                        {t('admin.charts.description')}
+                      </h3>
+                      <p className="mt-1 text-neutral-900 dark:text-white">
+                        {configuration.description}
+                      </p>
                     </div>
                   )}
                 </div>
-                
+
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('admin.charts.createdBy')}</h3>
+                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      {t('admin.charts.createdBy')}
+                    </h3>
                     <div className="mt-1 flex items-center gap-2">
                       <User size={16} className="text-neutral-400" />
                       <div>
-                        <div className="text-neutral-900 dark:text-white">{configuration.userName || 'Unknown User'}</div>
-                        <div className="text-sm text-neutral-500 dark:text-neutral-400">{configuration.userEmail}</div>
+                        <div className="text-neutral-900 dark:text-white">
+                          {configuration.userName || 'Unknown User'}
+                        </div>
+                        <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                          {configuration.userEmail}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('admin.charts.createdOn')}</h3>
+                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      {t('admin.charts.createdOn')}
+                    </h3>
                     <div className="mt-1 flex items-center gap-2">
                       <Calendar size={16} className="text-neutral-400" />
                       <span className="text-neutral-900 dark:text-white">
-                        {new Date(configuration.createdAt).toLocaleDateString()} at {new Date(configuration.createdAt).toLocaleTimeString()}
+                        {new Date(configuration.createdAt).toLocaleDateString()}{' '}
+                        at{' '}
+                        {new Date(configuration.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('admin.charts.visibility')}</h3>
+                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      {t('admin.charts.visibility')}
+                    </h3>
                     <div className="mt-1 flex gap-4">
                       {configuration.isTemplate && (
                         <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded text-sm">
@@ -174,20 +227,33 @@ export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
                   </div>
                 </div>
               </div>
-              
+
               {/* Component Summary */}
               <div>
-                <h3 className="text-lg font-semibold mb-4 dark:text-white">{t('admin.charts.componentSummary')}</h3>
+                <h3 className="text-lg font-semibold mb-4 dark:text-white">
+                  {t('admin.charts.componentSummary')}
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {Object.entries(
-                    configuration.components.reduce((acc, component) => {
-                      acc[component.category] = (acc[component.category] || 0) + 1
-                      return acc
-                    }, {} as Record<string, number>)
+                    configuration.components.reduce(
+                      (acc, component) => {
+                        acc[component.category] =
+                          (acc[component.category] || 0) + 1;
+                        return acc;
+                      },
+                      {} as Record<string, number>
+                    )
                   ).map(([category, count]) => (
-                    <div key={category} className="bg-neutral-50 dark:bg-neutral-700/50 p-4 rounded-lg">
-                      <div className="text-sm text-neutral-500 dark:text-neutral-400">{category}</div>
-                      <div className="text-xl font-semibold dark:text-white">{count} item{count > 1 ? 's' : ''}</div>
+                    <div
+                      key={category}
+                      className="bg-neutral-50 dark:bg-neutral-700/50 p-4 rounded-lg"
+                    >
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                        {category}
+                      </div>
+                      <div className="text-xl font-semibold dark:text-white">
+                        {count} item{count > 1 ? 's' : ''}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -197,13 +263,20 @@ export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
 
           {activeTab === 'components' && (
             <div className="space-y-4">
-              {configuration.components.map((component) => (
-                <div key={component.id} className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-700/50 rounded-lg">
+              {configuration.components.map(component => (
+                <div
+                  key={component.id}
+                  className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-700/50 rounded-lg"
+                >
                   <div className="flex items-center gap-4">
                     <Package className="text-neutral-400" size={20} />
                     <div>
-                      <div className="font-medium dark:text-white">{component.name}</div>
-                      <div className="text-sm text-neutral-500 dark:text-neutral-400">{component.category}</div>
+                      <div className="font-medium dark:text-white">
+                        {component.name}
+                      </div>
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                        {component.category}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-6">
@@ -216,11 +289,15 @@ export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
                   </div>
                 </div>
               ))}
-              
+
               <div className="mt-6 pt-4 border-t dark:border-neutral-700">
                 <div className="flex justify-between items-center">
-                  <div className="text-lg font-semibold dark:text-white">{t('admin.charts.total')}</div>
-                  <div className="text-2xl font-bold dark:text-white">€{configuration.totalPrice.toFixed(2)}</div>
+                  <div className="text-lg font-semibold dark:text-white">
+                    {t('admin.charts.total')}
+                  </div>
+                  <div className="text-2xl font-bold dark:text-white">
+                    €{configuration.totalPrice.toFixed(2)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -246,5 +323,5 @@ export function ConfigDetails({ configuration, onClose }: ConfigDetailsProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

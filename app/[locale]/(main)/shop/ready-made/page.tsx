@@ -1,18 +1,23 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useMemo } from 'react'
-import { useTranslations } from 'next-intl'
-import { usePathname, useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { AlertTriangle, Info, Cpu, ArrowLeft } from 'lucide-react'
-import ProductCard from '@/app/components/Shop/ProductCard'
-import AdvancedFilter from '@/app/components/Shop/AdvancedFilter'
-import Loading from '@/app/components/ui/Loading'
-import { useLoading, LoadingSpinner, FullPageLoading, ButtonLoading } from '@/app/hooks/useLoading'
-import { useTheme } from '@/app/contexts/ThemeContext'
+import { useState, useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { AlertTriangle, Info, Cpu, ArrowLeft } from 'lucide-react';
+import ProductCard from '@/app/components/Shop/ProductCard';
+import AdvancedFilter from '@/app/components/Shop/AdvancedFilter';
+import Loading from '@/app/components/ui/Loading';
+import {
+  useLoading,
+  LoadingSpinner,
+  FullPageLoading,
+  ButtonLoading,
+} from '@/app/hooks/useLoading';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import styled from 'styled-components';
-import AnimatedButton from '@/app/components/ui/animated-button'
-import styles from './Advanced.module.css'
+import AnimatedButton from '@/app/components/ui/animated-button';
+import styles from './Advanced.module.css';
 
 interface PC {
   id: string;
@@ -26,62 +31,64 @@ interface PC {
 }
 
 const specMapping: Record<string, string[]> = {
-  'cpu': ['cpu', 'processor', 'processors'],
-  'gpu': ['gpu', 'graphics', 'graphicscard', 'graphics card', 'video card'],
-  'ram': ['ram', 'memory', 'memories'],
-  'storage': ['storage', 'drive', 'disk', 'ssd', 'hdd'],
-  'motherboard': ['motherboard', 'mb', 'mainboard', 'system board'],
-  'psu': ['psu', 'powersupply', 'power supply', 'power'],
-  'case': ['case', 'chassis', 'tower', 'enclosure'],
-  'cooling': ['cooling', 'cooler', 'fan', 'radiator']
-}
+  cpu: ['cpu', 'processor', 'processors'],
+  gpu: ['gpu', 'graphics', 'graphicscard', 'graphics card', 'video card'],
+  ram: ['ram', 'memory', 'memories'],
+  storage: ['storage', 'drive', 'disk', 'ssd', 'hdd'],
+  motherboard: ['motherboard', 'mb', 'mainboard', 'system board'],
+  psu: ['psu', 'powersupply', 'power supply', 'power'],
+  case: ['case', 'chassis', 'tower', 'enclosure'],
+  cooling: ['cooling', 'cooler', 'fan', 'radiator'],
+};
 
 function getValidKeysForSpec(specKey: string): string[] {
-  return specMapping[specKey.toLowerCase()] || [specKey.toLowerCase()]
+  return specMapping[specKey.toLowerCase()] || [specKey.toLowerCase()];
 }
 
 function extractOptions(pcs: PC[], specKey: string) {
-  const options = new Set<string>()
-  const validKeys = getValidKeysForSpec(specKey)
-  
+  const options = new Set<string>();
+  const validKeys = getValidKeysForSpec(specKey);
+
   pcs.forEach(pc => {
     if (pc.specs) {
       Object.entries(pc.specs).forEach(([key, value]) => {
-        const keyMatches = validKeys.some(validKey => 
-          key.toLowerCase().includes(validKey) || validKey.includes(key.toLowerCase())
-        )
-        
+        const keyMatches = validKeys.some(
+          validKey =>
+            key.toLowerCase().includes(validKey) ||
+            validKey.includes(key.toLowerCase())
+        );
+
         if (keyMatches && value) {
-          const parts = value.split(/[,;]/).map(part => part.trim())
+          const parts = value.split(/[,;]/).map(part => part.trim());
           parts.forEach(part => {
-            if (part) options.add(part)
-          })
+            if (part) options.add(part);
+          });
         }
-      })
+      });
     }
-  })
-  
+  });
+
   return Array.from(options)
     .filter(value => value)
     .map(value => ({
       id: value,
-      name: value
-    }))
+      name: value,
+    }));
 }
 
 export default function ReadyMadePCsPage() {
-  const t = useTranslations()
-  const pathname = usePathname()
-  const router = useRouter()
-  const locale = pathname.split('/')[1]
-  const { theme } = useTheme()
-  
-  const [pcs, setPcs] = useState<PC[]>([])
-  const [filteredPCs, setFilteredPCs] = useState<PC[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  
+  const t = useTranslations();
+  const pathname = usePathname();
+  const router = useRouter();
+  const locale = pathname.split('/')[1];
+  const { theme } = useTheme();
+
+  const [pcs, setPcs] = useState<PC[]>([]);
+  const [filteredPCs, setFilteredPCs] = useState<PC[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
   const initialFilters = {
     category: [],
     cpu: [],
@@ -91,78 +98,86 @@ export default function ReadyMadePCsPage() {
     motherboard: [],
     psu: [],
     case: [],
-    cooling: []
-  }
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters)
-  const [sortOption, setSortOption] = useState('price-asc')
+    cooling: [],
+  };
+  const [activeFilters, setActiveFilters] =
+    useState<Record<string, string[]>>(initialFilters);
+  const [sortOption, setSortOption] = useState('price-asc');
 
   const maxPrice = useMemo(() => {
-    if (pcs.length === 0) return 5000
-    return Math.max(...pcs.map(pc => pc.price))
-  }, [pcs])
+    if (pcs.length === 0) return 5000;
+    return Math.max(...pcs.map(pc => pc.price));
+  }, [pcs]);
 
   const minPrice = useMemo(() => {
-    if (pcs.length === 0) return 0
-    return Math.min(...pcs.map(pc => pc.price))
-  }, [pcs])
+    if (pcs.length === 0) return 0;
+    return Math.min(...pcs.map(pc => pc.price));
+  }, [pcs]);
 
-  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ 
-    min: 0, 
-    max: 5000 
-  })
+  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({
+    min: 0,
+    max: 5000,
+  });
 
   useEffect(() => {
     if (pcs.length > 0) {
-      setPriceRange({ min: minPrice, max: maxPrice })
+      setPriceRange({ min: minPrice, max: maxPrice });
     }
-  }, [pcs, minPrice, maxPrice])
+  }, [pcs, minPrice, maxPrice]);
   useEffect(() => {
     const fetchPCs = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await fetch('/api/shop/product?type=configuration')
-        
+        const response = await fetch('/api/shop/product?type=configuration');
+
         if (!response.ok) {
-          throw new Error('Failed to load products')
+          throw new Error('Failed to load products');
         }
-          const data = await response.json()
-        
-        console.log('🔍 Raw API data:', data)
-        console.log('🔍 First config components:', data[0]?.components)        
+        const data = await response.json();
+
+        console.log('🔍 Raw API data:', data);
+        console.log('🔍 First config components:', data[0]?.components);
         const transformedPCs = data.map((config: any) => ({
           id: config.id,
           name: config.name,
           category: config.category || 'Gaming PC',
           description: config.description || '',
-          specs: config.components ? config.components.reduce((acc: Record<string, string>, comp: any) => {
-            const categoryName = comp.category || 'unknown';
-            acc[categoryName.toLowerCase()] = comp.name;
-            return acc;
-          }, {}) : {},
-          price: config.price || 0, 
+          specs: config.components
+            ? config.components.reduce(
+                (acc: Record<string, string>, comp: any) => {
+                  const categoryName = comp.category || 'unknown';
+                  acc[categoryName.toLowerCase()] = comp.name;
+                  return acc;
+                },
+                {}
+              )
+            : {},
+          price: config.price || 0,
           imageUrl: config.imageUrl,
-          stock: config.stock || 10
-        }))
-        
-        console.log('🔄 Transformed PCs:', transformedPCs)
-        console.log('🔍 First PC specs:', transformedPCs[0]?.specs)
-        
-        setPcs(transformedPCs)
+          stock: config.stock || 10,
+        }));
+
+        console.log('🔄 Transformed PCs:', transformedPCs);
+        console.log('🔍 First PC specs:', transformedPCs[0]?.specs);
+
+        setPcs(transformedPCs);
       } catch (err) {
-        console.error('Error fetching ready-made PCs:', err)
-        setError('Failed to load products. Please try again later.')
+        console.error('Error fetching ready-made PCs:', err);
+        setError('Failed to load products. Please try again later.');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    
-    fetchPCs()
-  }, []) 
-  const categoryOptions = Array.from(new Set(pcs.map(pc => pc.category))).map(cat => ({ 
-    id: cat, 
-    name: cat,
-    translationKey: `shop.filters.${cat.toLowerCase()}`
-  }));
+    };
+
+    fetchPCs();
+  }, []);
+  const categoryOptions = Array.from(new Set(pcs.map(pc => pc.category))).map(
+    cat => ({
+      id: cat,
+      name: cat,
+      translationKey: `shop.filters.${cat.toLowerCase()}`,
+    })
+  );
   const cpuOptions = extractOptions(pcs, 'cpu');
   const gpuOptions = extractOptions(pcs, 'gpu');
   const ramOptions = extractOptions(pcs, 'ram');
@@ -180,110 +195,134 @@ export default function ReadyMadePCsPage() {
     motherboardOptions: motherboardOptions.length,
     psuOptions: psuOptions.length,
     caseOptions: caseOptions.length,
-    coolingOptions: coolingOptions.length
+    coolingOptions: coolingOptions.length,
   });
 
   if (pcs.length > 0) {
     console.log('📋 First PC specs structure:', pcs[0].specs);
-    console.log('📋 All PC specs keys:', pcs.map(pc => Object.keys(pc.specs || {})));
-  }useEffect(() => {
-    console.log('🔄 Filtering PCs - Starting with:', pcs.length, 'PCs')
-    console.log('🔍 Active filters:', activeFilters)
-    console.log('🔎 Search query:', searchQuery)
-    console.log('💰 Price range:', priceRange)
-    
-    let result = [...pcs]
-    
+    console.log(
+      '📋 All PC specs keys:',
+      pcs.map(pc => Object.keys(pc.specs || {}))
+    );
+  }
+  useEffect(() => {
+    console.log('🔄 Filtering PCs - Starting with:', pcs.length, 'PCs');
+    console.log('🔍 Active filters:', activeFilters);
+    console.log('🔎 Search query:', searchQuery);
+    console.log('💰 Price range:', priceRange);
+
+    let result = [...pcs];
+
     console.log('🔍 Starting filter process with:', {
       totalPCs: pcs.length,
       activeFilters,
       searchQuery,
-      priceRange
-    })
-    
+      priceRange,
+    });
+
     if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter(pc => 
-        pc.name.toLowerCase().includes(query) || 
-        pc.description.toLowerCase().includes(query) ||
-        Object.entries(pc.specs).some(([key, value]) => 
-          value.toString().toLowerCase().includes(query)
-        )
-      )
-      console.log('📝 After search filter:', result.length)
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        pc =>
+          pc.name.toLowerCase().includes(query) ||
+          pc.description.toLowerCase().includes(query) ||
+          Object.entries(pc.specs).some(([key, value]) =>
+            value.toString().toLowerCase().includes(query)
+          )
+      );
+      console.log('📝 After search filter:', result.length);
     }
 
-    result = result.filter(pc => pc.price >= priceRange.min && pc.price <= priceRange.max)
-    console.log('💰 After price filter:', result.length)
+    result = result.filter(
+      pc => pc.price >= priceRange.min && pc.price <= priceRange.max
+    );
+    console.log('💰 After price filter:', result.length);
 
     if (activeFilters.category && activeFilters.category.length > 0) {
-      result = result.filter(pc => activeFilters.category.includes(pc.category))
-      console.log('📂 After category filter:', result.length)
+      result = result.filter(pc =>
+        activeFilters.category.includes(pc.category)
+      );
+      console.log('📂 After category filter:', result.length);
     }
 
     Object.entries(activeFilters).forEach(([filterType, selectedValues]) => {
-      if (filterType !== 'category' && selectedValues && selectedValues.length > 0) {
-        console.log(`🔧 Applying ${filterType} filter with values:`, selectedValues)
-        
-        const beforeCount = result.length
+      if (
+        filterType !== 'category' &&
+        selectedValues &&
+        selectedValues.length > 0
+      ) {
+        console.log(
+          `🔧 Applying ${filterType} filter with values:`,
+          selectedValues
+        );
+
+        const beforeCount = result.length;
         result = result.filter(pc => {
-          if (!pc.specs) return false
-          
-          const validKeys = getValidKeysForSpec(filterType)
-          console.log(`  Valid keys for ${filterType}:`, validKeys)
-          
-          let specValue = ''
-          let foundKey = ''
-  
+          if (!pc.specs) return false;
+
+          const validKeys = getValidKeysForSpec(filterType);
+          console.log(`  Valid keys for ${filterType}:`, validKeys);
+
+          let specValue = '';
+          let foundKey = '';
+
           for (const key of Object.keys(pc.specs)) {
-            if (validKeys.some(validKey => 
-              key.toLowerCase().includes(validKey) || validKey.includes(key.toLowerCase())
-            )) {
-              specValue = pc.specs[key].toLowerCase()
-              foundKey = key
-              break
+            if (
+              validKeys.some(
+                validKey =>
+                  key.toLowerCase().includes(validKey) ||
+                  validKey.includes(key.toLowerCase())
+              )
+            ) {
+              specValue = pc.specs[key].toLowerCase();
+              foundKey = key;
+              break;
             }
           }
-          
-          console.log(`  PC "${pc.name}" - Found spec "${foundKey}": "${specValue}"`)
-          
-          const matches = selectedValues.some(filter => 
+
+          console.log(
+            `  PC "${pc.name}" - Found spec "${foundKey}": "${specValue}"`
+          );
+
+          const matches = selectedValues.some(filter =>
             specValue.includes(filter.toLowerCase())
-          )
-          
-          console.log(`  Matches filter? ${matches}`)
-          return matches
-        })
-        
-        console.log(`  ${filterType} filter: ${beforeCount} -> ${result.length}`)
+          );
+
+          console.log(`  Matches filter? ${matches}`);
+          return matches;
+        });
+
+        console.log(
+          `  ${filterType} filter: ${beforeCount} -> ${result.length}`
+        );
       }
-    })
-    
+    });
+
     switch (sortOption) {
       case 'price-asc':
-        result.sort((a, b) => a.price - b.price)
-        break
+        result.sort((a, b) => a.price - b.price);
+        break;
       case 'price-desc':
-        result.sort((a, b) => b.price - a.price)
-        break
+        result.sort((a, b) => b.price - a.price);
+        break;
       case 'name-asc':
-        result.sort((a, b) => a.name.localeCompare(b.name))
-        break
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
       case 'name-desc':
-        result.sort((a, b) => b.name.localeCompare(a.name))
-        break
+        result.sort((a, b) => b.name.localeCompare(a.name));
+        break;
     }
-    
-    console.log('✅ Final result:', result.length)
-    setFilteredPCs(result)
-  }, [pcs, searchQuery, activeFilters, sortOption, priceRange])
+
+    console.log('✅ Final result:', result.length);
+    setFilteredPCs(result);
+  }, [pcs, searchQuery, activeFilters, sortOption, priceRange]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loading size="medium" />
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -300,7 +339,7 @@ export default function ReadyMadePCsPage() {
           {t('common.tryAgain')}
         </button>
       </div>
-    )
+    );
   }
 
   return (
@@ -365,7 +404,10 @@ export default function ReadyMadePCsPage() {
         <div className="flex-1 min-w-0">
           {filteredPCs.length === 0 ? (
             <div className="bg-white/95 dark:bg-red-900/20 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-400/50 dark:border-red-900/30 shadow-lg">
-              <Info size={48} className="mx-auto text-blue-500 dark:text-red-400 mb-4" />
+              <Info
+                size={48}
+                className="mx-auto text-blue-500 dark:text-red-400 mb-4"
+              />
               <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                 {t('shop.noProducts')}
               </h2>
@@ -375,7 +417,7 @@ export default function ReadyMadePCsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-              {filteredPCs.map((pc) => (
+              {filteredPCs.map(pc => (
                 <div key={pc.id} className="h-full flex">
                   <ProductCard
                     id={pc.id}
@@ -394,18 +436,20 @@ export default function ReadyMadePCsPage() {
           )}
         </div>
       </div>
-      
+
       {/* CTA for custom PC */}
       <div className="mt-12 relative overflow-hidden rounded-2xl">
-        <div className={`absolute inset-0 
-          ${theme === 'dark' 
-            ? 'bg-gradient-to-r from-neutral-900 via-neutral-800 to-red-900/30' 
-            : 'bg-gradient-to-r from-neutral-100 via-neutral-50 to-blue-100/30'
+        <div
+          className={`absolute inset-0 
+          ${
+            theme === 'dark'
+              ? 'bg-gradient-to-r from-neutral-900 via-neutral-800 to-red-900/30'
+              : 'bg-gradient-to-r from-neutral-100 via-neutral-50 to-blue-100/30'
           }`}
         />
       </div>
     </div>
-  )
+  );
 }
 
 const StyledWrapper = styled.div`

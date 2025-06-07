@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useEffect, useRef } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 
 interface ConfirmDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: () => void
-  title: string
-  message: string
-  confirmText?: string
-  cancelText?: string
-  variant?: 'default' | 'danger'
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'default' | 'danger';
 }
 
 export function ConfirmDialog({
@@ -22,41 +22,41 @@ export function ConfirmDialog({
   message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-  variant = 'default'
+  variant = 'default',
 }: ConfirmDialogProps) {
-  const dialogRef = useRef<HTMLDivElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        onClose()
+        onClose();
       }
     }
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden'
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen, onClose])
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
         {/* Backdrop */}
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 transition-opacity"
           onClick={onClose}
         />
-        
+
         {/* Dialog */}
-        <div 
+        <div
           ref={dialogRef}
           className="relative bg-white dark:bg-stone-950 rounded-lg shadow-xl max-w-md w-full p-6"
         >
@@ -67,7 +67,7 @@ export function ConfirmDialog({
           >
             <X size={20} />
           </button>
-          
+
           {/* Content */}
           <div className="text-center">
             <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">
@@ -76,7 +76,7 @@ export function ConfirmDialog({
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">
               {message}
             </p>
-            
+
             {/* Actions */}
             <div className="flex justify-center space-x-4">
               <button
@@ -87,8 +87,8 @@ export function ConfirmDialog({
               </button>
               <button
                 onClick={() => {
-                  onConfirm()
-                  onClose()
+                  onConfirm();
+                  onClose();
                 }}
                 className={`px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                   variant === 'danger'
@@ -103,5 +103,5 @@ export function ConfirmDialog({
         </div>
       </div>
     </div>
-  )
+  );
 }

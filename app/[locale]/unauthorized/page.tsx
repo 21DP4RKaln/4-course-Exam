@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
-import { usePathname } from 'next/navigation'
-import { ShieldAlert } from 'lucide-react'
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { ShieldAlert } from 'lucide-react';
 
 export default function UnauthorizedPage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
+  const t = useTranslations();
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-900">
@@ -21,8 +21,8 @@ export default function UnauthorizedPage() {
           {t('errors.unauthorized.title', { fallback: 'Access Denied' })}
         </h1>
         <p className="text-neutral-600 dark:text-neutral-400 mb-8">
-          {t('errors.unauthorized.message', { 
-            fallback: 'You do not have permission to access this page.' 
+          {t('errors.unauthorized.message', {
+            fallback: 'You do not have permission to access this page.',
           })}
         </p>
         <div className="space-y-4">
@@ -41,5 +41,5 @@ export default function UnauthorizedPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

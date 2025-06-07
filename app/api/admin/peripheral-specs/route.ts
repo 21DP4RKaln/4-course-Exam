@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prismaService';
 import { getJWTFromRequest, verifyJWT } from '@/lib/jwt';
-import { createUnauthorizedResponse, createForbiddenResponse, createBadRequestResponse } from '@/lib/apiErrors';
+import {
+  createUnauthorizedResponse,
+  createForbiddenResponse,
+  createBadRequestResponse,
+} from '@/lib/apiErrors';
 import { z } from 'zod';
 
 const peripheralSpecSchema = z.object({
@@ -38,11 +42,15 @@ export async function GET(request: NextRequest) {
         price: true,
         quantity: true,
         subType: true,
-        categoryId: true
-      }    });
-    
+        categoryId: true,
+      },
+    });
+
     if (!peripheral) {
-      return NextResponse.json({ error: 'Peripheral not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Peripheral not found' },
+        { status: 404 }
+      );
     }
 
     const simulatedSpecs = [
@@ -53,8 +61,8 @@ export async function GET(request: NextRequest) {
         specKey: {
           id: 'desc',
           name: 'description',
-          displayName: 'Description'
-        }
+          displayName: 'Description',
+        },
       },
       {
         id: `${peripheral.id}-subtype`,
@@ -63,15 +71,18 @@ export async function GET(request: NextRequest) {
         specKey: {
           id: 'subtype',
           name: 'subType',
-          displayName: 'Sub Type'
-        }
-      }
+          displayName: 'Sub Type',
+        },
+      },
     ];
 
     return NextResponse.json(simulatedSpecs);
   } catch (error) {
     console.error('Error fetching peripheral specifications:', error);
-    return NextResponse.json({ error: 'Failed to fetch peripheral specifications' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch peripheral specifications' },
+      { status: 500 }
+    );
   }
 }
 
@@ -94,20 +105,20 @@ export async function POST(request: NextRequest) {
 
     const results = [];
     const errors = [];
-    
+
     for (const specData of specsToCreate) {
       const validationResult = peripheralSpecSchema.safeParse(specData);
       if (!validationResult.success) {
         errors.push({ data: specData, errors: validationResult.error.errors });
         continue;
       }
-      
+
       const data = validationResult.data;
 
       const peripheral = await prisma.peripheral.findUnique({
-        where: { id: data.peripheralId }
+        where: { id: data.peripheralId },
       });
-      
+
       if (!peripheral) {
         errors.push({ data, error: 'Peripheral not found' });
         continue;
@@ -117,15 +128,15 @@ export async function POST(request: NextRequest) {
         const updatedPeripheral = await prisma.peripheral.update({
           where: { id: data.peripheralId },
           data: {
-            description: data.value
+            description: data.value,
           },
           select: {
             id: true,
             name: true,
-            description: true
-          }
+            description: true,
+          },
         });
-        
+
         const simulatedSpec = {
           id: `${updatedPeripheral.id}-desc`,
           peripheralId: updatedPeripheral.id,
@@ -134,28 +145,36 @@ export async function POST(request: NextRequest) {
           specKey: {
             id: data.specKeyId,
             name: 'description',
-            displayName: 'Description'
-          }
+            displayName: 'Description',
+          },
         };
-        
+
         results.push(simulatedSpec);
       } catch (error) {
         console.error('Error updating peripheral:', error);
         errors.push({ data, error: 'Failed to update peripheral information' });
       }
     }
-    
+
     if (errors.length > 0 && results.length === 0) {
-      return createBadRequestResponse('Failed to create any specifications', { errors });
+      return createBadRequestResponse('Failed to create any specifications', {
+        errors,
+      });
     }
-    
-    return NextResponse.json({
-      success: true,
-      results,
-      errors: errors.length > 0 ? errors : undefined
-    }, { status: 201 });
+
+    return NextResponse.json(
+      {
+        success: true,
+        results,
+        errors: errors.length > 0 ? errors : undefined,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error creating peripheral specifications:', error);
-    return NextResponse.json({ error: 'Failed to create peripheral specifications' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create peripheral specifications' },
+      { status: 500 }
+    );
   }
 }

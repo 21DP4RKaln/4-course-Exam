@@ -1,38 +1,48 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import { ArrowLeft, Save } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { ArrowLeft, Save } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 const componentSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   categoryId: z.string().min(1, 'Category is required'),
   price: z.number().min(0, 'Price must be positive'),
-  discountPrice: z.number().min(0, 'Discount price must be positive').nullable().optional(),
+  discountPrice: z
+    .number()
+    .min(0, 'Discount price must be positive')
+    .nullable()
+    .optional(),
   discountExpiresAt: z.string().nullable().optional(),
   stock: z.number().int().min(0, 'Stock must be non-negative'),
   sku: z.string().min(1, 'SKU is required'),
   imageUrl: z.string().url().optional().or(z.literal('')),
-})
+});
 
-type ComponentFormData = z.infer<typeof componentSchema>
+type ComponentFormData = z.infer<typeof componentSchema>;
 
-export default function EditComponentPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  
-  console.log("Component Edit Page params:", params);
-  console.log("Locale from pathname:", locale);
-  console.log("Full pathname:", pathname);
+export default function EditComponentPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
 
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
-  const [loading, setLoading] = useState(false)
-  const [fetchingComponent, setFetchingComponent] = useState(true)
+  console.log('Component Edit Page params:', params);
+  console.log('Locale from pathname:', locale);
+  console.log('Full pathname:', pathname);
+
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [loading, setLoading] = useState(false);
+  const [fetchingComponent, setFetchingComponent] = useState(true);
 
   const {
     register,
@@ -41,12 +51,12 @@ export default function EditComponentPage({ params }: { params: { id: string } }
     formState: { errors },
   } = useForm<ComponentFormData>({
     resolver: zodResolver(componentSchema),
-  })
+  });
 
   // Check for valid ID
   useEffect(() => {
-    if (!params.id || params.id === "undefined") {
-      console.error("Invalid component ID:", params.id);
+    if (!params.id || params.id === 'undefined') {
+      console.error('Invalid component ID:', params.id);
       router.push(`/${locale}/admin/components`);
       return;
     }
@@ -59,48 +69,50 @@ export default function EditComponentPage({ params }: { params: { id: string } }
 
   const fetchComponent = async () => {
     try {
-      console.log("Fetching component with ID:", params.id);
+      console.log('Fetching component with ID:', params.id);
       const response = await fetch(`/api/admin/components/${params.id}`);
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetched component data:", data);
+        console.log('Fetched component data:', data);
         reset({
           name: data.name,
           description: data.description || '',
           categoryId: data.categoryId,
           price: data.price,
           discountPrice: data.discountPrice || null,
-          discountExpiresAt: data.discountExpiresAt ? new Date(data.discountExpiresAt).toISOString().split('T')[0] : null,
+          discountExpiresAt: data.discountExpiresAt
+            ? new Date(data.discountExpiresAt).toISOString().split('T')[0]
+            : null,
           stock: data.stock,
           sku: data.sku,
           imageUrl: data.imageUrl || '',
         });
       } else {
-        console.error("Failed to fetch component, status:", response.status);
+        console.error('Failed to fetch component, status:', response.status);
         const errorText = await response.text();
-        console.error("Error response:", errorText);
+        console.error('Error response:', errorText);
       }
     } catch (error) {
       console.error('Error fetching component:', error);
     } finally {
       setFetchingComponent(false);
     }
-  }
+  };
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/admin/categories')
+      const response = await fetch('/api/admin/categories');
       if (response.ok) {
-        const data = await response.json()
-        setCategories(data)
+        const data = await response.json();
+        setCategories(data);
       }
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error('Error fetching categories:', error);
     }
-  }
+  };
 
   const onSubmit = async (data: ComponentFormData) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(`/api/admin/components/${params.id}`, {
         method: 'PUT',
@@ -108,24 +120,24 @@ export default function EditComponentPage({ params }: { params: { id: string } }
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (response.ok) {
-        router.push(`/${locale}/admin/components`)
+        router.push(`/${locale}/admin/components`);
       }
     } catch (error) {
-      console.error('Error updating component:', error)
+      console.error('Error updating component:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (fetchingComponent) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -156,7 +168,9 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
@@ -170,10 +184,12 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.sku && (
-                <p className="mt-1 text-sm text-red-600">{errors.sku.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.sku.message}
+                </p>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Price (€)
@@ -185,10 +201,12 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.price && (
-                <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.price.message}
+                </p>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Discount Price (€)
@@ -200,13 +218,15 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.discountPrice && (
-                <p className="mt-1 text-sm text-red-600">{errors.discountPrice.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.discountPrice.message}
+                </p>
               )}
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                 Leave empty for no discount
               </p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Discount Valid Until
@@ -217,13 +237,15 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.discountExpiresAt && (
-                <p className="mt-1 text-sm text-red-600">{errors.discountExpiresAt.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.discountExpiresAt.message}
+                </p>
               )}
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                 Leave empty for no expiration
               </p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Stock
@@ -234,10 +256,12 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.stock && (
-                <p className="mt-1 text-sm text-red-600">{errors.stock.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.stock.message}
+                </p>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Category
@@ -254,10 +278,12 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 ))}
               </select>
               {errors.categoryId && (
-                <p className="mt-1 text-sm text-red-600">{errors.categoryId.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.categoryId.message}
+                </p>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Image URL
@@ -268,10 +294,12 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.imageUrl && (
-                <p className="mt-1 text-sm text-red-600">{errors.imageUrl.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.imageUrl.message}
+                </p>
               )}
             </div>
-            
+
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Description
@@ -282,7 +310,9 @@ export default function EditComponentPage({ params }: { params: { id: string } }
                 className="w-full px-3 py-2 border rounded-lg resize-none dark:bg-neutral-700 dark:border-neutral-600"
               ></textarea>
               {errors.description && (
-                <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.description.message}
+                </p>
               )}
             </div>
           </div>
@@ -307,5 +337,5 @@ export default function EditComponentPage({ params }: { params: { id: string } }
         </form>
       </div>
     </div>
-  )
+  );
 }

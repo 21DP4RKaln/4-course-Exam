@@ -1,21 +1,29 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
-import { 
-  Save, ArrowLeft, Database, Download, 
-  Upload, Clock, HardDrive, Trash2, 
-  RefreshCw, CheckCircle, AlertTriangle 
-} from 'lucide-react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import {
+  Save,
+  ArrowLeft,
+  Database,
+  Download,
+  Upload,
+  Clock,
+  HardDrive,
+  Trash2,
+  RefreshCw,
+  CheckCircle,
+  AlertTriangle,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function BackupSettingsPage() {
-  const t = useTranslations()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isCreatingBackup, setIsCreatingBackup] = useState(false)
-  const [isRestoring, setIsRestoring] = useState(false)
-  const [selectedBackup, setSelectedBackup] = useState<string | null>(null)
-  
+  const t = useTranslations();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingBackup, setIsCreatingBackup] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [selectedBackup, setSelectedBackup] = useState<string | null>(null);
+
   const [settings, setSettings] = useState({
     autoBackup: true,
     backupFrequency: 'daily',
@@ -26,8 +34,8 @@ export default function BackupSettingsPage() {
     compressBackups: true,
     encryptBackups: false,
     emailNotifications: true,
-    notificationEmail: 'admin@ivapro.com'
-  })
+    notificationEmail: 'admin@ivapro.com',
+  });
 
   const [backups, setBackups] = useState([
     {
@@ -36,7 +44,7 @@ export default function BackupSettingsPage() {
       date: '2024-01-10T02:00:00',
       size: '125 MB',
       status: 'completed',
-      type: 'automatic'
+      type: 'automatic',
     },
     {
       id: '2',
@@ -44,7 +52,7 @@ export default function BackupSettingsPage() {
       date: '2024-01-09T14:30:00',
       size: '123 MB',
       status: 'completed',
-      type: 'manual'
+      type: 'manual',
     },
     {
       id: '3',
@@ -52,92 +60,99 @@ export default function BackupSettingsPage() {
       date: '2024-01-09T02:00:00',
       size: '122 MB',
       status: 'completed',
-      type: 'automatic'
-    }
-  ])
+      type: 'automatic',
+    },
+  ]);
 
   const handleCreateBackup = async () => {
-    setIsCreatingBackup(true)
+    setIsCreatingBackup(true);
     try {
       // Simulate backup creation
-      await new Promise(resolve => setTimeout(resolve, 3000))
-      
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
       const newBackup = {
         id: Date.now().toString(),
         name: `backup_${new Date().toISOString().replace(/[:-]/g, '_').replace('T', '_').split('.')[0]}.sql`,
         date: new Date().toISOString(),
         size: '124 MB',
         status: 'completed',
-        type: 'manual'
-      }
-      
-      setBackups(prev => [newBackup, ...prev])
-      alert('Backup created successfully!')
+        type: 'manual',
+      };
+
+      setBackups(prev => [newBackup, ...prev]);
+      alert('Backup created successfully!');
     } catch (error) {
-      alert('Failed to create backup')
+      alert('Failed to create backup');
     } finally {
-      setIsCreatingBackup(false)
+      setIsCreatingBackup(false);
     }
-  }
+  };
 
   const handleRestoreBackup = async (backupId: string) => {
-    if (!confirm('Are you sure you want to restore this backup? This will overwrite current data.')) {
-      return
+    if (
+      !confirm(
+        'Are you sure you want to restore this backup? This will overwrite current data.'
+      )
+    ) {
+      return;
     }
-    
-    setIsRestoring(true)
-    setSelectedBackup(backupId)
+
+    setIsRestoring(true);
+    setSelectedBackup(backupId);
     try {
       // Simulate restore process
-      await new Promise(resolve => setTimeout(resolve, 5000))
-      alert('Backup restored successfully!')
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      alert('Backup restored successfully!');
     } catch (error) {
-      alert('Failed to restore backup')
+      alert('Failed to restore backup');
     } finally {
-      setIsRestoring(false)
-      setSelectedBackup(null)
+      setIsRestoring(false);
+      setSelectedBackup(null);
     }
-  }
+  };
 
   const handleDeleteBackup = async (backupId: string) => {
     if (!confirm('Are you sure you want to delete this backup?')) {
-      return
+      return;
     }
-    
+
     try {
-      setBackups(prev => prev.filter(backup => backup.id !== backupId))
-      alert('Backup deleted successfully!')
+      setBackups(prev => prev.filter(backup => backup.id !== backupId));
+      alert('Backup deleted successfully!');
     } catch (error) {
-      alert('Failed to delete backup')
+      alert('Failed to delete backup');
     }
-  }
+  };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
       // Save settings
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      alert('Backup settings saved successfully!')
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert('Backup settings saved successfully!');
     } catch (error) {
-      alert('Failed to save settings')
+      alert('Failed to save settings');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
     setSettings(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }))
-  }
+      [name]:
+        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <Link 
+        <Link
           href="/admin/settings"
           className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
@@ -177,27 +192,33 @@ export default function BackupSettingsPage() {
               <CheckCircle className="h-8 w-8 text-green-500" />
               <div>
                 <h3 className="font-medium">Last Backup</h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">Today at 02:00 AM</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Today at 02:00 AM
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
             <div className="flex items-center space-x-3">
               <HardDrive className="h-8 w-8 text-blue-500" />
               <div>
                 <h3 className="font-medium">Total Backups</h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">12 backups (1.4 GB)</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  12 backups (1.4 GB)
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
             <div className="flex items-center space-x-3">
               <Clock className="h-8 w-8 text-orange-500" />
               <div>
                 <h3 className="font-medium">Next Backup</h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">Tomorrow at 02:00 AM</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Tomorrow at 02:00 AM
+                </p>
               </div>
             </div>
           </div>
@@ -210,20 +231,26 @@ export default function BackupSettingsPage() {
           <h2 className="text-lg font-semibold">Recent Backups</h2>
         </div>
         <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
-          {backups.map((backup) => (
-            <div key={backup.id} className="p-6 flex items-center justify-between">
+          {backups.map(backup => (
+            <div
+              key={backup.id}
+              className="p-6 flex items-center justify-between"
+            >
               <div className="flex items-center space-x-4">
                 <Database className="h-6 w-6 text-neutral-400" />
                 <div>
                   <h3 className="font-medium">{backup.name}</h3>
                   <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                    {new Date(backup.date).toLocaleString()} • {backup.size} • {backup.type}
+                    {new Date(backup.date).toLocaleString()} • {backup.size} •{' '}
+                    {backup.type}
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => alert('Download functionality not implemented')}
+                  onClick={() =>
+                    alert('Download functionality not implemented')
+                  }
                   className="p-2 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                   title="Download"
                 >
@@ -258,7 +285,7 @@ export default function BackupSettingsPage() {
       <form onSubmit={handleSaveSettings} className="space-y-6">
         <div className="bg-white dark:bg-stone-950 shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Backup Settings</h2>
-          
+
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
@@ -297,7 +324,7 @@ export default function BackupSettingsPage() {
                   <option value="monthly">Monthly</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Backup Time
@@ -311,7 +338,7 @@ export default function BackupSettingsPage() {
                   className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600 disabled:opacity-50"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Retention Period (days)
@@ -326,7 +353,7 @@ export default function BackupSettingsPage() {
                   className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Backup Location
@@ -364,7 +391,7 @@ export default function BackupSettingsPage() {
                   <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">Compress Backups</h3>
@@ -383,7 +410,7 @@ export default function BackupSettingsPage() {
                   <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">Email Notifications</h3>
@@ -418,5 +445,5 @@ export default function BackupSettingsPage() {
         </div>
       </form>
     </div>
-  )
+  );
 }

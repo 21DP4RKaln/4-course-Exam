@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedMice(prisma: PrismaClient) {
   // Get all peripherals with subType 'mice'
   const micePeripherals = await prisma.peripheral.findMany({
-    where: { subType: 'mice' }
+    where: { subType: 'mice' },
   });
 
   // Prepare Mouse entries
@@ -12,76 +12,105 @@ export async function seedMice(prisma: PrismaClient) {
   // For each Mouse peripheral, create a detailed Mouse entry
   for (let i = 0; i < micePeripherals.length; i++) {
     const peripheral = micePeripherals[i];
-    
+
     // Parse existing specifications if available
-    const specs = peripheral.specifications ? JSON.parse(peripheral.specifications.toString()) : {};
-    
+    const specs = peripheral.specifications
+      ? JSON.parse(peripheral.specifications.toString())
+      : {};
+
     // Get manufacturer from peripheral name or use default
-    const manufacturer = 
-      peripheral.name.includes('Logitech') ? 'Logitech' :
-      peripheral.name.includes('Razer') ? 'Razer' :
-      peripheral.name.includes('SteelSeries') ? 'SteelSeries' :
-      peripheral.name.includes('Corsair') ? 'Corsair' :
-      'Generic';
-    
+    const manufacturer = peripheral.name.includes('Logitech')
+      ? 'Logitech'
+      : peripheral.name.includes('Razer')
+        ? 'Razer'
+        : peripheral.name.includes('SteelSeries')
+          ? 'SteelSeries'
+          : peripheral.name.includes('Corsair')
+            ? 'Corsair'
+            : 'Generic';
+
     // DPI ranges - extract max value for schema compatibility
-    const dpiRanges = ['100-16000', '100-25600', '200-18000', '400-20000', '100-8000', '50-25000'];
+    const dpiRanges = [
+      '100-16000',
+      '100-25600',
+      '200-18000',
+      '400-20000',
+      '100-8000',
+      '50-25000',
+    ];
     const dpiRange = specs.dpi || dpiRanges[i % dpiRanges.length];
     // Extract the maximum DPI value as an integer
     const dpi = parseInt(dpiRange.split('-')[1]);
-    
+
     // Sensor types
     const sensorTypes = ['Optical', 'Optical', 'Optical', 'Laser'];
     const sensorType = specs.sensorType || sensorTypes[i % sensorTypes.length];
-    
+
     // Common sensor names by manufacturer
     let sensorName = 'Custom Sensor';
     if (peripheral.name.includes('Logitech')) {
       sensorName = ['HERO 25K', 'HERO 16K', 'HERO', 'Lightspeed'][i % 4];
     } else if (peripheral.name.includes('Razer')) {
-      sensorName = ['Focus+ Optical', 'Focus Pro 30K', 'Razer 5G', 'Razer 8K'][i % 4];
+      sensorName = ['Focus+ Optical', 'Focus Pro 30K', 'Razer 5G', 'Razer 8K'][
+        i % 4
+      ];
     } else if (peripheral.name.includes('SteelSeries')) {
-      sensorName = ['TrueMove Pro', 'TrueMove 3', 'TrueMove Core', 'TrueMove Air'][i % 4];
+      sensorName = [
+        'TrueMove Pro',
+        'TrueMove 3',
+        'TrueMove Core',
+        'TrueMove Air',
+      ][i % 4];
     } else if (peripheral.name.includes('Corsair')) {
-      sensorName = ['PMW3391', 'PMW3389', 'PixArt PAW3335', 'Corsair Marksman'][i % 4];
+      sensorName = ['PMW3391', 'PMW3389', 'PixArt PAW3335', 'Corsair Marksman'][
+        i % 4
+      ];
     }
-    
+
     // Button counts
     const buttonCounts = [6, 8, 5, 12, 7, 11];
     const buttons = specs.buttons || buttonCounts[i % buttonCounts.length];
-    
+
     // Connection types
-    const connectionTypes = ['Wired', 'Wireless', 'Bluetooth', 'Wired/Wireless', 'USB-C'];
-    const connection = specs.connection || connectionTypes[i % connectionTypes.length];
-    
+    const connectionTypes = [
+      'Wired',
+      'Wireless',
+      'Bluetooth',
+      'Wired/Wireless',
+      'USB-C',
+    ];
+    const connection =
+      specs.connection || connectionTypes[i % connectionTypes.length];
+
     // Mouse weight (as integer)
     const weight = 60 + i * 5; // Just the number without 'g'
-    
+
     // Battery life for wireless mice (as integer)
-    const batteryLife = connection.includes('Wireless') || connection.includes('Bluetooth') 
-      ? 20 + (i % 10) * 5 
-      : null;
-    
+    const batteryLife =
+      connection.includes('Wireless') || connection.includes('Bluetooth')
+        ? 20 + (i % 10) * 5
+        : null;
+
     // Additional specs to store in specifications JSON
     const additionalSpecs = {
       acceleration: `40G`,
       pollingRate: `${125 * Math.pow(2, i % 5)}Hz`, // 125, 250, 500, 1000, 2000 Hz
       grip: ['Palm', 'Claw', 'Fingertip', 'Universal'][i % 4],
-      dimensions: `${120 + (i % 5) * 5}mm x ${65 + (i % 3) * 2}mm x ${40 + i % 5}mm`,
-      adjustableWeight: i % 3 === 0
+      dimensions: `${120 + (i % 5) * 5}mm x ${65 + (i % 3) * 2}mm x ${40 + (i % 5)}mm`,
+      adjustableWeight: i % 3 === 0,
     };
-    
+
     // Update peripheral specifications
     await prisma.peripheral.update({
       where: { id: peripheral.id },
       data: {
         specifications: JSON.stringify({
           ...specs,
-          ...additionalSpecs
-        })
-      }
+          ...additionalSpecs,
+        }),
+      },
     });
-    
+
     mice.push({
       peripheralId: peripheral.id,
       manufacturer,
@@ -91,7 +120,7 @@ export async function seedMice(prisma: PrismaClient) {
       sensor: sensorName,
       weight,
       rgb: i % 5 !== 4, // Convert 'lighting' to boolean rgb
-      batteryLife
+      batteryLife,
     });
   }
 
@@ -100,10 +129,10 @@ export async function seedMice(prisma: PrismaClient) {
     await prisma.mouse.upsert({
       where: { peripheralId: mouse.peripheralId },
       update: mouse,
-      create: mouse
+      create: mouse,
     });
   }
-  
+
   // Call the function to add 10 more mice
   await addMoreMice(prisma);
 }
@@ -111,15 +140,16 @@ export async function seedMice(prisma: PrismaClient) {
 /**
  * Adds 10 additional mouse entries with unique specifications
  */
-async function addMoreMice(prisma: PrismaClient) {  const category = await prisma.peripheralCategory.findFirst({
-    where: { slug: 'mouse' }
+async function addMoreMice(prisma: PrismaClient) {
+  const category = await prisma.peripheralCategory.findFirst({
+    where: { slug: 'mouse' },
   });
-  
+
   if (!category) {
     console.error('Mouse category not found');
     return;
   }
-  
+
   // Define new mouse models with interesting specifications
   const newMouseModels = [
     {
@@ -154,8 +184,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         carbonNeutralCertified: true,
         color: 'White/Black',
         warranty: '2 years',
-        compatibleSoftware: 'G Hub'
-      }
+        compatibleSoftware: 'G Hub',
+      },
     },
     {
       name: 'Razer Viper V3 Pro',
@@ -189,8 +219,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         motionSync: true,
         color: 'Black',
         warranty: '2 years',
-        compatibleSoftware: 'Razer Synapse'
-      }
+        compatibleSoftware: 'Razer Synapse',
+      },
     },
     {
       name: 'Pulsar X2 Mini Wireless SuperGlide',
@@ -223,8 +253,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         overclocking: true,
         color: 'White',
         warranty: '2 years',
-        compatibleSoftware: 'Pulsar Fusion'
-      }
+        compatibleSoftware: 'Pulsar Fusion',
+      },
     },
     {
       name: 'Finalmouse Starlight Pro TenZ',
@@ -257,8 +287,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         magnesiumAlloy: true,
         skatesMaterial: 'Pure PTFE',
         color: 'Blue/Gold',
-        warranty: '4 years'
-      }
+        warranty: '4 years',
+      },
     },
     {
       name: 'Glorious Model O Pro',
@@ -291,8 +321,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         glossFinish: true,
         color: 'Matte White',
         warranty: '2 years',
-        compatibleSoftware: 'Glorious Core'
-      }
+        compatibleSoftware: 'Glorious Core',
+      },
     },
     {
       name: 'SteelSeries Aerox 5 Wireless',
@@ -326,8 +356,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         prismSync: true,
         color: 'Black',
         warranty: '1 year',
-        compatibleSoftware: 'SteelSeries GG'
-      }
+        compatibleSoftware: 'SteelSeries GG',
+      },
     },
     {
       name: 'Corsair M75 Wireless',
@@ -360,8 +390,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         hyperprocessing: true,
         color: 'Black',
         warranty: '2 years',
-        compatibleSoftware: 'iCUE'
-      }
+        compatibleSoftware: 'iCUE',
+      },
     },
     {
       name: 'Xtrfy M8 Wireless',
@@ -394,8 +424,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         eztune: true,
         color: 'Retro',
         warranty: '2 years',
-        noSoftwareRequired: true
-      }
+        noSoftwareRequired: true,
+      },
     },
     {
       name: 'Endgame Gear XM2w',
@@ -428,9 +458,10 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         debounceTime: 'Adjustable',
         color: 'Black',
         warranty: '2 years',
-        noDriverRequired: true
-      }
-    },    {
+        noDriverRequired: true,
+      },
+    },
+    {
       name: 'Lamzu Atlantis Pro',
       manufacturer: 'Lamzu',
       dpi: 26000,
@@ -461,8 +492,8 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         cleanMinimalistDesign: true,
         color: 'Sakura Pink',
         warranty: '1 year',
-        community: 'Enthusiast Grade'
-      }
+        community: 'Enthusiast Grade',
+      },
     },
     {
       name: 'Zowie EC-3C',
@@ -496,18 +527,18 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         designedForEsports: true,
         color: 'Black',
         warranty: '2 years',
-        noSoftwareRequired: true
-      }
-    }
+        noSoftwareRequired: true,
+      },
+    },
   ];
-  
+
   // Create new mouse peripherals and mouse entries
   for (let i = 0; i < newMouseModels.length; i++) {
     const model = newMouseModels[i];
-    
+
     // Generate a unique SKU
     const sku = `P-MOU-${model.manufacturer.substring(0, 3).toUpperCase()}-${2000 + i}`;
-    
+
     // Create peripheral description
     let description = `${model.name} - ${model.weight}g ${model.connection.toLowerCase()} gaming mouse with ${model.dpi} DPI ${model.sensor} sensor`;
     if (model.rgb) {
@@ -516,7 +547,7 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
     if (model.batteryLife) {
       description += `. Up to ${model.batteryLife} hours battery life`;
     }
-    
+
     // Create the peripheral entry
     const peripheral = await prisma.peripheral.create({
       data: {
@@ -529,9 +560,9 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         sku,
         subType: 'mice',
         imageUrl: `/products/peripherals/mice${(i % 3) + 1}.jpg`,
-      }
+      },
     });
-    
+
     // Create the mouse entry
     await prisma.mouse.create({
       data: {
@@ -543,12 +574,12 @@ async function addMoreMice(prisma: PrismaClient) {  const category = await prism
         rgb: model.rgb,
         weight: model.weight,
         sensor: model.sensor,
-        batteryLife: model.batteryLife
-      }
+        batteryLife: model.batteryLife,
+      },
     });
-    
+
     console.log(`Added mouse: ${model.name}`);
   }
-  
+
   console.log('Added 10 additional mice');
 }

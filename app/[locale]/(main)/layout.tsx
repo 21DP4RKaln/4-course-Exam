@@ -11,9 +11,7 @@ export default function MainLayout({ children }: Props) {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow pt-24 pb-24">
-        <div className="container mx-auto px-4">
-          {children}
-        </div>
+        <div className="container mx-auto px-4">{children}</div>
       </main>
       <Footer />
     </div>

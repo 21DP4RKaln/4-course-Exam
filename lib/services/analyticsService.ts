@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prismaService'
+import { prisma } from '@/lib/prismaService';
 
 export interface ChartDataPoint {
   label: string;
@@ -13,7 +13,9 @@ export interface TimeSeriesData {
 /**
  * Get sales analytics data
  */
-export async function getSalesAnalytics(period: 'day' | 'week' | 'month' | 'year' = 'month') {
+export async function getSalesAnalytics(
+  period: 'day' | 'week' | 'month' | 'year' = 'month'
+) {
   try {
     const now = new Date();
     let startDate: Date;
@@ -36,13 +38,13 @@ export async function getSalesAnalytics(period: 'day' | 'week' | 'month' | 'year
     const orders = await prisma.order.findMany({
       where: {
         createdAt: { gte: startDate },
-        status: 'COMPLETED'
+        status: 'COMPLETED',
       },
       select: {
         createdAt: true,
-        totalAmount: true
+        totalAmount: true,
       },
-      orderBy: { createdAt: 'asc' }
+      orderBy: { createdAt: 'asc' },
     });
 
     const salesByDate: Record<string, number> = {};
@@ -51,10 +53,12 @@ export async function getSalesAnalytics(period: 'day' | 'week' | 'month' | 'year
       salesByDate[date] = (salesByDate[date] || 0) + order.totalAmount;
     });
 
-    const chartData: TimeSeriesData[] = Object.entries(salesByDate).map(([date, value]) => ({
-      date,
-      value
-    }));
+    const chartData: TimeSeriesData[] = Object.entries(salesByDate).map(
+      ([date, value]) => ({
+        date,
+        value,
+      })
+    );
 
     return chartData;
   } catch (error) {
@@ -66,7 +70,9 @@ export async function getSalesAnalytics(period: 'day' | 'week' | 'month' | 'year
 /**
  * Get user growth data
  */
-export async function getUserGrowthAnalytics(period: 'week' | 'month' | 'year' = 'month') {
+export async function getUserGrowthAnalytics(
+  period: 'week' | 'month' | 'year' = 'month'
+) {
   try {
     const now = new Date();
     let startDate: Date;
@@ -86,12 +92,12 @@ export async function getUserGrowthAnalytics(period: 'week' | 'month' | 'year' =
     const users = await prisma.user.findMany({
       where: {
         createdAt: { gte: startDate },
-        role: 'USER'
+        role: 'USER',
       },
       select: {
-        createdAt: true
+        createdAt: true,
       },
-      orderBy: { createdAt: 'asc' }
+      orderBy: { createdAt: 'asc' },
     });
 
     const usersByDate: Record<string, number> = {};
@@ -100,10 +106,12 @@ export async function getUserGrowthAnalytics(period: 'week' | 'month' | 'year' =
       usersByDate[date] = (usersByDate[date] || 0) + 1;
     });
 
-    const chartData: TimeSeriesData[] = Object.entries(usersByDate).map(([date, value]) => ({
-      date,
-      value
-    }));
+    const chartData: TimeSeriesData[] = Object.entries(usersByDate).map(
+      ([date, value]) => ({
+        date,
+        value,
+      })
+    );
 
     return chartData;
   } catch (error) {
@@ -120,13 +128,13 @@ export async function getRepairMetrics() {
     const repairs = await prisma.repair.groupBy({
       by: ['status'],
       _count: {
-        _all: true
-      }
+        _all: true,
+      },
     });
 
     const chartData: ChartDataPoint[] = repairs.map(item => ({
       label: item.status,
-      value: item._count._all
+      value: item._count._all,
     }));
 
     return chartData;
@@ -142,17 +150,17 @@ export async function getRepairMetrics() {
 export async function getRevenueByCategoryAnalytics() {
   try {
     const orders = await prisma.order.findMany({
-      where: { 
-        status: 'COMPLETED' 
+      where: {
+        status: 'COMPLETED',
       },
       select: {
         id: true,
-        configurationId: true
-      }
+        configurationId: true,
+      },
     });
 
     const revenueByCategory: Record<string, number> = {};
-    
+
     for (const order of orders) {
       if (order.configurationId) {
         const configuration = await prisma.configuration.findUnique({
@@ -162,47 +170,53 @@ export async function getRevenueByCategoryAnalytics() {
               include: {
                 component: {
                   include: {
-                    category: true
-                  }
-                }
-              }
-            }
-          }
+                    category: true,
+                  },
+                },
+              },
+            },
+          },
         });
 
         if (configuration) {
           configuration.components.forEach(item => {
             const category = item.component.category.name;
-            revenueByCategory[category] = (revenueByCategory[category] || 0) + 
+            revenueByCategory[category] =
+              (revenueByCategory[category] || 0) +
               item.component.price * item.quantity;
           });
         }
       }
 
       const orderItems = await prisma.orderItem.findMany({
-        where: { orderId: order.id }
+        where: { orderId: order.id },
       });
 
       for (const item of orderItems) {
-        if (item.productType === 'COMPONENT' || item.productType === 'PERIPHERAL') {
+        if (
+          item.productType === 'COMPONENT' ||
+          item.productType === 'PERIPHERAL'
+        ) {
           const component = await prisma.component.findUnique({
             where: { id: item.productId },
-            include: { category: true }
+            include: { category: true },
           });
 
           if (component) {
             const category = component.category.name;
-            revenueByCategory[category] = (revenueByCategory[category] || 0) + 
-              item.price * item.quantity;
+            revenueByCategory[category] =
+              (revenueByCategory[category] || 0) + item.price * item.quantity;
           }
         }
       }
     }
 
-    const chartData: ChartDataPoint[] = Object.entries(revenueByCategory).map(([label, value]) => ({
-      label,
-      value
-    }));
+    const chartData: ChartDataPoint[] = Object.entries(revenueByCategory).map(
+      ([label, value]) => ({
+        label,
+        value,
+      })
+    );
 
     return chartData;
   } catch (error) {
@@ -217,24 +231,31 @@ export async function getRevenueByCategoryAnalytics() {
 export async function getStockLevelAnalytics() {
   try {
     const components = await prisma.component.findMany({
-      include: { 
-        category: true
-      }
+      include: {
+        category: true,
+      },
     });
 
-    const stockByCategory: Record<string, { inStock: number; lowStock: number; outOfStock: number }> = {};
+    const stockByCategory: Record<
+      string,
+      { inStock: number; lowStock: number; outOfStock: number }
+    > = {};
 
     components.forEach(component => {
       const categoryName = component.category.name;
       if (!stockByCategory[categoryName]) {
-        stockByCategory[categoryName] = { inStock: 0, lowStock: 0, outOfStock: 0 };
+        stockByCategory[categoryName] = {
+          inStock: 0,
+          lowStock: 0,
+          outOfStock: 0,
+        };
       }
 
-      if (component.quantity === 0) { 
+      if (component.quantity === 0) {
         stockByCategory[categoryName].outOfStock++;
-      } else if (component.quantity < 10) { 
+      } else if (component.quantity < 10) {
         stockByCategory[categoryName].lowStock++;
-      } else { 
+      } else {
         stockByCategory[categoryName].inStock++;
       }
     });
@@ -254,43 +275,43 @@ export async function getTopSellingProducts(limit = 10) {
     const orderItems = await prisma.orderItem.groupBy({
       by: ['productId', 'productType'],
       _sum: {
-        quantity: true
+        quantity: true,
       },
       _count: {
-        _all: true
+        _all: true,
       },
       orderBy: {
         _sum: {
-          quantity: 'desc'
-        }
+          quantity: 'desc',
+        },
       },
-      take: limit
+      take: limit,
     });
 
     const topProducts = await Promise.all(
-      orderItems.map(async (item) => {
+      orderItems.map(async item => {
         let name = 'Unknown Product';
-        
+
         try {
           switch (item.productType) {
             case 'COMPONENT':
               const component = await prisma.component.findUnique({
                 where: { id: item.productId },
-                select: { name: true }
+                select: { name: true },
               });
               if (component) name = component.name;
               break;
             case 'CONFIGURATION':
               const config = await prisma.configuration.findUnique({
                 where: { id: item.productId },
-                select: { name: true }
+                select: { name: true },
               });
               if (config) name = config.name;
               break;
             case 'PERIPHERAL':
               const peripheral = await prisma.peripheral.findUnique({
                 where: { id: item.productId },
-                select: { name: true }
+                select: { name: true },
               });
               if (peripheral) name = peripheral.name;
               break;
@@ -302,7 +323,7 @@ export async function getTopSellingProducts(limit = 10) {
         return {
           name,
           quantity: item._sum.quantity || 0,
-          orders: item._count._all
+          orders: item._count._all,
         };
       })
     );
@@ -317,52 +338,55 @@ export async function getTopSellingProducts(limit = 10) {
 /**
  * Get performance overview
  */
-export async function getPerformanceOverview(dateRange: { start: Date; end: Date }) {
+export async function getPerformanceOverview(dateRange: {
+  start: Date;
+  end: Date;
+}) {
   try {
     const [
       totalRevenue,
       totalOrders,
       averageOrderValue,
       repairStats,
-      newCustomers
+      newCustomers,
     ] = await prisma.$transaction([
       prisma.order.aggregate({
         where: {
           status: 'COMPLETED',
-          createdAt: { gte: dateRange.start, lte: dateRange.end }
+          createdAt: { gte: dateRange.start, lte: dateRange.end },
         },
-        _sum: { totalAmount: true }
+        _sum: { totalAmount: true },
       }),
       prisma.order.count({
         where: {
-          createdAt: { gte: dateRange.start, lte: dateRange.end }
-        }
+          createdAt: { gte: dateRange.start, lte: dateRange.end },
+        },
       }),
       prisma.order.aggregate({
         where: {
           status: 'COMPLETED',
-          createdAt: { gte: dateRange.start, lte: dateRange.end }
+          createdAt: { gte: dateRange.start, lte: dateRange.end },
         },
-        _avg: { totalAmount: true }
+        _avg: { totalAmount: true },
       }),
       prisma.repair.groupBy({
         by: ['status'],
         where: {
-          createdAt: { gte: dateRange.start, lte: dateRange.end }
+          createdAt: { gte: dateRange.start, lte: dateRange.end },
         },
         _count: {
-          _all: true
+          _all: true,
         },
         orderBy: {
-          status: 'asc' 
-        }
+          status: 'asc',
+        },
       }),
       prisma.user.count({
         where: {
           role: 'USER',
-          createdAt: { gte: dateRange.start, lte: dateRange.end }
-        }
-      })
+          createdAt: { gte: dateRange.start, lte: dateRange.end },
+        },
+      }),
     ]);
 
     return {
@@ -371,9 +395,12 @@ export async function getPerformanceOverview(dateRange: { start: Date; end: Date
       averageOrderValue: averageOrderValue._avg.totalAmount || 0,
       repairStats: repairStats.map(stat => ({
         status: stat.status,
-        count: stat._count && typeof stat._count === 'object' ? (stat._count._all ?? 0) : 0
+        count:
+          stat._count && typeof stat._count === 'object'
+            ? (stat._count._all ?? 0)
+            : 0,
       })),
-      newCustomers
+      newCustomers,
     };
   } catch (error) {
     console.error('Error fetching performance overview:', error);

@@ -19,14 +19,14 @@ export async function createPasswordResetToken(
 ) {
   const token = generateSecureToken();
   const code = generateVerificationCode();
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); 
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
   // Delete existing tokens using Prisma client
   await prisma.passwordResetToken.deleteMany({
     where: {
       userId,
-      type
-    }
+      type,
+    },
   });
 
   // Create new token using Prisma client
@@ -40,8 +40,8 @@ export async function createPasswordResetToken(
       contact,
       expiresAt,
       used: false,
-      createdAt: new Date()
-    }
+      createdAt: new Date(),
+    },
   });
 
   return { token, code };
@@ -55,15 +55,18 @@ export async function sendVerificationCode(
   try {
     if (type === 'email') {
       console.log('Attempting to send email verification code to:', contact);
-      
+
       try {
         const emailConfig = await getEmailConfig();
         console.log('Email config obtained, sending email...');
         await sendPasswordResetEmail(contact, code, emailConfig);
         console.log('Email sent successfully');
       } catch (emailError) {
-        console.error('Primary email config failed, trying fallback:', emailError);
-        
+        console.error(
+          'Primary email config failed, trying fallback:',
+          emailError
+        );
+
         // Fallback email config
         const fallbackConfig = {
           host: 'smtp.gmail.com',
@@ -74,9 +77,9 @@ export async function sendVerificationCode(
             pass: 'egku zbeo xaao xcsj',
           },
           fromEmail: '14dprkalninskvdarbs@gmail.com',
-          fromName: 'IvaPro Support'
+          fromName: 'IvaPro Support',
         };
-        
+
         await sendPasswordResetEmail(contact, code, fallbackConfig);
         console.log('Email sent successfully with fallback config');
       }
@@ -93,7 +96,10 @@ export async function sendVerificationCode(
   } catch (error) {
     console.error('Error sending verification code:', error);
     console.error('Contact:', contact, 'Type:', type);
-    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+    console.error(
+      'Error details:',
+      error instanceof Error ? error.message : 'Unknown error'
+    );
     throw error;
   }
 }
@@ -111,24 +117,24 @@ export async function verifyResetCode(
       type,
       used: false,
       expiresAt: {
-        gt: new Date()
-      }
+        gt: new Date(),
+      },
     },
     include: {
       user: {
         select: {
           id: true,
           email: true,
-          phone: true
-        }
-      }
-    }
+          phone: true,
+        },
+      },
+    },
   });
 
   if (!resetToken) {
     return null;
   }
-  
+
   return {
     id: resetToken.id,
     token: resetToken.token,
@@ -146,7 +152,7 @@ export async function verifyResetCode(
 export async function markTokenAsUsed(tokenId: string) {
   await prisma.passwordResetToken.update({
     where: { id: tokenId },
-    data: { used: true }
+    data: { used: true },
   });
 }
 
@@ -154,8 +160,8 @@ export async function cleanupExpiredTokens() {
   await prisma.passwordResetToken.deleteMany({
     where: {
       expiresAt: {
-        lt: new Date()
-      }
-    }
+        lt: new Date(),
+      },
+    },
   });
 }

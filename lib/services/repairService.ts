@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/prismaService'
-import { RepairStatus, RepairPriority } from '@prisma/client'
+import { prisma } from '@/lib/prismaService';
+import { RepairStatus, RepairPriority } from '@prisma/client';
 
 export interface RepairUpdateData {
   status?: RepairStatus;
@@ -38,14 +38,14 @@ export async function getRepairs(filters?: {
     if (filters?.priority) where.priority = filters.priority;
     if (filters?.specialistId) {
       where.specialists = {
-        some: { specialistId: filters.specialistId }
+        some: { specialistId: filters.specialistId },
       };
     }
     if (filters?.userId) where.userId = filters.userId;
     if (filters?.dateRange) {
       where.createdAt = {
         gte: filters.dateRange.start,
-        lte: filters.dateRange.end
+        lte: filters.dateRange.end,
       };
     }
 
@@ -57,8 +57,8 @@ export async function getRepairs(filters?: {
             id: true,
             name: true,
             email: true,
-            phone: true
-          }
+            phone: true,
+          },
         },
         specialists: {
           include: {
@@ -66,23 +66,20 @@ export async function getRepairs(filters?: {
               select: {
                 id: true,
                 name: true,
-                email: true
-              }
-            }
-          }
+                email: true,
+              },
+            },
+          },
         },
         parts: {
           include: {
-            component: true
-          }
+            component: true,
+          },
         },
         peripheral: true,
-        configuration: true
+        configuration: true,
       },
-      orderBy: [
-        { priority: 'desc' },
-        { createdAt: 'desc' }
-      ]
+      orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
     });
 
     return repairs;
@@ -105,8 +102,8 @@ export async function getRepairById(repairId: string) {
             id: true,
             name: true,
             email: true,
-            phone: true
-          }
+            phone: true,
+          },
         },
         specialists: {
           include: {
@@ -114,19 +111,19 @@ export async function getRepairById(repairId: string) {
               select: {
                 id: true,
                 name: true,
-                email: true
-              }
-            }
-          }
+                email: true,
+              },
+            },
+          },
         },
         parts: {
           include: {
-            component: true
-          }
+            component: true,
+          },
         },
         peripheral: true,
-        configuration: true
-      }
+        configuration: true,
+      },
     });
 
     return repair;
@@ -145,8 +142,8 @@ export async function updateRepair(repairId: string, data: RepairUpdateData) {
       where: { id: repairId },
       data: {
         ...data,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     });
 
     return repair;
@@ -159,20 +156,23 @@ export async function updateRepair(repairId: string, data: RepairUpdateData) {
 /**
  * Complete repair and notify customer
  */
-export async function completeRepair(repairId: string, data: RepairCompletionData) {
+export async function completeRepair(
+  repairId: string,
+  data: RepairCompletionData
+) {
   try {
-    const repair = await prisma.$transaction(async (tx) => {
+    const repair = await prisma.$transaction(async tx => {
       const updatedRepair = await tx.repair.update({
         where: { id: repairId },
         data: {
           status: 'COMPLETED',
           finalCost: data.finalCost,
           completionDate: new Date(),
-          diagnosticNotes: data.description
+          diagnosticNotes: data.description,
         },
         include: {
-          user: true
-        }
+          user: true,
+        },
       });
 
       if (data.partsUsed && data.partsUsed.length > 0) {
@@ -181,17 +181,17 @@ export async function completeRepair(repairId: string, data: RepairCompletionDat
             repairId,
             componentId: part.componentId,
             quantity: part.quantity,
-            price: part.price
-          }))
-        });       
+            price: part.price,
+          })),
+        });
         for (const part of data.partsUsed) {
           await tx.component.update({
             where: { id: part.componentId },
             data: {
               quantity: {
-                decrement: part.quantity
-              }
-            }
+                decrement: part.quantity,
+              },
+            },
           });
         }
       }
@@ -203,7 +203,7 @@ export async function completeRepair(repairId: string, data: RepairCompletionDat
       repairId: repair.id,
       description: data.description,
       finalCost: data.finalCost,
-      imageUrl: data.imageUrl
+      imageUrl: data.imageUrl,
     });
 
     return repair;
@@ -216,14 +216,18 @@ export async function completeRepair(repairId: string, data: RepairCompletionDat
 /**
  * Assign specialist to repair
  */
-export async function assignSpecialist(repairId: string, specialistId: string, notes?: string) {
+export async function assignSpecialist(
+  repairId: string,
+  specialistId: string,
+  notes?: string
+) {
   try {
     const assignment = await prisma.repairSpecialist.create({
       data: {
         repairId,
         specialistId,
-        notes
-      }
+        notes,
+      },
     });
 
     return assignment;

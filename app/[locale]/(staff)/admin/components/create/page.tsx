@@ -1,35 +1,41 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { useRouter, usePathname } from 'next/navigation'
-import { ArrowLeft, Save } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
+import { ArrowLeft, Save } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 const componentSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   categoryId: z.string().min(1, 'Category is required'),
   price: z.number().min(0, 'Price must be positive'),
-  discountPrice: z.number().min(0, 'Discount price must be positive').nullable().optional(),
+  discountPrice: z
+    .number()
+    .min(0, 'Discount price must be positive')
+    .nullable()
+    .optional(),
   discountExpiresAt: z.string().nullable().optional(),
   stock: z.number().int().min(0, 'Stock must be non-negative'),
   sku: z.string().min(1, 'SKU is required'),
   imageUrl: z.string().url().optional().or(z.literal('')),
-})
+});
 
-type ComponentFormData = z.infer<typeof componentSchema>
+type ComponentFormData = z.infer<typeof componentSchema>;
 
 export default function CreateComponentPage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
-  const [loading, setLoading] = useState(false)
+  const t = useTranslations();
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -37,10 +43,10 @@ export default function CreateComponentPage() {
     formState: { errors },
   } = useForm<ComponentFormData>({
     resolver: zodResolver(componentSchema),
-  })
+  });
 
   const onSubmit = async (data: ComponentFormData) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch('/api/admin/components', {
         method: 'POST',
@@ -48,21 +54,23 @@ export default function CreateComponentPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (response.ok) {
-        router.push(`/${locale}/admin/components`)
+        router.push(`/${locale}/admin/components`);
       }
     } catch (error) {
-      console.error('Error creating component:', error)
+      console.error('Error creating component:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-4">        <button
+      <div className="flex items-center space-x-4">
+        {' '}
+        <button
           onClick={() => router.back()}
           className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
@@ -76,7 +84,9 @@ export default function CreateComponentPage() {
       <div className="bg-white dark:bg-stone-950 rounded-lg shadow-sm p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <div>
+              {' '}
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('admin.name')}
               </label>
               <input
@@ -85,11 +95,15 @@ export default function CreateComponentPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
-            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <div>
+              {' '}
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('admin.sku')}
               </label>
               <input
@@ -98,11 +112,15 @@ export default function CreateComponentPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.sku && (
-                <p className="mt-1 text-sm text-red-600">{errors.sku.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.sku.message}
+                </p>
               )}
             </div>
 
-            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <div>
+              {' '}
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('admin.category')}
               </label>
               <select
@@ -117,11 +135,15 @@ export default function CreateComponentPage() {
                 ))}
               </select>
               {errors.categoryId && (
-                <p className="mt-1 text-sm text-red-600">{errors.categoryId.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.categoryId.message}
+                </p>
               )}
             </div>
 
-            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <div>
+              {' '}
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('admin.price')} (€)
               </label>
               <input
@@ -131,11 +153,15 @@ export default function CreateComponentPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.price && (
-                <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.price.message}
+                </p>
               )}
             </div>
 
-            <div>              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <div>
+              {' '}
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('admin.discountPrice')} (€)
               </label>
               <input
@@ -145,13 +171,15 @@ export default function CreateComponentPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.discountPrice && (
-                <p className="mt-1 text-sm text-red-600">{errors.discountPrice.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.discountPrice.message}
+                </p>
               )}
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                 Leave empty for no discount
               </p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Discount Valid Until
@@ -162,7 +190,9 @@ export default function CreateComponentPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.discountExpiresAt && (
-                <p className="mt-1 text-sm text-red-600">{errors.discountExpiresAt.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.discountExpiresAt.message}
+                </p>
               )}
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                 Leave empty for no expiration
@@ -179,7 +209,9 @@ export default function CreateComponentPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.stock && (
-                <p className="mt-1 text-sm text-red-600">{errors.stock.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.stock.message}
+                </p>
               )}
             </div>
 
@@ -193,7 +225,9 @@ export default function CreateComponentPage() {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.imageUrl && (
-                <p className="mt-1 text-sm text-red-600">{errors.imageUrl.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.imageUrl.message}
+                </p>
               )}
             </div>
           </div>
@@ -229,5 +263,5 @@ export default function CreateComponentPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

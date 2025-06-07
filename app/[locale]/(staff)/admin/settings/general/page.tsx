@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { Save, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Save, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function GeneralSettingsPage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const [isSaving, setIsSaving] = useState(false)
+  const t = useTranslations();
+  const router = useRouter();
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     companyName: 'IvaPro',
     companyEmail: 'info@ivapro.com',
@@ -22,36 +22,39 @@ export default function GeneralSettingsPage() {
     maintenanceMode: false,
     registrationEnabled: true,
     reviewsEnabled: true,
-    guestCheckout: false
-  })
+    guestCheckout: false,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSaving(true)
-    
+    e.preventDefault();
+    setIsSaving(true);
+
     try {
       // API call to save settings
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      alert('Settings saved successfully!')
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert('Settings saved successfully!');
     } catch (error) {
-      alert('Failed to save settings')
+      alert('Failed to save settings');
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }))
-  }
+      [name]:
+        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <Link 
+        <Link
           href="/admin/settings"
           className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg"
         >
@@ -191,7 +194,8 @@ export default function GeneralSettingsPage() {
               <div>
                 <h3 className="font-medium">Maintenance Mode</h3>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  Enable maintenance mode to prevent users from accessing the site
+                  Enable maintenance mode to prevent users from accessing the
+                  site
                 </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -205,7 +209,7 @@ export default function GeneralSettingsPage() {
                 <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
               </label>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">User Registration</h3>
@@ -224,7 +228,7 @@ export default function GeneralSettingsPage() {
                 <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
               </label>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">Product Reviews</h3>
@@ -243,7 +247,7 @@ export default function GeneralSettingsPage() {
                 <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
               </label>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">Guest Checkout</h3>
@@ -277,5 +281,5 @@ export default function GeneralSettingsPage() {
         </div>
       </form>
     </div>
-  )
+  );
 }

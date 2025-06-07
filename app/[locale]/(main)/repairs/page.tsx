@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { useState, useRef } from 'react'
-import { useTranslations } from 'next-intl'
-import { usePathname, useRouter } from 'next/navigation'
-import { useAuth } from '@/app/contexts/AuthContext'
+import { useState, useRef } from 'react';
+import { useTranslations } from 'next-intl';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
 import {
   Wrench,
   HardDrive,
@@ -29,10 +29,10 @@ import {
   BarChart,
   Image as ImageIcon,
   ArrowLeft,
-  ArrowRight
-} from 'lucide-react'
-import AnimatedButton from '@/app/components/ui/animated-button'
-import PhoneInput from '@/app/components/ui/PhoneInput'
+  ArrowRight,
+} from 'lucide-react';
+import AnimatedButton from '@/app/components/ui/animated-button';
+import PhoneInput from '@/app/components/ui/PhoneInput';
 
 const repairServices = [
   {
@@ -46,10 +46,10 @@ const repairServices = [
     icon: <Cpu size={24} />,
     price: 20,
     timeEstimate: '1-2 weeks',
-    hasNote: true
+    hasNote: true,
   },
   {
-    id: 'data-recovery', 
+    id: 'data-recovery',
     icon: <HardDrive size={24} />,
     price: 30,
     timeEstimate: '3-7 days',
@@ -70,184 +70,205 @@ const repairServices = [
     icon: <Code size={24} />,
     price: 35,
     timeEstimate: '1-7 days',
-  }
-]
+  },
+];
 
 export default function RepairsPage() {
-  const t = useTranslations('repairs')
-  const pathname = usePathname()
-  const router = useRouter()
-  const { user, isAuthenticated } = useAuth()
-  const locale = pathname.split('/')[1]
-  
-  const [currentStep, setCurrentStep] = useState(1)
-  const [firstName, setFirstName] = useState(user?.firstName || '')
-  const [lastName, setLastName] = useState(user?.lastName || '')
-  const [email, setEmail] = useState(user?.email || '')
+  const t = useTranslations('repairs');
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
+  const locale = pathname.split('/')[1];
+
+  const [currentStep, setCurrentStep] = useState(1);
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [selectedService, setSelectedService] = useState('');
-  const [issue, setIssue] = useState('')
-  const [images, setImages] = useState<File[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  
-  const formRef = useRef<HTMLDivElement>(null)
-  
-  const selectedServiceDetails = repairServices.find(s => s.id === selectedService)
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [issue, setIssue] = useState('');
+  const [images, setImages] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const formRef = useRef<HTMLDivElement>(null);
+
+  const selectedServiceDetails = repairServices.find(
+    s => s.id === selectedService
+  );
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files)
-      setImages(prevImages => [...prevImages, ...newFiles])
+      const newFiles = Array.from(e.target.files);
+      setImages(prevImages => [...prevImages, ...newFiles]);
     }
-  }
+  };
 
   const removeImage = (index: number) => {
-    setImages(prevImages => prevImages.filter((_, i) => i !== index))
-  }
-  
+    setImages(prevImages => prevImages.filter((_, i) => i !== index));
+  };
+
   const scrollToForm = () => {
     if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }
-  
+  };
+
   const nextStep = () => {
     if (currentStep < 5) {
-      setCurrentStep(currentStep + 1)
-      setTimeout(scrollToForm, 100)
+      setCurrentStep(currentStep + 1);
+      setTimeout(scrollToForm, 100);
     }
-  }
-  
+  };
+
   const previousStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-      setTimeout(scrollToForm, 100)
+      setCurrentStep(currentStep - 1);
+      setTimeout(scrollToForm, 100);
     }
-  }
-  
+  };
+
   const canProceedFromStep = (step: number) => {
-    switch(step) {
+    switch (step) {
       case 1:
         if (!user) {
-          return firstName && lastName && email && phone
+          return firstName && lastName && email && phone;
         }
-        return true
+        return true;
       case 2:
-        return selectedService !== ''
+        return selectedService !== '';
       case 3:
-        return issue.trim() !== ''
+        return issue.trim() !== '';
       case 4:
-        return true 
+        return true;
       default:
-        return true
+        return true;
     }
-  }
-  
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!selectedService || !issue || !email || (!phone && !user)) {
-      alert('Please fill in all required fields')
-      return
+      alert('Please fill in all required fields');
+      return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const formData = new FormData()
-      formData.append('firstName', firstName)
+      const formData = new FormData();
+      formData.append('firstName', firstName);
       formData.append('lastName', lastName);
-      formData.append('email', email)
-      formData.append('phone', phone)
-      formData.append('serviceId', selectedService)
-      formData.append('issue', issue)
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('serviceId', selectedService);
+      formData.append('issue', issue);
       images.forEach((image, index) => {
-        formData.append(`image_${index}`, image)
-      })
-      
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      setShowSuccess(true)
-      
+        formData.append(`image_${index}`, image);
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      setShowSuccess(true);
+
       if (!user) {
-        setFirstName('')
-        setLastName('')
-        setEmail('')
-        setPhone('')
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPhone('');
       }
-      setSelectedService('')
-      setIssue('')
-      setImages([])
-      setCurrentStep(1)
-      
+      setSelectedService('');
+      setIssue('');
+      setImages([]);
+      setCurrentStep(1);
+
       setTimeout(() => {
-        setShowSuccess(false)
-      }, 5000)
+        setShowSuccess(false);
+      }, 5000);
     } catch (error) {
-      console.error('Error submitting repair request:', error)
-      alert('Failed to submit repair request. Please try again.')
+      console.error('Error submitting repair request:', error);
+      alert('Failed to submit repair request. Please try again.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto">
       {/* Hero section */}
       <div className="bg-gradient-to-r from-blue-600 to-red-600 dark:from-red-600 dark:to-blue-600 rounded-lg p-8 mb-12 text-white">
-        <h1 className="text-3xl font-bold mb-4">
-          {t('pageTitle')}
-        </h1>
-        <p className="text-lg opacity-90 max-w-2xl">
-          {t('pageSubtitle')}
-        </p>
+        <h1 className="text-3xl font-bold mb-4">{t('pageTitle')}</h1>
+        <p className="text-lg opacity-90 max-w-2xl">{t('pageSubtitle')}</p>
       </div>
-      
+
       {/* Main content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Step-by-step Form */}
         <div className="lg:col-span-2 order-2 lg:order-1">
-          <div ref={formRef} className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden">
+          <div
+            ref={formRef}
+            className="bg-white dark:bg-stone-950 rounded-lg shadow-md overflow-hidden"
+          >
             {/* Progress indicator */}
             <div className="bg-gradient-to-r from-blue-700 to-blue-400 dark:from-red-700 dark:to-red-900 p-6 text-white">
               <h2 className="text-2xl font-semibold mb-4">
                 {t('requestTitle')}
               </h2>
-              
+
               {/* Step indicators */}
               <div className="flex items-center justify-between">
-                {[1, 2, 3, 4, 5].map((step) => (
+                {[1, 2, 3, 4, 5].map(step => (
                   <div key={step} className="flex items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
-                      step <= currentStep 
-                        ? 'bg-white text-blue-600 dark:text-red-600' 
-                        : 'bg-white/30 text-white'
-                    }`}>
-                      {step < currentStep ? (
-                        <CheckCircle size={20} />
-                      ) : (
-                        step
-                      )}
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+                        step <= currentStep
+                          ? 'bg-white text-blue-600 dark:text-red-600'
+                          : 'bg-white/30 text-white'
+                      }`}
+                    >
+                      {step < currentStep ? <CheckCircle size={20} /> : step}
                     </div>
                     {step < 5 && (
-                      <div className={`w-8 h-0.5 mx-2 transition-all duration-300 ${
-                        step < currentStep ? 'bg-white' : 'bg-white/30'
-                      }`} />
+                      <div
+                        className={`w-8 h-0.5 mx-2 transition-all duration-300 ${
+                          step < currentStep ? 'bg-white' : 'bg-white/30'
+                        }`}
+                      />
                     )}
                   </div>
                 ))}
               </div>
-              
+
               {/* Step labels */}
               <div className="flex justify-between mt-3 text-sm">
-                <span className={currentStep === 1 ? 'font-semibold' : 'opacity-70'}>{t('step1')}</span>
-                <span className={currentStep === 2 ? 'font-semibold' : 'opacity-70'}>{t('step2')}</span>
-                <span className={currentStep === 3 ? 'font-semibold' : 'opacity-70'}>{t('step3')}</span>
-                <span className={currentStep === 4 ? 'font-semibold' : 'opacity-70'}>{t('step4')}</span>
-                <span className={currentStep === 5 ? 'font-semibold' : 'opacity-70'}>{t('step5')}</span>
+                <span
+                  className={currentStep === 1 ? 'font-semibold' : 'opacity-70'}
+                >
+                  {t('step1')}
+                </span>
+                <span
+                  className={currentStep === 2 ? 'font-semibold' : 'opacity-70'}
+                >
+                  {t('step2')}
+                </span>
+                <span
+                  className={currentStep === 3 ? 'font-semibold' : 'opacity-70'}
+                >
+                  {t('step3')}
+                </span>
+                <span
+                  className={currentStep === 4 ? 'font-semibold' : 'opacity-70'}
+                >
+                  {t('step4')}
+                </span>
+                <span
+                  className={currentStep === 5 ? 'font-semibold' : 'opacity-70'}
+                >
+                  {t('step5')}
+                </span>
               </div>
             </div>
-            
+
             {showSuccess && (
               <div className="p-6 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 flex items-start animate-in slide-in-from-top duration-500">
                 <CheckCircle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
@@ -257,7 +278,7 @@ export default function RepairsPage() {
                 </div>
               </div>
             )}
-            
+
             {/* Form content */}
             <form onSubmit={handleSubmit} className="p-6">
               {/* Step 1: Personal Information */}
@@ -266,11 +287,14 @@ export default function RepairsPage() {
                   <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
                     {t('step1')}
                   </h3>
-                  
+
                   {!user && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        <label
+                          htmlFor="firstName"
+                          className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                        >
                           {t('firstName')}
                         </label>
                         <div className="relative">
@@ -281,15 +305,18 @@ export default function RepairsPage() {
                             id="firstName"
                             type="text"
                             value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                            onChange={e => setFirstName(e.target.value)}
                             required
                             className="block w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 transition-all duration-200"
                           />
                         </div>
                       </div>
-                      
+
                       <div>
-                        <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        <label
+                          htmlFor="lastName"
+                          className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                        >
                           {t('lastName')}
                         </label>
                         <div className="relative">
@@ -300,15 +327,18 @@ export default function RepairsPage() {
                             id="lastName"
                             type="text"
                             value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
+                            onChange={e => setLastName(e.target.value)}
                             required
                             className="block w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 transition-all duration-200"
                           />
                         </div>
                       </div>
-                      
+
                       <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        <label
+                          htmlFor="email"
+                          className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                        >
                           {t('email')}
                         </label>
                         <div className="relative">
@@ -319,15 +349,18 @@ export default function RepairsPage() {
                             id="email"
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={e => setEmail(e.target.value)}
                             required
                             className="block w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 transition-all duration-200"
                           />
                         </div>
                       </div>
-                      
+
                       <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        <label
+                          htmlFor="phone"
+                          className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                        >
                           {t('phoneRequired')}
                         </label>
                         <div className="relative">
@@ -341,26 +374,29 @@ export default function RepairsPage() {
                       </div>
                     </div>
                   )}
-                  
+
                   {user && (
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                       <p className="text-blue-800 dark:text-blue-300 text-sm">
-                        Logged in as: <span className="font-medium">{user.firstName} {user.lastName}</span>
+                        Logged in as:{' '}
+                        <span className="font-medium">
+                          {user.firstName} {user.lastName}
+                        </span>
                       </p>
                     </div>
                   )}
                 </div>
               )}
-              
+
               {/* Step 2: Select Service */}
               {currentStep === 2 && (
                 <div className="space-y-6 animate-in slide-in-from-right duration-500">
                   <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
                     {t('step2')}
                   </h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {repairServices.map((service) => (
+                    {repairServices.map(service => (
                       <div
                         key={service.id}
                         onClick={() => setSelectedService(service.id)}
@@ -371,7 +407,9 @@ export default function RepairsPage() {
                         }`}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <div className="text-blue-600 dark:text-red-400">{service.icon}</div>
+                          <div className="text-blue-600 dark:text-red-400">
+                            {service.icon}
+                          </div>
                           {service.price && (
                             <span className="font-semibold text-neutral-900 dark:text-white">
                               From €{service.price}
@@ -398,22 +436,25 @@ export default function RepairsPage() {
                   </div>
                 </div>
               )}
-              
+
               {/* Step 3: Describe Issue */}
               {currentStep === 3 && (
                 <div className="space-y-6 animate-in slide-in-from-right duration-500">
                   <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
                     {t('step3')}
                   </h3>
-                  
+
                   <div>
-                    <label htmlFor="issue" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                    <label
+                      htmlFor="issue"
+                      className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                    >
                       {t('describeIssue')}
                     </label>
                     <textarea
                       id="issue"
                       value={issue}
-                      onChange={(e) => setIssue(e.target.value)}
+                      onChange={e => setIssue(e.target.value)}
                       required
                       rows={6}
                       className="block w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-red-500 transition-all duration-200"
@@ -422,25 +463,31 @@ export default function RepairsPage() {
                   </div>
                 </div>
               )}
-              
+
               {/* Step 4: Upload Image */}
               {currentStep === 4 && (
                 <div className="space-y-6 animate-in slide-in-from-right duration-500">
                   <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
                     {t('step4')}
                   </h3>
-                    <div>
+                  <div>
                     <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                       {t('attachImage')}
                     </label>
-                    
+
                     {/* Display uploaded images */}
                     {images.length > 0 && (
                       <div className="mb-4 grid grid-cols-2 md:grid-cols-3 gap-4">
                         {images.map((img, index) => (
-                          <div key={index} className="relative bg-neutral-100 dark:bg-neutral-800 rounded-lg p-3">
+                          <div
+                            key={index}
+                            className="relative bg-neutral-100 dark:bg-neutral-800 rounded-lg p-3"
+                          >
                             <div className="flex items-center justify-center mb-2">
-                              <ImageIcon size={32} className="text-neutral-400" />
+                              <ImageIcon
+                                size={32}
+                                className="text-neutral-400"
+                              />
                             </div>
                             <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate text-center">
                               {img.name}
@@ -456,16 +503,21 @@ export default function RepairsPage() {
                         ))}
                       </div>
                     )}
-                    
+
                     {/* Upload area */}
                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md relative transition-all duration-200 hover:border-blue-400 dark:hover:border-red-400">
                       <div className="space-y-1 text-center">
-                        <Upload size={48} className="mx-auto text-neutral-400" />
+                        <Upload
+                          size={48}
+                          className="mx-auto text-neutral-400"
+                        />
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
                           {t('uploadImageText')}
                         </p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-500">
-                          {images.length > 0 ? `${images.length} ${t('imagesSelected')}` : t('selectMultipleImages')}
+                          {images.length > 0
+                            ? `${images.length} ${t('imagesSelected')}`
+                            : t('selectMultipleImages')}
                         </p>
                       </div>
                       <input
@@ -479,43 +531,52 @@ export default function RepairsPage() {
                   </div>
                 </div>
               )}
-              
+
               {/* Step 5: Review & Submit */}
               {currentStep === 5 && (
                 <div className="space-y-6 animate-in slide-in-from-right duration-500">
                   <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
                     {t('step5')}
                   </h3>
-                  
+
                   <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 space-y-4">
                     {/* Personal info summary */}
                     <div>
-                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">{t('step1')}</h4>
+                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">
+                        {t('step1')}
+                      </h4>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {firstName} {lastName} • {email} • {phone}
                       </p>
                     </div>
-                    
+
                     {/* Service summary */}
                     <div>
-                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">{t('step2')}</h4>
+                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">
+                        {t('step2')}
+                      </h4>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                        {selectedServiceDetails && t(`services.${selectedServiceDetails.id}.name`)}
+                        {selectedServiceDetails &&
+                          t(`services.${selectedServiceDetails.id}.name`)}
                       </p>
                     </div>
-                    
+
                     {/* Issue summary */}
                     <div>
-                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">{t('step3')}</h4>
+                      <h4 className="font-medium text-neutral-900 dark:text-white mb-2">
+                        {t('step3')}
+                      </h4>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
                         {issue}
                       </p>
                     </div>
-                    
+
                     {/* Image summary */}
                     {images.length > 0 && (
                       <div>
-                        <h4 className="font-medium text-neutral-900 dark:text-white mb-2">{t('step4')}</h4>
+                        <h4 className="font-medium text-neutral-900 dark:text-white mb-2">
+                          {t('step4')}
+                        </h4>
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
                           {images.map(img => img.name).join(', ')}
                         </p>
@@ -524,7 +585,7 @@ export default function RepairsPage() {
                   </div>
                 </div>
               )}
-              
+
               {/* Navigation buttons */}
               <div className="flex justify-between mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
                 <button
@@ -540,7 +601,7 @@ export default function RepairsPage() {
                   <ChevronLeft size={16} className="mr-1" />
                   {t('previousStep')}
                 </button>
-                
+
                 {currentStep < 5 ? (
                   <button
                     type="button"
@@ -568,7 +629,7 @@ export default function RepairsPage() {
             </form>
           </div>
         </div>
-        
+
         {/* Service Details & Information */}
         <div className="order-1 lg:order-2 space-y-6">
           {selectedServiceDetails && (
@@ -578,7 +639,9 @@ export default function RepairsPage() {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <div className="text-blue-600 dark:text-red-400 mr-2">{selectedServiceDetails.icon}</div>
+                  <div className="text-blue-600 dark:text-red-400 mr-2">
+                    {selectedServiceDetails.icon}
+                  </div>
                   <h4 className="text-lg font-semibold text-neutral-900 dark:text-white">
                     {t(`services.${selectedServiceDetails.id}.name`)}
                   </h4>
@@ -588,11 +651,13 @@ export default function RepairsPage() {
                 </p>
                 {selectedServiceDetails.price && (
                   <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
-                    <Package size={16} className="mr-1" /> From €{selectedServiceDetails.price}
+                    <Package size={16} className="mr-1" /> From €
+                    {selectedServiceDetails.price}
                   </div>
                 )}
                 <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
-                  <Clock size={16} className="mr-1" /> {selectedServiceDetails.timeEstimate}
+                  <Clock size={16} className="mr-1" />{' '}
+                  {selectedServiceDetails.timeEstimate}
                 </div>
                 {selectedServiceDetails.hasNote && (
                   <p className="text-sm text-green-600 dark:text-green-400">
@@ -602,7 +667,6 @@ export default function RepairsPage() {
               </div>
             </div>
           )}
-          
           {/* Process steps */}
           <div className="bg-white dark:bg-stone-950 rounded-lg shadow-md p-6">
             <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-4">
@@ -617,25 +681,37 @@ export default function RepairsPage() {
                 { icon: <CheckCircle size={20} />, key: 'receive' },
               ].map((step, idx) => (
                 <div key={idx} className="flex items-center">
-                  <div className="text-blue-600 dark:text-red-400 mr-2">{step.icon}</div>
-                  <span className="text-neutral-900 dark:text-white">{t(`processSteps.${step.key}`)}</span>
-                  {idx < 4 && <ChevronRight size={14} className="mx-2 text-neutral-500 dark:text-neutral-400" />}
+                  <div className="text-blue-600 dark:text-red-400 mr-2">
+                    {step.icon}
+                  </div>
+                  <span className="text-neutral-900 dark:text-white">
+                    {t(`processSteps.${step.key}`)}
+                  </span>
+                  {idx < 4 && (
+                    <ChevronRight
+                      size={14}
+                      className="mx-2 text-neutral-500 dark:text-neutral-400"
+                    />
+                  )}
                 </div>
               ))}
             </div>
           </div>
-          
           {/* Service info alert */}
           <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-md">
             <div className="flex">
-              <AlertTriangle size={20} className="text-amber-400 mr-2 flex-shrink-0" />
+              <AlertTriangle
+                size={20}
+                className="text-amber-400 mr-2 flex-shrink-0"
+              />
               <div className="text-sm text-amber-700 dark:text-amber-300">
                 <p className="font-medium">{t('importantNote')}</p>
                 <p className="mt-1">{t('finalPricingNote')}</p>
               </div>
             </div>
-          </div>        </div>
+          </div>{' '}
+        </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { ChevronDown } from 'lucide-react'
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { ChevronDown } from 'lucide-react';
 
 interface ProductCardProps {
-  id: string
-  name: string
-  price: number
-  imageUrl: string | null
-  type: 'component' | 'configuration' | 'peripheral'
-  category: string
-  stock: number
-  specs?: Record<string, string>
-  showRating?: boolean
+  id: string;
+  name: string;
+  price: number;
+  imageUrl: string | null;
+  type: 'component' | 'configuration' | 'peripheral';
+  category: string;
+  stock: number;
+  specs?: Record<string, string>;
+  showRating?: boolean;
 }
 
 export default function ProductCard({
@@ -27,12 +27,12 @@ export default function ProductCard({
   category,
   stock,
   specs,
-  showRating = true
+  showRating = true,
 }: ProductCardProps) {
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  const t = useTranslations()
-  
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+  const t = useTranslations();
+
   return (
     <div className="relative bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden">
       {/* Product Image */}
@@ -83,5 +83,5 @@ export default function ProductCard({
         </button>
       </div>
     </div>
-  )
+  );
 }

@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedGamepads(prisma: PrismaClient) {
   // Get all peripherals with subType 'gamepads'
   const gamepadPeripherals = await prisma.peripheral.findMany({
-    where: { subType: 'gamepads' }
+    where: { subType: 'gamepads' },
   });
 
   // Prepare Gamepad entries
@@ -12,25 +12,37 @@ export async function seedGamepads(prisma: PrismaClient) {
   // For each Gamepad peripheral, create a detailed Gamepad entry
   for (let i = 0; i < gamepadPeripherals.length; i++) {
     const peripheral = gamepadPeripherals[i];
-    
+
     // Parse existing specifications if available
-    const specs = peripheral.specifications ? JSON.parse(peripheral.specifications.toString()) : {};
-    
+    const specs = peripheral.specifications
+      ? JSON.parse(peripheral.specifications.toString())
+      : {};
+
     // Connection types
     const connections = [
       'Wired - USB',
       'Wireless - 2.4GHz',
       'Wireless - Bluetooth',
-      'Wired - USB, Wireless - Bluetooth'
+      'Wired - USB, Wireless - Bluetooth',
     ];
     const connection = specs.connection || connections[i % connections.length];
-      // Determine if wireless based on connection type
+    // Determine if wireless based on connection type
     const isWireless = connection.includes('Wireless');
-    
+
     // Manufacturer (required field)
-    const manufacturers = ['Microsoft', 'Sony', 'Nintendo', 'Logitech', 'Razer', 'SteelSeries', 'PowerA', '8BitDo'];
-    const manufacturer = specs.manufacturer || manufacturers[i % manufacturers.length];
-    
+    const manufacturers = [
+      'Microsoft',
+      'Sony',
+      'Nintendo',
+      'Logitech',
+      'Razer',
+      'SteelSeries',
+      'PowerA',
+      '8BitDo',
+    ];
+    const manufacturer =
+      specs.manufacturer || manufacturers[i % manufacturers.length];
+
     // Platform compatibility
     const platforms = [
       'Xbox, PC',
@@ -38,29 +50,35 @@ export async function seedGamepads(prisma: PrismaClient) {
       'PC',
       'Xbox, PlayStation, PC, Switch',
       'PlayStation, PC, Android, iOS',
-      'Xbox, PC, Android'
+      'Xbox, PC, Android',
     ];
-    const platformCompatibility = specs.platformCompatibility || platforms[i % platforms.length];
-      // Primary platform (required field)
+    const platformCompatibility =
+      specs.platformCompatibility || platforms[i % platforms.length];
+    // Primary platform (required field)
     const primaryPlatform = platformCompatibility.split(',')[0].trim();
-    
+
     // Layout types
-    const layouts = ['Xbox-style', 'PlayStation-style', 'Xbox-style', 'Switch-style'];
+    const layouts = [
+      'Xbox-style',
+      'PlayStation-style',
+      'Xbox-style',
+      'Switch-style',
+    ];
     const layout = specs.layout || layouts[i % layouts.length];
-    
+
     // Battery life in hours (only for wireless)
     const batteryLife = isWireless ? 20 + (i % 10) * 5 : null;
-    
+
     gamepads.push({
       peripheralId: peripheral.id,
       manufacturer, // Added required field
       connection,
-      platform: primaryPlatform, // Added required field 
+      platform: primaryPlatform, // Added required field
       layout,
       vibration: i % 5 !== 4,
       programmable: i % 2 === 0,
       batteryLife,
-      rgb: i % 4 === 0
+      rgb: i % 4 === 0,
     });
   }
   // Insert Gamepad entries
@@ -75,16 +93,16 @@ export async function seedGamepads(prisma: PrismaClient) {
       vibration: gamepad.vibration,
       programmable: gamepad.programmable,
       batteryLife: gamepad.batteryLife,
-      rgb: gamepad.rgb
+      rgb: gamepad.rgb,
     };
-    
+
     await prisma.gamepad.upsert({
       where: { peripheralId: gamepad.peripheralId },
       update: validGamepadData,
-      create: validGamepadData
+      create: validGamepadData,
     });
   }
-  
+
   // Call the function to add 10 more gamepads
   await addMoreGamepads(prisma);
 }
@@ -94,14 +112,14 @@ export async function seedGamepads(prisma: PrismaClient) {
  */
 async function addMoreGamepads(prisma: PrismaClient) {
   const category = await prisma.peripheralCategory.findFirst({
-    where: { slug: 'gamepad' }
+    where: { slug: 'gamepad' },
   });
-  
+
   if (!category) {
     console.error('Gamepad category not found');
     return;
   }
-  
+
   // Define new gamepad models with interesting specifications
   const newGamepadModels = [
     {
@@ -135,8 +153,8 @@ async function addMoreGamepads(prisma: PrismaClient) {
         customProfiles: 3,
         triggerLocks: true,
         gripMaterial: 'Premium rubber',
-        adjustableJoystickTension: true
-      }
+        adjustableJoystickTension: true,
+      },
     },
     {
       name: 'DualSense Edge Wireless Controller',
@@ -171,8 +189,8 @@ async function addMoreGamepads(prisma: PrismaClient) {
         gripMaterial: 'Textured plastic',
         hapticFeedback: true,
         adaptiveTriggers: true,
-        touchpad: true
-      }
+        touchpad: true,
+      },
     },
     {
       name: '8BitDo Ultimate Controller',
@@ -204,8 +222,8 @@ async function addMoreGamepads(prisma: PrismaClient) {
         interchangeableParts: false,
         customProfiles: 3,
         chargingDock: true,
-        classicDPad: true
-      }
+        classicDPad: true,
+      },
     },
     {
       name: 'Nintendo Switch Pro Controller Plus',
@@ -237,8 +255,8 @@ async function addMoreGamepads(prisma: PrismaClient) {
         hdRumble: true,
         motionControls: true,
         nfcReader: true,
-        amiboSupport: true
-      }
+        amiboSupport: true,
+      },
     },
     {
       name: 'Razer Wolverine V3 Pro',
@@ -271,8 +289,8 @@ async function addMoreGamepads(prisma: PrismaClient) {
         customProfiles: 4,
         triggerStops: true,
         mechanicalButtons: true,
-        chroma: true
-      }
+        chroma: true,
+      },
     },
     {
       name: 'SteelSeries Stratus Pro',
@@ -304,8 +322,8 @@ async function addMoreGamepads(prisma: PrismaClient) {
         customProfiles: 3,
         rapidTriggers: true,
         analogStickCalibration: true,
-        lowLatencyBluetooth: true
-      }
+        lowLatencyBluetooth: true,
+      },
     },
     {
       name: 'PowerA MOGA XP Ultra',
@@ -333,10 +351,11 @@ async function addMoreGamepads(prisma: PrismaClient) {
         weight: '235g',
         warranty: '1 year',
         platformCompatibility: 'Android, Windows, iOS',
-        layout: 'Xbox-style',        phoneMounting: true,
+        layout: 'Xbox-style',
+        phoneMounting: true,
         lowLatencyConnection: true,
-        passthroughCharging: true
-      }
+        passthroughCharging: true,
+      },
     },
     {
       name: 'Logitech G Pro X',
@@ -369,8 +388,8 @@ async function addMoreGamepads(prisma: PrismaClient) {
         lightspeedTechnology: true,
         powerPlay: true,
         analogStickModules: 'Replaceable',
-        buttonLifespan: '20 million clicks'
-      }
+        buttonLifespan: '20 million clicks',
+      },
     },
     {
       name: 'Turtle Beach Recon Cloud',
@@ -402,8 +421,8 @@ async function addMoreGamepads(prisma: PrismaClient) {
         customProfiles: 2,
         coolingGrips: true,
         mobileGaming: true,
-        audioControls: true
-      }
+        audioControls: true,
+      },
     },
     {
       name: 'GuliKit KingKong Pro 2',
@@ -437,18 +456,18 @@ async function addMoreGamepads(prisma: PrismaClient) {
         noDrifting: true,
         sixAxisMotion: true,
         turboFunction: true,
-        nfcSupport: true
-      }
-    }
+        nfcSupport: true,
+      },
+    },
   ];
-  
+
   // Create new gamepad peripherals and gamepad entries
   for (let i = 0; i < newGamepadModels.length; i++) {
     const model = newGamepadModels[i];
-    
+
     // Generate a unique SKU
     const sku = `P-PAD-${model.manufacturer.substring(0, 3).toUpperCase()}-${2000 + i}`;
-    
+
     // Create the peripheral entry
     const peripheral = await prisma.peripheral.create({
       data: {
@@ -461,28 +480,28 @@ async function addMoreGamepads(prisma: PrismaClient) {
         sku,
         subType: 'gamepads',
         imageUrl: `/products/peripherals/gamepads${(i % 3) + 1}.jpg`,
-      }
+      },
     });
-      // Map from the model fields to the database fields using only fields that exist in the schema
+    // Map from the model fields to the database fields using only fields that exist in the schema
     const gamepadData = {
       peripheralId: peripheral.id,
       manufacturer: model.manufacturer,
       connection: model.connection,
       platform: model.platform,
       layout: model.layout,
-      vibration: model.rumble || false,         // field name mismatch: rumble -> vibration
+      vibration: model.rumble || false, // field name mismatch: rumble -> vibration
       programmable: model.programmableButtons || false, // field name mismatch: programmableButtons -> programmable
       batteryLife: model.batteryLife || null,
-      rgb: model.rgb || false
+      rgb: model.rgb || false,
     };
-    
+
     // Create the gamepad entry
     await prisma.gamepad.create({
-      data: gamepadData
+      data: gamepadData,
     });
-    
+
     console.log(`Added gamepad: ${model.name}`);
   }
-  
+
   console.log('Added 10 additional gamepads');
 }

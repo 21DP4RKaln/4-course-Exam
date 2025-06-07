@@ -1,31 +1,33 @@
-'use client'
+'use client';
 
-import { useTranslations } from 'next-intl'
-import { usePathname } from 'next/navigation'
-import { useWishlist } from '@/app/contexts/WishlistContext'
-import { Heart, Trash2 } from 'lucide-react'
-import ProductCard from '@/app/components/Products/ProductCard'
+import { useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
+import { useWishlist } from '@/app/contexts/WishlistContext';
+import { Heart, Trash2 } from 'lucide-react';
+import ProductCard from '@/app/components/Products/ProductCard';
 
 export default function WishlistTab() {
-  const dashboardT = useTranslations('dashboard')
-  const { items, removeFromWishlist, loading } = useWishlist()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
+  const dashboardT = useTranslations('dashboard');
+  const { items, removeFromWishlist, loading } = useWishlist();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
 
   const handleRemove = async (productId: string, productType: string) => {
-    await removeFromWishlist(productId, productType)
-  }
+    await removeFromWishlist(productId, productType);
+  };
 
   return (
     <div className="space-y-6">
-
       {loading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 dark:border-red-500"></div>
         </div>
       ) : items.length === 0 ? (
         <div className="bg-white dark:bg-neutral-950 rounded-xl shadow-lg p-8 text-center border border-blue-100 dark:border-red-900/20">
-          <Heart size={48} className="mx-auto text-blue-500 dark:text-red-500 mb-4" />
+          <Heart
+            size={48}
+            className="mx-auto text-blue-500 dark:text-red-500 mb-4"
+          />
           <h3 className="text-lg font-medium text-neutral-950 dark:text-white mb-2">
             {dashboardT('emptyWishlist')}
           </h3>
@@ -35,14 +37,18 @@ export default function WishlistTab() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((item) => (
+          {items.map(item => (
             <div key={item.id} className="relative group">
-              <ProductCard 
+              <ProductCard
                 id={item.productId}
                 name={item.name}
                 price={item.price}
                 imageUrl={item.imageUrl}
-                type={item.productType.toLowerCase() as 'component' | 'configuration'}
+                type={
+                  item.productType.toLowerCase() as
+                    | 'component'
+                    | 'configuration'
+                }
                 category={''}
                 stock={1}
                 showRating={true}
@@ -58,5 +64,5 @@ export default function WishlistTab() {
         </div>
       )}
     </div>
-  )
+  );
 }

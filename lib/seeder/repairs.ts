@@ -12,15 +12,18 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
     throw new Error('Users not found. Please seed users first.');
   }
 
-  const repairs = [    {
+  const repairs = [
+    {
       title: 'Monitor Screen Flickering',
-      description: 'Customer reports screen flickering issues on gaming monitor',
+      description:
+        'Customer reports screen flickering issues on gaming monitor',
       status: RepairStatus.PENDING,
       priority: RepairPriority.NORMAL,
       userId: users[0]?.id || '',
       peripheralId: peripherals[0]?.id,
       estimatedCost: priceWith99(75, 125),
-      diagnosticNotes: 'Initial assessment required to determine cause of flickering'
+      diagnosticNotes:
+        'Initial assessment required to determine cause of flickering',
     },
     {
       title: 'Keyboard Key Replacement',
@@ -31,7 +34,7 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
       peripheralId: peripherals[1]?.id,
       estimatedCost: priceWith99(25, 50),
       finalCost: priceWith99(35, 45),
-      diagnosticNotes: 'Switch replacement needed for W, A, S, D keys'
+      diagnosticNotes: 'Switch replacement needed for W, A, S, D keys',
     },
     {
       title: 'Gaming PC Overheating',
@@ -43,7 +46,8 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
       estimatedCost: priceWith99(100, 200),
       finalCost: priceWith99(149, 179),
       completionDate: new Date('2025-05-20'),
-      diagnosticNotes: 'Thermal paste replacement and additional case fans installed'
+      diagnosticNotes:
+        'Thermal paste replacement and additional case fans installed',
     },
     {
       title: 'Mouse Sensor Malfunction',
@@ -53,7 +57,7 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
       userId: users[3]?.id || '',
       peripheralId: peripherals[2]?.id,
       estimatedCost: priceWith99(40, 80),
-      diagnosticNotes: 'Sensor cleaning or replacement may be required'
+      diagnosticNotes: 'Sensor cleaning or replacement may be required',
     },
     {
       title: 'Headset Audio Issues',
@@ -63,17 +67,18 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
       userId: users[4]?.id || '',
       peripheralId: peripherals[3]?.id,
       estimatedCost: priceWith99(60, 100),
-      diagnosticNotes: 'Cable connection issue suspected, replacement cable ordered'
+      diagnosticNotes:
+        'Cable connection issue suspected, replacement cable ordered',
     },
     {
-      title: 'PC Won\'t Boot',
+      title: "PC Won't Boot",
       description: 'System powers on but no display output',
       status: RepairStatus.IN_PROGRESS,
       priority: RepairPriority.URGENT,
       userId: users[0]?.id || '',
       configurationId: configurations[1]?.id,
       estimatedCost: priceWith99(150, 300),
-      diagnosticNotes: 'Testing RAM and GPU components for failure'
+      diagnosticNotes: 'Testing RAM and GPU components for failure',
     },
     {
       title: 'Webcam Not Detected',
@@ -85,7 +90,8 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
       estimatedCost: priceWith99(20, 40),
       finalCost: priceWith99(25, 35),
       completionDate: new Date('2025-05-18'),
-      diagnosticNotes: 'Driver reinstallation and USB port cleaning resolved issue'
+      diagnosticNotes:
+        'Driver reinstallation and USB port cleaning resolved issue',
     },
     {
       title: 'Speaker Distortion',
@@ -95,11 +101,13 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
       userId: users[2]?.id || '',
       peripheralId: peripherals[0]?.id,
       estimatedCost: priceWith99(50, 90),
-      diagnosticNotes: 'Driver damage suspected, replacement parts being sourced'
+      diagnosticNotes:
+        'Driver damage suspected, replacement parts being sourced',
     },
     {
       title: 'Custom Build Assembly',
-      description: 'Customer requesting professional assembly of purchased components',
+      description:
+        'Customer requesting professional assembly of purchased components',
       status: RepairStatus.COMPLETED,
       priority: RepairPriority.NORMAL,
       userId: users[3]?.id || '',
@@ -107,7 +115,8 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
       estimatedCost: priceWith99(100, 150),
       finalCost: priceWith99(125, 145),
       completionDate: new Date('2025-05-22'),
-      diagnosticNotes: 'Full system assembly with cable management and testing completed'
+      diagnosticNotes:
+        'Full system assembly with cable management and testing completed',
     },
     {
       title: 'Gamepad Stick Drift',
@@ -117,8 +126,9 @@ export async function seedRepairs(prisma: PrismaClient): Promise<void> {
       userId: users[4]?.id || '',
       peripheralId: peripherals[1]?.id,
       estimatedCost: priceWith99(30, 60),
-      diagnosticNotes: 'Customer decided to purchase replacement instead of repair'
-    }
+      diagnosticNotes:
+        'Customer decided to purchase replacement instead of repair',
+    },
   ];
 
   await prisma.repair.createMany({ data: repairs, skipDuplicates: true });

@@ -35,9 +35,9 @@ try {
   console.log('Step 2: Running the partial build...');
   execSync('cross-env NODE_OPTIONS=--max-old-space-size=4096 next build', {
     stdio: 'inherit',
-    cwd: rootDir
+    cwd: rootDir,
   });
-  
+
   console.log('Build completed successfully!');
 } catch (error) {
   console.error('Build failed:', error);

@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { useWishlist } from '@/app/contexts/WishlistContext'
-import { ShoppingCart, Heart, Share2, Check, Copy } from 'lucide-react'
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { useWishlist } from '@/app/contexts/WishlistContext';
+import { ShoppingCart, Heart, Share2, Check, Copy } from 'lucide-react';
 
 interface ProductActionsProps {
-  productId: string
-  productType: string
-  price: number
-  discountPrice?: number | null
-  stock: number
-  onAddToCart: () => void
+  productId: string;
+  productType: string;
+  price: number;
+  discountPrice?: number | null;
+  stock: number;
+  onAddToCart: () => void;
 }
 
 export default function ProductActions({
@@ -21,49 +21,49 @@ export default function ProductActions({
   price,
   discountPrice,
   stock,
-  onAddToCart
+  onAddToCart,
 }: ProductActionsProps) {
-  const t = useTranslations('product')
-  const tShare = useTranslations('nav')
-  const { isAuthenticated } = useAuth()
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
-  const [isSharing, setIsSharing] = useState(false)
-  const [shareSuccess, setShareSuccess] = useState(false)
+  const t = useTranslations('product');
+  const tShare = useTranslations('nav');
+  const { isAuthenticated } = useAuth();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
 
-  const inWishlist = isInWishlist(productId, productType)
+  const inWishlist = isInWishlist(productId, productType);
 
   const handleWishlistToggle = async () => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) return;
 
     if (inWishlist) {
-      await removeFromWishlist(productId, productType)
+      await removeFromWishlist(productId, productType);
     } else {
-      await addToWishlist(productId, productType)
+      await addToWishlist(productId, productType);
     }
-  }
+  };
 
   const handleShare = async () => {
-    setIsSharing(true)
+    setIsSharing(true);
     try {
-      const url = window.location.href
-      
+      const url = window.location.href;
+
       if (navigator.share) {
         await navigator.share({
           title: document.title,
           text: t('shareText'),
-          url: url
-        })
+          url: url,
+        });
       } else {
-        await navigator.clipboard.writeText(url)
-        setShareSuccess(true)
-        setTimeout(() => setShareSuccess(false), 2000)
+        await navigator.clipboard.writeText(url);
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
       }
     } catch (error) {
-      console.error('Error sharing:', error)
+      console.error('Error sharing:', error);
     } finally {
-      setIsSharing(false)
+      setIsSharing(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -73,17 +73,15 @@ export default function ProductActions({
             <span className="product-price-display">
               €{discountPrice.toFixed(2)}
             </span>
-            <span className="product-price-original">
-              €{price.toFixed(2)}
-            </span>
+            <span className="product-price-original">€{price.toFixed(2)}</span>
             <span className="product-discount-badge">
-              {t('saveAmount', { amount: (price - (discountPrice || 0)).toFixed(2) })}
+              {t('saveAmount', {
+                amount: (price - (discountPrice || 0)).toFixed(2),
+              })}
             </span>
           </>
         ) : (
-          <span className="product-price-display">
-            €{price.toFixed(2)}
-          </span>
+          <span className="product-price-display">€{price.toFixed(2)}</span>
         )}
       </div>
 
@@ -96,7 +94,7 @@ export default function ProductActions({
           <ShoppingCart size={18} className="mr-2" />
           {stock === 0 ? t('outOfStock') : t('addToCart')}
         </button>
-        
+
         <button
           onClick={handleWishlistToggle}
           disabled={!isAuthenticated}
@@ -104,16 +102,16 @@ export default function ProductActions({
             inWishlist ? 'wishlist-button-active' : 'wishlist-button-inactive'
           }`}
         >
-          <Heart 
-            size={18} 
-            className={`mr-2 ${inWishlist ? 'fill-current' : ''}`} 
+          <Heart
+            size={18}
+            className={`mr-2 ${inWishlist ? 'fill-current' : ''}`}
           />
           {inWishlist ? t('removeFromWishlist') : t('addToWishlist')}
         </button>
       </div>
 
       <div className="flex items-center space-x-4">
-        <button 
+        <button
           onClick={handleShare}
           disabled={isSharing}
           className={`action-button ${
@@ -132,13 +130,11 @@ export default function ProductActions({
             </>
           )}
         </button>
-        
+
         {isAuthenticated && (
-          <button className="action-button text-xs">
-            {t('reportIssue')}
-          </button>
+          <button className="action-button text-xs">{t('reportIssue')}</button>
         )}
       </div>
     </div>
-  )
+  );
 }

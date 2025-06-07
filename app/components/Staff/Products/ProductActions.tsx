@@ -1,77 +1,77 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { Eye, Edit, Trash2, MoreVertical } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
-import { useAuth } from '@/app/contexts/AuthContext'
+import { useRouter } from 'next/navigation';
+import { Eye, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '@/app/contexts/AuthContext';
 
 interface ProductActionsProps {
-  id: string
-  type: 'component' | 'peripheral' | 'ready-made'
-  onDelete?: () => void
-  canEdit?: boolean
-  canDelete?: boolean
+  id: string;
+  type: 'component' | 'peripheral' | 'ready-made';
+  onDelete?: () => void;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
-export function ProductActions({ 
-  id, 
-  type, 
+export function ProductActions({
+  id,
+  type,
   onDelete,
   canEdit = true,
-  canDelete = true
+  canDelete = true,
 }: ProductActionsProps) {
-  const router = useRouter()
-  const { user } = useAuth()
-  const [showMenu, setShowMenu] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const locale = 'en'
+  const router = useRouter();
+  const { user } = useAuth();
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const locale = 'en';
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowMenu(false)
+        setShowMenu(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleView = () => {
-    const basePath = `/${locale}/${user?.role.toLowerCase()}`
-    
+    const basePath = `/${locale}/${user?.role.toLowerCase()}`;
+
     switch (type) {
       case 'component':
-        router.push(`${basePath}/components/${id}`)
-        break
+        router.push(`${basePath}/components/${id}`);
+        break;
       case 'peripheral':
-        router.push(`${basePath}/peripherals/${id}`)
-        break
+        router.push(`${basePath}/peripherals/${id}`);
+        break;
       case 'ready-made':
-        router.push(`${basePath}/ready-made/${id}`)
-        break
+        router.push(`${basePath}/ready-made/${id}`);
+        break;
     }
-  }
+  };
 
   const handleEdit = () => {
-    if (!canEdit) return
-    
-    const basePath = `/${locale}/${user?.role.toLowerCase()}`
-    
+    if (!canEdit) return;
+
+    const basePath = `/${locale}/${user?.role.toLowerCase()}`;
+
     switch (type) {
       case 'component':
-        router.push(`${basePath}/components/${id}/edit`)
-        break
+        router.push(`${basePath}/components/${id}/edit`);
+        break;
       case 'peripheral':
-        router.push(`${basePath}/peripherals/${id}/edit`)
-        break
+        router.push(`${basePath}/peripherals/${id}/edit`);
+        break;
       case 'ready-made':
-        router.push(`${basePath}/configurations/${id}/edit`)
-        break
+        router.push(`${basePath}/configurations/${id}/edit`);
+        break;
     }
-  }
+  };
 
   return (
     <div className="relative" ref={menuRef}>
@@ -92,7 +92,7 @@ export function ProductActions({
               <Eye size={16} className="mr-2" />
               View Details
             </button>
-            
+
             {canEdit && (
               <button
                 onClick={handleEdit}
@@ -102,7 +102,7 @@ export function ProductActions({
                 Edit
               </button>
             )}
-            
+
             {canDelete && onDelete && (
               <button
                 onClick={onDelete}
@@ -116,5 +116,5 @@ export function ProductActions({
         </div>
       )}
     </div>
-  )
+  );
 }

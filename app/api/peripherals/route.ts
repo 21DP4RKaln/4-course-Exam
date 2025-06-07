@@ -1,191 +1,183 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prismaService'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prismaService';
+import { extractPeripheralSpecifications } from '@/lib/services/unifiedProductService';
 
-async function getAllPeripheralCategoriesWithCounts() {
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+    const search = searchParams.get('search') || '';
+    const specFilters = searchParams
+      .getAll('spec')
+      .filter((spec): spec is string => spec !== null);
+
+    const categories = await getCategories();
+
+    let peripherals: any[] = [];
+    let featuredProducts: any[] = [];
+    let availableSpecifications: any[] = [];
+
+    if (category) {
+      const whereClause: any = {
+        category: {
+          slug: category,
+        },
+      };
+
+      if (search) {
+        whereClause.OR = [
+          { name: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ];
+      }
+
+      const fetchedPeripherals = await prisma.peripheral.findMany({
+        where: whereClause,
+        include: {
+          category: true,
+          keyboard: true,
+          mouse: true,
+          microphone: true,
+          camera: true,
+          monitor: true,
+          headphones: true,
+          speakers: true,
+          gamepad: true,
+          mousePad: true,
+        },
+        orderBy: {
+          price: 'asc',
+        },
+      });
+
+      peripherals = fetchedPeripherals.map(peripheral => {
+        const discountPrice =
+          peripheral.discountPrice &&
+          (!peripheral.discountExpiresAt ||
+            new Date(peripheral.discountExpiresAt) > new Date())
+            ? peripheral.discountPrice
+            : null;
+
+        return {
+          id: peripheral.id,
+          name: peripheral.name,
+          description: peripheral.description || '',
+          price: peripheral.price,
+          discountPrice: discountPrice,
+          stock: peripheral.quantity,
+          imageUrl: peripheral.imagesUrl,
+          categoryId: peripheral.categoryId,
+          categoryName: peripheral.category.name,
+          specifications: extractPeripheralSpecifications(peripheral),
+          sku: peripheral.sku || '',
+          type: 'peripheral',
+        };
+      });
+
+      if (specFilters.length > 0) {
+        peripherals = peripherals.filter(filteredPeripheral => {
+          return specFilters.every(filter => {
+            const [key, value] = filter.split('=');
+            const peripheralValue =
+              filteredPeripheral.specifications[key]?.toLowerCase() || '';
+            const filterValue = value.toLowerCase();
+
+            if (key === 'model') {
+              const normalizedPeripheralValue = peripheralValue.replace(
+                /\s+/g,
+                '-'
+              );
+              const normalizedFilterValue = filterValue.replace(/\s+/g, '-');
+              return normalizedPeripheralValue.includes(normalizedFilterValue);
+            }
+
+            return peripheralValue.includes(filterValue);
+          });
+        });
+      }
+    } else {
+      featuredProducts = await getFeaturedProducts();
+    }
+
+    return NextResponse.json({
+      categories,
+      components: peripherals,
+      specifications: availableSpecifications,
+      featuredProducts,
+    });
+  } catch (error) {
+    console.error('Error fetching peripherals:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch peripherals' },
+      { status: 500 }
+    );
+  }
+}
+
+async function getCategories() {
   try {
     const categories = await prisma.peripheralCategory.findMany({
-      orderBy: { name: 'asc' },
+      orderBy: {
+        name: 'asc',
+      },
       include: {
         _count: {
-          select: { peripherals: true }, 
+          select: {
+            peripherals: true,
+          },
         },
       },
-    })
+    });
+
     return categories.map(cat => ({
       id: cat.id,
       name: cat.name,
       slug: cat.slug,
       description: cat.description,
-      componentCount: cat._count.peripherals, 
-    }))
+      componentCount: cat._count.peripherals,
+    }));
   } catch (error) {
-    const err = error as Error
-    console.error('Error fetching peripheral categories:', err.message, err.stack)
-    return []
+    console.error('Error fetching categories:', error);
+    return [];
   }
 }
 
-function parseSpecifications(peripheral: any): Record<string, string> {
-  let jsonSpecs: Record<string, string> = {};
-  if (peripheral.specifications) { 
-    try {
-      jsonSpecs = typeof peripheral.specifications === 'string'
-        ? JSON.parse(peripheral.specifications)
-        : peripheral.specifications; 
-    } catch (e) {
-      console.error(`Failed to parse specifications JSON for peripheral ${peripheral.id}:`, peripheral.specifications, e);
-    }
-  }
-  return jsonSpecs;
-}
-
-async function getFeaturedPeripherals() {
+async function getFeaturedProducts() {
   try {
     const featured = await prisma.peripheral.findMany({
-      where: { quantity: { gt: 0 } }, 
+      where: {
+        quantity: { gt: 0 },
+      },
       include: {
-        category: true, 
+        category: true,
       },
       orderBy: [{ viewCount: 'desc' }, { price: 'asc' }],
       take: 6,
-    })
-    return featured.map(p => {
-      const combinedSpecs = parseSpecifications(p);
+    });
+
+    return featured.map(peripheral => {
       const discountPrice =
-        p.discountPrice &&
-        (!p.discountExpiresAt || new Date(p.discountExpiresAt) > new Date())
-          ? p.discountPrice
-          : null
+        peripheral.discountPrice &&
+        (!peripheral.discountExpiresAt ||
+          new Date(peripheral.discountExpiresAt) > new Date())
+          ? peripheral.discountPrice
+          : null;
+
       return {
-        id: p.id,
-        name: p.name,
-        description: p.description || '',
-        price: p.price,
+        id: peripheral.id,
+        name: peripheral.name,
+        description: peripheral.description || '',
+        price: peripheral.price,
         discountPrice: discountPrice,
-        stock: p.quantity,
-        imageUrl: p.imagesUrl,
-        categoryId: p.categoryId,
-        categoryName: p.category.name,
-        specifications: combinedSpecs,
-        sku: p.sku || '',
-      }
-    })
+        stock: peripheral.quantity,
+        imageUrl: peripheral.imagesUrl,
+        categoryId: peripheral.categoryId,
+        categoryName: peripheral.category.name,
+        type: 'peripheral',
+      };
+    });
   } catch (error) {
-    const err = error as Error
-    console.error('Error fetching featured peripherals:', err.message, err.stack)
-    return []
-  }
-}
-
-async function getPeripheralsAndSpecsForCategorySlug(
-  categorySlug: string,
-  search: string,
-  specFilters: string[],
-) {
-  const currentCategory = await prisma.peripheralCategory.findUnique({
-    where: { slug: categorySlug },
-  })
-
-  if (!currentCategory) {
-    return { peripherals: [], specifications: [], categoryFound: false }
-  }
-
-  const whereClause: any = { categoryId: currentCategory.id }
-  if (search) {
-    whereClause.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { description: { contains: search, mode: 'insensitive' } },
-    ]
-  }
-  const fetchedPeripherals = await prisma.peripheral.findMany({
-    where: whereClause,
-    include: {
-      category: true,
-    },
-    orderBy: { price: 'asc' },
-  })
-
-  let peripherals = fetchedPeripherals.map(p => {
-    const combinedSpecs = parseSpecifications(p);
-    const discountPrice =
-      p.discountPrice &&
-      (!p.discountExpiresAt || new Date(p.discountExpiresAt) > new Date())
-        ? p.discountPrice
-        : null
-    return {
-      id: p.id,
-      name: p.name,
-      description: p.description || '',
-      price: p.price,
-      discountPrice: discountPrice,
-      stock: p.quantity,
-      imageUrl: p.imagesUrl,
-      categoryId: p.categoryId,
-      categoryName: p.category.name,
-      specifications: combinedSpecs,
-      sku: p.sku || '',
-    }
-  })
-  if (specFilters.length > 0) {
-    peripherals = peripherals.filter(p => {
-      return specFilters.every(filter => {
-        const [key, value] = filter.split('=')
-        const pValue = p.specifications[key]?.toString().toLowerCase() || ''
-        const filterValue = value.toLowerCase()
-        return pValue.includes(filterValue) 
-      })
-    })
-  }
-
-
-  const availableSpecs: any[] = []
-
-  return { peripherals, specifications: availableSpecs, categoryFound: true }
-}
-
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const categorySlug = searchParams.get('category')
-    const search = searchParams.get('search') || ''
-    const specFilters = searchParams.getAll('spec') || []
-
-    const allPeripheralCategories = await getAllPeripheralCategoriesWithCounts()
-
-    let peripheralsForCategoryList: any[] = []
-    let specificationsForCategoryList: any[] = []
-    let featuredPeripheralsList: any[] = []
-
-    if (categorySlug) {
-      const categoryData = await getPeripheralsAndSpecsForCategorySlug(
-        categorySlug,
-        search,
-        specFilters,
-      )
-      if (!categoryData.categoryFound) {
-        return NextResponse.json(
-          { error: 'Peripheral category not found' },
-          { status: 404 },
-        )
-      }
-      peripheralsForCategoryList = categoryData.peripherals
-      specificationsForCategoryList = categoryData.specifications
-    } else {
-      featuredPeripheralsList = await getFeaturedPeripherals()
-    }
-
-    return NextResponse.json({
-      categories: allPeripheralCategories,
-      components: peripheralsForCategoryList, 
-      specifications: specificationsForCategoryList, 
-      featuredProducts: featuredPeripheralsList, 
-    })
-  } catch (error) {
-    const err = error as Error
-    console.error('Error in GET /api/peripherals:', err.message, err.stack)
-    return NextResponse.json(
-      { error: 'Failed to fetch peripheral data', details: err.message },
-      { status: 500 },
-    )
+    console.error('Error fetching featured products:', error);
+    return [];
   }
 }

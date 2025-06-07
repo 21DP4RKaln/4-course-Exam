@@ -9,7 +9,9 @@ export async function GET(
   try {
     const { params } = context;
     const resolvedParams = await params;
-    const id = resolvedParams.id;console.log('Fetching component with ID:', id);    const component = await prisma.component.findUnique({
+    const id = resolvedParams.id;
+    console.log('Fetching component with ID:', id);
+    const component = await prisma.component.findUnique({
       where: {
         id,
       },
@@ -22,8 +24,8 @@ export async function GET(
         storage: true,
         psu: true,
         cooling: true,
-        caseModel: true
-      }
+        caseModel: true,
+      },
     });
 
     if (!component) {
@@ -32,15 +34,23 @@ export async function GET(
         { error: 'Component not found' },
         { status: 404 }
       );
-    }    console.log('Raw component data:', JSON.stringify({
-      ...component,
-      category: component.category?.name
-    }, null, 2));
-    
+    }
+    console.log(
+      'Raw component data:',
+      JSON.stringify(
+        {
+          ...component,
+          category: component.category?.name,
+        },
+        null,
+        2
+      )
+    );
+
     const specs = extractComponentSpecifications(component);
-    
+
     console.log('Final specifications:', specs);
-    
+
     let discountPrice = null;
     if (component.discountPrice && component.discountExpiresAt) {
       const now = new Date();
@@ -49,7 +59,8 @@ export async function GET(
       }
     } else if (component.discountPrice) {
       discountPrice = component.discountPrice;
-    }    return NextResponse.json({
+    }
+    return NextResponse.json({
       id: component.id,
       type: 'component',
       name: component.name,
@@ -59,17 +70,21 @@ export async function GET(
       price: component.price,
       discountPrice: discountPrice,
       discountExpiresAt: component.discountExpiresAt,
-      imageUrl: component.imagesUrl, 
-      stock: component.quantity, 
+      imageUrl: component.imagesUrl,
+      stock: component.quantity,
       rating: component.rating || 0,
       ratingCount: component.ratingCount || 0,
       ratings: {
         average: component.rating || 0,
         count: component.ratingCount || 0,
-      }    });
+      },
+    });
   } catch (error) {
     const resolvedParams = await context.params;
-    console.error(`Error fetching component with ID ${resolvedParams.id}:`, error);
+    console.error(
+      `Error fetching component with ID ${resolvedParams.id}:`,
+      error
+    );
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,10 +1,10 @@
-import { NextAuthOptions } from 'next-auth'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import { prisma } from '@/lib/prismaService'
-import GoogleProvider from 'next-auth/providers/google'
-import AppleProvider from 'next-auth/providers/apple'
-import LinkedInProvider from 'next-auth/providers/linkedin'
-import { Adapter } from 'next-auth/adapters'
+import { NextAuthOptions } from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { prisma } from '@/lib/prismaService';
+import GoogleProvider from 'next-auth/providers/google';
+import AppleProvider from 'next-auth/providers/apple';
+import LinkedInProvider from 'next-auth/providers/linkedin';
+import { Adapter } from 'next-auth/adapters';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -30,23 +30,23 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
-        token.role = user.role || 'USER'
-        token.userId = user.id
+        token.role = user.role || 'USER';
+        token.userId = user.id;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.userId as string
-        session.user.role = token.role as string
+        session.user.id = token.userId as string;
+        session.user.role = token.role as string;
       }
-      return session
+      return session;
     },
     async signIn({ user, account, profile, email, credentials }) {
       try {
         const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! }
-        })
+          where: { email: user.email! },
+        });
 
         if (!existingUser) {
           await prisma.user.create({
@@ -59,14 +59,14 @@ export const authOptions: NextAuthOptions = {
               profileImageUrl: user.image,
               role: 'USER',
               password: '',
-            }
-          })
+            },
+          });
         }
 
-        return true
+        return true;
       } catch (error) {
-        console.error('Sign in error:', error)
-        return false
+        console.error('Sign in error:', error);
+        return false;
       }
     },
   },
@@ -78,4 +78,4 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET,
-}
+};

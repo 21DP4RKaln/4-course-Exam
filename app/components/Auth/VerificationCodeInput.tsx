@@ -24,7 +24,7 @@ export default function VerificationCodeInput({
 }: VerificationCodeInputProps) {
   const t = useTranslations('auth.resetPassword.step2');
   const [code, setCode] = useState(['', '', '', '', '', '']);
-  const [timeLeft, setTimeLeft] = useState(900); 
+  const [timeLeft, setTimeLeft] = useState(900);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -44,7 +44,10 @@ export default function VerificationCodeInput({
         inputRefs.current[index + 1]?.focus();
       }
 
-      if (newCode.every(digit => digit !== '') && newCode.join('').length === 6) {
+      if (
+        newCode.every(digit => digit !== '') &&
+        newCode.join('').length === 6
+      ) {
         onCodeComplete(newCode.join(''));
       }
     }
@@ -75,7 +78,10 @@ export default function VerificationCodeInput({
   const maskContact = (contact: string, type: 'email' | 'phone') => {
     if (type === 'email') {
       const [localPart, domain] = contact.split('@');
-      const maskedLocal = localPart.charAt(0) + '*'.repeat(localPart.length - 2) + localPart.charAt(localPart.length - 1);
+      const maskedLocal =
+        localPart.charAt(0) +
+        '*'.repeat(localPart.length - 2) +
+        localPart.charAt(localPart.length - 1);
       return `${maskedLocal}@${domain}`;
     } else {
       const masked = contact.replace(/(\d{3})\d{3}(\d{3})/, '$1***$2');
@@ -84,7 +90,9 @@ export default function VerificationCodeInput({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">      <div className="text-center">
+    <div className="w-full max-w-md mx-auto space-y-6">
+      {' '}
+      <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           {t('title')}
         </h2>
@@ -92,20 +100,19 @@ export default function VerificationCodeInput({
           {t('subtitle', { contact: maskContact(contact, type) })}
         </p>
       </div>
-
       <div className="flex justify-center space-x-3">
         {code.map((digit, index) => (
           <Input
             key={index}
-            ref={(el) => {
+            ref={el => {
               if (el) {
                 inputRefs.current[index] = el;
               }
             }}
             type="text"
             value={digit}
-            onChange={(e) => handleInputChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
+            onChange={e => handleInputChange(index, e.target.value)}
+            onKeyDown={e => handleKeyDown(index, e)}
             onPaste={index === 0 ? handlePaste : undefined}
             className="w-12 h-12 text-center text-xl font-bold border-2 focus:border-blue-500"
             maxLength={1}
@@ -113,25 +120,29 @@ export default function VerificationCodeInput({
           />
         ))}
       </div>
-
       {error && (
         <div className="text-red-500 text-sm text-center bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
           {error}
         </div>
       )}
-
-      <div className="text-center space-y-3">        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Code expires in: <span className="font-medium text-red-500">{formatTime(timeLeft)}</span>
+      <div className="text-center space-y-3">
+        {' '}
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Code expires in:{' '}
+          <span className="font-medium text-red-500">
+            {formatTime(timeLeft)}
+          </span>
         </p>
-
         <Button
           type="button"
           variant="ghost"
           onClick={onResendCode}
-          disabled={isLoading || timeLeft > 840} 
+          disabled={isLoading || timeLeft > 840}
           className="text-blue-600 hover:text-blue-700"
         >
-          {timeLeft > 840 ? t('resendIn', { seconds: 900 - timeLeft }) : t('resendCode')}
+          {timeLeft > 840
+            ? t('resendIn', { seconds: 900 - timeLeft })
+            : t('resendCode')}
         </Button>
       </div>
     </div>

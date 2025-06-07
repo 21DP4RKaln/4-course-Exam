@@ -1,59 +1,69 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
-import { Button } from '@/app/components/ui/button'
-import { Search, ExternalLink } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import { Search, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface Component {
-  id: string
-  name: string
-  category: string
-  price: number
-  stock: number
-  sku: string
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  sku: string;
 }
 
 export default function ComponentsPage() {
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  const [components, setComponents] = useState<Component[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+  const [components, setComponents] = useState<Component[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
-    fetchComponents()
-  }, [])
+    fetchComponents();
+  }, []);
 
   const fetchComponents = async () => {
     try {
-      const response = await fetch('/api/specialist/products/components')
+      const response = await fetch('/api/specialist/products/components');
       if (response.ok) {
-        const data = await response.json()
-        setComponents(data)
+        const data = await response.json();
+        setComponents(data);
       }
     } catch (error) {
-      console.error('Error fetching components:', error)
+      console.error('Error fetching components:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const filteredComponents = components.filter(component => {
-    if (selectedCategory && component.category !== selectedCategory) return false
-    if (searchQuery && !component.name.toLowerCase().includes(searchQuery.toLowerCase())) return false
-    return true
-  })
+    if (selectedCategory && component.category !== selectedCategory)
+      return false;
+    if (
+      searchQuery &&
+      !component.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+      return false;
+    return true;
+  });
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -72,13 +82,13 @@ export default function ComponentsPage() {
             placeholder="Search components..."
             className="pl-10 pr-4 py-2 w-full border rounded-lg dark:bg-neutral-800 dark:border-neutral-700"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
         <select
           className="border rounded-lg px-4 py-2 dark:bg-neutral-800 dark:border-neutral-700"
           value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
+          onChange={e => setSelectedCategory(e.target.value)}
         >
           <option value="">All Categories</option>
           <option value="cpu">CPU</option>
@@ -106,23 +116,32 @@ export default function ComponentsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredComponents.map((component) => (
+                {filteredComponents.map(component => (
                   <tr key={component.id} className="border-b">
                     <td className="px-6 py-4">{component.name}</td>
-                    <td className="px-6 py-4 capitalize">{component.category}</td>
+                    <td className="px-6 py-4 capitalize">
+                      {component.category}
+                    </td>
                     <td className="px-6 py-4">{component.sku}</td>
                     <td className="px-6 py-4 text-right">€{component.price}</td>
                     <td className="px-6 py-4 text-center">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        component.stock > 10 ? 'bg-green-100 text-green-800' :
-                        component.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          component.stock > 10
+                            ? 'bg-green-100 text-green-800'
+                            : component.stock > 0
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {component.stock}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <Link href={`/${locale}/shop/product/${component.id}`} target="_blank">
+                      <Link
+                        href={`/${locale}/shop/product/${component.id}`}
+                        target="_blank"
+                      >
                         <Button variant="ghost" size="sm">
                           <ExternalLink className="h-4 w-4" />
                         </Button>
@@ -136,5 +155,5 @@ export default function ComponentsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

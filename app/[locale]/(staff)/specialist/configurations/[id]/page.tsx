@@ -1,145 +1,168 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
-import { Button } from '@/app/components/ui/button'
-import { Badge } from '@/app/components/ui/badge'
-import { ArrowLeft, ShoppingCart, Edit, CheckCircle, XCircle } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import { Badge } from '@/app/components/ui/badge';
+import {
+  ArrowLeft,
+  ShoppingCart,
+  Edit,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface ConfigurationDetails {
-  id: string
-  name: string
-  description: string
-  status: string
-  totalPrice: number
-  userId: string
-  userName: string
-  createdAt: string
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  totalPrice: number;
+  userId: string;
+  userName: string;
+  createdAt: string;
   components: {
-    id: string
-    name: string
-    category: string
-    price: number
-    quantity: number
-  }[]
+    id: string;
+    name: string;
+    category: string;
+    price: number;
+    quantity: number;
+  }[];
 }
 
 export default function ConfigurationDetailsPage() {
-  const router = useRouter()
-  const params = useParams()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  const [configuration, setConfiguration] = useState<ConfigurationDetails | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [approving, setApproving] = useState(false)
+  const router = useRouter();
+  const params = useParams();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+  const [configuration, setConfiguration] =
+    useState<ConfigurationDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [approving, setApproving] = useState(false);
 
   useEffect(() => {
-    fetchConfigurationDetails()
-  }, [params.id])
+    fetchConfigurationDetails();
+  }, [params.id]);
 
   const fetchConfigurationDetails = async () => {
     try {
-      const response = await fetch(`/api/specialist/configurations/${params.id}`)
+      const response = await fetch(
+        `/api/specialist/configurations/${params.id}`
+      );
       if (response.ok) {
-        const data = await response.json()
-        setConfiguration(data)
+        const data = await response.json();
+        setConfiguration(data);
       }
     } catch (error) {
-      console.error('Error fetching configuration details:', error)
+      console.error('Error fetching configuration details:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleApprove = async () => {
-    setApproving(true)
+    setApproving(true);
     try {
-      const response = await fetch(`/api/specialist/configurations/${params.id}/approve`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `/api/specialist/configurations/${params.id}/approve`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         }
-      })
+      );
 
       if (response.ok) {
-        await fetchConfigurationDetails()
-        alert('Configuration approved successfully!')
+        await fetchConfigurationDetails();
+        alert('Configuration approved successfully!');
       }
     } catch (error) {
-      console.error('Error approving configuration:', error)
-      alert('Failed to approve configuration')
+      console.error('Error approving configuration:', error);
+      alert('Failed to approve configuration');
     } finally {
-      setApproving(false)
+      setApproving(false);
     }
-  }
+  };
 
   const handleReject = async () => {
-    const reason = prompt('Please provide a reason for rejection:')
-    if (!reason) return
+    const reason = prompt('Please provide a reason for rejection:');
+    if (!reason) return;
 
     try {
-      const response = await fetch(`/api/specialist/configurations/${params.id}/reject`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ reason })
-      })
+      const response = await fetch(
+        `/api/specialist/configurations/${params.id}/reject`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ reason }),
+        }
+      );
 
       if (response.ok) {
-        await fetchConfigurationDetails()
-        alert('Configuration rejected')
+        await fetchConfigurationDetails();
+        alert('Configuration rejected');
       }
     } catch (error) {
-      console.error('Error rejecting configuration:', error)
-      alert('Failed to reject configuration')
+      console.error('Error rejecting configuration:', error);
+      alert('Failed to reject configuration');
     }
-  }
+  };
 
   const handlePublish = async () => {
     try {
-      const response = await fetch(`/api/specialist/configurations/${params.id}/publish`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `/api/specialist/configurations/${params.id}/publish`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         }
-      })
+      );
 
       if (response.ok) {
-        await fetchConfigurationDetails()
-        alert('Configuration published to shop!')
+        await fetchConfigurationDetails();
+        alert('Configuration published to shop!');
       }
     } catch (error) {
-      console.error('Error publishing configuration:', error)
-      alert('Failed to publish configuration')
+      console.error('Error publishing configuration:', error);
+      alert('Failed to publish configuration');
     }
-  }
+  };
 
   if (loading || !configuration) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'DRAFT':
-        return 'bg-neutral-100 text-neutral-800'
+        return 'bg-neutral-100 text-neutral-800';
       case 'SUBMITTED':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800';
       case 'APPROVED':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'REJECTED':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-neutral-100 text-neutral-800'
+        return 'bg-neutral-100 text-neutral-800';
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -176,11 +199,15 @@ export default function ConfigurationDetailsPage() {
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">Created Date</h4>
-                  <p>{new Date(configuration.createdAt).toLocaleDateString()}</p>
+                  <p>
+                    {new Date(configuration.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">Total Price</h4>
-                  <p className="text-lg font-semibold">€{configuration.totalPrice}</p>
+                  <p className="text-lg font-semibold">
+                    €{configuration.totalPrice}
+                  </p>
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">Status</h4>
@@ -203,18 +230,25 @@ export default function ConfigurationDetailsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {configuration.components.map((component) => (
+                      {configuration.components.map(component => (
                         <tr key={component.id} className="border-b">
                           <td className="px-4 py-2">{component.name}</td>
                           <td className="px-4 py-2">{component.category}</td>
-                          <td className="px-4 py-2 text-center">{component.quantity}</td>
-                          <td className="px-4 py-2 text-right">€{component.price}</td>
+                          <td className="px-4 py-2 text-center">
+                            {component.quantity}
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            €{component.price}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
                       <tr className="bg-neutral-50 dark:bg-neutral-800">
-                        <td colSpan={3} className="px-4 py-2 text-right font-medium">
+                        <td
+                          colSpan={3}
+                          className="px-4 py-2 text-right font-medium"
+                        >
                           Total:
                         </td>
                         <td className="px-4 py-2 text-right font-semibold">
@@ -245,7 +279,9 @@ export default function ConfigurationDetailsPage() {
                     Publish to Shop
                   </Button>
                 )}
-                <Link href={`/${locale}/specialist/configurations/${configuration.id}/edit`}>
+                <Link
+                  href={`/${locale}/specialist/configurations/${configuration.id}/edit`}
+                >
                   <Button variant="outline">
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
@@ -257,5 +293,5 @@ export default function ConfigurationDetailsPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

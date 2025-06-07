@@ -1,79 +1,79 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { useTheme } from '@/app/contexts/ThemeContext'
-import { 
-  Tag, 
-  Megaphone, 
-  TrendingUp, 
-  Users, 
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import {
+  Tag,
+  Megaphone,
+  TrendingUp,
+  Users,
   DollarSign,
   CalendarDays,
-  ArrowRight
-} from 'lucide-react'
-import Link from 'next/link'
+  ArrowRight,
+} from 'lucide-react';
+import Link from 'next/link';
 
 interface MarketingStats {
-  activePromoCodes: number
-  totalDiscountGiven: number
-  activeUsers: number
-  conversionRate: number
+  activePromoCodes: number;
+  totalDiscountGiven: number;
+  activeUsers: number;
+  conversionRate: number;
   recentCampaigns: Array<{
-    id: string
-    name: string
-    type: string
-    status: string
-    startDate: string
-    endDate?: string
-  }>
+    id: string;
+    name: string;
+    type: string;
+    status: string;
+    startDate: string;
+    endDate?: string;
+  }>;
   promoCodeUsage: Array<{
-    code: string
-    usageCount: number
-    discountAmount: number
-  }>
+    code: string;
+    usageCount: number;
+    discountAmount: number;
+  }>;
 }
 
 export default function MarketingOverviewPage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const params = useParams()
-  const locale = params.locale as string
-  const { user } = useAuth()
-  const { theme } = useTheme()
-  const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState<MarketingStats | null>(null)
+  const t = useTranslations();
+  const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
+  const { user } = useAuth();
+  const { theme } = useTheme();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<MarketingStats | null>(null);
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') {
-      router.push('/')
-      return
+      router.push('/');
+      return;
     }
 
     const fetchMarketingStats = async () => {
       try {
-        const response = await fetch('/api/admin/marketing/stats')
-        if (!response.ok) throw new Error('Failed to fetch stats')
-        const data = await response.json()
-        setStats(data)
+        const response = await fetch('/api/admin/marketing/stats');
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        const data = await response.json();
+        setStats(data);
       } catch (error) {
-        console.error('Error fetching marketing stats:', error)
+        console.error('Error fetching marketing stats:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchMarketingStats()
-  }, [user, router])
+    fetchMarketingStats();
+  }, [user, router]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-600"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -83,14 +83,14 @@ export default function MarketingOverviewPage() {
           Marketing Overview
         </h1>
         <div className="flex gap-4">
-          <Link 
+          <Link
             href={`/${locale}/admin/marketing/promo-codes/create`}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
           >
             <Tag size={18} />
             Create Promo Code
           </Link>
-          <Link 
+          <Link
             href={`/${locale}/admin/marketing/campaigns`}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2"
           >
@@ -105,7 +105,9 @@ export default function MarketingOverviewPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Active Promo Codes</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Active Promo Codes
+              </p>
               <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {stats?.activePromoCodes || 0}
               </p>
@@ -119,7 +121,9 @@ export default function MarketingOverviewPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Total Discount Given</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Total Discount Given
+              </p>
               <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 €{stats?.totalDiscountGiven?.toFixed(2) || '0.00'}
               </p>
@@ -133,7 +137,9 @@ export default function MarketingOverviewPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Active Users</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Active Users
+              </p>
               <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {stats?.activeUsers || 0}
               </p>
@@ -147,7 +153,9 @@ export default function MarketingOverviewPage() {
         <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Conversion Rate</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Conversion Rate
+              </p>
               <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {stats?.conversionRate?.toFixed(1) || 0}%
               </p>
@@ -166,24 +174,28 @@ export default function MarketingOverviewPage() {
             Marketing Tools
           </h2>
           <div className="space-y-3">
-            <Link 
+            <Link
               href={`/${locale}/admin/marketing/promo-codes`}
               className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-600"
             >
               <div className="flex items-center gap-3">
                 <Tag className="h-5 w-5 text-neutral-600 dark:text-neutral-300" />
-                <span className="text-neutral-900 dark:text-white">Promo Codes</span>
+                <span className="text-neutral-900 dark:text-white">
+                  Promo Codes
+                </span>
               </div>
               <ArrowRight className="h-5 w-5 text-neutral-400" />
             </Link>
 
-            <Link 
+            <Link
               href={`/${locale}/admin/marketing/campaigns`}
               className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-600"
             >
               <div className="flex items-center gap-3">
                 <Megaphone className="h-5 w-5 text-neutral-600 dark:text-neutral-300" />
-                <span className="text-neutral-900 dark:text-white">Campaigns</span>
+                <span className="text-neutral-900 dark:text-white">
+                  Campaigns
+                </span>
               </div>
               <ArrowRight className="h-5 w-5 text-neutral-400" />
             </Link>
@@ -195,13 +207,15 @@ export default function MarketingOverviewPage() {
             Recent Campaigns
           </h2>
           <div className="space-y-3">
-            {stats?.recentCampaigns?.map((campaign) => (
-              <div 
+            {stats?.recentCampaigns?.map(campaign => (
+              <div
                 key={campaign.id}
                 className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg"
               >
                 <div>
-                  <p className="font-medium text-neutral-900 dark:text-white">{campaign.name}</p>
+                  <p className="font-medium text-neutral-900 dark:text-white">
+                    {campaign.name}
+                  </p>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400">
                     {campaign.type} • {campaign.status}
                   </p>
@@ -244,7 +258,7 @@ export default function MarketingOverviewPage() {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-stone-950 divide-y divide-neutral-200 dark:divide-neutral-700">
-                {stats?.promoCodeUsage?.map((promo) => (
+                {stats?.promoCodeUsage?.map(promo => (
                   <tr key={promo.code}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm font-medium text-neutral-900 dark:text-white">
@@ -269,5 +283,5 @@ export default function MarketingOverviewPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

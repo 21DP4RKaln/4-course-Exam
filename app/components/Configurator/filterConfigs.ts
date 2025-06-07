@@ -1,12 +1,12 @@
 export interface Filter {
-  id: string
-  name: string
-  category: string
+  id: string;
+  name: string;
+  category: string;
 }
 
 export const filters: Record<string, Filter[]> = {
   cpu: [
-    { id: 'intel', name: 'Intel', category: 'cpu'},
+    { id: 'intel', name: 'Intel', category: 'cpu' },
     { id: 'intel-core-i9', name: 'Core i9', category: 'cpu' },
     { id: 'intel-core-i7', name: 'Core i7', category: 'cpu' },
     { id: 'intel-core-i5', name: 'Core i5', category: 'cpu' },
@@ -24,7 +24,11 @@ export const filters: Record<string, Filter[]> = {
     { id: 'nvidia-rtx-4060-ti', name: 'RTX 4060 Ti', category: 'gpu' },
     { id: 'nvidia-rtx-4070', name: 'RTX 4070', category: 'gpu' },
     { id: 'nvidia-rtx-4070-super', name: 'RTX 4070 Super', category: 'gpu' },
-    { id: 'nvidia-rtx-4070-ti-super', name: 'RTX 4070 Ti Super', category: 'gpu' },
+    {
+      id: 'nvidia-rtx-4070-ti-super',
+      name: 'RTX 4070 Ti Super',
+      category: 'gpu',
+    },
     { id: 'nvidia-rtx-4090', name: 'RTX 4090', category: 'gpu' },
     { id: 'amd', name: 'AMD', category: 'gpu' },
     { id: 'amd-rx-6400', name: 'RX 6400', category: 'gpu' },
@@ -37,7 +41,11 @@ export const filters: Record<string, Filter[]> = {
     { id: 'atx', name: 'ATX', category: 'motherboard' },
     { id: 'micro-atx', name: 'Micro-ATX', category: 'motherboard' },
     { id: 'mini-itx', name: 'Mini-ITX', category: 'motherboard' },
-    { id: 'intel-compatible', name: 'Intel Compatible', category: 'motherboard' },
+    {
+      id: 'intel-compatible',
+      name: 'Intel Compatible',
+      category: 'motherboard',
+    },
     { id: 'amd-compatible', name: 'AMD Compatible', category: 'motherboard' },
   ],
   memory: [
@@ -70,9 +78,13 @@ export const filters: Record<string, Filter[]> = {
   ],
   services: [
     { id: 'windows', name: 'Windows', category: 'services' },
-    { id: 'wifi+bluetooth', name: 'WiFi + Bluetooth adapter', category: 'services' },
+    {
+      id: 'wifi+bluetooth',
+      name: 'WiFi + Bluetooth adapter',
+      category: 'services',
+    },
     { id: '4gpu', name: 'For GPU', category: 'services' },
     { id: 'sound', name: 'Sound Card', category: 'services' },
     { id: 'capture', name: 'Capture Card', category: 'services' },
   ],
-}
+};

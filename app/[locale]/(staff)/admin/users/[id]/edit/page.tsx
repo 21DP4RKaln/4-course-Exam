@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import { ArrowLeft, Save } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import PhoneInput from '@/app/components/ui/PhoneInput'
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { ArrowLeft, Save } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import PhoneInput from '@/app/components/ui/PhoneInput';
 
 const userEditSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -16,17 +16,17 @@ const userEditSchema = z.object({
   role: z.enum(['USER', 'SPECIALIST', 'ADMIN']),
   isBlocked: z.boolean(),
   blockReason: z.string().optional(),
-})
+});
 
-type UserEditFormData = z.infer<typeof userEditSchema>
+type UserEditFormData = z.infer<typeof userEditSchema>;
 
 export default function EditUserPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  
-  const [loading, setLoading] = useState(false)
-  const [fetchingUser, setFetchingUser] = useState(true)
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
+
+  const [loading, setLoading] = useState(false);
+  const [fetchingUser, setFetchingUser] = useState(true);
 
   const {
     register,
@@ -37,19 +37,19 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
     formState: { errors },
   } = useForm<UserEditFormData>({
     resolver: zodResolver(userEditSchema),
-  })
+  });
 
-  const isBlocked = watch('isBlocked')
+  const isBlocked = watch('isBlocked');
 
   useEffect(() => {
-    fetchUser()
-  }, [params.id])
+    fetchUser();
+  }, [params.id]);
 
   const fetchUser = async () => {
     try {
-      const response = await fetch(`/api/admin/users/${params.id}`)
+      const response = await fetch(`/api/admin/users/${params.id}`);
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         reset({
           email: data.email,
           firstName: data.firstName,
@@ -58,17 +58,17 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
           role: data.role,
           isBlocked: data.isBlocked,
           blockReason: data.blockReason || '',
-        })
+        });
       }
     } catch (error) {
-      console.error('Error fetching user:', error)
+      console.error('Error fetching user:', error);
     } finally {
-      setFetchingUser(false)
+      setFetchingUser(false);
     }
-  }
+  };
 
   const onSubmit = async (data: UserEditFormData) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(`/api/admin/users/${params.id}`, {
         method: 'PUT',
@@ -76,24 +76,24 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (response.ok) {
-        router.push(`/${locale}/admin/users`)
+        router.push(`/${locale}/admin/users`);
       }
     } catch (error) {
-      console.error('Error updating user:', error)
+      console.error('Error updating user:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (fetchingUser) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -123,7 +123,9 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.firstName && (
-                <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
 
@@ -137,7 +139,9 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.lastName && (
-                <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.lastName.message}
+                </p>
               )}
             </div>
 
@@ -151,7 +155,9 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
                 className="w-full px-3 py-2 border rounded-lg dark:bg-neutral-700 dark:border-neutral-600"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -161,7 +167,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
               </label>
               <PhoneInput
                 value={watch('phone') || ''}
-                onChange={(value) => setValue('phone', value)}
+                onChange={value => setValue('phone', value)}
                 error={errors.phone?.message}
               />
             </div>
@@ -179,7 +185,9 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
                 <option value="ADMIN">Admin</option>
               </select>
               {errors.role && (
-                <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.role.message}
+                </p>
               )}
             </div>
 
@@ -232,5 +240,5 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
         </form>
       </div>
     </div>
-  )
+  );
 }

@@ -21,14 +21,15 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid or expired verification code' },
         { status: 400 }
       );
-    }    return NextResponse.json({
+    }
+    return NextResponse.json({
       message: 'Code verified successfully',
       userId: resetToken.user.id,
       token: resetToken.token,
     });
   } catch (error) {
     console.error('Error verifying code:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid input', details: error.errors },

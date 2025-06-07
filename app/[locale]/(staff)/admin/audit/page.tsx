@@ -1,15 +1,24 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
-import { useRouter, usePathname } from 'next/navigation'
-import { 
-  Shield, FileSearch, Clock, User, Download, RefreshCw,
-  AlertCircle, Info, ChevronLeft, ChevronRight, ExternalLink
-} from 'lucide-react'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { useLoading } from '@/app/hooks/useLoading'
-import { format } from 'date-fns'
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
+import {
+  Shield,
+  FileSearch,
+  Clock,
+  User,
+  Download,
+  RefreshCw,
+  AlertCircle,
+  Info,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+} from 'lucide-react';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { useLoading } from '@/app/hooks/useLoading';
+import { format } from 'date-fns';
 
 interface AuditLogEntry {
   id: string;
@@ -25,51 +34,51 @@ interface AuditLogEntry {
 }
 
 export default function AuditPage() {
-  const t = useTranslations()
-  const router = useRouter()
-  const pathname = usePathname()
-  const { user, isAuthenticated } = useAuth()
-  const locale = pathname.split('/')[1]
- 
-  const API_ENDPOINT = '/api/admin/audit'
+  const t = useTranslations();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, isAuthenticated } = useAuth();
+  const locale = pathname.split('/')[1];
 
-  const [logs, setLogs] = useState<AuditLogEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [filter, setFilter] = useState('')
-  const [actionFilter, setActionFilter] = useState<string>('all')
-  const [entityFilter, setEntityFilter] = useState<string>('all')
-  const [dateFilter, setDateFilter] = useState<string>('all')
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalLogs, setTotalLogs] = useState(0)
-  
-  const loadingComponent = useLoading(loading)
+  const API_ENDPOINT = '/api/admin/audit';
+
+  const [logs, setLogs] = useState<AuditLogEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState('');
+  const [actionFilter, setActionFilter] = useState<string>('all');
+  const [entityFilter, setEntityFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('all');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalLogs, setTotalLogs] = useState(0);
+
+  const loadingComponent = useLoading(loading);
 
   // Fetch audit logs
   useEffect(() => {
     const fetchLogs = async () => {
-      setLoading(true)
-      setError(null)
-      
+      setLoading(true);
+      setError(null);
+
       try {
         // Build query parameters
         const params = new URLSearchParams();
         params.append('page', page.toString());
         params.append('limit', '25'); // Show 25 logs per page
-        
+
         if (actionFilter !== 'all') {
           params.append('action', actionFilter);
         }
-        
+
         if (entityFilter !== 'all') {
           params.append('entityType', entityFilter);
         }
-        
+
         if (dateFilter !== 'all') {
           const now = new Date();
           let fromDate: Date;
-          
+
           switch (dateFilter) {
             case 'today':
               fromDate = new Date(now.setHours(0, 0, 0, 0));
@@ -90,17 +99,17 @@ export default function AuditPage() {
             default:
               fromDate = new Date(0);
           }
-          
+
           params.append('fromDate', fromDate.toISOString());
           params.append('toDate', new Date().toISOString());
         }
-        
+
         const response = await fetch(`${API_ENDPOINT}?${params.toString()}`);
-        
+
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
         setLogs(data.logs);
         setTotalPages(data.pagination.pages);
@@ -119,42 +128,48 @@ export default function AuditPage() {
   // Redirect if not authenticated or not admin
   useEffect(() => {
     if (isAuthenticated && user && user.role !== 'ADMIN') {
-      router.push(`/${locale}/dashboard`)
+      router.push(`/${locale}/dashboard`);
     }
-  }, [isAuthenticated, user, router, locale])
+  }, [isAuthenticated, user, router, locale]);
 
   // Filter logs based on user input
   const filteredLogs = logs.filter(log => {
-    const matchesSearch = filter === '' || 
-      (log.userName && log.userName.toLowerCase().includes(filter.toLowerCase())) ||
+    const matchesSearch =
+      filter === '' ||
+      (log.userName &&
+        log.userName.toLowerCase().includes(filter.toLowerCase())) ||
       log.action.toLowerCase().includes(filter.toLowerCase()) ||
       log.entityType.toLowerCase().includes(filter.toLowerCase()) ||
-      (log.entityId && log.entityId.toLowerCase().includes(filter.toLowerCase())) ||
-      (log.details && JSON.stringify(log.details).toLowerCase().includes(filter.toLowerCase()));
-      
+      (log.entityId &&
+        log.entityId.toLowerCase().includes(filter.toLowerCase())) ||
+      (log.details &&
+        JSON.stringify(log.details)
+          .toLowerCase()
+          .includes(filter.toLowerCase()));
+
     return matchesSearch;
   });
 
   // Get unique actions & entity types for filters
   const uniqueActions = Array.from(new Set(logs.map(log => log.action)));
-  const uniqueEntityTypes = Array.from(new Set(logs.map(log => log.entityType)));
+  const uniqueEntityTypes = Array.from(
+    new Set(logs.map(log => log.entityType))
+  );
 
   // Export logs to CSV
   const exportToCSV = () => {
     window.location.href = `${API_ENDPOINT}?format=csv${
       actionFilter !== 'all' ? `&action=${actionFilter}` : ''
-    }${
-      entityFilter !== 'all' ? `&entityType=${entityFilter}` : ''
-    }${
+    }${entityFilter !== 'all' ? `&entityType=${entityFilter}` : ''}${
       dateFilter !== 'all' ? `&${getDateRangeParams(dateFilter)}` : ''
     }`;
-  }
-  
+  };
+
   // Helper function to get date range params for filter
   const getDateRangeParams = (filter: string) => {
     const now = new Date();
     let fromDate: Date;
-    
+
     switch (filter) {
       case 'today':
         fromDate = new Date(now.setHours(0, 0, 0, 0));
@@ -175,9 +190,9 @@ export default function AuditPage() {
       default:
         fromDate = new Date(0);
     }
-    
+
     return `fromDate=${fromDate.toISOString()}&toDate=${new Date().toISOString()}`;
-  }
+  };
 
   // Handle pagination
   const goToNextPage = () => {
@@ -185,7 +200,7 @@ export default function AuditPage() {
       setPage(page + 1);
     }
   };
-  
+
   const goToPrevPage = () => {
     if (page > 1) {
       setPage(page - 1);
@@ -214,36 +229,36 @@ export default function AuditPage() {
       default:
         return <div className="w-2 h-2 bg-neutral-500 rounded-full mr-2"></div>;
     }
-  }
+  };
 
   // Format date for display
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleString();
-  }
+  };
 
   // Refresh logs
   const refreshLogs = async () => {
-    setLoading(true)
-    setError(null)
-    
+    setLoading(true);
+    setError(null);
+
     try {
       // Build query parameters
       const params = new URLSearchParams();
       params.append('page', page.toString());
       params.append('limit', '25'); // Show 25 logs per page
-      
+
       if (actionFilter !== 'all') {
         params.append('action', actionFilter);
       }
-      
+
       if (entityFilter !== 'all') {
         params.append('entityType', entityFilter);
       }
-      
+
       if (dateFilter !== 'all') {
         const now = new Date();
         let fromDate: Date;
-        
+
         switch (dateFilter) {
           case 'today':
             fromDate = new Date(now.setHours(0, 0, 0, 0));
@@ -264,17 +279,17 @@ export default function AuditPage() {
           default:
             fromDate = new Date(0);
         }
-        
+
         params.append('fromDate', fromDate.toISOString());
         params.append('toDate', new Date().toISOString());
       }
-      
+
       const response = await fetch(`${API_ENDPOINT}?${params.toString()}`);
-      
+
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
       setLogs(data.logs);
       setTotalPages(data.pagination.pages);
@@ -285,9 +300,9 @@ export default function AuditPage() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  if (loading && logs.length === 0) return loadingComponent
+  if (loading && logs.length === 0) return loadingComponent;
 
   return (
     <div className="space-y-6">
@@ -295,16 +310,16 @@ export default function AuditPage() {
         <h1 className="text-2xl font-bold flex items-center">
           <Shield className="mr-2" /> Audit Logs
         </h1>
-        
+
         <div className="flex space-x-2">
-          <button 
-            onClick={refreshLogs} 
+          <button
+            onClick={refreshLogs}
             className="btn btn-outline flex items-center"
           >
             <RefreshCw size={16} className="mr-2" /> Refresh
           </button>
-          <button 
-            onClick={exportToCSV} 
+          <button
+            onClick={exportToCSV}
             className="btn btn-outline flex items-center"
           >
             <Download size={16} className="mr-2" /> Export
@@ -400,8 +415,8 @@ export default function AuditPage() {
       <div className="text-sm text-neutral-500 dark:text-neutral-400">
         {!loading && (
           <span>
-            Showing {filteredLogs.length} logs (page {page} of {totalPages || 1})
-            {totalLogs > 0 && ` • ${totalLogs} total logs`}
+            Showing {filteredLogs.length} logs (page {page} of {totalPages || 1}
+            ){totalLogs > 0 && ` • ${totalLogs} total logs`}
           </span>
         )}
       </div>
@@ -444,11 +459,15 @@ export default function AuditPage() {
                 </tr>
               ) : filteredLogs.length > 0 ? (
                 filteredLogs.map(log => (
-                  <tr key={log.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-750">
+                  <tr
+                    key={log.id}
+                    className="hover:bg-neutral-50 dark:hover:bg-neutral-750"
+                  >
                     <td className="px-4 py-3 whitespace-nowrap text-sm">
                       <div className="flex items-center">
                         {getActivityIcon(log.action)}
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium
                           ${log.action === 'create' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ''}
                           ${log.action === 'update' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : ''}
                           ${log.action === 'delete' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : ''}
@@ -458,8 +477,10 @@ export default function AuditPage() {
                           ${log.action === 'publish' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' : ''}
                           ${log.action === 'approve' ? 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200' : ''}
                           ${'bg-neutral-100 text-stone-950 dark:bg-neutral-700 dark:text-neutral-200'}
-                        `}>
-                          {log.action.charAt(0).toUpperCase() + log.action.slice(1)}
+                        `}
+                        >
+                          {log.action.charAt(0).toUpperCase() +
+                            log.action.slice(1)}
                         </span>
                       </div>
                     </td>
@@ -479,7 +500,9 @@ export default function AuditPage() {
                       <div className="flex items-center">
                         <span className="font-medium">{log.entityType}</span>
                         {log.entityId && (
-                          <span className="ml-1 text-neutral-400">#{log.entityId.substring(0, 8)}</span>
+                          <span className="ml-1 text-neutral-400">
+                            #{log.entityId.substring(0, 8)}
+                          </span>
                         )}
                       </div>
                     </td>
@@ -500,7 +523,10 @@ export default function AuditPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-4 py-3 text-center text-neutral-500 dark:text-neutral-400">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-3 text-center text-neutral-500 dark:text-neutral-400"
+                  >
                     No audit logs found matching the current filters
                   </td>
                 </tr>
@@ -509,7 +535,7 @@ export default function AuditPage() {
           </table>
         </div>
       </div>
-      
+
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-between items-center mt-4">
@@ -517,14 +543,14 @@ export default function AuditPage() {
             Showing page {page} of {totalPages}
           </div>
           <div className="flex space-x-2">
-            <button 
+            <button
               className="btn btn-outline px-3 py-1 text-sm flex items-center"
               disabled={page <= 1}
               onClick={goToPrevPage}
             >
               <ChevronLeft size={16} className="mr-1" /> Previous
             </button>
-            <button 
+            <button
               className="btn btn-primary px-3 py-1 text-sm flex items-center"
               disabled={page >= totalPages}
               onClick={goToNextPage}
@@ -535,5 +561,5 @@ export default function AuditPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

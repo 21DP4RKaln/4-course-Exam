@@ -1,146 +1,164 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
-import { Button } from '@/app/components/ui/button'
-import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 
 interface Component {
-  id: string
-  name: string
-  category: string
-  price: number
-  quantity: number
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  quantity: number;
 }
 
 interface Configuration {
-  id: string
-  name: string
-  description: string
-  status: string
-  totalPrice: number
-  components: Component[]
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  totalPrice: number;
+  components: Component[];
 }
 
 export default function EditConfigurationPage() {
-  const router = useRouter()
-  const params = useParams()
-  const [configuration, setConfiguration] = useState<Configuration | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [availableComponents, setAvailableComponents] = useState<any[]>([])
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const router = useRouter();
+  const params = useParams();
+  const [configuration, setConfiguration] = useState<Configuration | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [availableComponents, setAvailableComponents] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
-    fetchConfiguration()
-    fetchAvailableComponents()
-  }, [params.id])
+    fetchConfiguration();
+    fetchAvailableComponents();
+  }, [params.id]);
 
   const fetchConfiguration = async () => {
     try {
-      const response = await fetch(`/api/specialist/configurations/${params.id}`)
+      const response = await fetch(
+        `/api/specialist/configurations/${params.id}`
+      );
       if (response.ok) {
-        const data = await response.json()
-        setConfiguration(data)
+        const data = await response.json();
+        setConfiguration(data);
       }
     } catch (error) {
-      console.error('Error fetching configuration:', error)
+      console.error('Error fetching configuration:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchAvailableComponents = async () => {
     try {
-      const response = await fetch('/api/components')
+      const response = await fetch('/api/components');
       if (response.ok) {
-        const data = await response.json()
-        setAvailableComponents(data.components)
+        const data = await response.json();
+        setAvailableComponents(data.components);
       }
     } catch (error) {
-      console.error('Error fetching components:', error)
+      console.error('Error fetching components:', error);
     }
-  }
+  };
 
   const handleSave = async () => {
-    if (!configuration) return
+    if (!configuration) return;
 
-    setSaving(true)
+    setSaving(true);
     try {
-      const response = await fetch(`/api/specialist/configurations/${params.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(configuration)
-      })
+      const response = await fetch(
+        `/api/specialist/configurations/${params.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(configuration),
+        }
+      );
 
       if (response.ok) {
-        alert('Configuration saved successfully!')
-        router.push(`/specialist/configurations/${params.id}`)
+        alert('Configuration saved successfully!');
+        router.push(`/specialist/configurations/${params.id}`);
       }
     } catch (error) {
-      console.error('Error saving configuration:', error)
-      alert('Failed to save configuration')
+      console.error('Error saving configuration:', error);
+      alert('Failed to save configuration');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const addComponent = (component: any) => {
-    if (!configuration) return
+    if (!configuration) return;
 
-    const existingComponent = configuration.components.find(c => c.id === component.id)
-    
+    const existingComponent = configuration.components.find(
+      c => c.id === component.id
+    );
+
     if (existingComponent) {
       setConfiguration({
         ...configuration,
         components: configuration.components.map(c =>
           c.id === component.id ? { ...c, quantity: c.quantity + 1 } : c
-        )
-      })
+        ),
+      });
     } else {
       setConfiguration({
         ...configuration,
-        components: [...configuration.components, { ...component, quantity: 1 }]
-      })
+        components: [
+          ...configuration.components,
+          { ...component, quantity: 1 },
+        ],
+      });
     }
-  }
+  };
 
   const removeComponent = (componentId: string) => {
-    if (!configuration) return
+    if (!configuration) return;
 
     setConfiguration({
       ...configuration,
-      components: configuration.components.filter(c => c.id !== componentId)
-    })
-  }
+      components: configuration.components.filter(c => c.id !== componentId),
+    });
+  };
 
   const updateQuantity = (componentId: string, quantity: number) => {
-    if (!configuration || quantity < 1) return
+    if (!configuration || quantity < 1) return;
 
     setConfiguration({
       ...configuration,
       components: configuration.components.map(c =>
         c.id === componentId ? { ...c, quantity } : c
-      )
-    })
-  }
+      ),
+    });
+  };
 
   if (loading || !configuration) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   const calculateTotalPrice = () => {
-    return configuration.components.reduce((total, component) => 
-      total + (component.price * component.quantity), 0
-    )
-  }
+    return configuration.components.reduce(
+      (total, component) => total + component.price * component.quantity,
+      0
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -169,23 +187,29 @@ export default function EditConfigurationPage() {
                     type="text"
                     className="w-full border rounded-lg px-3 py-2"
                     value={configuration.name}
-                    onChange={(e) => setConfiguration({
-                      ...configuration,
-                      name: e.target.value
-                    })}
+                    onChange={e =>
+                      setConfiguration({
+                        ...configuration,
+                        name: e.target.value,
+                      })
+                    }
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Description</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Description
+                  </label>
                   <textarea
                     className="w-full border rounded-lg px-3 py-2"
                     rows={4}
                     value={configuration.description}
-                    onChange={(e) => setConfiguration({
-                      ...configuration,
-                      description: e.target.value
-                    })}
+                    onChange={e =>
+                      setConfiguration({
+                        ...configuration,
+                        description: e.target.value,
+                      })
+                    }
                   />
                 </div>
 
@@ -202,7 +226,7 @@ export default function EditConfigurationPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {configuration.components.map((component) => (
+                        {configuration.components.map(component => (
                           <tr key={component.id} className="border-b">
                             <td className="px-4 py-2">{component.name}</td>
                             <td className="px-4 py-2 text-center">
@@ -211,10 +235,17 @@ export default function EditConfigurationPage() {
                                 min="1"
                                 className="w-16 border rounded px-2 py-1 text-center"
                                 value={component.quantity}
-                                onChange={(e) => updateQuantity(component.id, parseInt(e.target.value))}
+                                onChange={e =>
+                                  updateQuantity(
+                                    component.id,
+                                    parseInt(e.target.value)
+                                  )
+                                }
                               />
                             </td>
-                            <td className="px-4 py-2 text-right">€{component.price}</td>
+                            <td className="px-4 py-2 text-right">
+                              €{component.price}
+                            </td>
                             <td className="px-4 py-2 text-right">
                               <Button
                                 variant="ghost"
@@ -229,7 +260,10 @@ export default function EditConfigurationPage() {
                       </tbody>
                       <tfoot>
                         <tr className="bg-neutral-50 dark:bg-neutral-800">
-                          <td colSpan={2} className="px-4 py-2 text-right font-medium">
+                          <td
+                            colSpan={2}
+                            className="px-4 py-2 text-right font-medium"
+                          >
                             Total:
                           </td>
                           <td className="px-4 py-2 text-right font-semibold">
@@ -256,7 +290,7 @@ export default function EditConfigurationPage() {
                 <select
                   className="w-full border rounded-lg px-3 py-2"
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={e => setSelectedCategory(e.target.value)}
                 >
                   <option value="">All Categories</option>
                   <option value="cpu">CPU</option>
@@ -270,15 +304,19 @@ export default function EditConfigurationPage() {
 
                 <div className="space-y-2">
                   {availableComponents
-                    .filter(c => !selectedCategory || c.category === selectedCategory)
-                    .map((component) => (
+                    .filter(
+                      c => !selectedCategory || c.category === selectedCategory
+                    )
+                    .map(component => (
                       <div
                         key={component.id}
                         className="flex items-center justify-between p-3 border rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800"
                       >
                         <div>
                           <div className="font-medium">{component.name}</div>
-                          <div className="text-sm text-neutral-500">€{component.price}</div>
+                          <div className="text-sm text-neutral-500">
+                            €{component.price}
+                          </div>
                         </div>
                         <Button
                           size="sm"
@@ -295,5 +333,5 @@ export default function EditConfigurationPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

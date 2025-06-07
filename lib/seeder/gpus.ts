@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function seedGPUs(prisma: PrismaClient) {
   // Get all components with subType 'gpu'
   const gpuComponents = await prisma.component.findMany({
-    where: { subType: 'gpu' }
+    where: { subType: 'gpu' },
   });
 
   // Prepare GPU entries
@@ -12,29 +12,33 @@ export async function seedGPUs(prisma: PrismaClient) {
   // For each GPU component, create a detailed GPU entry
   for (let i = 0; i < gpuComponents.length; i++) {
     const component = gpuComponents[i];
-    
+
     // Parse existing specifications if available
-    const specs = component.specifications ? JSON.parse(component.specifications.toString()) : {};
-    
+    const specs = component.specifications
+      ? JSON.parse(component.specifications.toString())
+      : {};
+
     gpus.push({
       componentId: component.id,
       manufacturer: specs.manufacturer || (i % 2 === 0 ? 'NVIDIA' : 'AMD'),
-      chipset: i % 2 === 0 
-        ? `GeForce RTX ${40 - (i % 3)}0${9 - (i % 2)}0`
-        : `Radeon RX ${79 - (i % 3)}00 ${i % 2 === 0 ? 'XT' : 'XTX'}`,
+      chipset:
+        i % 2 === 0
+          ? `GeForce RTX ${40 - (i % 3)}0${9 - (i % 2)}0`
+          : `Radeon RX ${79 - (i % 3)}00 ${i % 2 === 0 ? 'XT' : 'XTX'}`,
       memory: 8 + (i % 4) * 4,
       memoryType: i % 2 === 0 ? 'GDDR6X' : 'GDDR6',
       coreClock: 1.5 + (i % 5) * 0.15,
       boostClock: 2.2 + (i % 5) * 0.1,
       tdp: 250 + (i % 6) * 25,
-      powerConnectors: i % 3 === 0 ? '3x 8-pin' : (i % 3 === 1 ? '2x 8-pin' : '16-pin PCIe 5.0'),
+      powerConnectors:
+        i % 3 === 0 ? '3x 8-pin' : i % 3 === 1 ? '2x 8-pin' : '16-pin PCIe 5.0',
       length: 280 + (i % 5) * 10,
       width: 120 + (i % 3) * 10,
       hdmiPorts: 1 + (i % 3),
       displayPorts: 2 + (i % 2),
-      rayTracing: i % 4 !== 3
+      rayTracing: i % 4 !== 3,
     });
-  }  // Add 10 more GPUs directly
+  } // Add 10 more GPUs directly
   const additionalGpus = [
     {
       manufacturer: 'NVIDIA',
@@ -49,7 +53,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 140,
       hdmiPorts: 2,
       displayPorts: 3,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'AMD',
@@ -64,7 +68,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 135,
       hdmiPorts: 2,
       displayPorts: 2,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'NVIDIA',
@@ -79,7 +83,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 130,
       hdmiPorts: 1,
       displayPorts: 3,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'AMD',
@@ -94,7 +98,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 125,
       hdmiPorts: 1,
       displayPorts: 2,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'NVIDIA',
@@ -109,7 +113,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 125,
       hdmiPorts: 1,
       displayPorts: 3,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'AMD',
@@ -124,7 +128,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 120,
       hdmiPorts: 1,
       displayPorts: 2,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'NVIDIA',
@@ -139,7 +143,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 120,
       hdmiPorts: 1,
       displayPorts: 3,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'AMD',
@@ -154,7 +158,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 115,
       hdmiPorts: 1,
       displayPorts: 2,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'NVIDIA',
@@ -169,7 +173,7 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 110,
       hdmiPorts: 1,
       displayPorts: 3,
-      rayTracing: true
+      rayTracing: true,
     },
     {
       manufacturer: 'AMD',
@@ -184,33 +188,39 @@ export async function seedGPUs(prisma: PrismaClient) {
       width: 115,
       hdmiPorts: 1,
       displayPorts: 2,
-      rayTracing: true
-    }
+      rayTracing: true,
+    },
   ];
-    // Create component entries for the new GPUs
+  // Create component entries for the new GPUs
   for (const gpu of additionalGpus) {
     // Create a base component first
     const sku = `GPU-${gpu.manufacturer.toUpperCase()}-${gpu.chipset.replace(/\\s+/g, '-').toUpperCase()}-${Date.now().toString().slice(-6)}`;
     const componentName = `${gpu.manufacturer} ${gpu.chipset} ${gpu.memory}GB ${gpu.memoryType}`;
-    
+
     const categories = await prisma.componentCategory.findMany();
     const gpuCategory = categories.find(c => c.slug === 'gpu');
     if (!gpuCategory) {
       throw new Error('GPU category not found');
     }
-    
+
     // Calculate a reasonable price based on specs
     const basePrice = 150;
     const memoryMultiplier = gpu.memory * 15;
-    const tierMultiplier = 
-      gpu.chipset.includes('4090') || gpu.chipset.includes('8000') ? 7.0 :
-      gpu.chipset.includes('4080') || gpu.chipset.includes('7900') ? 4.5 :
-      gpu.chipset.includes('4070') || gpu.chipset.includes('7800') ? 3.0 :
-      gpu.chipset.includes('4060') || gpu.chipset.includes('7700') ? 2.0 :
-      gpu.chipset.includes('7600') ? 1.5 : 1.0;
-    
+    const tierMultiplier =
+      gpu.chipset.includes('4090') || gpu.chipset.includes('8000')
+        ? 7.0
+        : gpu.chipset.includes('4080') || gpu.chipset.includes('7900')
+          ? 4.5
+          : gpu.chipset.includes('4070') || gpu.chipset.includes('7800')
+            ? 3.0
+            : gpu.chipset.includes('4060') || gpu.chipset.includes('7700')
+              ? 2.0
+              : gpu.chipset.includes('7600')
+                ? 1.5
+                : 1.0;
+
     const price = Math.round(basePrice + memoryMultiplier * tierMultiplier);
-    
+
     const component = await prisma.component.create({
       data: {
         name: componentName,
@@ -225,15 +235,15 @@ export async function seedGPUs(prisma: PrismaClient) {
         specifications: JSON.stringify({
           manufacturer: gpu.manufacturer,
           memory: `${gpu.memory}GB ${gpu.memoryType}`,
-          boost_clock: `${gpu.boostClock} GHz`
-        })
-      }
+          boost_clock: `${gpu.boostClock} GHz`,
+        }),
+      },
     });
-    
+
     // Add to GPU entries
     gpus.push({
       componentId: component.id,
-      ...gpu
+      ...gpu,
     });
   }
 
@@ -242,7 +252,7 @@ export async function seedGPUs(prisma: PrismaClient) {
     await prisma.gPU.upsert({
       where: { componentId: gpu.componentId },
       update: gpu,
-      create: gpu
+      create: gpu,
     });
   }
 }
