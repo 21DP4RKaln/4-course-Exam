@@ -1693,19 +1693,45 @@
     "discountPrice": "Discount Price",
     "stock": "Stock",
     "sku": "SKU"
-  },
-  "specialist": {
+  },  "specialist": {
     "dashboard": {
+      "title": "Specialist Dashboard",
+      "welcomeBack": "Welcome back",
+      "todayOverview": "Here's what's happening with your tasks today.",
       "pendingRepairs": "Pending Repairs",
-      "requiresAttention": "Requires Attention",
+      "requiresAttention": "Requires Attention", 
+      "awaitingAction": "Awaiting action",
       "activeRepairs": "Active Repairs",
       "inProgress": "In Progress",
       "pendingConfigurations": "Pending Configurations",
+      "pendingConfigs": "Pending Configs",
       "awaitingReview": "Awaiting Review",
+      "needReview": "Need review",
       "approvedConfigurations": "Approved Configurations",
-      "thisMonth": "This Month"
+      "completedToday": "Completed Today",
+      "repairsFinished": "Repairs finished",
+      "thisMonth": "This Month",
+      "quickActions": "Quick Actions",
+      "recentActivity": "Recent Activity",
+      "repairRequests": "Repair Requests",
+      "manageRepairRequests": "Manage repair requests",
+      "configurations": "Configurations", 
+      "reviewUserConfigurations": "Review user configurations",
+      "components": "Components",
+      "viewComponentInventory": "View component inventory",
+      "readyMadePCs": "Ready-Made PCs",
+      "manageShopPCs": "Manage shop PCs",
+      "repairCompleted": "Repair #{id} completed",
+      "newConfigurationSubmitted": "New configuration submitted for review",
+      "newRepairRequest": "New repair request received",
+      "minutesAgo": "{minutes} minutes ago",
+      "hourAgo": "1 hour ago",
+      "hoursAgo": "{hours} hours ago",
+      "today": "today",
+      "yesterday": "yesterday",
+      "noRecentActivity": "No recent activity to display"
     }
-  },  "staff": {
+  },"staff": {
     "dashboard": "Dashboard",
     "account": "Account",
     "repairs": "Repairs",
@@ -1734,11 +1760,13 @@
     "totalRepairs": "Total Repairs",
     "totalRevenue": "Total Revenue",
     "pendingConfigurations": "Pending Configurations",
-    "activeRepairs": "Active Repairs",    "lowStockItems": "Low Stock Items",
+    "activeRepairs": "Active Repairs",    
+    "lowStockItems": "Low Stock Items",
     "monthlyGrowth": "Monthly Growth",
     "salesOverview": "Sales Overview",
     "repairMetrics": "Repair Metrics",
     "retry": "Retry",
+    "ready-made": "Ready-Made PCs",
     "failedToLoadData": "Failed to load dashboard data"
   },
   "account": {

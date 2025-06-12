@@ -230,7 +230,7 @@ export default function ProductCard({
         theme === 'dark'
           ? 'bg-dark-card border border-stone-950 hover:border-brand-red-800'
           : 'bg-white border border-neutral-100 hover:border-brand-blue-200'
-      } shadow-soft hover:shadow-medium flex flex-col h-[500px]`}
+      } shadow-soft hover:shadow-medium flex flex-col ${showSpecs ? 'h-auto min-h-[600px]' : 'h-[550px]'}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -275,7 +275,7 @@ export default function ProductCard({
       </div>
 
       {/* Product image */}
-      <div className="relative aspect-square overflow-hidden">
+      <div className="relative h-64 overflow-hidden flex-shrink-0">
         <Image
           src={(imageUrl || defaultImageUrl).trim()}
           alt={name}
@@ -368,10 +368,10 @@ export default function ProductCard({
           </button>
         </div>
       </div>
-      <div className="p-4 flex flex-col flex-grow">
+      <div className="p-4 flex flex-col flex-grow min-h-0">
         {/* Rating display */}
         {showRating && rating > 0 && (
-          <div className="flex items-center mb-2">
+          <div className="flex items-center mb-2 flex-shrink-0">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -393,10 +393,10 @@ export default function ProductCard({
           </div>
         )}
         {/* Product info section */}
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col flex-grow min-h-0">
           {/* Title */}
           <h3
-            className={`font-semibold mb-2 text-lg line-clamp-2 group-hover:${
+            className={`font-semibold mb-2 text-lg line-clamp-2 flex-shrink-0 group-hover:${
               theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
             } transition-colors ${
               theme === 'dark' ? 'text-white' : 'text-neutral-900'
@@ -405,8 +405,68 @@ export default function ProductCard({
             {name}
           </h3>
 
+          {/* Specs section - expandable */}
+          {showSpecs && Object.keys(specs).length > 0 && (
+            <div
+              className={`mb-3 p-3 rounded-lg text-xs space-y-2 overflow-y-auto flex-grow min-h-0 scrollbar-thin ${
+                theme === 'dark'
+                  ? 'bg-neutral-900 border border-stone-950'
+                  : 'bg-neutral-50 border border-neutral-200'
+              }`}
+              style={{ maxHeight: '180px' }}
+            >
+              <div className="grid grid-cols-1 gap-y-2">
+                {/* Group important specs first */}
+                {['brand', 'manufacturer', 'model'].some(key => specs[key]) && (
+                  <div
+                    className={`flex items-start ${
+                      theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
+                    }`}
+                  >
+                    <span className="font-medium mr-1 min-w-16 text-xs">
+                      {formatSpecKey('brand')}:
+                    </span>
+                    <span className="font-bold text-xs">
+                      {formatSpecValue(
+                        specs['brand'] ||
+                          specs['manufacturer'] ||
+                          specs['model']
+                      )}
+                    </span>
+                  </div>
+                )}
+
+                {/* Show all other specs */}
+                {Object.entries(specs)
+                  .filter(
+                    ([key]) =>
+                      !['brand', 'manufacturer', 'model'].includes(
+                        key.toLowerCase()
+                      )
+                  )
+                  .map(([key, value]) => (
+                    <div
+                      key={key}
+                      className={`flex items-start ${
+                        theme === 'dark'
+                          ? 'text-neutral-300'
+                          : 'text-neutral-700'
+                      }`}
+                    >
+                      <span className="font-medium mr-1 min-w-16 text-xs">
+                        {formatSpecKey(key)}:
+                      </span>
+                      <span className="font-bold text-xs">
+                        {formatSpecValue(value)}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
           {/* Price section */}
-          <div className="flex items-center mb-4 mt-auto">
+          <div className="flex items-center mb-3 mt-auto flex-shrink-0">
             {discountPrice ? (
               <div className="flex items-center">
                 <span
@@ -430,8 +490,9 @@ export default function ProductCard({
               </span>
             )}
           </div>
+
           {/* Specs button */}
-          <div className="mt-auto">
+          <div className="flex-shrink-0">
             <button
               onClick={toggleSpecs}
               className={`w-full flex items-center justify-center py-2 px-4 rounded-lg transition-all ${
@@ -450,58 +511,6 @@ export default function ProductCard({
             </button>
           </div>
         </div>
-        {/* Expandable specs section */}{' '}
-        {showSpecs && Object.keys(specs).length > 0 && (
-          <div
-            className={`mt-3 p-4 rounded-lg mb-1 text-xs space-y-2 overflow-y-auto max-h-[200px] scrollbar-thin ${
-              theme === 'dark'
-                ? 'bg-neutral-900 border border-stone-950'
-                : 'bg-neutral-50 border border-neutral-200'
-            }`}
-          >
-            <div className="grid grid-cols-1 gap-y-2">
-              {/* Group important specs first */}
-              {['brand', 'manufacturer', 'model'].some(key => specs[key]) && (
-                <div
-                  className={`flex items-start ${
-                    theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
-                  }`}
-                >
-                  <span className="font-medium mr-1 min-w-20">
-                    {formatSpecKey('brand')}:
-                  </span>
-                  <span className="font-bold">
-                    {formatSpecValue(
-                      specs['brand'] || specs['manufacturer'] || specs['model']
-                    )}
-                  </span>
-                </div>
-              )}
-
-              {/* Show important specs based on product type */}
-              {Object.entries(specs)
-                .filter(
-                  ([key]) =>
-                    !['brand', 'manufacturer', 'model'].includes(
-                      key.toLowerCase()
-                    )
-                )
-                .map(([key, value]) => (
-                  <div
-                    key={key}
-                    className={`flex items-start ${
-                      theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
-                    }`}
-                  >
-                    <span className="font-medium mr-1 min-w-20">
-                      {formatSpecKey(key)}:
-                    </span>
-                    <span className="font-bold">{formatSpecValue(value)}</span>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
       </div>
     </Link>
   );

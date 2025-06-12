@@ -1550,19 +1550,47 @@
     "discountPrice": "Цена со скидкой",
     "stock": "Наличие",
     "sku": "Артикул"
-  },
-  "specialist": {
+  },  "specialist": {
     "dashboard": {
+      "title": "Панель специалиста",
+      "welcomeBack": "Добро пожаловать обратно",
+      "todayOverview": "Вот что происходит с вашими задачами сегодня.",
       "pendingRepairs": "Ожидающие ремонты",
       "requiresAttention": "Требуется внимание",
+      "awaitingAction": "Ожидает действий",
       "activeRepairs": "Активные ремонты",
       "inProgress": "В процессе",
       "pendingConfigurations": "Ожидающие конфигурации",
+      "pendingConfigs": "Ожидающие конфиг.",
       "awaitingReview": "Ожидают проверки",
+      "needReview": "Требуется проверка",
       "approvedConfigurations": "Утвержденные конфигурации",
-      "thisMonth": "В этом месяце"
+      "completedToday": "Завершено сегодня",
+      "repairsFinished": "Ремонты завершены",
+      "thisMonth": "В этом месяце",
+      "quickActions": "Быстрые действия",
+      "recentActivity": "Недавняя активность",
+      "repairRequests": "Запросы на ремонт",
+      "manageRepairRequests": "Управление запросами на ремонт",
+      "configurations": "Конфигурации",
+      "reviewUserConfigurations": "Проверка пользовательских конфигураций",
+      "components": "Компоненты",
+      "viewComponentInventory": "Просмотр инвентаря компонентов",
+      "readyMadePCs": "Готовые ПК",
+      "manageShopPCs": "Управление ПК магазина",
+      "repairCompleted": "Ремонт #{id} завершен",
+      "newConfigurationSubmitted": "Новая конфигурация отправлена на проверку",
+      "newRepairRequest": "Получен новый запрос на ремонт",
+      "minutesAgo": "{minutes} минут назад",
+      "hourAgo": "1 час назад",
+      "hoursAgo": "{hours} часов назад",
+      "today": "сегодня",
+      "yesterday": "вчера",
+      "noRecentActivity": "Нет недавней активности для отображения"
     }
-  },  "staff": {
+  },
+  "staff": {
+    "account": "Аккаунт",
     "dashboard": "Панель",
     "repairs": "Ремонты",
     "configurations": "Конфигурации",
@@ -1592,6 +1620,7 @@
     "salesOverview": "Обзор продаж",
     "repairMetrics": "Метрики ремонта",
     "retry": "Повторить",
+    "ready-made": "Готовые ПК",
     "failedToLoadData": "Не удалось загрузить данные панели"
   },
   "account": {
@@ -1611,7 +1640,17 @@
     "email": "Электронная почта",
     "emailPlaceholder": "Введите ваш адрес электронной почты",
     "phone": "Телефон",
-    "phonePlaceholder": "Введите ваш номер телефона"
+    "phonePlaceholder": "Введите ваш номер телефона",
+    "uploadImage": "Загрузить изображение",
+    "changePassword": "Изменить Пароль",
+    "currentPassword": "Текущий Пароль",
+    "currentPasswordPlaceholder": "Введите ваш текущий пароль",
+    "newPassword": "Новый Пароль",
+    "newPasswordPlaceholder": "Введите новый пароль",
+    "passwordRequirements": "Требования к паролю: минимум 8 символов, заглавные и строчные буквы, цифры и специальные символы",
+    "confirmPassword": "Подтвердите Пароль",
+    "confirmPasswordPlaceholder": "Введите новый пароль еще раз",
+    "passwordRequirementsShort": "Требования к паролю: 8+ символов, заглавные, строчные, цифры и спецсимволы"
   },
   "repairs": {
     "pageTitle": "Услуги по Ремонту Компьютеров",

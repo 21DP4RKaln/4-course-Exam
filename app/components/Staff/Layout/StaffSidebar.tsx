@@ -121,36 +121,58 @@ export function StaffSidebar() {
   const isActive = (href: string) => {
     return pathname === href || pathname.startsWith(href + '/');
   };
+
+  // Add smooth scroll behavior and enhanced transitions
+  useEffect(() => {
+    const sidebar = document.getElementById('staff-sidebar');
+    if (sidebar) {
+      sidebar.style.scrollBehavior = 'smooth';
+    }
+  }, []);
+
   return (
     <motion.aside
+      id="staff-sidebar"
       className={`${
         isCollapsed ? 'w-20' : 'w-64'
-      } bg-white dark:bg-stone-950 border-r border-neutral-200 dark:border-neutral-700 flex flex-col`}
-      initial={{ x: -20, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      } bg-white dark:bg-stone-950 border-r border-neutral-200 dark:border-neutral-700 flex flex-col shadow-lg backdrop-blur-sm`}
+      initial={{ x: -100, opacity: 0, scale: 0.95 }}
+      animate={{
+        x: 0,
+        opacity: 1,
+        scale: 1,
+        width: isCollapsed ? '5rem' : '16rem',
+      }}
+      transition={{
+        duration: 0.5,
+        ease: [0.4, 0, 0.2, 1],
+        width: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+      }}
+      whileHover={{
+        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+      }}
     >
       {/* Logo Section */}
       <motion.div
-        className="h-16 flex items-center justify-between px-4 border-b border-neutral-200 dark:border-neutral-700"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
+        className="h-16 flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 bg-gradient-to-r from-neutral-50 to-white dark:from-neutral-900 dark:to-stone-950"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
       >
         <AnimatePresence mode="wait">
           {!isCollapsed ? (
             <motion.div
               key="full-logo"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-              className="flex-1"
+              initial={{ opacity: 0, scale: 0.8, x: -20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.8, x: -20 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="flex-1 min-w-0"
             >
               <LogoWrapper $theme={theme}>
                 <Link href={`/${locale}`} className="logo-link">
                   <div className="flex items-center">
-                    <div className="logo-container p-1">
+                    <div className="logo-container p-2">
                       <Image
                         src={
                           theme === 'dark'
@@ -158,8 +180,8 @@ export function StaffSidebar() {
                             : '/images/logo-light.png'
                         }
                         alt="IvaPro Logo"
-                        width={60}
-                        height={28}
+                        width={64}
+                        height={30}
                         className="logo-image"
                         priority
                       />
@@ -171,16 +193,16 @@ export function StaffSidebar() {
           ) : (
             <motion.div
               key="small-logo"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, scale: 0.8, rotate: -180 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              exit={{ opacity: 0, scale: 0.8, rotate: 180 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
               className="flex-1 flex justify-center"
             >
               <LogoWrapper $theme={theme}>
-                <Link href={`/${locale}`} className="logo-link">
-                  <div className="flex items-center justify-center">
-                    <div className="logo-container relative w-9 h-9 p-1">
+                <Link href={`/${locale}`} className="logo-link-collapsed">
+                  <div className="flex items-center justify-center w-12 h-12">
+                    <div className="logo-container-collapsed">
                       <Image
                         src={
                           theme === 'dark'
@@ -188,9 +210,9 @@ export function StaffSidebar() {
                             : '/images/logo-light.png'
                         }
                         alt="IvaPro Logo"
-                        width={32}
-                        height={32}
-                        className="logo-image object-contain"
+                        width={28}
+                        height={28}
+                        className="logo-image-collapsed"
                         priority
                       />
                     </div>
@@ -203,30 +225,37 @@ export function StaffSidebar() {
 
         <motion.button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500 dark:text-neutral-400 transition-colors"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
+          className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500 dark:text-neutral-400 transition-all duration-200 hover:shadow-md"
+          whileHover={{
+            scale: 1.1,
+            backgroundColor:
+              theme === 'dark'
+                ? 'rgba(64, 64, 64, 0.8)'
+                : 'rgba(245, 245, 245, 0.8)',
+          }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
           <AnimatePresence mode="wait">
             {isCollapsed ? (
               <motion.div
                 key="expand"
-                initial={{ rotate: -180, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 180, opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
+                animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={18} />
               </motion.div>
             ) : (
               <motion.div
                 key="collapse"
-                initial={{ rotate: 180, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -180, opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ rotate: 90, opacity: 0, scale: 0.8 }}
+                animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                exit={{ rotate: -90, opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={18} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -234,12 +263,12 @@ export function StaffSidebar() {
       </motion.div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 overflow-y-auto">
         <motion.div
-          className="space-y-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, staggerChildren: 0.05 }}
+          className="space-y-2"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.3, staggerChildren: 0.1 }}
         >
           {menuItems
             .filter(item => item.show)
@@ -250,37 +279,68 @@ export function StaffSidebar() {
               return (
                 <motion.div
                   key={item.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 + 0.3 }}
+                  initial={{ opacity: 0, x: -30, scale: 0.9 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  transition={{
+                    delay: index * 0.1 + 0.4,
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 24,
+                  }}
+                  whileHover={{ x: 4 }}
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center px-3 py-2 rounded-lg transition-all ${
+                    className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden ${
                       active
-                        ? 'bg-primary dark:bg-red-500 text-white shadow-md'
-                        : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
+                        ? 'bg-gradient-to-r from-primary to-primary/90 dark:from-red-500 dark:to-red-600 text-white shadow-lg shadow-primary/25 dark:shadow-red-500/25'
+                        : 'text-neutral-700 dark:text-neutral-300 hover:bg-gradient-to-r hover:from-neutral-100 hover:to-neutral-50 dark:hover:from-neutral-700 dark:hover:to-neutral-600 hover:shadow-md'
                     }`}
                     title={isCollapsed ? item.label : undefined}
                   >
+                    {active && (
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"
+                        initial={{ x: '-100%' }}
+                        animate={{ x: '100%' }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatDelay: 3,
+                          ease: 'easeInOut',
+                        }}
+                      />
+                    )}
+
                     <motion.div
-                      whileHover={{ scale: active ? 1 : 1.1 }}
-                      whileTap={{ scale: 0.95 }}
+                      className="relative z-10"
+                      whileHover={{
+                        scale: active ? 1.05 : 1.15,
+                        rotate: active ? 0 : 5,
+                      }}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 17,
+                      }}
                     >
                       <Icon
                         size={20}
-                        className={isCollapsed ? 'mx-auto' : 'mr-3'}
+                        className={`${isCollapsed ? 'mx-auto' : 'mr-3'} ${
+                          active ? 'drop-shadow-sm' : ''
+                        }`}
                       />
                     </motion.div>
 
                     <AnimatePresence>
                       {!isCollapsed && (
                         <motion.span
-                          initial={{ opacity: 0, width: 0 }}
-                          animate={{ opacity: 1, width: 'auto' }}
-                          exit={{ opacity: 0, width: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="whitespace-nowrap"
+                          initial={{ opacity: 0, width: 0, x: -10 }}
+                          animate={{ opacity: 1, width: 'auto', x: 0 }}
+                          exit={{ opacity: 0, width: 0, x: -10 }}
+                          transition={{ duration: 0.3, ease: 'easeOut' }}
+                          className="whitespace-nowrap font-medium relative z-10"
                         >
                           {item.label}
                         </motion.span>
@@ -295,41 +355,125 @@ export function StaffSidebar() {
 
       {/* User Section */}
       <motion.div
-        className="border-t border-neutral-200 dark:border-neutral-700 p-4"
-        initial={{ opacity: 0, y: 20 }}
+        className="border-t border-neutral-200 dark:border-neutral-700 px-4 py-4 bg-gradient-to-r from-neutral-50 to-white dark:from-neutral-900 dark:to-stone-950"
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.6, duration: 0.4, ease: 'easeOut' }}
       >
-        <div
-          className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}
-        >
-          <AnimatePresence>
-            {!isCollapsed && (
-              <motion.div
-                className="flex items-center"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
+        <AnimatePresence mode="wait">
+          {isCollapsed ? (
+            <motion.div
+              key="collapsed-user"
+              className="flex flex-col items-center space-y-3"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              {/* Collapsed User Avatar */}
+              <Link
+                href={`/${locale}/${userRole}/account`}
+                title={`${user?.firstName || user?.name} - ${t('staff.accountSettings')}`}
+                className="group"
               >
-                {' '}
+                <motion.div
+                  className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 dark:from-red-500 dark:to-red-600 flex items-center justify-center text-white font-semibold overflow-hidden cursor-pointer relative shadow-lg"
+                  whileTap={{ scale: 0.9 }}
+                  whileHover={{
+                    scale: 1.15,
+                    boxShadow:
+                      theme === 'dark'
+                        ? '0px 8px 20px rgba(220, 38, 38, 0.5)'
+                        : '0px 8px 20px rgba(0, 102, 204, 0.5)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 17 }}
+                >
+                  {user?.profileImageUrl ? (
+                    <Image
+                      src={user.profileImageUrl}
+                      alt={user?.firstName || user?.name || 'User'}
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                  ) : (
+                    <span className="text-lg font-bold">
+                      {user?.firstName?.[0] || user?.name?.[0] || 'U'}
+                    </span>
+                  )}
+                  <motion.div
+                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-xl"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      whileHover={{
+                        scale: [1, 1.3, 1.1],
+                        rotate: [0, -10, 10, 0],
+                        opacity: 1,
+                      }}
+                      transition={{
+                        duration: 0.6,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      <User
+                        size={16}
+                        className="text-white drop-shadow-lg filter brightness-110"
+                      />
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+              </Link>
+
+              {/* Collapsed Logout Button */}
+              <motion.button
+                onClick={logout}
+                className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-neutral-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 hover:shadow-lg"
+                title={t('auth.logout')}
+                whileHover={{
+                  scale: 1.15,
+                  rotate: [0, -5, 5, 0],
+                  backgroundColor:
+                    theme === 'dark'
+                      ? 'rgba(220, 38, 38, 0.1)'
+                      : 'rgba(239, 68, 68, 0.1)',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+                }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              >
+                <LogOut size={16} />
+              </motion.button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="expanded-user"
+              className="flex items-center justify-between"
+              initial={{ opacity: 0, x: -30, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -30, scale: 0.9 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              <div className="flex items-center min-w-0 flex-1 mr-3">
                 <Link
                   href={`/${locale}/${userRole}/account`}
                   title={t('staff.accountSettings') || 'Account Settings'}
+                  className="flex items-center group"
                 >
-                  {' '}
                   <motion.div
-                    className="w-8 h-8 rounded-full bg-primar flex items-center justify-center text-white font-semibold overflow-hidden cursor-pointer relative group"
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ boxShadow: '0px 0px 0px rgba(0, 0, 0, 0)' }}
-                    animate={{ boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)' }}
+                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 dark:from-red-500 dark:to-red-600 flex items-center justify-center text-white font-semibold overflow-hidden cursor-pointer relative shadow-md"
+                    whileTap={{ scale: 0.9 }}
                     whileHover={{
-                      scale: 1.05,
+                      scale: 1.1,
                       boxShadow:
                         theme === 'dark'
-                          ? '0px 0px 8px rgba(220, 38, 38, 0.6)'
-                          : '0px 0px 8px rgba(0, 102, 204, 0.6)',
+                          ? '0px 6px 16px rgba(220, 38, 38, 0.4)'
+                          : '0px 6px 16px rgba(0, 102, 204, 0.4)',
                     }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 17 }}
                   >
                     {user?.profileImageUrl ? (
                       <Image
@@ -337,35 +481,29 @@ export function StaffSidebar() {
                         alt={user?.firstName || user?.name || 'User'}
                         width={32}
                         height={32}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-lg"
                       />
                     ) : (
-                      <span>
+                      <span className="text-sm font-bold">
                         {user?.firstName?.[0] || user?.name?.[0] || 'U'}
                       </span>
                     )}
                     <motion.div
-                      className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200"
+                      className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-lg"
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: 0 }}
                       whileHover={{ opacity: 1 }}
                       transition={{ duration: 0.2 }}
                     >
                       <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
                         whileHover={{
-                          scale: [1, 1.2, 1.1],
-                          rotate: [0, -5, 5, 0],
-                          transition: {
-                            duration: 0.5,
-                            ease: 'easeInOut',
-                          },
+                          scale: [1, 1.3, 1.1],
+                          rotate: [0, -10, 10, 0],
+                          opacity: 1,
                         }}
                         transition={{
-                          type: 'spring',
-                          stiffness: 300,
-                          damping: 20,
+                          duration: 0.6,
+                          ease: 'easeInOut',
                         }}
                       >
                         <Camera
@@ -375,45 +513,54 @@ export function StaffSidebar() {
                       </motion.div>
                     </motion.div>
                   </motion.div>
-                </Link>
-                <div className="ml-3">
-                  <Link
-                    href={`/${locale}/${userRole}/account`}
-                    className="group block"
-                  >
+                  <div className="ml-3 min-w-0 flex-1">
                     <motion.p
-                      className="text-sm font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-primary dark:group-hover:text-red-500 transition-colors duration-200"
-                      whileHover={{ y: -1 }}
+                      className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 group-hover:text-primary dark:group-hover:text-red-400 transition-colors duration-200 truncate"
+                      whileHover={{ y: -1, scale: 1.02 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 17,
+                      }}
                     >
                       {user?.firstName || user?.name}
                     </motion.p>
                     <motion.p
-                      className="text-xs text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-700 dark:group-hover:text-neutral-300 transition-colors duration-200"
-                      whileHover={{ y: 1 }}
+                      className="text-xs text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors duration-200 font-medium uppercase tracking-wide"
+                      whileHover={{ y: 1, scale: 1.02 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 17,
+                      }}
                     >
                       {user?.role}
                     </motion.p>
-                  </Link>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  </div>
+                </Link>
+              </div>
 
-          <motion.button
-            onClick={logout}
-            className={`p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500 dark:text-neutral-400 transition-colors ${
-              isCollapsed ? 'mx-auto' : ''
-            }`}
-            title={t('auth.logout')}
-            whileHover={{
-              scale: 1.1,
-              color: theme === 'dark' ? '#ef4444' : '#0066CC',
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <LogOut size={20} />
-          </motion.button>
-        </div>
+              <motion.button
+                onClick={logout}
+                className="p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-neutral-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 hover:shadow-lg"
+                title={t('auth.logout')}
+                whileHover={{
+                  scale: 1.15,
+                  rotate: [0, -5, 5, 0],
+                  backgroundColor:
+                    theme === 'dark'
+                      ? 'rgba(220, 38, 38, 0.1)'
+                      : 'rgba(239, 68, 68, 0.1)',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+                }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              >
+                <LogOut size={18} />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </motion.aside>
   );
@@ -422,17 +569,97 @@ export function StaffSidebar() {
 const LogoWrapper = styled.div<{ $theme: string }>`
   .logo-link {
     display: inline-block;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center;
+    border-radius: 12px;
+    padding: 4px;
   }
 
   .logo-link:hover {
-    transform: scale(1.05);
+    transform: scale(1.08) translateY(-2px);
+    background: ${props =>
+      props.$theme === 'dark'
+        ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%)'
+        : 'linear-gradient(135deg, rgba(0, 102, 204, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)'};
   }
 
   .logo-link:active {
-    transform: scale(0.95);
-    transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.96) translateY(1px);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Collapsed logo styles */
+  .logo-link-collapsed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+    padding: 2px;
+  }
+
+  .logo-link-collapsed:hover {
+    transform: scale(1.1);
+    background: ${props =>
+      props.$theme === 'dark'
+        ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%)'
+        : 'linear-gradient(135deg, rgba(0, 102, 204, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)'};
+  }
+
+  .logo-container-collapsed {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: ${props =>
+      props.$theme === 'dark'
+        ? 'linear-gradient(135deg, rgba(64, 64, 64, 0.3) 0%, rgba(32, 32, 32, 0.1) 100%)'
+        : 'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.4) 100%)'};
+    backdrop-filter: blur(4px);
+    border: 1px solid
+      ${props =>
+        props.$theme === 'dark'
+          ? 'rgba(255, 255, 255, 0.1)'
+          : 'rgba(0, 0, 0, 0.05)'};
+    transition: all 0.3s ease;
+  }
+
+  .logo-image-collapsed {
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.15));
+    object-fit: contain;
+  }
+
+  .logo-link-collapsed:hover .logo-container-collapsed {
+    background: ${props =>
+      props.$theme === 'dark'
+        ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.05) 100%)'
+        : 'linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)'};
+    box-shadow: 0 4px 16px
+      ${props =>
+        props.$theme === 'dark'
+          ? 'rgba(220, 38, 38, 0.25)'
+          : 'rgba(0, 102, 204, 0.25)'};
+    border-color: ${props =>
+      props.$theme === 'dark'
+        ? 'rgba(220, 38, 38, 0.3)'
+        : 'rgba(0, 102, 204, 0.3)'};
+  }
+
+  .logo-link-collapsed:hover .logo-image-collapsed {
+    filter: drop-shadow(
+      0 3px 8px
+        ${props =>
+          props.$theme === 'dark'
+            ? 'rgba(220, 38, 38, 0.4)'
+            : 'rgba(0, 102, 204, 0.4)'}
+    );
+    transform: scale(1.05);
   }
 
   .logo-container {
@@ -440,9 +667,19 @@ const LogoWrapper = styled.div<{ $theme: string }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    transition: all 0.5s ease;
+    border-radius: 12px;
+    transition: all 0.6s ease;
     overflow: hidden;
+    background: ${props =>
+      props.$theme === 'dark'
+        ? 'linear-gradient(135deg, rgba(64, 64, 64, 0.3) 0%, rgba(32, 32, 32, 0.1) 100%)'
+        : 'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.4) 100%)'};
+    backdrop-filter: blur(8px);
+    border: 1px solid
+      ${props =>
+        props.$theme === 'dark'
+          ? 'rgba(255, 255, 255, 0.1)'
+          : 'rgba(0, 0, 0, 0.05)'};
   }
 
   .logo-container::before {
@@ -456,15 +693,28 @@ const LogoWrapper = styled.div<{ $theme: string }>`
       transparent,
       transparent,
       transparent,
-      ${props => (props.$theme === 'dark' ? '#dc2626' : '#0066cc')}
+      ${props => (props.$theme === 'dark' ? '#dc2626' : '#0066cc')},
+      transparent
     );
-    animation: rotate 4s linear infinite;
+    animation: rotate 6s linear infinite;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.6s ease;
+  }
+
+  .logo-container::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: ${props =>
+      props.$theme === 'dark'
+        ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+        : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'};
+    border-radius: 10px;
+    z-index: 1;
   }
 
   .logo-link:hover .logo-container::before {
-    opacity: 0.15;
+    opacity: 0.2;
   }
 
   @keyframes rotate {
@@ -477,49 +727,52 @@ const LogoWrapper = styled.div<{ $theme: string }>`
   }
 
   .logo-link:hover .logo-container {
-    background-color: ${props =>
+    background: ${props =>
       props.$theme === 'dark'
-        ? 'rgba(220, 38, 38, 0.1)'
-        : 'rgba(0, 102, 204, 0.1)'};
-    box-shadow: 0 4px 20px
+        ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.05) 100%)'
+        : 'linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)'};
+    box-shadow: 0 8px 32px
       ${props =>
         props.$theme === 'dark'
-          ? 'rgba(220, 38, 38, 0.3)'
-          : 'rgba(0, 102, 204, 0.3)'};
+          ? 'rgba(220, 38, 38, 0.25)'
+          : 'rgba(0, 102, 204, 0.25)'};
+    border-color: ${props =>
+      props.$theme === 'dark'
+        ? 'rgba(220, 38, 38, 0.3)'
+        : 'rgba(0, 102, 204, 0.3)'};
   }
 
   .logo-image {
     position: relative;
     z-index: 2;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
   }
 
   .logo-link:hover .logo-image {
     filter: drop-shadow(
-      0 4px 12px
+      0 6px 16px
         ${props =>
           props.$theme === 'dark'
             ? 'rgba(220, 38, 38, 0.4)'
             : 'rgba(0, 102, 204, 0.4)'}
     );
-    animation: pulse 2s infinite;
+    animation: logoFloat 3s ease-in-out infinite;
   }
 
-  @keyframes pulse {
-    0% {
-      transform: scale(1);
+  @keyframes logoFloat {
+    0%,
+    100% {
+      transform: translateY(0px) scale(1);
     }
     50% {
-      transform: scale(1.03);
-    }
-    100% {
-      transform: scale(1);
+      transform: translateY(-2px) scale(1.02);
     }
   }
 
   .logo-link:active .logo-image {
-    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
     animation: none;
+    transform: scale(0.98);
   }
 `;

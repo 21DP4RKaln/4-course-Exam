@@ -318,6 +318,135 @@ export interface RepairRequestData {
   imageUrl?: string;
 }
 
+export async function sendRepairConfirmationEmail(
+  to: string,
+  repairData: RepairRequestData,
+  config: EmailConfig
+) {
+  const transporter = await createEmailTransporter(config);
+
+  const imageSection =
+    repairData.hasImage && repairData.imageUrl
+      ? `
+    <div style="margin: 20px 0;">
+      <h3 style="color: #333; margin: 10px 0;">Your Uploaded Image:</h3>
+      <p>You provided an image with your repair request. Our technicians will review it as part of the diagnostic process.</p>
+    </div>
+  `
+      : '';
+
+  const mailOptions = {
+    from: config.fromEmail
+      ? `"${config.fromName || 'IvaPro Support'}" <${config.fromEmail}>`
+      : config.auth.user,
+    to,
+    subject: `Repair Request Confirmation - #${repairData.repairId.slice(0, 8)}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #007bff; margin: 0;">IvaPro</h1>
+          <p style="color: #666; margin: 5px 0;">Computer Repair & Configuration Services</p>
+        </div>
+        
+        <div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          <h2 style="color: #155724; margin: 0 0 10px 0; text-align: center;">✅ Repair Request Received!</h2>
+          <p style="color: #155724; margin: 0; text-align: center;">Thank you for submitting your repair request. We have received your request and will begin processing it shortly.</p>
+        </div>
+        
+        <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Your Repair Request Details</h2>
+        
+        <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Repair ID:</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #eee; font-family: monospace; color: #007bff; font-weight: bold;">#${repairData.repairId.slice(0, 8)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Customer Name:</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${repairData.customerName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Contact Email:</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${repairData.customerEmail}</td>
+          </tr>
+          ${
+            repairData.customerPhone
+              ? `
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Contact Phone:</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${repairData.customerPhone}</td>
+          </tr>
+          `
+              : ''
+          }
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Service Requested:</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${repairData.serviceType}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">Estimated Cost:</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #eee; font-size: 16px; font-weight: bold; color: #28a745;">€${repairData.estimatedCost}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #333;">Estimated Time:</td>
+            <td style="padding: 8px 0;">${repairData.estimatedTime}</td>
+          </tr>
+        </table>
+        
+        <h3 style="color: #333; margin: 20px 0 10px 0;">Issue Description:</h3>
+        <div style="background-color: #f8f9fa; border-left: 4px solid #007bff; padding: 15px; margin: 10px 0;">
+          <p style="margin: 0; line-height: 1.6;">${repairData.issueDescription.replace(/\n/g, '<br>')}</p>
+        </div>
+        
+        ${imageSection}
+        
+        <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 30px 0;">
+          <h3 style="color: #856404; margin: 0 0 15px 0;">📋 What Happens Next?</h3>
+          <ol style="margin: 0; padding-left: 20px; line-height: 1.8; color: #856404;">
+            <li><strong>Initial Review:</strong> Our technicians will review your request within 1 business day</li>
+            <li><strong>Contact:</strong> We'll contact you to confirm details and schedule device drop-off</li>
+            <li><strong>Diagnosis:</strong> We'll perform a thorough diagnosis of your device</li>
+            <li><strong>Repair Estimate:</strong> You'll receive a detailed repair quote before we proceed</li>
+            <li><strong>Repair Process:</strong> Once approved, we'll complete the repair within the estimated timeframe</li>
+            <li><strong>Completion:</strong> We'll notify you when your device is ready for pickup</li>
+          </ol>
+        </div>
+        
+        <div style="background-color: #e9ecef; border-radius: 8px; padding: 20px; margin: 30px 0;">
+          <h3 style="color: #333; margin: 0 0 15px 0;">Important Information:</h3>
+          <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+            <li>Please save this email and your repair ID for future reference</li>
+            <li>You will receive updates via email as your repair progresses</li>
+            <li>The estimated cost may change after detailed diagnosis</li>
+            <li>Final approval will be required before any chargeable work begins</li>
+            <li>We provide a 30-day warranty on all completed repairs</li>
+          </ul>
+        </div>
+        
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+        
+        <div style="text-align: center;">
+          <h3 style="color: #333; margin: 0 0 10px 0;">Need to Contact Us?</h3>
+          <p style="color: #666; margin: 0;">If you have any questions about your repair request, please don't hesitate to reach out.</p>
+          <p style="color: #666; margin: 10px 0 0 0; font-size: 14px;">
+            📧 Email: support@ivapro.com | 📞 Phone: +371 12345678
+          </p>
+          <p style="color: #666; margin: 10px 0 0 0; font-size: 14px;">
+            Reference your Repair ID: <strong style="color: #007bff;">#${repairData.repairId.slice(0, 8)}</strong>
+          </p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+          <p style="color: #999; font-size: 12px; margin: 0;">
+            This is an automated confirmation email. Please do not reply to this message.
+          </p>
+        </div>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
 export async function sendRepairRequestNotification(
   to: string,
   repairData: RepairRequestData,

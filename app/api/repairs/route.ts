@@ -9,6 +9,7 @@ import {
   createBadRequestResponse,
   createServerErrorResponse,
 } from '@/lib/apiErrors';
+import { sendRepairConfirmationEmail, EmailConfig } from '@/lib/mail/email';
 import { z } from 'zod';
 
 const createRepairSchema = z.object({
@@ -193,24 +194,46 @@ ${imageUrl ? 'Image attached: ' + imageUrl : ''}
         throw error;
       });
 
-    const emailContent = `
-New repair request submitted:
+    // Send automatic email confirmation to customer
+    try {
+      const emailConfig: EmailConfig = {
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.EMAIL_PORT || '587'),
+        secure: process.env.EMAIL_SECURE === 'true',
+        auth: {
+          user: process.env.EMAIL_USER || '',
+          pass: process.env.EMAIL_PASS || '',
+        },
+        fromEmail: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+        fromName: process.env.EMAIL_FROM_NAME || 'IvaPro Support',
+      };
 
-Customer: ${firstName} ${lastName}
-Email: ${email}
-Phone: ${phone || 'Not provided'}
-Service: ${serviceId}
-Price: €${selectedService.price}
-Time: ${selectedService.time}
+      const repairConfirmationData = {
+        repairId: repair.id,
+        customerName: `${firstName} ${lastName}`,
+        customerEmail: email,
+        customerPhone: phone || undefined,
+        serviceType: serviceId,
+        issueDescription: issue,
+        estimatedCost: selectedService.price,
+        estimatedTime: selectedService.time,
+        hasImage: !!imageUrl,
+        imageUrl: imageUrl || undefined,
+      };
 
-Issue Description:
-${issue}
+      await sendRepairConfirmationEmail(
+        email,
+        repairConfirmationData,
+        emailConfig
+      );
 
-Repair ID: ${repair.id}
-Status: PENDING
-`;
-
-    console.log('Email notification would be sent:', emailContent);
+      console.log(
+        `Repair confirmation email sent to: ${email} for repair ID: ${repair.id}`
+      );
+    } catch (emailError) {
+      console.error('Failed to send repair confirmation email:', emailError);
+      // Don't fail the entire request if email fails - log the error and continue
+    }
 
     return NextResponse.json({
       success: true,
