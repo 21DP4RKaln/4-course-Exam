@@ -1508,13 +1508,12 @@ const ConfiguratorPage = () => {
             const brand =
               filterType.charAt(0).toUpperCase() + filterType.slice(1);
             newActiveFilters[`Brand=${brand}`] = true;
-          }
-          // Handle NVIDIA GPU series
+          } // Handle NVIDIA GPU series
           else if (filterType.startsWith('nvidia-rtx-')) {
             newActiveFilters['Brand=NVIDIA'] = true;
             const model = filterType.split('nvidia-rtx-')[1];
             newActiveFilters[
-              `Series=RTX ${model.replace('-', ' ').toUpperCase()}`
+              `Architecture=RTX ${model.replace('-', ' ').toUpperCase()}`
             ] = true;
           }
           // Handle AMD GPU series
@@ -1522,41 +1521,43 @@ const ConfiguratorPage = () => {
             newActiveFilters['Brand=AMD'] = true;
             const model = filterType.split('amd-rx-')[1];
             newActiveFilters[
-              `Series=RX ${model.replace('-', ' ').toUpperCase()}`
+              `Architecture=RX ${model.replace('-', ' ').toUpperCase()}`
             ] = true;
           }
           // Handle Intel GPU series
           else if (filterType.startsWith('intel-a')) {
             newActiveFilters['Brand=Intel'] = true;
             const model = filterType.split('intel-')[1];
-            newActiveFilters[`Series=Arc ${model.toUpperCase()}`] = true;
-          }
-          // Handle GPU architecture filters
-          else if (filterType === 'rtx-40') {
-            newActiveFilters['Series=RTX 40'] = true;
+            newActiveFilters[`Architecture=Arc ${model.toUpperCase()}`] = true;
+          } // Handle GPU architecture filters
+          else if (filterType === 'rtx-50') {
+            newActiveFilters['Architecture=RTX 50'] = true;
+          } else if (filterType === 'rtx-40') {
+            newActiveFilters['Architecture=RTX 40'] = true;
           } else if (filterType === 'rtx-30') {
-            newActiveFilters['Series=RTX 30'] = true;
+            newActiveFilters['Architecture=RTX 30'] = true;
           } else if (filterType === 'gtx-16') {
-            newActiveFilters['Series=GTX 16'] = true;
+            newActiveFilters['Architecture=GTX 16'] = true;
+          } else if (filterType === 'rx-8000') {
+            newActiveFilters['Architecture=RX 8000'] = true;
           } else if (filterType === 'rx-7000') {
-            newActiveFilters['Series=RX 7000'] = true;
+            newActiveFilters['Architecture=RX 7000'] = true;
           } else if (filterType === 'rx-6000') {
-            newActiveFilters['Series=RX 6000'] = true;
+            newActiveFilters['Architecture=RX 6000'] = true;
           } else if (filterType === 'rx-5000') {
-            newActiveFilters['Series=RX 5000'] = true;
+            newActiveFilters['Architecture=RX 5000'] = true;
           } else if (filterType === 'arc-a') {
-            newActiveFilters['Series=Arc A'] = true;
+            newActiveFilters['Architecture=Arc A'] = true;
           }
           break;
-
         case 'motherboard':
           // Handle motherboard form factor filters
           if (['atx', 'micro-atx', 'mini-itx', 'e-atx'].includes(filterType)) {
             const formFactor =
               filterType === 'micro-atx'
-                ? 'Micro ATX'
+                ? 'Micro-ATX'
                 : filterType === 'mini-itx'
-                  ? 'Mini ITX'
+                  ? 'Mini-ITX'
                   : filterType === 'e-atx'
                     ? 'E-ATX'
                     : 'ATX';
@@ -1569,11 +1570,10 @@ const ConfiguratorPage = () => {
             newActiveFilters['Socket=AM5'] = true;
           }
           break;
-
         case 'ram':
           // Handle RAM type filters
           if (['ddr4', 'ddr5'].includes(filterType)) {
-            newActiveFilters[`Type=${filterType.toUpperCase()}`] = true;
+            newActiveFilters[`Memory Type=${filterType.toUpperCase()}`] = true;
           }
           // Handle RAM capacity filters
           else if (
@@ -1585,33 +1585,30 @@ const ConfiguratorPage = () => {
             newActiveFilters[`Capacity=${capacity}`] = true;
           }
           break;
-
         case 'storage':
           // Handle storage type filters
           if (filterType === 'nvme') {
             newActiveFilters['Type=NVMe SSD'] = true;
-          } else if (filterType === 'sata') {
-            newActiveFilters['Type=SATA SSD'] = true;
+          } else if (filterType === 'sata' || filterType === 'sata-ssd') {
+            newActiveFilters['Type=SATA'] = true;
           } else if (filterType === 'hdd') {
             newActiveFilters['Type=HDD'] = true;
           }
           break;
-
         case 'case':
           // Handle case form factor filters
           if (['atx', 'micro-atx', 'mini-itx', 'e-atx'].includes(filterType)) {
             const formFactor =
               filterType === 'micro-atx'
-                ? 'Micro ATX'
+                ? 'Micro-ATX'
                 : filterType === 'mini-itx'
-                  ? 'Mini ITX'
+                  ? 'Mini-ITX'
                   : filterType === 'e-atx'
                     ? 'E-ATX'
                     : 'ATX';
             newActiveFilters[`Form Factor=${formFactor}`] = true;
           }
           break;
-
         case 'psu':
           // Handle PSU efficiency filters
           if (filterType.includes('80plus-')) {
@@ -1625,9 +1622,9 @@ const ConfiguratorPage = () => {
         case 'cooling':
           // Handle cooling type filters
           if (filterType === 'air') {
-            newActiveFilters['Type=Air'] = true;
-          } else if (filterType === 'liquid' || filterType === 'fluid') {
-            newActiveFilters['Type=Liquid'] = true;
+            newActiveFilters['Type=Air Cooler'] = true;
+          } else if (filterType === 'liquid') {
+            newActiveFilters['Type=Liquid Cooler'] = true;
           }
           break;
 
@@ -1685,42 +1682,54 @@ const ConfiguratorPage = () => {
       else if (filterType.startsWith('nvidia-rtx-')) {
         expectedFilters['Brand=NVIDIA'] = true;
         const model = filterType.split('nvidia-rtx-')[1];
-        expectedFilters[`Series=RTX ${model.replace('-', ' ').toUpperCase()}`] =
-          true;
+        expectedFilters[
+          `Architecture=RTX ${model.replace('-', ' ').toUpperCase()}`
+        ] = true;
       } else if (filterType.startsWith('amd-rx-')) {
         expectedFilters['Brand=AMD'] = true;
         const model = filterType.split('amd-rx-')[1];
-        expectedFilters[`Series=RX ${model.replace('-', ' ').toUpperCase()}`] =
-          true;
+        expectedFilters[
+          `Architecture=RX ${model.replace('-', ' ').toUpperCase()}`
+        ] = true;
       } else if (filterType.startsWith('intel-a')) {
         expectedFilters['Brand=Intel'] = true;
         const model = filterType.split('intel-')[1];
-        expectedFilters[`Series=Arc ${model.toUpperCase()}`] = true;
-      }
-      // Handle RAM-specific filters
+        expectedFilters[`Architecture=Arc ${model.toUpperCase()}`] = true;
+      } // Handle GPU series filters (RTX 50, RTX 40, RX 8000, RX 7000, RX 6000, RX 5000)
+      else if (filterType === 'rtx-50') {
+        expectedFilters['Architecture=RTX 50'] = true;
+      } else if (filterType === 'rtx-40') {
+        expectedFilters['Architecture=RTX 40'] = true;
+      } else if (filterType === 'rx-8000') {
+        expectedFilters['Architecture=RX 8000'] = true;
+      } else if (filterType === 'rx-7000') {
+        expectedFilters['Architecture=RX 7000'] = true;
+      } else if (filterType === 'rx-6000') {
+        expectedFilters['Architecture=RX 6000'] = true;
+      } else if (filterType === 'rx-5000') {
+        expectedFilters['Architecture=RX 5000'] = true;
+      } // Handle RAM-specific filters
       else if (['ddr4', 'ddr5'].includes(filterType)) {
-        expectedFilters[`Type=${filterType.toUpperCase()}`] = true;
+        expectedFilters[`Memory Type=${filterType.toUpperCase()}`] = true;
       } else if (
         ['16gb', '32gb', '64gb', '128gb', '256gb'].includes(filterType)
       ) {
         const capacity = filterType.replace('gb', ' GB');
         expectedFilters[`Capacity=${capacity}`] = true;
-      }
-      // Handle storage-specific filters
+      } // Handle storage-specific filters
       else if (filterType === 'nvme') {
         expectedFilters['Type=NVMe SSD'] = true;
-      } else if (filterType === 'sata-ssd') {
-        expectedFilters['Type=SATA SSD'] = true;
+      } else if (filterType === 'sata-ssd' || filterType === 'sata') {
+        expectedFilters['Type=SATA'] = true;
       } else if (filterType === 'hdd') {
         expectedFilters['Type=HDD'] = true;
-      }
-      // Handle motherboard-specific filters
+      } // Handle motherboard-specific filters
       else if (['atx', 'micro-atx', 'mini-itx'].includes(filterType)) {
         const formFactor =
           filterType === 'micro-atx'
-            ? 'Micro ATX'
+            ? 'Micro-ATX'
             : filterType === 'mini-itx'
-              ? 'Mini ITX'
+              ? 'Mini-ITX'
               : 'ATX';
         expectedFilters[`Form Factor=${formFactor}`] = true;
       } else if (filterType === 'intel-compatible') {
@@ -1731,12 +1740,11 @@ const ConfiguratorPage = () => {
       // Handle case-specific filters
       else if (filterType === 'eatx') {
         expectedFilters['Form Factor=E-ATX'] = true;
-      }
-      // Handle cooling-specific filters
+      } // Handle cooling-specific filters
       else if (filterType === 'air') {
-        expectedFilters['Type=Air'] = true;
-      } else if (filterType === 'fluid') {
-        expectedFilters['Type=Liquid'] = true;
+        expectedFilters['Type=Air Cooler'] = true;
+      } else if (filterType === 'liquid') {
+        expectedFilters['Type=Liquid Cooler'] = true;
       } // Handle PSU-specific filters
       else if (filterType.includes('80plus-')) {
         // Convert "80plus-bronze" to "80+ Bronze", "80plus-gold" to "80+ Gold", etc.

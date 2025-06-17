@@ -405,8 +405,6 @@ export const filters: Record<string, QuickFilter[]> = {
     { id: 'nvidia', name: 'Nvidia', category: 'gpu' },
     { id: 'rtx-50', name: 'RTX 50', category: 'gpu' },
     { id: 'rtx-40', name: 'RTX 40', category: 'gpu' },
-    { id: 'rtx-30', name: 'RTX 30', category: 'gpu' },
-    { id: 'gtx-16', name: 'GTX 16', category: 'gpu' },
     // AMD
     { id: 'amd', name: 'AMD', category: 'gpu' },
     { id: 'rx-8000', name: 'RX 8000', category: 'gpu' },

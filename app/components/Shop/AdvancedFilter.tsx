@@ -218,7 +218,7 @@ export default function AdvancedFilter({
       initialExpandedSections[group.title] =
         group.title === t('shop.filters.category');
     });
-    initialExpandedSections['price'] = false;
+    initialExpandedSections['price'] = true; // Price filter is open by default
     setExpandedSections(initialExpandedSections);
   }, [internalFilterGroups, t]);
 

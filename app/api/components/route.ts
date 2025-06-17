@@ -75,6 +75,8 @@ export async function GET(request: NextRequest) {
           powerConsumption += comp.storage.powerConsumption;
         }
 
+        const specs = extractComponentSpecifications(comp);
+
         return {
           id: comp.id,
           name: comp.name,
@@ -85,7 +87,7 @@ export async function GET(request: NextRequest) {
           imageUrl: comp.imagesUrl,
           categoryId: comp.categoryId,
           categoryName: comp.category.name,
-          specifications: extractComponentSpecifications(comp),
+          specifications: specs,
           sku: comp.sku || '',
           type: 'component',
           cpu: comp.cpu,
@@ -102,10 +104,28 @@ export async function GET(request: NextRequest) {
 
       if (specFilters.length > 0) {
         components = components.filter(filteredComp => {
-          return specFilters.every(filter => {
+          const passes = specFilters.every(filter => {
             const [key, value] = filter.split('=');
-            const compValue =
-              filteredComp.specifications[key]?.toLowerCase() || '';
+            if (!key || !value) return true; // Skip invalid filters
+
+            // Try to find the specification value with case-insensitive key matching
+            let compValue = '';
+            const specs = filteredComp.specifications;
+
+            // Try exact match first
+            if (specs[key]) {
+              compValue = specs[key].toLowerCase();
+            } else {
+              // Try case-insensitive search
+              const specKeys = Object.keys(specs);
+              const matchingKey = specKeys.find(
+                k => k.toLowerCase() === key.toLowerCase()
+              );
+              if (matchingKey) {
+                compValue = specs[matchingKey].toLowerCase();
+              }
+            }
+
             const filterValue = value.toLowerCase();
 
             if (key === 'model') {
@@ -114,8 +134,91 @@ export async function GET(request: NextRequest) {
               return normalizedCompValue.includes(normalizedFilterValue);
             }
 
+            // Special handling for GPU brand filters
+            if (key.toLowerCase() === 'brand' && filteredComp.gpu) {
+              // For GPUs, check both Brand (board manufacturer) and Sub Brand (chip manufacturer)
+              const brandValue = specs['Brand'] || '';
+              const subBrandValue = specs['Sub Brand'] || '';
+
+              return (
+                brandValue.toLowerCase() === filterValue ||
+                subBrandValue.toLowerCase() === filterValue
+              );
+            }
+
+            // Special handling for GPU architecture series filters
+            if (key.toLowerCase() === 'architecture' && filteredComp.gpu) {
+              const architectureValue = specs['Architecture'] || '';
+
+              // Handle series-based filtering (e.g., RTX 40 matches RTX 4070, RTX 4080, etc.)
+              if (
+                filterValue.includes('rtx 5') ||
+                filterValue.includes('rtx 50')
+              ) {
+                return architectureValue.toLowerCase().includes('rtx 5');
+              }
+              if (
+                filterValue.includes('rtx 4') ||
+                filterValue.includes('rtx 40')
+              ) {
+                return architectureValue.toLowerCase().includes('rtx 4');
+              }
+              if (
+                filterValue.includes('rtx 3') ||
+                filterValue.includes('rtx 30')
+              ) {
+                return architectureValue.toLowerCase().includes('rtx 3');
+              }
+              if (filterValue.includes('gtx 16')) {
+                return architectureValue.toLowerCase().includes('gtx 16');
+              }
+              if (
+                filterValue.includes('rx 8') ||
+                filterValue.includes('rx 8000')
+              ) {
+                return architectureValue.toLowerCase().includes('rx 8');
+              }
+              if (
+                filterValue.includes('rx 7') ||
+                filterValue.includes('rx 7000')
+              ) {
+                return architectureValue.toLowerCase().includes('rx 7');
+              }
+              if (
+                filterValue.includes('rx 6') ||
+                filterValue.includes('rx 6000')
+              ) {
+                return architectureValue.toLowerCase().includes('rx 6');
+              }
+              if (
+                filterValue.includes('rx 5') ||
+                filterValue.includes('rx 5000')
+              ) {
+                return architectureValue.toLowerCase().includes('rx 5');
+              }
+              if (filterValue.includes('arc')) {
+                return architectureValue.toLowerCase().includes('arc');
+              }
+
+              // Fallback to exact match for specific models
+              return architectureValue.toLowerCase() === filterValue;
+            }
+
+            // For exact matches on brand, series, etc.
+            if (['brand', 'series'].includes(key.toLowerCase())) {
+              return compValue === filterValue;
+            }
+
+            // Special handling for Form Factor - exact match to avoid ATX matching Micro-ATX
+            if (key.toLowerCase() === 'form factor') {
+              return compValue === filterValue;
+            }
+
+            // For other fields, use contains
             return compValue.includes(filterValue);
           });
+
+          return passes;
         });
       }
     } else {

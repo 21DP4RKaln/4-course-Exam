@@ -167,6 +167,7 @@ export function extractComponentSpecifications(
     specifications['DisplayPort'] = component.gpu.hasDisplayPort ? 'Yes' : 'No';
     specifications['HDMI Port'] = component.gpu.hasHDMI ? 'Yes' : 'No';
     specifications['Sub Brand'] = component.gpu.subBrand || '';
+    specifications['Architecture'] = component.gpu.architecture || '';
     // Power Consumption removed as requested
   }
   if (component.ram) {
@@ -237,6 +238,8 @@ export function extractComponentSpecifications(
     specifications['Molex/PATA Connections'] = String(
       component.psu.molexPataConnections || ''
     );
+    // Add energy efficiency certification
+    specifications['Certification'] = component.psu.energyEfficiency || '';
   }
 
   if (component.cooling) {
@@ -244,6 +247,9 @@ export function extractComponentSpecifications(
     specifications['Socket'] = component.cooling.socket || '';
     specifications['Fan Diameter'] = `${component.cooling.fanDiameter || 0} mm`;
     specifications['Fan Speed'] = `${component.cooling.fanSpeed || 0} RPM`;
+    // Add cooling type from category/subCategory
+    specifications['Type'] =
+      component.cooling.category || component.cooling.subCategory || '';
   }
   if (component.caseModel) {
     specifications['Brand'] = component.caseModel.brand || '';

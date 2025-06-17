@@ -37,6 +37,61 @@ const QuickFilters: React.FC<Props> = ({
   );
   const containerRef = useRef<HTMLDivElement>(null);
   const MAX_VISIBLE_ITEMS = 6;
+  const getCategoryColor = useCallback((category: string) => {
+    const categoryColors: Record<
+      string,
+      { primary: string; secondary: string; accent: string }
+    > = {
+      cpu: {
+        primary: 'blue',
+        secondary: 'orange',
+        accent: 'indigo',
+      },
+      gpu: {
+        primary: 'green',
+        secondary: 'red',
+        accent: 'emerald',
+      },
+      motherboard: {
+        primary: 'purple',
+        secondary: 'cyan',
+        accent: 'violet',
+      },
+      ram: {
+        primary: 'indigo',
+        secondary: 'violet',
+        accent: 'blue',
+      },
+      storage: {
+        primary: 'red',
+        secondary: 'orange',
+        accent: 'amber',
+      },
+      case: {
+        primary: 'purple',
+        secondary: 'pink',
+        accent: 'fuchsia',
+      },
+      psu: {
+        primary: 'yellow',
+        secondary: 'amber',
+        accent: 'orange',
+      },
+      cooling: {
+        primary: 'sky',
+        secondary: 'blue',
+        accent: 'cyan',
+      },
+      services: {
+        primary: 'teal',
+        secondary: 'green',
+        accent: 'emerald',
+      },
+    };
+
+    return categoryColors[category] || categoryColors.cpu;
+  }, []);
+
   const getBrandColor = useCallback(
     (filterId: string | null, isActive: boolean) => {
       if (!isActive) {
@@ -46,168 +101,240 @@ const QuickFilters: React.FC<Props> = ({
       }
 
       if (!filterId) return theme === 'dark' ? 'text-red-400' : 'text-blue-600';
-      // CPU brands and series
-      if (
-        filterId.toLowerCase().includes('intel') ||
-        filterId.toLowerCase().includes('core')
-      ) {
-        return 'text-blue-500';
-      }
-      if (
-        filterId.toLowerCase().includes('amd') ||
-        filterId.toLowerCase().includes('ryzen') ||
-        filterId.toLowerCase().includes('threadripper')
-      ) {
-        return 'text-orange-500';
-      } // GPU brands and series
-      if (
-        filterId.toLowerCase().includes('nvidia') ||
-        filterId.toLowerCase().includes('rtx') ||
-        filterId.toLowerCase().includes('gtx')
-      ) {
-        return 'text-green-500';
-      }
-      if (
-        filterId.toLowerCase().includes('amd') &&
-        (filterId.toLowerCase().includes('rx') ||
-          filterId.toLowerCase().includes('radeon'))
-      ) {
-        return 'text-red-500';
-      }
-      if (
-        filterId.toLowerCase().includes('intel') &&
-        (filterId.toLowerCase().includes('arc') ||
-          filterId.toLowerCase().includes('a580') ||
-          filterId.toLowerCase().includes('a750'))
-      ) {
-        return 'text-blue-400';
-      } // PSU efficiency ratings
-      if (
-        filterId.toLowerCase().includes('80plus-bronze') ||
-        filterId.toLowerCase().includes('bronze')
-      ) {
-        return 'text-amber-600';
-      }
-      if (
-        filterId.toLowerCase().includes('80plus-gold') ||
-        filterId.toLowerCase().includes('gold')
-      ) {
-        return 'text-yellow-500';
-      }
-      if (
-        filterId.toLowerCase().includes('80plus-platinum') ||
-        filterId.toLowerCase().includes('platinum')
-      ) {
-        return 'text-slate-300';
-      }
-      if (
-        filterId.toLowerCase().includes('80plus-titanium') ||
-        filterId.toLowerCase().includes('titanium')
-      ) {
-        return 'text-gray-400';
-      } // Motherboard form factors and compatibility
-      if (
-        filterId.toLowerCase().includes('atx') &&
-        !filterId.toLowerCase().includes('micro') &&
-        !filterId.toLowerCase().includes('mini')
-      ) {
-        return 'text-purple-500';
-      }
-      if (
-        filterId.toLowerCase().includes('micro-atx') ||
-        filterId.toLowerCase().includes('microatx')
-      ) {
-        return 'text-cyan-500';
-      }
-      if (
-        filterId.toLowerCase().includes('mini-itx') ||
-        filterId.toLowerCase().includes('mini-atx') ||
-        filterId.toLowerCase().includes('miniitx')
-      ) {
-        return 'text-pink-500';
-      }
-      if (filterId.toLowerCase().includes('eatx')) {
-        return 'text-indigo-600';
-      }
-      if (filterId.toLowerCase().includes('intel-compatible')) {
-        return 'text-blue-500';
-      }
-      if (filterId.toLowerCase().includes('amd-compatible')) {
-        return 'text-orange-500';
-      } // RAM specifications
-      if (filterId.toLowerCase().includes('ddr4')) {
+
+      const colors = getCategoryColor(activeCategory || 'cpu');
+
+      // CPU category - Blue family
+      if (activeCategory === 'cpu') {
+        if (
+          filterId.toLowerCase().includes('intel') ||
+          filterId.toLowerCase().includes('core')
+        ) {
+          return 'text-blue-500';
+        }
+        if (
+          filterId.toLowerCase().includes('amd') ||
+          filterId.toLowerCase().includes('ryzen') ||
+          filterId.toLowerCase().includes('threadripper')
+        ) {
+          return 'text-orange-500';
+        }
         return 'text-indigo-500';
       }
-      if (filterId.toLowerCase().includes('ddr5')) {
-        return 'text-violet-500';
+
+      // GPU category - Green family
+      if (activeCategory === 'gpu') {
+        if (
+          filterId.toLowerCase().includes('nvidia') ||
+          filterId.toLowerCase().includes('rtx') ||
+          filterId.toLowerCase().includes('rtx-50') ||
+          filterId.toLowerCase().includes('rtx-40') ||
+          filterId.toLowerCase().includes('gtx')
+        ) {
+          return 'text-green-500';
+        }
+        if (
+          filterId.toLowerCase().includes('amd') &&
+          (filterId.toLowerCase().includes('rx') ||
+            filterId.toLowerCase().includes('radeon') ||
+            filterId.toLowerCase().includes('rx-8000') ||
+            filterId.toLowerCase().includes('rx-7000') ||
+            filterId.toLowerCase().includes('rx-6000') ||
+            filterId.toLowerCase().includes('rx-5000'))
+        ) {
+          return 'text-red-500';
+        }
+        if (
+          filterId.toLowerCase().includes('intel') &&
+          (filterId.toLowerCase().includes('arc') ||
+            filterId.toLowerCase().includes('a580') ||
+            filterId.toLowerCase().includes('a750'))
+        ) {
+          return 'text-emerald-400';
+        }
+        return 'text-green-400';
       }
-      if (filterId.toLowerCase().includes('16gb')) {
-        return 'text-emerald-500';
-      }
-      if (filterId.toLowerCase().includes('32gb')) {
-        return 'text-teal-500';
-      }
-      if (filterId.toLowerCase().includes('64gb')) {
-        return 'text-sky-500';
-      }
-      if (filterId.toLowerCase().includes('128gb')) {
-        return 'text-blue-400';
-      }
-      if (filterId.toLowerCase().includes('256gb')) {
-        return 'text-indigo-400';
-      } // Storage types
-      if (filterId.toLowerCase().includes('nvme')) {
-        return 'text-red-500';
-      }
-      if (
-        filterId.toLowerCase().includes('sata-ssd') ||
-        filterId.toLowerCase().includes('sata ssd')
-      ) {
-        return 'text-orange-400';
-      }
-      if (filterId.toLowerCase().includes('hdd')) {
-        return 'text-gray-500';
-      } // Cooling types
-      if (
-        filterId.toLowerCase().includes('air') &&
-        filterId.toLowerCase().includes('cooling')
-      ) {
-        return 'text-sky-400';
-      }
-      if (
-        filterId.toLowerCase().includes('liquid') &&
-        filterId.toLowerCase().includes('cooling')
-      ) {
-        return 'text-blue-600';
-      }
-      if (
-        filterId.toLowerCase().includes('fluid') &&
-        filterId.toLowerCase().includes('cooling')
-      ) {
-        return 'text-blue-600';
-      }
-      // Services
-      if (filterId.toLowerCase().includes('windows')) {
-        return 'text-blue-500';
-      }
-      if (
-        filterId.toLowerCase().includes('wifi') ||
-        filterId.toLowerCase().includes('bluetooth')
-      ) {
-        return 'text-green-500';
-      }
-      if (filterId.toLowerCase().includes('4gpu')) {
+
+      // Motherboard category - Purple family
+      if (activeCategory === 'motherboard') {
+        if (
+          filterId.toLowerCase().includes('atx') &&
+          !filterId.toLowerCase().includes('micro') &&
+          !filterId.toLowerCase().includes('mini')
+        ) {
+          return 'text-purple-500';
+        }
+        if (
+          filterId.toLowerCase().includes('micro-atx') ||
+          filterId.toLowerCase().includes('microatx')
+        ) {
+          return 'text-cyan-500';
+        }
+        if (
+          filterId.toLowerCase().includes('mini-itx') ||
+          filterId.toLowerCase().includes('mini-atx') ||
+          filterId.toLowerCase().includes('miniitx')
+        ) {
+          return 'text-violet-500';
+        }
+        if (filterId.toLowerCase().includes('eatx')) {
+          return 'text-purple-600';
+        }
+        if (filterId.toLowerCase().includes('intel-compatible')) {
+          return 'text-purple-400';
+        }
+        if (filterId.toLowerCase().includes('amd-compatible')) {
+          return 'text-violet-400';
+        }
         return 'text-purple-500';
       }
-      if (filterId.toLowerCase().includes('sound')) {
-        return 'text-yellow-500';
+
+      // RAM category - Indigo family
+      if (activeCategory === 'ram') {
+        if (filterId.toLowerCase().includes('ddr4')) {
+          return 'text-indigo-500';
+        }
+        if (filterId.toLowerCase().includes('ddr5')) {
+          return 'text-violet-500';
+        }
+        if (filterId.toLowerCase().includes('16gb')) {
+          return 'text-indigo-400';
+        }
+        if (filterId.toLowerCase().includes('32gb')) {
+          return 'text-violet-400';
+        }
+        if (filterId.toLowerCase().includes('64gb')) {
+          return 'text-blue-500';
+        }
+        if (filterId.toLowerCase().includes('128gb')) {
+          return 'text-blue-400';
+        }
+        if (filterId.toLowerCase().includes('256gb')) {
+          return 'text-indigo-600';
+        }
+        return 'text-indigo-500';
       }
-      if (filterId.toLowerCase().includes('capture')) {
-        return 'text-red-500';
+
+      // Storage category - Red/Orange family
+      if (activeCategory === 'storage') {
+        if (filterId.toLowerCase().includes('nvme')) {
+          return 'text-red-500';
+        }
+        if (
+          filterId.toLowerCase().includes('sata-ssd') ||
+          filterId.toLowerCase().includes('sata ssd')
+        ) {
+          return 'text-orange-500';
+        }
+        if (filterId.toLowerCase().includes('hdd')) {
+          return 'text-amber-600';
+        }
+        return 'text-red-400';
       }
+
+      // Case category - Purple/Pink family
+      if (activeCategory === 'case') {
+        if (
+          filterId.toLowerCase().includes('atx') &&
+          !filterId.toLowerCase().includes('micro') &&
+          !filterId.toLowerCase().includes('mini')
+        ) {
+          return 'text-purple-500';
+        }
+        if (
+          filterId.toLowerCase().includes('micro-atx') ||
+          filterId.toLowerCase().includes('microatx')
+        ) {
+          return 'text-pink-500';
+        }
+        if (
+          filterId.toLowerCase().includes('mini-itx') ||
+          filterId.toLowerCase().includes('mini-atx') ||
+          filterId.toLowerCase().includes('miniitx')
+        ) {
+          return 'text-fuchsia-500';
+        }
+        return 'text-purple-400';
+      }
+
+      // PSU category - Yellow/Amber family
+      if (activeCategory === 'psu') {
+        if (
+          filterId.toLowerCase().includes('80plus-bronze') ||
+          filterId.toLowerCase().includes('bronze')
+        ) {
+          return 'text-amber-600';
+        }
+        if (
+          filterId.toLowerCase().includes('80plus-gold') ||
+          filterId.toLowerCase().includes('gold')
+        ) {
+          return 'text-yellow-500';
+        }
+        if (
+          filterId.toLowerCase().includes('80plus-platinum') ||
+          filterId.toLowerCase().includes('platinum')
+        ) {
+          return 'text-orange-300';
+        }
+        if (
+          filterId.toLowerCase().includes('80plus-titanium') ||
+          filterId.toLowerCase().includes('titanium')
+        ) {
+          return 'text-yellow-300';
+        }
+        return 'text-yellow-400';
+      }
+
+      // Cooling category - Sky/Blue family
+      if (activeCategory === 'cooling') {
+        if (
+          filterId.toLowerCase().includes('air') &&
+          filterId.toLowerCase().includes('cooling')
+        ) {
+          return 'text-sky-500';
+        }
+        if (
+          filterId.toLowerCase().includes('liquid') &&
+          filterId.toLowerCase().includes('cooling')
+        ) {
+          return 'text-blue-500';
+        }
+        if (
+          filterId.toLowerCase().includes('fluid') &&
+          filterId.toLowerCase().includes('cooling')
+        ) {
+          return 'text-cyan-500';
+        }
+        return 'text-sky-400';
+      }
+
+      // Services category - Teal/Green family
+      if (activeCategory === 'services') {
+        if (filterId.toLowerCase().includes('windows')) {
+          return 'text-teal-500';
+        }
+        if (
+          filterId.toLowerCase().includes('wifi') ||
+          filterId.toLowerCase().includes('bluetooth')
+        ) {
+          return 'text-green-500';
+        }
+        if (filterId.toLowerCase().includes('4gpu')) {
+          return 'text-emerald-500';
+        }
+        if (filterId.toLowerCase().includes('sound')) {
+          return 'text-teal-400';
+        }
+        if (filterId.toLowerCase().includes('capture')) {
+          return 'text-green-400';
+        }
+        return 'text-teal-500';
+      }
+
       return theme === 'dark' ? 'text-red-400' : 'text-blue-600';
     },
-    [theme]
+    [theme, activeCategory, getCategoryColor]
   );
   const getBrandUnderlineColor = useCallback(
     (filterId: string | null) => {

@@ -172,7 +172,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50 via-white to-white dark:from-neutral-800 dark:via-neutral-950 dark:to-stone-950">
+    <div>
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Sveiciena sekcija ar animāciju */}
         <motion.div

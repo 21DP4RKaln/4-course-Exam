@@ -56,7 +56,7 @@ const FilterSection: React.FC<Props> = ({
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({
-    price: false, // Start collapsed for cleaner UI
+    price: true, // Price filter is open by default
     'specs.cores': false,
     'specs.threads': false,
     'specs.socket': false,
