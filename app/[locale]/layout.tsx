@@ -10,6 +10,8 @@ import { ThemeProvider } from '@/app/contexts/ThemeContext';
 import { WishlistProvider } from '@/app/contexts/WishlistContext';
 import SessionWrapper from '@/app/components/SessionWrapper';
 import ClientLayout from './ClientLayout';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
@@ -99,6 +101,8 @@ export default async function LocaleLayout({ children, params }: Props) {
             </ThemeProvider>
           </I18nProvider>
         </SessionWrapper>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

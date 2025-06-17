@@ -48,6 +48,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.15.3",
     "@types/request-ip": "^0.0.41",
+    "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
