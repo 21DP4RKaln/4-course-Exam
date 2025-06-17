@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import PDFDocument from 'pdfkit';
+import { jsPDF } from 'jspdf';
 
 export interface ConfigurationPDFData {
   id: string;
@@ -30,219 +30,190 @@ export async function generateConfigurationPDF(
 
   const filename = `configuration-${configData.id}.pdf`;
   const outputPath = path.join(tempDir, filename);
-  return new Promise((resolve, reject) => {
-    try {
-      // Create a new PDF document with explicit font settings
-      const doc = new PDFDocument({
-        margin: 50,
-        font: 'Times-Roman', // Use built-in PDF font instead of system font
-      });
 
-      // Pipe the PDF to a file
-      doc.pipe(fs.createWriteStream(outputPath));
+  try {
+    // Create a new PDF document with jsPDF
+    const doc = new jsPDF();
 
-      // Format date and time professionally
-      const formattedDate = configData.createdAt.toLocaleDateString('lv-LV', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-      const formattedTime = configData.createdAt.toLocaleTimeString('lv-LV', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }); // Header
-      doc
-        .font('Times-Bold')
-        .fontSize(20)
-        .fillColor('#1f2937')
-        .text('IVAPRO', 50, 50);
-      doc
-        .font('Times-Bold')
-        .fontSize(16)
-        .text('DATORA KONFIGURĀCIJAS SARAKSTS', 50, 80);
+    // Format date and time professionally
+    const formattedDate = configData.createdAt.toLocaleDateString('lv-LV', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    const formattedTime = configData.createdAt.toLocaleTimeString('lv-LV', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
-      // Draw header line
-      doc
-        .strokeColor('#dc2626')
-        .lineWidth(2)
-        .moveTo(50, 110)
-        .lineTo(545, 110)
-        .stroke();
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(31, 41, 55);
+    doc.text('IVAPRO', 20, 30);
 
-      let yPosition = 140; // Configuration Information
-      doc
-        .font('Times-Bold')
-        .fontSize(14)
-        .fillColor('#374151')
-        .text('KONFIGURĀCIJAS INFORMĀCIJA:', 50, yPosition);
-      yPosition += 30;
-      doc
-        .font('Times-Roman')
-        .fontSize(11)
-        .fillColor('#6b7280')
-        .text(`Konfigurācijas ID: ${configData.id}`, 70, yPosition)
-        .text(`Nosaukums: ${configData.name}`, 70, yPosition + 20)
-        .text(`Izveidošanas datums: ${formattedDate}`, 70, yPosition + 40)
-        .text(`Izveidošanas laiks: ${formattedTime}`, 70, yPosition + 60);
+    doc.setFontSize(16);
+    doc.text('DATORA KONFIGURĀCIJAS SARAKSTS', 20, 45);
 
-      yPosition += 100; // Components section
-      doc
-        .font('Times-Bold')
-        .fontSize(14)
-        .fillColor('#374151')
-        .text('KOMPONENTES:', 50, yPosition);
-      yPosition += 30; // Table headers
-      doc
-        .font('Times-Bold')
-        .fontSize(10)
-        .fillColor('#374151')
-        .text('Kategorija', 50, yPosition)
-        .text('Komponente', 150, yPosition)
-        .text('Cena', 400, yPosition)
-        .text('Galvenās specifikācijas', 450, yPosition);
+    // Draw header line
+    doc.setDrawColor(220, 38, 38);
+    doc.setLineWidth(2);
+    doc.line(20, 55, 190, 55);
 
-      yPosition += 20;
+    let yPosition = 75;
 
-      // Draw table header line
-      doc
-        .strokeColor('#d1d5db')
-        .lineWidth(1)
-        .moveTo(50, yPosition)
-        .lineTo(545, yPosition)
-        .stroke();
+    // Configuration Information
+    doc.setFontSize(14);
+    doc.setTextColor(55, 65, 81);
+    doc.text('KONFIGURĀCIJAS INFORMĀCIJA:', 20, yPosition);
+
+    yPosition += 15;
+    doc.setFontSize(11);
+    doc.setTextColor(107, 114, 128);
+    doc.text(`Konfigurācijas ID: ${configData.id}`, 25, yPosition);
+    doc.text(`Nosaukums: ${configData.name}`, 25, yPosition + 10);
+    doc.text(`Izveidošanas datums: ${formattedDate}`, 25, yPosition + 20);
+    doc.text(`Izveidošanas laiks: ${formattedTime}`, 25, yPosition + 30);
+
+    yPosition += 50;
+
+    // Components section
+    doc.setFontSize(14);
+    doc.setTextColor(55, 65, 81);
+    doc.text('KOMPONENTES:', 20, yPosition);
+
+    yPosition += 15;
+
+    // Table headers
+    doc.setFontSize(10);
+    doc.setTextColor(55, 65, 81);
+    doc.text('Kategorija', 20, yPosition);
+    doc.text('Komponente', 60, yPosition);
+    doc.text('Cena', 140, yPosition);
+    doc.text('Specifikācijas', 160, yPosition);
+
+    yPosition += 10;
+
+    // Draw header line
+    doc.setDrawColor(107, 114, 128);
+    doc.setLineWidth(0.5);
+    doc.line(20, yPosition, 190, yPosition);
+
+    yPosition += 5;
+
+    // Component rows
+    configData.components.forEach(component => {
+      const specifications = Object.entries(component.specifications)
+        .filter(([key, value]) => value && value !== 'N/A')
+        .slice(0, 2) // Limit to 2 specs for space
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ');
+
+      doc.setFontSize(9);
+      doc.setTextColor(107, 114, 128);
+      doc.text(component.categoryName, 20, yPosition);
+      doc.text(
+        component.componentName.substring(0, 25) +
+          (component.componentName.length > 25 ? '...' : ''),
+        60,
+        yPosition
+      );
+      doc.text(`€${component.price.toFixed(2)}`, 140, yPosition);
+      doc.text(
+        specifications.substring(0, 30) +
+          (specifications.length > 30 ? '...' : ''),
+        160,
+        yPosition
+      );
+
       yPosition += 10;
 
-      // Components
-      configData.components.forEach((component, index) => {
-        if (yPosition > 700) {
-          doc.addPage();
-          yPosition = 50;
-        }
+      // Check if we need a new page
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 30;
+      }
+    });
 
-        const specs = Object.entries(component.specifications)
-          .filter(([key, value]) => value && value !== 'N/A')
-          .slice(0, 2) // Limit to 2 specs for space
-          .map(([key, value]) => `${key}: ${value}`)
-          .join(', ');
-        doc
-          .font('Times-Roman')
-          .fontSize(9)
-          .fillColor('#6b7280')
-          .text(component.categoryName, 50, yPosition)
-          .text(
-            component.componentName.substring(0, 35) +
-              (component.componentName.length > 35 ? '...' : ''),
-            150,
-            yPosition
-          )
-          .text(`€${component.price.toFixed(2)}`, 400, yPosition)
-          .text(
-            specs.substring(0, 40) + (specs.length > 40 ? '...' : ''),
-            450,
-            yPosition
-          );
+    yPosition += 10;
 
-        yPosition += 20;
+    // Draw summary line
+    doc.setDrawColor(220, 38, 38);
+    doc.setLineWidth(1);
+    doc.line(20, yPosition, 190, yPosition);
 
-        // Add separator line every few items
-        if ((index + 1) % 3 === 0) {
-          doc
-            .strokeColor('#f3f4f6')
-            .lineWidth(0.5)
-            .moveTo(50, yPosition)
-            .lineTo(545, yPosition)
-            .stroke();
-          yPosition += 5;
-        }
-      });
+    yPosition += 15;
 
-      yPosition += 20; // Summary section
-      doc
-        .strokeColor('#dc2626')
-        .lineWidth(1)
-        .moveTo(50, yPosition)
-        .lineTo(545, yPosition)
-        .stroke();
-      yPosition += 20;
+    // Summary
+    doc.setFontSize(14);
+    doc.setTextColor(55, 65, 81);
+    doc.text('KOPSAVILKUMS:', 20, yPosition);
 
-      doc
-        .font('Times-Bold')
-        .fontSize(14)
-        .fillColor('#374151')
-        .text('KOPSAVILKUMS:', 50, yPosition);
-      yPosition += 30;
-      doc
-        .font('Times-Roman')
-        .fontSize(12)
-        .fillColor('#6b7280')
-        .text(
-          `Kopējā cena: €${configData.totalPrice.toFixed(2)}`,
-          70,
-          yPosition
-        )
-        .text(
-          `Elektroenerģijas patēriņš: ${configData.totalPowerConsumption}W`,
-          70,
-          yPosition + 25
-        )
-        .text(
-          `Ieteicamais barošanas bloks: ${configData.recommendedPsuWattage}`,
-          70,
-          yPosition + 50
-        );
+    yPosition += 15;
+    doc.setFontSize(12);
+    doc.setTextColor(107, 114, 128);
+    doc.text(
+      `Kopējā cena: €${configData.totalPrice.toFixed(2)}`,
+      25,
+      yPosition
+    );
+    doc.text(
+      `Kopējais enerģijas patēriņš: ${configData.totalPowerConsumption}W`,
+      25,
+      yPosition + 10
+    );
+    doc.text(
+      `Ieteicamā barošanas bloka jauda: ${configData.recommendedPsuWattage}`,
+      25,
+      yPosition + 20
+    );
 
-      yPosition += 100; // Footer
-      doc
-        .font('Times-Roman')
-        .fontSize(10)
-        .fillColor('#9ca3af')
-        .text(
-          'Šī konfigurācija ir izveidota izmantojot IvaPro datora konstruktoru.',
-          50,
-          yPosition
-        )
-        .text(
-          'Ja jums ir jautājumi par šo konfigurāciju, lūdzu sazinieties ar mūsu',
-          50,
-          yPosition + 20
-        )
-        .text('klientu apkalpošanas komandu.', 50, yPosition + 35);
+    yPosition += 40;
 
-      yPosition += 70;
-      doc
-        .font('Times-Roman')
-        .fontSize(9)
-        .fillColor('#9ca3af')
-        .text('SIA "IvaPro"', 50, yPosition)
-        .text('Reģ. Nr.: 40003XXXXXX', 50, yPosition + 15)
-        .text('PVN maksātāja kods: LVXXXXXXX', 50, yPosition + 30)
-        .text('Adrese: Rīga, Latvija', 50, yPosition + 45);
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(156, 163, 175);
+    doc.text(
+      'Šī konfigurācija ir izveidota izmantojot IvaPro datora konstruktoru.',
+      20,
+      yPosition
+    );
+    doc.text(
+      'Ja jums ir jautājumi par šo konfigurāciju, lūdzu sazinieties ar mūsu',
+      20,
+      yPosition + 10
+    );
+    doc.text('klientu apkalpošanas komandu.', 20, yPosition + 20);
 
-      yPosition += 75;
-      doc
-        .font('Times-Roman')
-        .fontSize(8)
-        .fillColor('#d1d5db')
-        .text(
-          `Dokuments ģenerēts: ${new Date().toLocaleString('lv-LV')}`,
-          50,
-          yPosition
-        );
+    yPosition += 35;
 
-      // Finalize the PDF
-      doc.end();
+    // Company info
+    doc.setFontSize(9);
+    doc.setTextColor(156, 163, 175);
+    doc.text('SIA "IvaPro"', 20, yPosition);
+    doc.text('Reģ. Nr.: 40003XXXXXX', 20, yPosition + 8);
+    doc.text('PVN maksātāja kods: LVXXXXXXX', 20, yPosition + 16);
+    doc.text('Adrese: Rīga, Latvija', 20, yPosition + 24);
 
-      doc.on('end', () => {
-        resolve(outputPath);
-      });
+    yPosition += 35;
 
-      doc.on('error', error => {
-        reject(error);
-      });
-    } catch (error) {
-      reject(error);
-    }
-  });
+    // Generation timestamp
+    doc.setFontSize(8);
+    doc.setTextColor(209, 213, 219);
+    doc.text(
+      `Dokuments ģenerēts: ${new Date().toLocaleString('lv-LV')}`,
+      20,
+      yPosition
+    );
+
+    // Save the PDF
+    const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
+    await fs.writeFile(outputPath, pdfBuffer);
+
+    return outputPath;
+  } catch (error) {
+    console.error('Error generating PDF with jsPDF:', error);
+    throw new Error('Failed to generate PDF');
+  }
 }
 
 /**
