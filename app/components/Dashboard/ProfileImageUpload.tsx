@@ -19,7 +19,9 @@ export default function ProfileImageUpload({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      onChange(e.target.files[0]);
+      const file = e.target.files[0];
+      console.log('Image selected:', file.name, 'Size:', file.size);
+      onChange(file);
     }
   };
 
@@ -41,9 +43,13 @@ export default function ProfileImageUpload({
       >
         {currentImage ? (
           <img
-            src={currentImage}
+            src={`${currentImage}?t=${Date.now()}`}
             alt={imageT('altText')}
             className="w-full h-full object-cover"
+            onError={e => {
+              console.error('Image failed to load:', currentImage);
+              e.currentTarget.style.display = 'none';
+            }}
           />
         ) : (
           <Image size={48} className="text-blue-500 dark:text-red-500" />

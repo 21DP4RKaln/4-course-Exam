@@ -11,5 +11,11 @@
       "app/api/**": {
         "maxDuration": 30
       }
-    }
+    },
+    "routes": [
+      {
+        "src": "/uploads/(.*)",
+        "dest": "/api/uploads/$1"
+      }
+    ]
   }

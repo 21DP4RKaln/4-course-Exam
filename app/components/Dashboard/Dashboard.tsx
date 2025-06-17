@@ -102,7 +102,14 @@ export default function ProfileTab() {
         }
       }
 
-      await updateProfile(updateData, profileImage, deleteProfileImage);
+      console.log('Updating profile with image:', profileImage?.name);
+      const result = await updateProfile(
+        updateData,
+        profileImage,
+        deleteProfileImage
+      );
+      console.log('Profile update result:', result);
+
       setSuccessMessage(t('updateSuccess'));
 
       setTimeout(() => {

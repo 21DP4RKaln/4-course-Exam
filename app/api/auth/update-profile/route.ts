@@ -1,16 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
+import { join } from 'path';
+import { randomUUID } from 'crypto';
+import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prismaService';
-import { verifyJWT, getJWTFromRequest } from '@/lib/auth/jwt';
+import { getJWTFromRequest, verifyJWT } from '@/lib/auth/jwt';
 import {
   createUnauthorizedResponse,
   createBadRequestResponse,
   createServerErrorResponse,
 } from '@/lib/apiErrors';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import { join } from 'path';
-import { randomUUID } from 'crypto';
-import * as bcrypt from 'bcryptjs';
+
+// Add cloud storage configuration
+const USE_CLOUD_STORAGE = process.env.USE_CLOUD_STORAGE === 'true';
+const CLOUD_STORAGE_URL = process.env.CLOUD_STORAGE_URL || '';
+
+// Function to upload to cloud storage (you'll need to implement based on your provider)
+async function uploadToCloud(file: File): Promise<string> {
+  // Example for Cloudinary, AWS S3, etc.
+  // This is a placeholder - implement based on your cloud provider
+  if (process.env.CLOUDINARY_URL) {
+    // Cloudinary upload logic
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append(
+      'upload_preset',
+      process.env.CLOUDINARY_UPLOAD_PRESET || 'profiles'
+    );
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+    return data.secure_url;
+  }
+
+  // Fallback to local storage
+  throw new Error('Cloud storage not configured');
+}
 
 export async function PUT(request: NextRequest) {
   try {
@@ -118,21 +151,49 @@ export async function PUT(request: NextRequest) {
     if (deleteProfileImage) {
       updateData.profileImageUrl = null;
     } else if (profileImage) {
-      const bytes = await profileImage.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      const filename = `${randomUUID()}-${profileImage.name}`;
-      const uploadDir = join(process.cwd(), 'public', 'uploads', 'profiles');
-
-      if (!existsSync(uploadDir)) {
-        await mkdir(uploadDir, { recursive: true });
+      if (USE_CLOUD_STORAGE) {
+        // Upload to cloud storage
+        try {
+          const cloudUrl = await uploadToCloud(profileImage);
+          updateData.profileImageUrl = cloudUrl;
+        } catch (cloudError) {
+          console.error(
+            'Cloud upload failed, falling back to local:',
+            cloudError
+          );
+          // Fall back to local storage
+        }
       }
 
-      const imagePath = join(uploadDir, filename);
+      // Local storage fallback or primary method
+      if (!updateData.profileImageUrl) {
+        const bytes = await profileImage.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
-      await writeFile(imagePath, buffer);
+        const filename = `${randomUUID()}-${profileImage.name}`;
 
-      updateData.profileImageUrl = `/uploads/profiles/${filename}`;
+        // For hosting compatibility, try different upload directories
+        let uploadDir: string;
+        let urlPath: string;
+
+        if (process.env.VERCEL) {
+          // Vercel specific - use /tmp directory and serve via API
+          uploadDir = '/tmp/uploads/profiles';
+          urlPath = `/api/uploads/profiles/${filename}`;
+        } else {
+          // Traditional hosting
+          uploadDir = join(process.cwd(), 'public', 'uploads', 'profiles');
+          urlPath = `/uploads/profiles/${filename}`;
+        }
+
+        if (!existsSync(uploadDir)) {
+          await mkdir(uploadDir, { recursive: true });
+        }
+
+        const imagePath = join(uploadDir, filename);
+        await writeFile(imagePath, buffer);
+        updateData.profileImageUrl = urlPath;
+      }
     }
 
     const updatedUser = await prisma.user.update({
