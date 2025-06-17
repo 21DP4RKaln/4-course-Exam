@@ -20,27 +20,41 @@ cloudinary.config({
 
 // Function to upload to cloud storage
 async function uploadToCloud(file: File): Promise<string> {
-  console.log('Uploading to cloud storage...');
+  console.log('🔧 [HOSTING DEBUG] Starting cloud upload process...');
+  console.log('🔧 [HOSTING DEBUG] Environment check:', {
+    hasCloudinaryName: !!process.env.CLOUDINARY_CLOUD_NAME,
+    hasCloudinaryKey: !!process.env.CLOUDINARY_API_KEY,
+    hasCloudinarySecret: !!process.env.CLOUDINARY_API_SECRET,
+    hasBlobToken: !!process.env.BLOB_READ_WRITE_TOKEN,
+    isVercel: !!process.env.VERCEL,
+  });
 
   // Try Vercel Blob first if token is available
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
-      console.log('Trying Vercel Blob upload...');
+      console.log('🔧 [HOSTING DEBUG] Trying Vercel Blob upload...');
       const filename = `profiles/${randomUUID()}-${file.name}`;
       const blob = await put(filename, file, {
         access: 'public',
       });
-      console.log('Vercel Blob upload successful:', blob.url);
+      console.log(
+        '✅ [HOSTING DEBUG] Vercel Blob upload successful:',
+        blob.url
+      );
       return blob.url;
-    } catch (error) {
-      console.error('Vercel Blob upload failed:', error);
+    } catch (error: any) {
+      console.error('❌ [HOSTING DEBUG] Vercel Blob upload failed:', error);
     }
   }
 
   // Fallback to Cloudinary
-  if (process.env.CLOUDINARY_CLOUD_NAME) {
+  if (
+    process.env.CLOUDINARY_CLOUD_NAME &&
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET
+  ) {
     try {
-      console.log('Trying Cloudinary upload...');
+      console.log('🔧 [HOSTING DEBUG] Trying Cloudinary upload...');
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
@@ -58,14 +72,29 @@ async function uploadToCloud(file: File): Promise<string> {
         }
       );
 
-      console.log('Cloudinary upload successful:', result.secure_url);
+      console.log(
+        '✅ [HOSTING DEBUG] Cloudinary upload successful:',
+        result.secure_url
+      );
       return result.secure_url;
-    } catch (error) {
-      console.error('Cloudinary upload failed:', error);
+    } catch (error: any) {
+      console.error('❌ [HOSTING DEBUG] Cloudinary upload failed:', error);
+      console.error('❌ [HOSTING DEBUG] Cloudinary error details:', {
+        message: error?.message,
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME?.substring(0, 5) + '...',
+      });
     }
+  } else {
+    console.error('❌ [HOSTING DEBUG] Cloudinary not configured. Missing:', {
+      cloudName: !process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: !process.env.CLOUDINARY_API_KEY,
+      apiSecret: !process.env.CLOUDINARY_API_SECRET,
+    });
   }
 
-  throw new Error('No cloud storage service configured');
+  throw new Error(
+    '❌ [HOSTING DEBUG] No cloud storage service configured or all uploads failed'
+  );
 }
 
 export async function PUT(request: NextRequest) {

@@ -106,6 +106,7 @@
     "login": "Login",
     "register": "Register",
     "back": "Back",
+    "removeFromWishlist": "Remove from Wishlist",
     "buildYourOwn": "Build Your Own"
   },
   "footer": {

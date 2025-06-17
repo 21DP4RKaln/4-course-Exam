@@ -105,6 +105,7 @@
     "login": "Ielogoties",
     "register": "Reģistrēties",
     "back": "Atpakaļ",
+    "removeFromWishlist": "Noņemt no Vēlmju Saraksta",
     "buildYourOwn": "Izveido Savu"
   },
   "footer": {
@@ -765,6 +766,11 @@
     "waterCooling": "Ūdens Dzesēšana",
     "sidePanel": "Sānu Panelis",
     "fanDiameter": "Ventilatora Diametrs",
+    "integratedgpu": "Integrētā Grafika",
+    "maxramfrequency": "Maksimālā RAM Frekvence",
+    "maxramcapacity": "Maksimālais RAM Apjoms",
+    "basefrequency": "Pamat Frekvence",
+    
     "fanSpeed": "Ventilatora Ātrums"
   },
   "configurator": {
@@ -809,7 +815,6 @@
       "powerNote": "Aprēķinātais strāvas patēriņš:",
       "psuUnderpowered": "Ieteicamais barošanas bloks var būt nepietiekams",
       "issuesFound": "Konstatētas savietojamības problēmas",
-    
       "warnings": {
         "cpuMotherboardIncompatible": {
           "amd": "AMD procesors nav savietojams ar šo mātesplati",
@@ -1019,6 +1024,7 @@
       "radiatorSize": "Radiatora Izmērs",
       "base_clock": " Pamat Takts",
       "boost_clock": "Paaugstinātais Takts",
+      "Architecture ": "Arhitektūra",
       "integrated_graphics": "Integrētā Grafika"
     },
     "validation": {
@@ -1046,12 +1052,14 @@
         "corei5": "Core i5",
         "corei3": "Core i3"
       }
-    },    "actions": {
+    },    
+    "actions": {
       "save": " Saglabāt Melnrakstu",
       "addToCart": "Pievienot Grozam",
       "exportPDF": "Lejupielādēt PDF",
       "saved": "Konfigurācija saglabāta jūsu melnrakstu sarakstā",
       "submitted": "Konfigurācija veiksmīgi iesniegta",
+      "reset": "Notīrīt konfigurāciju",
       "addedToCart": "Konfigurācija pievienota grozam",      
       "errors": {
         "saveFailed": "Neizdevās saglabāt konfigurāciju",

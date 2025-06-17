@@ -30,11 +30,13 @@ export async function generateConfigurationPDF(
 
   const filename = `configuration-${configData.id}.pdf`;
   const outputPath = path.join(tempDir, filename);
-
   return new Promise((resolve, reject) => {
     try {
-      // Create a new PDF document
-      const doc = new PDFDocument({ margin: 50 });
+      // Create a new PDF document with explicit font settings
+      const doc = new PDFDocument({
+        margin: 50,
+        font: 'Times-Roman', // Use built-in PDF font instead of system font
+      });
 
       // Pipe the PDF to a file
       doc.pipe(fs.createWriteStream(outputPath));
@@ -48,11 +50,16 @@ export async function generateConfigurationPDF(
       const formattedTime = configData.createdAt.toLocaleTimeString('lv-LV', {
         hour: '2-digit',
         minute: '2-digit',
-      });
-
-      // Header
-      doc.fontSize(20).fillColor('#1f2937').text('IVAPRO', 50, 50);
-      doc.fontSize(16).text('DATORA KONFIGURĀCIJAS SARAKSTS', 50, 80);
+      }); // Header
+      doc
+        .font('Times-Bold')
+        .fontSize(20)
+        .fillColor('#1f2937')
+        .text('IVAPRO', 50, 50);
+      doc
+        .font('Times-Bold')
+        .fontSize(16)
+        .text('DATORA KONFIGURĀCIJAS SARAKSTS', 50, 80);
 
       // Draw header line
       doc
@@ -62,16 +69,15 @@ export async function generateConfigurationPDF(
         .lineTo(545, 110)
         .stroke();
 
-      let yPosition = 140;
-
-      // Configuration Information
+      let yPosition = 140; // Configuration Information
       doc
+        .font('Times-Bold')
         .fontSize(14)
         .fillColor('#374151')
         .text('KONFIGURĀCIJAS INFORMĀCIJA:', 50, yPosition);
       yPosition += 30;
-
       doc
+        .font('Times-Roman')
         .fontSize(11)
         .fillColor('#6b7280')
         .text(`Konfigurācijas ID: ${configData.id}`, 70, yPosition)
@@ -79,14 +85,15 @@ export async function generateConfigurationPDF(
         .text(`Izveidošanas datums: ${formattedDate}`, 70, yPosition + 40)
         .text(`Izveidošanas laiks: ${formattedTime}`, 70, yPosition + 60);
 
-      yPosition += 100;
-
-      // Components section
-      doc.fontSize(14).fillColor('#374151').text('KOMPONENTES:', 50, yPosition);
-      yPosition += 30;
-
-      // Table headers
+      yPosition += 100; // Components section
       doc
+        .font('Times-Bold')
+        .fontSize(14)
+        .fillColor('#374151')
+        .text('KOMPONENTES:', 50, yPosition);
+      yPosition += 30; // Table headers
+      doc
+        .font('Times-Bold')
         .fontSize(10)
         .fillColor('#374151')
         .text('Kategorija', 50, yPosition)
@@ -117,8 +124,8 @@ export async function generateConfigurationPDF(
           .slice(0, 2) // Limit to 2 specs for space
           .map(([key, value]) => `${key}: ${value}`)
           .join(', ');
-
         doc
+          .font('Times-Roman')
           .fontSize(9)
           .fillColor('#6b7280')
           .text(component.categoryName, 50, yPosition)
@@ -149,9 +156,7 @@ export async function generateConfigurationPDF(
         }
       });
 
-      yPosition += 20;
-
-      // Summary section
+      yPosition += 20; // Summary section
       doc
         .strokeColor('#dc2626')
         .lineWidth(1)
@@ -161,12 +166,13 @@ export async function generateConfigurationPDF(
       yPosition += 20;
 
       doc
+        .font('Times-Bold')
         .fontSize(14)
         .fillColor('#374151')
         .text('KOPSAVILKUMS:', 50, yPosition);
       yPosition += 30;
-
       doc
+        .font('Times-Roman')
         .fontSize(12)
         .fillColor('#6b7280')
         .text(
@@ -185,10 +191,9 @@ export async function generateConfigurationPDF(
           yPosition + 50
         );
 
-      yPosition += 100;
-
-      // Footer
+      yPosition += 100; // Footer
       doc
+        .font('Times-Roman')
         .fontSize(10)
         .fillColor('#9ca3af')
         .text(
@@ -204,8 +209,8 @@ export async function generateConfigurationPDF(
         .text('klientu apkalpošanas komandu.', 50, yPosition + 35);
 
       yPosition += 70;
-
       doc
+        .font('Times-Roman')
         .fontSize(9)
         .fillColor('#9ca3af')
         .text('SIA "IvaPro"', 50, yPosition)
@@ -214,8 +219,8 @@ export async function generateConfigurationPDF(
         .text('Adrese: Rīga, Latvija', 50, yPosition + 45);
 
       yPosition += 75;
-
       doc
+        .font('Times-Roman')
         .fontSize(8)
         .fillColor('#d1d5db')
         .text(

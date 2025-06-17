@@ -100,6 +100,7 @@
     "login": "Войти",
     "register": "Регистрация",
     "back": "Назад",
+    "removeFromWishlist": "Удалить из избранного",
     "buildYourOwn": "Собрать свой"
   },
   "footer": {
@@ -1012,6 +1013,7 @@
       "radiatorSize": "Размер радиатора",
       "base_clock": "Базовая Частота",
       "boost_clock": "Повышенная Частота",
+      "Architecture ": "Архитектура",
       "integrated_graphics": "Встроенная графика"
     },
     "quickFilters": {
@@ -1022,10 +1024,12 @@
       "memoryTypes": "Типы памяти",
       "storageTypes": "Устройства хранения",
       "powerSupplyWattage": "Мощность блока питания"
-    },    "actions": {
+    },    
+    "actions": {
       "save": "Сохранить черновик",
       "addToCart": "Добавить в корзину",
       "exportPDF": "Скачать PDF",
+      "reset":"Сбросить",
       "saved": "Конфигурация сохранена в черновики",
       "submitted": "Конфигурация успешно отправлена",
       "addedToCart": "Конфигурация добавлена в корзину",
