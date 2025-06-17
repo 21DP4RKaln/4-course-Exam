@@ -98,18 +98,32 @@ const ComponentSelectionGrid: React.FC<ComponentSelectionGridProps> = ({
           theme === 'dark' ? 'custom-scrollbar-dark' : 'custom-scrollbar-light'
         }`}
       >
-        {currentComponents.map(component => (
-          <div key={component.id} className="w-full min-w-0">
-            <ComponentCard
-              component={component}
-              isSelected={
-                selectedComponents[activeCategory]?.id === component.id
-              }
-              onSelect={onSelectComponent}
-              onViewDetails={handleViewDetails}
-            />
-          </div>
-        ))}
+        {currentComponents.map(component => {
+          // Check if component is selected - handle both single components and arrays
+          const selectedInCategory = selectedComponents[activeCategory];
+          let isSelected = false;
+
+          if (selectedInCategory) {
+            if (Array.isArray(selectedInCategory)) {
+              // For arrays (like services), check if component is in the array
+              isSelected = selectedInCategory.some(c => c.id === component.id);
+            } else {
+              // For single components, check ID directly
+              isSelected = selectedInCategory.id === component.id;
+            }
+          }
+
+          return (
+            <div key={component.id} className="w-full min-w-0">
+              <ComponentCard
+                component={component}
+                isSelected={isSelected}
+                onSelect={onSelectComponent}
+                onViewDetails={handleViewDetails}
+              />
+            </div>
+          );
+        })}
       </div>
       {/* Pagination controls */}
       {totalPages > 1 && (

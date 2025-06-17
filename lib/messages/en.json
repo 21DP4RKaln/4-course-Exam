@@ -838,6 +838,7 @@
     "usbtype-cports": "USB Type-C Ports",
     "watercooling": "Water Cooling",
     "fandiameter": "Fan Diameter",
+    "certification": "Certification",
     "fanspeed": "Fan Speed",
     "m": {
       "2slots": "M.2 Slots"
@@ -1128,6 +1129,7 @@
       "radiatorSize": "Radiator Size",
       "base_clock": "Base Clock",
       "boost_clock": "Boost Clock",      
+      "Certification": "Certification",
       "integrated_graphics": "Integrated Graphics",
       "M": {
         "2 Slots": "M.2 Slots"

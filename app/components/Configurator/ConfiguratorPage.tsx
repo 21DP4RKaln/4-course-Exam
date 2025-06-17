@@ -568,7 +568,6 @@ const ConfiguratorPage = () => {
       const loadConfiguration = async () => {
         try {
           setIsLoadingConfiguration(true);
-
           const configData = await getConfigurationById(loadConfigId, user.id);
 
           if (configData && configData.components) {
@@ -614,6 +613,12 @@ const ConfiguratorPage = () => {
             }
 
             setSelectedComponents(loadedComponents);
+            console.log('🔧 Configuration loaded successfully!');
+            console.log('📦 Loaded components:', loadedComponents);
+            console.log(
+              '🎯 Component count:',
+              Object.keys(loadedComponents).length
+            );
           }
         } catch (error) {
           console.error('Error loading configuration:', error);

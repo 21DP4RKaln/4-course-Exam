@@ -146,7 +146,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
                           : 'text-brand-blue-600'
                       }`}
                     >
-                      €{formatPrice(component.discountPrice)}
+                      {formatPrice(component.discountPrice)}
                     </div>
                     <div
                       className={`text-sm line-through ${
@@ -155,7 +155,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
                           : 'text-neutral-400'
                       }`}
                     >
-                      €{formatPrice(component.price)}
+                      {formatPrice(component.price)}
                     </div>
                   </>
                 ) : (
@@ -166,7 +166,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
                         : 'text-brand-blue-600'
                     }`}
                   >
-                    €{formatPrice(component.price)}
+                    {formatPrice(component.price)}
                   </div>
                 )}
               </div>
@@ -255,14 +255,14 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
                         : 'text-brand-blue-600'
                     }`}
                   >
-                    €{formatPrice(component.discountPrice)}
+                    {formatPrice(component.discountPrice)}
                   </div>
                   <div
                     className={`text-base line-through ${
                       theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'
                     }`}
                   >
-                    €{formatPrice(component.price)}
+                    {formatPrice(component.price)}
                   </div>
                 </>
               ) : (
@@ -273,7 +273,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
                       : 'text-brand-blue-600'
                   }`}
                 >
-                  €{formatPrice(component.price)}
+                  {formatPrice(component.price)}
                 </div>
               )}
               {component.stock !== undefined && component.stock <= 5 && (

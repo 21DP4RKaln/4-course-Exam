@@ -14,11 +14,9 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@/app/components/ui/tabs';
-import {
-  getUserConfigurations,
-  getUserOrders,
-  type UserConfiguration,
-  type UserOrder,
+import type {
+  UserConfiguration,
+  UserOrder,
 } from '@/lib/services/dashboardService';
 
 import ProfileTab from '@/app/components/Dashboard/Dashboard';
@@ -91,7 +89,8 @@ export default function DashboardPage() {
       try {
         // Ielādē konfigurācijas, ja aktīvs ir configurations tab
         if (activeTab === 'configurations') {
-          const configData = await getUserConfigurations(user.id);
+          const response = await fetch('/api/dashboard/configurations');
+          const configData = await response.json();
           console.log('Fetched configurations:', configData);
           if (mounted) setConfigurations(configData);
         }

@@ -74,6 +74,15 @@ const SelectedComponentsList: React.FC<Props> = ({
   const t = useTranslations();
   const { theme } = useTheme();
 
+  // Debug logging for selectedComponents changes
+  useEffect(() => {
+    console.log(
+      '🎯 SelectedComponentsList: Components updated',
+      selectedComponents
+    );
+    console.log('🎯 Component count:', Object.keys(selectedComponents).length);
+  }, [selectedComponents]);
+
   // Generate default configuration name if none exists
   useEffect(() => {
     if (!configName || configName.trim() === '') {
