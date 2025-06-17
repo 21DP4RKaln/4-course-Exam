@@ -4,17 +4,18 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 
-import ConfiguratorLayout from './ConfiguratorLayout';
 import CategoryList from './CategoryList';
 import FilterSection from './FilterSection';
-import { createCpuFilterGroups } from './filter/cpuFilters';
-import { createGpuFilterGroups } from './filter/gpuFilters';
-import { createRamFilterGroups } from './filter/ramFilters';
-import { createMotherboardFilterGroups } from './filter/motherboardFilters';
-import { createStorageFilterGroups } from './filter/storageFilters';
-import { createPsuFilterGroups } from './filter/psuFilters';
-import { createCaseFilterGroups } from './filter/caseFilters';
-import { createCoolingFilterGroups } from './filter/coolingFilters';
+import {
+  createCpuFilterGroups,
+  createGpuFilterGroups,
+  createRamFilterGroups,
+  createMotherboardFilterGroups,
+  createStorageFilterGroups,
+  createPsuFilterGroups,
+  createCaseFilterGroups,
+  createCoolingFilterGroups,
+} from './filters';
 import QuickFilters from './QuickFilters';
 import ComponentSelectionGrid from './ComponentSelectionGrid';
 import MobileFilterModal from './MobileFilterModal';
@@ -25,6 +26,7 @@ import './customScrollbar.css';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useCart } from '@/app/contexts/CartContext';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import ResetButton from '@/app/components/ui/reset-button-animated';
 
 import { Component, Category, SelectedComponentsType } from './types';
 import { getConfigurationById } from '@/lib/services/dashboardService';
@@ -1471,105 +1473,186 @@ const ConfiguratorPage = () => {
 
       setQuickCpuFilter(filterType);
 
-      // Convert quick filter to regular filter format
+      // Convert quick filter to regular filter format only for current active category
       const newActiveFilters: Record<string, boolean> = {};
-      // Handle brand-only filters
-      if (['intel', 'amd', 'nvidia'].includes(filterType)) {
-        const brand = filterType.charAt(0).toUpperCase() + filterType.slice(1);
-        newActiveFilters[`Brand=${brand}`] = true;
-      } // Handle CPU-specific filters
-      else if (filterType.startsWith('intel-core-')) {
-        newActiveFilters['Brand=Intel'] = true;
-        const series = filterType.split('intel-core-')[1];
-        newActiveFilters[`Series=Core ${series}`] = true;
-      } else if (filterType.startsWith('amd-ryzen-')) {
-        newActiveFilters['Brand=AMD'] = true;
-        const series = filterType.split('amd-ryzen-')[1];
-        newActiveFilters[`Series=Ryzen ${series}`] = true;
-      } else if (filterType === 'amd-threadripper') {
-        newActiveFilters['Brand=AMD'] = true;
-        newActiveFilters['Series=Threadripper'] = true;
-      }
-      // Handle GPU-specific filters
-      else if (filterType.startsWith('nvidia-rtx-')) {
-        newActiveFilters['Brand=NVIDIA'] = true;
-        const model = filterType.split('nvidia-rtx-')[1];
-        newActiveFilters[
-          `Series=RTX ${model.replace('-', ' ').toUpperCase()}`
-        ] = true;
-      } else if (filterType.startsWith('amd-rx-')) {
-        newActiveFilters['Brand=AMD'] = true;
-        const model = filterType.split('amd-rx-')[1];
-        newActiveFilters[`Series=RX ${model.replace('-', ' ').toUpperCase()}`] =
-          true;
-      } else if (filterType.startsWith('intel-a')) {
-        newActiveFilters['Brand=Intel'] = true;
-        const model = filterType.split('intel-')[1];
-        newActiveFilters[`Series=Arc ${model.toUpperCase()}`] = true;
-      }
-      // Handle RAM-specific filters
-      else if (['ddr4', 'ddr5'].includes(filterType)) {
-        newActiveFilters[`Type=${filterType.toUpperCase()}`] = true;
-      } else if (
-        ['16gb', '32gb', '64gb', '128gb', '256gb'].includes(filterType)
-      ) {
-        const capacity = filterType.replace('gb', ' GB');
-        newActiveFilters[`Capacity=${capacity}`] = true;
-      }
-      // Handle storage-specific filters
-      else if (filterType === 'nvme') {
-        newActiveFilters['Type=NVMe SSD'] = true;
-      } else if (filterType === 'sata-ssd') {
-        newActiveFilters['Type=SATA SSD'] = true;
-      } else if (filterType === 'hdd') {
-        newActiveFilters['Type=HDD'] = true;
-      }
-      // Handle motherboard-specific filters
-      else if (['atx', 'micro-atx', 'mini-itx'].includes(filterType)) {
-        const formFactor =
-          filterType === 'micro-atx'
-            ? 'Micro ATX'
-            : filterType === 'mini-itx'
-              ? 'Mini ITX'
-              : 'ATX';
-        newActiveFilters[`Form Factor=${formFactor}`] = true;
-      } else if (filterType === 'intel-compatible') {
-        newActiveFilters['Socket=LGA1700'] = true;
-      } else if (filterType === 'amd-compatible') {
-        newActiveFilters['Socket=AM5'] = true;
-      }
-      // Handle case-specific filters
-      else if (filterType === 'eatx') {
-        newActiveFilters['Form Factor=E-ATX'] = true;
-      }
-      // Handle cooling-specific filters
-      else if (filterType === 'air') {
-        newActiveFilters['Type=Air'] = true;
-      } else if (filterType === 'fluid') {
-        newActiveFilters['Type=Liquid'] = true;
-      }
-      // Handle PSU-specific filters
-      else if (filterType.includes('80+')) {
-        const certification = filterType.replace(/\+/g, '+ ').toUpperCase();
-        newActiveFilters[`Certification=${certification}`] = true;
-      }
-      // Handle services-specific filters
-      else if (filterType === 'windows') {
-        newActiveFilters['OS=Windows'] = true;
-      } else if (filterType === 'wifi+bluetooth') {
-        newActiveFilters['Connectivity=WiFi+Bluetooth'] = true;
-      } else if (filterType === '4gpu') {
-        newActiveFilters['Purpose=GPU Support'] = true;
-      } else if (filterType === 'sound') {
-        newActiveFilters['Type=Sound Card'] = true;
-      } else if (filterType === 'capture') {
-        newActiveFilters['Type=Capture Card'] = true;
-      }
 
-      // Update active filters
+      // Only apply filters that are relevant to the current active category
+      switch (activeCategory) {
+        case 'cpu':
+          // Handle brand-only filters for CPU
+          if (['intel', 'amd'].includes(filterType)) {
+            const brand =
+              filterType.charAt(0).toUpperCase() + filterType.slice(1);
+            newActiveFilters[`Brand=${brand}`] = true;
+          }
+          // Handle Intel CPU series
+          else if (filterType.startsWith('intel-core-')) {
+            newActiveFilters['Brand=Intel'] = true;
+            const series = filterType.split('intel-core-')[1];
+            newActiveFilters[`Series=Core ${series}`] = true;
+          }
+          // Handle AMD CPU series
+          else if (filterType.startsWith('amd-ryzen-')) {
+            newActiveFilters['Brand=AMD'] = true;
+            const series = filterType.split('amd-ryzen-')[1];
+            newActiveFilters[`Series=Ryzen ${series}`] = true;
+          } else if (filterType === 'amd-threadripper') {
+            newActiveFilters['Brand=AMD'] = true;
+            newActiveFilters['Series=Threadripper'] = true;
+          }
+          break;
+
+        case 'gpu':
+          // Handle GPU brand filters
+          if (['nvidia', 'amd', 'intel'].includes(filterType)) {
+            const brand =
+              filterType.charAt(0).toUpperCase() + filterType.slice(1);
+            newActiveFilters[`Brand=${brand}`] = true;
+          }
+          // Handle NVIDIA GPU series
+          else if (filterType.startsWith('nvidia-rtx-')) {
+            newActiveFilters['Brand=NVIDIA'] = true;
+            const model = filterType.split('nvidia-rtx-')[1];
+            newActiveFilters[
+              `Series=RTX ${model.replace('-', ' ').toUpperCase()}`
+            ] = true;
+          }
+          // Handle AMD GPU series
+          else if (filterType.startsWith('amd-rx-')) {
+            newActiveFilters['Brand=AMD'] = true;
+            const model = filterType.split('amd-rx-')[1];
+            newActiveFilters[
+              `Series=RX ${model.replace('-', ' ').toUpperCase()}`
+            ] = true;
+          }
+          // Handle Intel GPU series
+          else if (filterType.startsWith('intel-a')) {
+            newActiveFilters['Brand=Intel'] = true;
+            const model = filterType.split('intel-')[1];
+            newActiveFilters[`Series=Arc ${model.toUpperCase()}`] = true;
+          }
+          // Handle GPU architecture filters
+          else if (filterType === 'rtx-40') {
+            newActiveFilters['Series=RTX 40'] = true;
+          } else if (filterType === 'rtx-30') {
+            newActiveFilters['Series=RTX 30'] = true;
+          } else if (filterType === 'gtx-16') {
+            newActiveFilters['Series=GTX 16'] = true;
+          } else if (filterType === 'rx-7000') {
+            newActiveFilters['Series=RX 7000'] = true;
+          } else if (filterType === 'rx-6000') {
+            newActiveFilters['Series=RX 6000'] = true;
+          } else if (filterType === 'rx-5000') {
+            newActiveFilters['Series=RX 5000'] = true;
+          } else if (filterType === 'arc-a') {
+            newActiveFilters['Series=Arc A'] = true;
+          }
+          break;
+
+        case 'motherboard':
+          // Handle motherboard form factor filters
+          if (['atx', 'micro-atx', 'mini-itx', 'e-atx'].includes(filterType)) {
+            const formFactor =
+              filterType === 'micro-atx'
+                ? 'Micro ATX'
+                : filterType === 'mini-itx'
+                  ? 'Mini ITX'
+                  : filterType === 'e-atx'
+                    ? 'E-ATX'
+                    : 'ATX';
+            newActiveFilters[`Form Factor=${formFactor}`] = true;
+          }
+          // Handle motherboard compatibility filters
+          else if (filterType === 'intel-compatible') {
+            newActiveFilters['Socket=LGA1700'] = true;
+          } else if (filterType === 'amd-compatible') {
+            newActiveFilters['Socket=AM5'] = true;
+          }
+          break;
+
+        case 'ram':
+          // Handle RAM type filters
+          if (['ddr4', 'ddr5'].includes(filterType)) {
+            newActiveFilters[`Type=${filterType.toUpperCase()}`] = true;
+          }
+          // Handle RAM capacity filters
+          else if (
+            ['16gb', '32gb', '64gb', '128gb', '256gb', '512gb'].includes(
+              filterType
+            )
+          ) {
+            const capacity = filterType.replace('gb', ' GB');
+            newActiveFilters[`Capacity=${capacity}`] = true;
+          }
+          break;
+
+        case 'storage':
+          // Handle storage type filters
+          if (filterType === 'nvme') {
+            newActiveFilters['Type=NVMe SSD'] = true;
+          } else if (filterType === 'sata') {
+            newActiveFilters['Type=SATA SSD'] = true;
+          } else if (filterType === 'hdd') {
+            newActiveFilters['Type=HDD'] = true;
+          }
+          break;
+
+        case 'case':
+          // Handle case form factor filters
+          if (['atx', 'micro-atx', 'mini-itx', 'e-atx'].includes(filterType)) {
+            const formFactor =
+              filterType === 'micro-atx'
+                ? 'Micro ATX'
+                : filterType === 'mini-itx'
+                  ? 'Mini ITX'
+                  : filterType === 'e-atx'
+                    ? 'E-ATX'
+                    : 'ATX';
+            newActiveFilters[`Form Factor=${formFactor}`] = true;
+          }
+          break;
+
+        case 'psu':
+          // Handle PSU efficiency filters
+          if (filterType.includes('80plus-')) {
+            const certification = filterType
+              .replace('80plus-', '80+ ')
+              .replace(/\b\w/g, l => l.toUpperCase());
+            newActiveFilters[`Certification=${certification}`] = true;
+          }
+          break;
+
+        case 'cooling':
+          // Handle cooling type filters
+          if (filterType === 'air') {
+            newActiveFilters['Type=Air'] = true;
+          } else if (filterType === 'liquid' || filterType === 'fluid') {
+            newActiveFilters['Type=Liquid'] = true;
+          }
+          break;
+
+        case 'services':
+          // Handle service filters
+          if (filterType === 'windows') {
+            newActiveFilters['OS=Windows'] = true;
+          } else if (filterType === 'wifi+bluetooth') {
+            newActiveFilters['Connectivity=WiFi+Bluetooth'] = true;
+          } else if (filterType === '4gpu') {
+            newActiveFilters['Purpose=GPU Support'] = true;
+          } else if (filterType === 'sound') {
+            newActiveFilters['Type=Sound Card'] = true;
+          } else if (filterType === 'capture') {
+            newActiveFilters['Type=Capture Card'] = true;
+          }
+          break;
+
+        default:
+          // If no category match, don't apply any filters
+          break;
+      } // Update active filters only if we have relevant filters for this category
       setActiveFilters(newActiveFilters);
     },
-    []
+    [activeCategory]
   );
   // Helper function to check if a quick filter matches current active filters
   const isQuickFilterActive = useCallback(
@@ -1598,24 +1681,21 @@ const ConfiguratorPage = () => {
       } else if (filterType === 'amd-threadripper') {
         expectedFilters['Brand=AMD'] = true;
         expectedFilters['Series=Threadripper'] = true;
-      }
-      // Handle GPU-specific filters
+      } // Handle GPU-specific filters
       else if (filterType.startsWith('nvidia-rtx-')) {
-        expectedFilters['subBrand=NVIDIA'] = true;
+        expectedFilters['Brand=NVIDIA'] = true;
         const model = filterType.split('nvidia-rtx-')[1];
-        expectedFilters[
-          `architecture=RTX ${model.replace('-', ' ').toUpperCase()}`
-        ] = true;
+        expectedFilters[`Series=RTX ${model.replace('-', ' ').toUpperCase()}`] =
+          true;
       } else if (filterType.startsWith('amd-rx-')) {
-        expectedFilters['subBrand=AMD'] = true;
+        expectedFilters['Brand=AMD'] = true;
         const model = filterType.split('amd-rx-')[1];
-        expectedFilters[
-          `architecture=RX ${model.replace('-', ' ').toUpperCase()}`
-        ] = true;
+        expectedFilters[`Series=RX ${model.replace('-', ' ').toUpperCase()}`] =
+          true;
       } else if (filterType.startsWith('intel-a')) {
-        expectedFilters['subBrand=Intel'] = true;
+        expectedFilters['Brand=Intel'] = true;
         const model = filterType.split('intel-')[1];
-        expectedFilters[`architecture=Arc ${model.toUpperCase()}`] = true;
+        expectedFilters[`Series=Arc ${model.toUpperCase()}`] = true;
       }
       // Handle RAM-specific filters
       else if (['ddr4', 'ddr5'].includes(filterType)) {
@@ -1658,11 +1738,11 @@ const ConfiguratorPage = () => {
       } else if (filterType === 'fluid') {
         expectedFilters['Type=Liquid'] = true;
       } // Handle PSU-specific filters
-      else if (filterType.includes('80+')) {
-        // Convert "80+bronze" to "80+ Bronze", "80+gold" to "80+ Gold", etc.
-        const level = filterType.replace('80+', ''); // Extract "bronze", "gold", etc.
+      else if (filterType.includes('80plus-')) {
+        // Convert "80plus-bronze" to "80+ Bronze", "80plus-gold" to "80+ Gold", etc.
+        const level = filterType.replace('80plus-', ''); // Extract "bronze", "gold", etc.
         const capitalizedLevel = level.charAt(0).toUpperCase() + level.slice(1); // "Bronze", "Gold", etc.
-        expectedFilters[`Energy Efficiency=80+ ${capitalizedLevel}`] = true;
+        expectedFilters[`Certification=80+ ${capitalizedLevel}`] = true;
       }
       // Handle services-specific filters
       else if (filterType === 'windows') {
@@ -2082,15 +2162,18 @@ const ConfiguratorPage = () => {
     },
     []
   );
-
   // Handle reset configuration
   const handleResetConfiguration = useCallback(() => {
     setSelectedComponents({});
-    setConfigName(' ');
-  }, []);
-
+    setConfigName('');
+    setQuickCpuFilter(null);
+    setActiveFilters({});
+    setSearchQuery('');
+    // Reset price range to default
+    setPriceRange([minPrice, maxPrice]);
+  }, [minPrice, maxPrice]);
   return (
-    <ConfiguratorLayout>
+    <>
       {/* Show loading overlay when loading configuration */}
       {isLoadingConfiguration && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -2235,11 +2318,11 @@ const ConfiguratorPage = () => {
                 </span>
               </div>
             )}
-          </div>
+          </div>{' '}
           {/* Component list */}
           <div
             className="bg-white dark:bg-stone-950 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 flex flex-col flex-grow"
-            style={{ maxHeight: 'calc(100vh - 160px)' }}
+            style={{ maxHeight: 'calc(100vh - 50px)' }}
           >
             {/* Mobile Filters */}
             <div className="lg:hidden p-4 border-b border-neutral-200 dark:border-neutral-800">
@@ -2249,22 +2332,17 @@ const ConfiguratorPage = () => {
                 activeCategory={activeCategory}
                 isQuickFilterActive={isQuickFilterActive}
                 activeFilters={activeFilters}
-              />
+              />{' '}
               {(quickCpuFilter ||
                 Object.keys(activeFilters).some(key => activeFilters[key])) && (
-                <button
-                  onClick={() => {
-                    setQuickCpuFilter(null);
-                    setActiveFilters({});
-                  }}
-                  className={`mt-2 px-3 py-1 text-sm rounded-md border transition-colors ${
-                    theme === 'dark'
-                      ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800 hover:text-white'
-                      : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                  }`}
-                >
-                  {t('configurator.clearFilters')}
-                </button>
+                <div className="mt-2">
+                  <ResetButton
+                    onClick={() => {
+                      setQuickCpuFilter(null);
+                      setActiveFilters({});
+                    }}
+                  />
+                </div>
               )}
             </div>
             {/* Desktop Filters */}
@@ -2278,24 +2356,18 @@ const ConfiguratorPage = () => {
                     isQuickFilterActive={isQuickFilterActive}
                     activeFilters={activeFilters}
                   />
-                </div>
+                </div>{' '}
                 {(quickCpuFilter ||
                   Object.keys(activeFilters).some(
                     key => activeFilters[key]
                   )) && (
-                  <button
+                  <ResetButton
                     onClick={() => {
                       setQuickCpuFilter(null);
                       setActiveFilters({});
                     }}
-                    className={`ml-4 px-3 py-1 text-sm rounded-md border transition-colors ${
-                      theme === 'dark'
-                        ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800 hover:text-white'
-                        : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                    }`}
-                  >
-                    {t('configurator.clearFilters')}
-                  </button>
+                    className="ml-4"
+                  />
                 )}
               </div>
             </div>
@@ -2475,7 +2547,7 @@ const ConfiguratorPage = () => {
           maxPrice={maxPrice}
         />
       </div>
-    </ConfiguratorLayout>
+    </>
   );
 };
 

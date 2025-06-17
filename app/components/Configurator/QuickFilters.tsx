@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { filters } from './filter/Quickfilter';
+import { filters } from './filters';
 
 interface Props {
   activeFilter?: string | null;
@@ -69,27 +69,41 @@ const QuickFilters: React.FC<Props> = ({
       }
       if (
         filterId.toLowerCase().includes('amd') &&
-        filterId.toLowerCase().includes('rx')
+        (filterId.toLowerCase().includes('rx') ||
+          filterId.toLowerCase().includes('radeon'))
       ) {
         return 'text-red-500';
       }
       if (
         filterId.toLowerCase().includes('intel') &&
         (filterId.toLowerCase().includes('arc') ||
-          filterId.toLowerCase().includes('a580'))
+          filterId.toLowerCase().includes('a580') ||
+          filterId.toLowerCase().includes('a750'))
       ) {
         return 'text-blue-400';
       } // PSU efficiency ratings
-      if (filterId.toLowerCase().includes('bronze')) {
+      if (
+        filterId.toLowerCase().includes('80plus-bronze') ||
+        filterId.toLowerCase().includes('bronze')
+      ) {
         return 'text-amber-600';
       }
-      if (filterId.toLowerCase().includes('gold')) {
+      if (
+        filterId.toLowerCase().includes('80plus-gold') ||
+        filterId.toLowerCase().includes('gold')
+      ) {
         return 'text-yellow-500';
       }
-      if (filterId.toLowerCase().includes('platinum')) {
+      if (
+        filterId.toLowerCase().includes('80plus-platinum') ||
+        filterId.toLowerCase().includes('platinum')
+      ) {
         return 'text-slate-300';
       }
-      if (filterId.toLowerCase().includes('titanium')) {
+      if (
+        filterId.toLowerCase().includes('80plus-titanium') ||
+        filterId.toLowerCase().includes('titanium')
+      ) {
         return 'text-gray-400';
       } // Motherboard form factors and compatibility
       if (
@@ -222,27 +236,41 @@ const QuickFilters: React.FC<Props> = ({
       }
       if (
         filterId.toLowerCase().includes('amd') &&
-        filterId.toLowerCase().includes('rx')
+        (filterId.toLowerCase().includes('rx') ||
+          filterId.toLowerCase().includes('radeon'))
       ) {
         return 'after:bg-red-500';
       }
       if (
         filterId.toLowerCase().includes('intel') &&
         (filterId.toLowerCase().includes('arc') ||
-          filterId.toLowerCase().includes('a580'))
+          filterId.toLowerCase().includes('a580') ||
+          filterId.toLowerCase().includes('a750'))
       ) {
         return 'after:bg-blue-400';
       } // PSU efficiency ratings
-      if (filterId.toLowerCase().includes('bronze')) {
+      if (
+        filterId.toLowerCase().includes('80plus-bronze') ||
+        filterId.toLowerCase().includes('bronze')
+      ) {
         return 'after:bg-amber-600';
       }
-      if (filterId.toLowerCase().includes('gold')) {
+      if (
+        filterId.toLowerCase().includes('80plus-gold') ||
+        filterId.toLowerCase().includes('gold')
+      ) {
         return 'after:bg-yellow-500';
       }
-      if (filterId.toLowerCase().includes('platinum')) {
+      if (
+        filterId.toLowerCase().includes('80plus-platinum') ||
+        filterId.toLowerCase().includes('platinum')
+      ) {
         return 'after:bg-slate-300';
       }
-      if (filterId.toLowerCase().includes('titanium')) {
+      if (
+        filterId.toLowerCase().includes('80plus-titanium') ||
+        filterId.toLowerCase().includes('titanium')
+      ) {
         return 'after:bg-gray-400';
       } // Motherboard form factors and compatibility
       if (
@@ -380,27 +408,41 @@ const QuickFilters: React.FC<Props> = ({
       }
       if (
         filterId.toLowerCase().includes('amd') &&
-        filterId.toLowerCase().includes('rx')
+        (filterId.toLowerCase().includes('rx') ||
+          filterId.toLowerCase().includes('radeon'))
       ) {
         return 'shadow-[0_0_20px_rgba(239,68,68,0.5)]';
       }
       if (
         filterId.toLowerCase().includes('intel') &&
         (filterId.toLowerCase().includes('arc') ||
-          filterId.toLowerCase().includes('a580'))
+          filterId.toLowerCase().includes('a580') ||
+          filterId.toLowerCase().includes('a750'))
       ) {
         return 'shadow-[0_0_20px_rgba(96,165,250,0.5)]';
       } // PSU efficiency ratings
-      if (filterId.toLowerCase().includes('bronze')) {
+      if (
+        filterId.toLowerCase().includes('80plus-bronze') ||
+        filterId.toLowerCase().includes('bronze')
+      ) {
         return 'shadow-[0_0_20px_rgba(217,119,6,0.5)]';
       }
-      if (filterId.toLowerCase().includes('gold')) {
+      if (
+        filterId.toLowerCase().includes('80plus-gold') ||
+        filterId.toLowerCase().includes('gold')
+      ) {
         return 'shadow-[0_0_20px_rgba(234,179,8,0.5)]';
       }
-      if (filterId.toLowerCase().includes('platinum')) {
+      if (
+        filterId.toLowerCase().includes('80plus-platinum') ||
+        filterId.toLowerCase().includes('platinum')
+      ) {
         return 'shadow-[0_0_20px_rgba(203,213,225,0.5)]';
       }
-      if (filterId.toLowerCase().includes('titanium')) {
+      if (
+        filterId.toLowerCase().includes('80plus-titanium') ||
+        filterId.toLowerCase().includes('titanium')
+      ) {
         return 'shadow-[0_0_20px_rgba(156,163,175,0.5)]';
       } // Motherboard form factors and compatibility
       if (

@@ -18,6 +18,8 @@ import {
   Download,
 } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import ResetButton from '@/app/components/ui/reset-button-animated';
+import SaveButton from '@/app/components/ui/save-button';
 
 interface Category {
   id: string;
@@ -143,28 +145,6 @@ const SelectedComponentsList: React.FC<Props> = ({
   const hasAllRequiredComponents = requiredCategories.every(
     categoryId => selectedComponents[categoryId]
   );
-
-  // Handle PDF export with validation
-  const handlePDFExport = () => {
-    if (hasAllRequiredComponents) {
-      onExportPDF();
-    } else {
-      const missingCategories = requiredCategories.filter(
-        categoryId => !selectedComponents[categoryId]
-      );
-      const missingCategoryNames = missingCategories.map(categoryId => {
-        const category = componentCategories.find(cat => cat.id === categoryId);
-        return category?.name || categoryId;
-      });
-
-      // Create a simple notification
-      alert(
-        t('configurator.actions.errors.missingComponents', {
-          components: missingCategoryNames.join(', '),
-        })
-      );
-    }
-  };
   return (
     <div
       className={`w-[320px] max-w-full rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${
@@ -425,37 +405,16 @@ const SelectedComponentsList: React.FC<Props> = ({
           </div>
           {/* PDF and Reset Buttons */}
           <div className="grid grid-cols-2 gap-2">
-            {/* PDF Export Button */}
-            <button
-              onClick={handlePDFExport}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                hasAllRequiredComponents
-                  ? theme === 'dark'
-                    ? 'bg-green-900/20 text-green-400 border border-green-800 hover:bg-green-900/30'
-                    : 'bg-green-50 text-green-600 border border-green-200 hover:bg-green-100'
-                  : theme === 'dark'
-                    ? 'bg-neutral-800/50 text-neutral-500 border border-neutral-700 hover:bg-neutral-800/70'
-                    : 'bg-neutral-100 text-neutral-500 border border-neutral-300 hover:bg-neutral-200'
-              }`}
-              title={t('configurator.actions.exportPDF')}
-            >
-              <Download size={16} />
-            </button>
-            {/* Reset Button */}
-            {selectedCount > 0 ? (
-              <button
-                onClick={onResetConfiguration}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                  theme === 'dark'
-                    ? 'bg-red-900/20 text-red-400 border border-red-800 hover:bg-red-900/30'
-                    : 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
-                }`}
-              >
-                <RotateCcw size={16} />
-              </button>
-            ) : (
-              <div></div>
-            )}
+            {/* PDF Export Button - using save-button component */}
+            <SaveButton
+              onClick={onExportPDF}
+              disabled={!hasAllRequiredComponents}
+            />
+            {/* Reset Button - using reset-button component */}
+            <ResetButton
+              onClick={onResetConfiguration}
+              disabled={selectedCount === 0}
+            />
           </div>
         </div>
       </div>

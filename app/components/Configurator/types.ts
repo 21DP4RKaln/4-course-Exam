@@ -1,4 +1,4 @@
-// Component and Category types for the configurator
+// Consolidated component and category types for the configurator
 
 export interface Component {
   id: string;
@@ -36,6 +36,42 @@ export interface Category {
   iconName?: string;
   description?: string;
   componentCount?: number;
+}
+
+// Filter interfaces
+export interface FilterOption {
+  id: string;
+  name: string;
+  value?: string;
+  label?: string;
+  translationKey?: string;
+}
+
+export interface FilterGroup {
+  title: string;
+  titleTranslationKey?: string;
+  options: FilterOption[];
+}
+
+// Component types for compatibility checking
+export type ComponentType = keyof typeof ComponentTypes;
+
+export const ComponentTypes = {
+  cpu: 'cpu',
+  motherboard: 'motherboard',
+  gpu: 'gpu',
+  ram: 'ram',
+  storage: 'storage',
+  case: 'case',
+  cooling: 'cooling',
+  psu: 'psu',
+} as const;
+
+export interface CompatibilityRule {
+  from: ComponentType;
+  to: ComponentType;
+  rule: (fromComponent: Component, toComponent: Component) => boolean;
+  errorMessage: string;
 }
 
 // Type for selected components - services can have multiple items

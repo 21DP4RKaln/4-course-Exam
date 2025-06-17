@@ -795,7 +795,72 @@
     "sidePanel": "Side Panel",
     "fanDiameter": "Fan Diameter",
     "fanSpeed": "Fan Speed",
-    "usbTypeCPorts": "USB Type-C Ports"
+    "usbTypeCPorts": "USB Type-C Ports",
+    "videomemory": "Video Memory",
+    "basefrequency": "Base Frequency",
+    "maxramcapacity": "Max RAM Capacity",
+    "maxramfrequency": "Max RAM Frequency",
+    "integratedgpu": "Integrated GPU",
+    "memorytype": "Memory Type",
+    "fancount": "Fan Count",
+    "chiptype": "Chip Type",
+    "dviport": "DVI Port",
+    "vgaport": "VGA Port",
+    "hdmiport": "HDMI Port",
+    "displayport": "DisplayPort",
+    "subbrand": "Sub Brand",
+    "memoryslots": "Memory Slots",
+    "processorsupport": "Processor Support",
+    "maxmemoryfrequency": "Max Memory Frequency",
+    "maxvideocards": "Max Video Cards",
+    "sataports": "SATA Ports",
+    "m.2slots": "M.2 Slots",
+    "sli/crossfire": "SLI/Crossfire Support",
+    "wifi/bluetooth": "Wi-Fi/Bluetooth",
+    "nvmesupport": "NVMe Support",
+    "formfactor": "Form Factor",
+    "modulecount": "Module Count",
+    "maxfrequency": "Max Frequency",
+    "rgblighting": "RGB Lighting",
+    "type": "Type",
+    "nvme": "NVMe",
+    "writespeed": "Write Speed",
+    "readspeed": "Read Speed",
+    "M.2 Slots": "M.2 Slots",
+    "power": "Power Consumption",
+    "sataconnections": "SATA Connections",
+    "pcieconnections": "PCIe Connections",
+    "molex/pataconnections": "Molex/PATA Connections",
+    "psuincluded": "PSU Included",
+    "audioin": "Audio In",
+    "audioout": "Audio Out",
+    "usbtype-cports": "USB Type-C Ports",
+    "watercooling": "Water Cooling",
+    "fandiameter": "Fan Diameter",
+    "fanspeed": "Fan Speed",
+    "m": {
+      "2slots": "M.2 Slots"
+    },
+    "actions": {
+      "reset": "Reset Filters"
+    },
+    "usb2": {
+      "0ports": "USB 2.0 Ports"
+    },
+    "usb3": {
+      "0ports": "USB 3.0 Ports",
+      "2ports": "USB 3.2 Ports"
+    },
+    "5": {
+      "25\"slots": "5.25\" Slots"
+    },
+    "3": {
+      "5\"slots": "3.5\" Slots",
+      "25\"slots": "2.5\" Slots"
+    },
+    "2": {
+      "5\"slots": "2.5\" Slots"
+    }
   },
   "configurator": {
     "title": "PC Configuration",
@@ -962,7 +1027,6 @@
       "Socket": "Socket",
       "M.2 Slots": "M.2 Slots",
       "WiFi/Bluetooth": "WiFi/Bluetooth",
-
       "Chip Type": "Chip Type",
       "DVI Port": "DVI Port",
       "VGA Port": "VGA Port",
@@ -1063,7 +1127,27 @@
       "radiatorSize": "Radiator Size",
       "base_clock": "Base Clock",
       "boost_clock": "Boost Clock",      
-      "integrated_graphics": "Integrated Graphics"
+      "integrated_graphics": "Integrated Graphics",
+      "M": {
+        "2 Slots": "M.2 Slots"
+      },
+      "USB 2": {
+        "0 Ports": "USB 2.0 Ports"
+      },
+      "USB 3": {
+        "0 Ports": "USB 3.0 Ports",
+        "2 Ports": "USB 3.2 Ports"
+      },
+      "5": {
+        "25\" Slots": "5.25\" Slots"
+      },
+      "3": {
+        "5\" Slots": "3.5\" Slots",
+        "25\" Slots": "2.5\" Slots"
+      },
+      "2": {
+        "5\" Slots": "2.5\" Slots"
+      }
     },
     "quickFilters": {
       "quickFilters": "Quick Filters",
@@ -1073,8 +1157,10 @@
       "memoryTypes": "Memory Types",
       "storageTypes": "Storage Types",
       "powerSupplyWattage": "Power Supply Wattage"
-    },    "actions": {
+    },    
+    "actions": {
       "save": "Save Draft",
+      "reset":"Reset Filters",
       "addToCart": "Add to Cart",
       "exportPDF": "Download PDF",
       "saved": "Configuration saved to your drafts",
