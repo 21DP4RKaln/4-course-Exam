@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import { join } from 'path';
 import { randomUUID } from 'crypto';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prismaService';
@@ -11,38 +8,64 @@ import {
   createBadRequestResponse,
   createServerErrorResponse,
 } from '@/lib/apiErrors';
+import { put } from '@vercel/blob';
+import { v2 as cloudinary } from 'cloudinary';
 
-// Add cloud storage configuration
-const USE_CLOUD_STORAGE = process.env.USE_CLOUD_STORAGE === 'true';
-const CLOUD_STORAGE_URL = process.env.CLOUD_STORAGE_URL || '';
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-// Function to upload to cloud storage (you'll need to implement based on your provider)
+// Function to upload to cloud storage
 async function uploadToCloud(file: File): Promise<string> {
-  // Example for Cloudinary, AWS S3, etc.
-  // This is a placeholder - implement based on your cloud provider
-  if (process.env.CLOUDINARY_URL) {
-    // Cloudinary upload logic
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append(
-      'upload_preset',
-      process.env.CLOUDINARY_UPLOAD_PRESET || 'profiles'
-    );
+  console.log('Uploading to cloud storage...');
 
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
-
-    const data = await response.json();
-    return data.secure_url;
+  // Try Vercel Blob first if token is available
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      console.log('Trying Vercel Blob upload...');
+      const filename = `profiles/${randomUUID()}-${file.name}`;
+      const blob = await put(filename, file, {
+        access: 'public',
+      });
+      console.log('Vercel Blob upload successful:', blob.url);
+      return blob.url;
+    } catch (error) {
+      console.error('Vercel Blob upload failed:', error);
+    }
   }
 
-  // Fallback to local storage
-  throw new Error('Cloud storage not configured');
+  // Fallback to Cloudinary
+  if (process.env.CLOUDINARY_CLOUD_NAME) {
+    try {
+      console.log('Trying Cloudinary upload...');
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      const result = await cloudinary.uploader.upload(
+        `data:${file.type};base64,${buffer.toString('base64')}`,
+        {
+          folder: 'profiles',
+          public_id: `${randomUUID()}-${file.name.split('.')[0]}`,
+          overwrite: true,
+          resource_type: 'image',
+          transformation: [
+            { width: 400, height: 400, crop: 'fill' },
+            { quality: 'auto' },
+          ],
+        }
+      );
+
+      console.log('Cloudinary upload successful:', result.secure_url);
+      return result.secure_url;
+    } catch (error) {
+      console.error('Cloudinary upload failed:', error);
+    }
+  }
+
+  throw new Error('No cloud storage service configured');
 }
 
 export async function PUT(request: NextRequest) {
@@ -56,6 +79,7 @@ export async function PUT(request: NextRequest) {
     if (!payload) {
       return createUnauthorizedResponse('Invalid token');
     }
+
     const formData = await request.formData();
 
     const email = formData.get('email') as string | null;
@@ -71,6 +95,13 @@ export async function PUT(request: NextRequest) {
       | string
       | null;
     const shippingCountry = formData.get('shippingCountry') as string | null;
+
+    console.log('Profile update request:', {
+      hasImage: !!profileImage,
+      deleteImage: deleteProfileImage,
+      imageSize: profileImage?.size,
+      imageName: profileImage?.name,
+    });
 
     if (email === '' && phone === '') {
       return createBadRequestResponse('Either email or phone is required');
@@ -107,7 +138,13 @@ export async function PUT(request: NextRequest) {
 
     const currentUser = await prisma.user.findUnique({
       where: { id: payload.userId },
-      select: { firstName: true, lastName: true, email: true, phone: true },
+      select: {
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        profileImageUrl: true,
+      },
     });
 
     if (!currentUser) {
@@ -148,51 +185,20 @@ export async function PUT(request: NextRequest) {
       }
       updateData.password = await bcrypt.hash(password, 10);
     }
+
+    // Handle profile image upload
     if (deleteProfileImage) {
+      console.log('Deleting profile image');
       updateData.profileImageUrl = null;
-    } else if (profileImage) {
-      if (USE_CLOUD_STORAGE) {
-        // Upload to cloud storage
-        try {
-          const cloudUrl = await uploadToCloud(profileImage);
-          updateData.profileImageUrl = cloudUrl;
-        } catch (cloudError) {
-          console.error(
-            'Cloud upload failed, falling back to local:',
-            cloudError
-          );
-          // Fall back to local storage
-        }
-      }
-
-      // Local storage fallback or primary method
-      if (!updateData.profileImageUrl) {
-        const bytes = await profileImage.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-
-        const filename = `${randomUUID()}-${profileImage.name}`;
-
-        // For hosting compatibility, try different upload directories
-        let uploadDir: string;
-        let urlPath: string;
-
-        if (process.env.VERCEL) {
-          // Vercel specific - use /tmp directory and serve via API
-          uploadDir = '/tmp/uploads/profiles';
-          urlPath = `/api/uploads/profiles/${filename}`;
-        } else {
-          // Traditional hosting
-          uploadDir = join(process.cwd(), 'public', 'uploads', 'profiles');
-          urlPath = `/uploads/profiles/${filename}`;
-        }
-
-        if (!existsSync(uploadDir)) {
-          await mkdir(uploadDir, { recursive: true });
-        }
-
-        const imagePath = join(uploadDir, filename);
-        await writeFile(imagePath, buffer);
-        updateData.profileImageUrl = urlPath;
+    } else if (profileImage && profileImage.size > 0) {
+      try {
+        console.log('Processing profile image upload...');
+        const imageUrl = await uploadToCloud(profileImage);
+        updateData.profileImageUrl = imageUrl;
+        console.log('Profile image uploaded successfully:', imageUrl);
+      } catch (error) {
+        console.error('Profile image upload failed:', error);
+        return createServerErrorResponse('Failed to upload profile image');
       }
     }
 
@@ -213,6 +219,11 @@ export async function PUT(request: NextRequest) {
         shippingPostalCode: true,
         shippingCountry: true,
       },
+    });
+
+    console.log('Profile updated successfully:', {
+      userId: updatedUser.id,
+      profileImageUrl: updatedUser.profileImageUrl,
     });
 
     return NextResponse.json(updatedUser);

@@ -48,9 +48,13 @@ export default function ProfileTab() {
 
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleUpdateProfile = async (formData: FormData) => {
     setError('');
     setSuccessMessage('');
+    setIsUploading(true);
+
     try {
       const {
         password,
@@ -117,6 +121,8 @@ export default function ProfileTab() {
       }, 3000);
     } catch (err: any) {
       setError(err.message || validationT('profileError'));
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -192,7 +198,7 @@ export default function ProfileTab() {
                 : undefined,
           }}
           onUpdate={handleUpdateProfile}
-          loading={loading}
+          loading={loading || isUploading}
         />
       )}
     </div>

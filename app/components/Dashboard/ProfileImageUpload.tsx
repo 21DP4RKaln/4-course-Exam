@@ -20,7 +20,34 @@ export default function ProfileImageUpload({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      console.log('Image selected:', file.name, 'Size:', file.size);
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+
+      // Validate file type
+      const allowedTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only JPEG, PNG, and WebP images are allowed');
+        return;
+      }
+
+      console.log(
+        'Image selected:',
+        file.name,
+        'Size:',
+        file.size,
+        'Type:',
+        file.type
+      );
       onChange(file);
     }
   };
@@ -67,7 +94,7 @@ export default function ProfileImageUpload({
           type="file"
           ref={fileInputRef}
           onChange={handleImageChange}
-          accept="image/*"
+          accept="image/jpeg,image/jpg,image/png,image/webp"
           className="hidden"
         />
       </motion.div>{' '}
