@@ -13,13 +13,13 @@ const ConfiguratorLayout: React.FC<ConfiguratorLayoutProps> = ({
   const { theme } = useTheme();
   return (
     <div
-      className={`min-h-screen max-h-screen overflow-hidden ${
+      className={`min-h-screen ${
         theme === 'dark'
           ? 'bg-stone-950 text-white'
           : 'bg-neutral-100 text-neutral-900'
-      } transition-colors duration-200`}
+      } transition-colors duration-200 overflow-x-hidden`}
     >
-      <div className="h-full overflow-hidden">{children}</div>
+      <div className="h-full w-full overflow-x-hidden">{children}</div>
     </div>
   );
 };

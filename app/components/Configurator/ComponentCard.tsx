@@ -12,12 +12,14 @@ interface ComponentCardProps {
   component: Component;
   isSelected: boolean;
   onSelect: (component: Component) => void;
+  onViewDetails?: (component: Component) => void;
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
   component,
   isSelected,
   onSelect,
+  onViewDetails,
 }) => {
   const t = useTranslations();
   const { theme } = useTheme();
@@ -98,87 +100,110 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
           ? 'focus:ring-brand-red-500/50'
           : 'focus:ring-brand-blue-500/50'
       }`}
-      onClick={() => onSelect(component)}
+      onClick={() => {
+        // On mobile, show details modal instead of selecting directly
+        if (window.innerWidth < 768 && onViewDetails) {
+          onViewDetails(component);
+        } else {
+          onSelect(component);
+        }
+      }}
       tabIndex={0}
       role="button"
       aria-pressed={isSelected}
       onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          onSelect(component);
+          if (window.innerWidth < 768 && onViewDetails) {
+            onViewDetails(component);
+          } else {
+            onSelect(component);
+          }
         }
       }}
     >
-      <div className="flex flex-col sm:flex-row items-center w-full">
-        <div className="flex-shrink-0 mr-0 sm:mr-4 mb-3 sm:mb-0">
-          {getComponentImage()}
-        </div>
-        <div className="flex-grow text-center sm:text-left">
-          <h3
-            className={`font-medium text-lg ${
-              theme === 'dark' ? 'text-white' : 'text-neutral-900'
-            }`}
-          >
-            {component.name}
-          </h3>
-          <p
-            className={`text-sm mt-2 flex flex-wrap justify-center sm:justify-start gap-x-3 gap-y-1 ${
-              theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
-            }`}
-          >
-            {Object.entries(component.specifications || {}).map(
-              ([key, value]) => (
-                <span key={key}>
-                  {t(`configurator.specs.${key}`, { defaultMessage: key })}:{' '}
-                  {String(value)}
-                </span>
-              )
-            )}
-          </p>
-        </div>{' '}
-        <div className="flex-shrink-0 text-center sm:text-right mt-3 sm:mt-0">
-          <div className="flex flex-col items-center sm:items-end">
-            {component.discountPrice &&
-            component.discountPrice < component.price ? (
-              <>
-                <div
-                  className={`text-xl font-bold ${
-                    theme === 'dark'
-                      ? 'text-brand-red-400'
-                      : 'text-brand-blue-600'
-                  }`}
-                >
-                  €{formatPrice(component.discountPrice)}
-                </div>
-                <div
-                  className={`text-base line-through ${
-                    theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'
-                  }`}
-                >
-                  €{formatPrice(component.price)}
-                </div>
-              </>
-            ) : (
-              <div
-                className={`text-xl font-bold ${
-                  theme === 'dark'
-                    ? 'text-brand-red-400'
-                    : 'text-brand-blue-600'
-                }`}
-              >
-                €{formatPrice(component.price)}
+      {/* Mobile Layout */}
+      <div className="md:hidden">
+        <div className="flex items-center space-x-3">
+          <div className="flex-shrink-0">{getComponentImage()}</div>
+          <div className="flex-1 min-w-0">
+            <h3
+              className={`font-medium text-lg truncate ${
+                theme === 'dark' ? 'text-white' : 'text-neutral-900'
+              }`}
+            >
+              {component.name}
+            </h3>
+            <div className="flex items-center justify-between mt-2">
+              <div className="flex flex-col">
+                {component.discountPrice &&
+                component.discountPrice < component.price ? (
+                  <>
+                    <div
+                      className={`text-lg font-bold ${
+                        theme === 'dark'
+                          ? 'text-brand-red-400'
+                          : 'text-brand-blue-600'
+                      }`}
+                    >
+                      €{formatPrice(component.discountPrice)}
+                    </div>
+                    <div
+                      className={`text-sm line-through ${
+                        theme === 'dark'
+                          ? 'text-neutral-500'
+                          : 'text-neutral-400'
+                      }`}
+                    >
+                      €{formatPrice(component.price)}
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    className={`text-lg font-bold ${
+                      theme === 'dark'
+                        ? 'text-brand-red-400'
+                        : 'text-brand-blue-600'
+                    }`}
+                  >
+                    €{formatPrice(component.price)}
+                  </div>
+                )}
               </div>
-            )}
+              <button
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all ${
+                  isSelected
+                    ? theme === 'dark'
+                      ? 'bg-brand-red-500/20 text-brand-red-400 border border-brand-red-500/30'
+                      : 'bg-brand-blue-500/20 text-brand-blue-600 border border-brand-blue-500/30'
+                    : theme === 'dark'
+                      ? 'bg-brand-red-500 text-white hover:bg-brand-red-600'
+                      : 'bg-brand-blue-500 text-white hover:bg-brand-blue-600'
+                } ${component.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (component.stock !== 0) {
+                    onSelect(component);
+                  }
+                }}
+                disabled={component.stock === 0}
+              >
+                {component.stock === 0
+                  ? t('buttons.outOfStock')
+                  : isSelected
+                    ? t('buttons.selected')
+                    : t('buttons.select')}
+              </button>
+            </div>
             {component.stock !== undefined && component.stock <= 5 && (
               <div
-                className={`text-sm mt-1 ${
+                className={`text-xs mt-1 ${
                   component.stock === 0
                     ? 'text-red-500'
                     : theme === 'dark'
                       ? 'text-yellow-400'
                       : 'text-yellow-600'
                 }`}
-                aria-live="polite"
               >
                 {component.stock === 0
                   ? t('outOfStock')
@@ -186,53 +211,119 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
               </div>
             )}
           </div>
-          <div className="flex flex-col sm:flex-row items-center mt-3 justify-center sm:justify-end gap-3">
-            {/* 
-                <button 
-                  className={`text-sm px-3 py-1.5 rounded-md transition-colors w-full sm:w-auto ${
-                    theme === 'dark'
-                      ? 'text-neutral-400 hover:text-white hover:bg-stone-800'
-                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
-                  } focus:outline-none focus:ring-1 ${
-                    theme === 'dark' ? 'focus:ring-brand-red-400' : 'focus:ring-brand-blue-400'
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    // Compare functionality would go here
-                  }}
-                >
-                  {t('buttons.compare')}
-                </button> 
-              */}
-            <button
-              className={`text-sm px-4 py-1.5 rounded-full font-medium transition-all w-full sm:w-auto ${
-                isSelected
-                  ? theme === 'dark'
-                    ? 'bg-brand-red-500/20 text-brand-red-400 border border-brand-red-500/30'
-                    : 'bg-brand-blue-500/20 text-brand-blue-600 border border-brand-blue-500/30'
-                  : theme === 'dark'
-                    ? 'bg-brand-red-500 text-white hover:bg-brand-red-600'
-                    : 'bg-brand-blue-500 text-white hover:bg-brand-blue-600'
-              } ${component.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''} focus:outline-none focus:ring-2 ${
-                theme === 'dark'
-                  ? 'focus:ring-brand-red-500'
-                  : 'focus:ring-brand-blue-500'
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden md:block">
+        <div className="flex flex-col sm:flex-row items-center w-full">
+          <div className="flex-shrink-0 mr-0 sm:mr-4 mb-3 sm:mb-0">
+            {getComponentImage()}
+          </div>
+          <div className="flex-grow text-center sm:text-left">
+            <h3
+              className={`font-medium text-lg ${
+                theme === 'dark' ? 'text-white' : 'text-neutral-900'
               }`}
-              onClick={e => {
-                e.stopPropagation();
-                if (component.stock !== 0) {
-                  onSelect(component);
-                }
-              }}
-              disabled={component.stock === 0}
-              aria-disabled={component.stock === 0}
             >
-              {component.stock === 0
-                ? t('buttons.outOfStock')
-                : isSelected
-                  ? t('buttons.selected')
-                  : t('buttons.select')}
-            </button>
+              {component.name}
+            </h3>
+            <p
+              className={`text-sm mt-2 flex flex-wrap justify-center sm:justify-start gap-x-3 gap-y-1 ${
+                theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
+              }`}
+            >
+              {Object.entries(component.specifications || {}).map(
+                ([key, value]) => (
+                  <span key={key}>
+                    {t(`configurator.specs.${key}`, { defaultMessage: key })}:{' '}
+                    {String(value)}
+                  </span>
+                )
+              )}
+            </p>
+          </div>
+          <div className="flex-shrink-0 text-center sm:text-right mt-3 sm:mt-0">
+            <div className="flex flex-col items-center sm:items-end">
+              {component.discountPrice &&
+              component.discountPrice < component.price ? (
+                <>
+                  <div
+                    className={`text-xl font-bold ${
+                      theme === 'dark'
+                        ? 'text-brand-red-400'
+                        : 'text-brand-blue-600'
+                    }`}
+                  >
+                    €{formatPrice(component.discountPrice)}
+                  </div>
+                  <div
+                    className={`text-base line-through ${
+                      theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'
+                    }`}
+                  >
+                    €{formatPrice(component.price)}
+                  </div>
+                </>
+              ) : (
+                <div
+                  className={`text-xl font-bold ${
+                    theme === 'dark'
+                      ? 'text-brand-red-400'
+                      : 'text-brand-blue-600'
+                  }`}
+                >
+                  €{formatPrice(component.price)}
+                </div>
+              )}
+              {component.stock !== undefined && component.stock <= 5 && (
+                <div
+                  className={`text-sm mt-1 ${
+                    component.stock === 0
+                      ? 'text-red-500'
+                      : theme === 'dark'
+                        ? 'text-yellow-400'
+                        : 'text-yellow-600'
+                  }`}
+                  aria-live="polite"
+                >
+                  {component.stock === 0
+                    ? t('outOfStock')
+                    : `${component.stock} ${t('inStock')}`}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col sm:flex-row items-center mt-3 justify-center sm:justify-end gap-3">
+              <button
+                className={`text-sm px-4 py-1.5 rounded-full font-medium transition-all w-full sm:w-auto ${
+                  isSelected
+                    ? theme === 'dark'
+                      ? 'bg-brand-red-500/20 text-brand-red-400 border border-brand-red-500/30'
+                      : 'bg-brand-blue-500/20 text-brand-blue-600 border border-brand-blue-500/30'
+                    : theme === 'dark'
+                      ? 'bg-brand-red-500 text-white hover:bg-brand-red-600'
+                      : 'bg-brand-blue-500 text-white hover:bg-brand-blue-600'
+                } ${component.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''} focus:outline-none focus:ring-2 ${
+                  theme === 'dark'
+                    ? 'focus:ring-brand-red-500'
+                    : 'focus:ring-brand-blue-500'
+                }`}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (component.stock !== 0) {
+                    onSelect(component);
+                  }
+                }}
+                disabled={component.stock === 0}
+                aria-disabled={component.stock === 0}
+              >
+                {component.stock === 0
+                  ? t('buttons.outOfStock')
+                  : isSelected
+                    ? t('buttons.selected')
+                    : t('buttons.select')}
+              </button>
+            </div>
           </div>
         </div>
       </div>

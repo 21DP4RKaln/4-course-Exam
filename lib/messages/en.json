@@ -1028,6 +1028,7 @@
     },    "actions": {
       "save": "Save Draft",
       "addToCart": "Add to Cart",
+      "exportPDF": "Download PDF",
       "saved": "Configuration saved to your drafts",
       "submitted": "Configuration successfully submitted",
       "addedToCart": "Configuration added to cart",
@@ -1038,7 +1039,8 @@
         "addToCartFailed": "Failed to add configuration to cart",
         "submitFailed": "Failed to submit configuration",
         "missingComponents": "Missing required components: {components}",
-        "emptyConfiguration": "Configuration is empty"
+        "emptyConfiguration": "Configuration is empty",
+        "exportPDFFailed": "Failed to export PDF file"
       }
     },
     "categoryList": {

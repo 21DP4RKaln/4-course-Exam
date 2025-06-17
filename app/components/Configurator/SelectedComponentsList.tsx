@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Cpu,
@@ -14,6 +14,8 @@ import {
   AlertTriangle,
   Wrench,
   Check,
+  RotateCcw,
+  Download,
 } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 
@@ -44,6 +46,8 @@ interface Props {
   onSaveConfiguration: () => void;
   onSubmitConfiguration: () => void;
   onAddToCart: () => void;
+  onResetConfiguration: () => void;
+  onExportPDF: () => void;
   totalPowerConsumption: number;
   getRecommendedPsuWattage: () => string;
 }
@@ -60,11 +64,24 @@ const SelectedComponentsList: React.FC<Props> = ({
   onSaveConfiguration,
   onSubmitConfiguration,
   onAddToCart,
+  onResetConfiguration,
+  onExportPDF,
   totalPowerConsumption,
   getRecommendedPsuWattage,
 }) => {
   const t = useTranslations();
   const { theme } = useTheme();
+
+  // Generate default configuration name if none exists
+  useEffect(() => {
+    if (!configName || configName.trim() === '') {
+      const configCount =
+        parseInt(localStorage.getItem('configCounter') || '0') + 1;
+      localStorage.setItem('configCounter', configCount.toString());
+      setConfigName(`PC#${configCount}`);
+    }
+  }, [configName, setConfigName]);
+
   // Get category icon based on category id
   const getCategoryIcon = (categoryId: string) => {
     const iconColor =
@@ -111,6 +128,43 @@ const SelectedComponentsList: React.FC<Props> = ({
     return count + (selectedComponents[key] ? 1 : 0);
   }, 0);
   const totalCategories = visibleCategories.length;
+
+  // Check if all required components are selected for PDF export
+  const requiredCategories = [
+    'cpu',
+    'gpu',
+    'motherboard',
+    'ram',
+    'storage',
+    'psu',
+    'case',
+    'cooling',
+  ];
+  const hasAllRequiredComponents = requiredCategories.every(
+    categoryId => selectedComponents[categoryId]
+  );
+
+  // Handle PDF export with validation
+  const handlePDFExport = () => {
+    if (hasAllRequiredComponents) {
+      onExportPDF();
+    } else {
+      const missingCategories = requiredCategories.filter(
+        categoryId => !selectedComponents[categoryId]
+      );
+      const missingCategoryNames = missingCategories.map(categoryId => {
+        const category = componentCategories.find(cat => cat.id === categoryId);
+        return category?.name || categoryId;
+      });
+
+      // Create a simple notification
+      alert(
+        t('configurator.actions.errors.missingComponents', {
+          components: missingCategoryNames.join(', '),
+        })
+      );
+    }
+  };
   return (
     <div
       className={`w-[320px] max-w-full rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${
@@ -163,20 +217,6 @@ const SelectedComponentsList: React.FC<Props> = ({
               style={{ width: `${(selectedCount / totalCategories) * 100}%` }}
             />
           </div>
-        </div>{' '}
-        {/* Configuration Name Input */}
-        <div className="mt-4">
-          <input
-            type="text"
-            value={configName || 'PC'}
-            onChange={e => setConfigName(e.target.value || 'PC')}
-            placeholder="PC"
-            className={`w-full p-2 rounded border text-sm transition-colors ${
-              theme === 'dark'
-                ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500 focus:border-brand-red-500'
-                : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-brand-blue-500'
-            } focus:outline-none`}
-          />
         </div>
       </div>{' '}
       {/* Component List */}
@@ -277,8 +317,13 @@ const SelectedComponentsList: React.FC<Props> = ({
           );
         })}
       </div>{' '}
-      {/* Compatibility Issues */}
-      {compatibilityIssues.length > 0 && (
+      {/* Compatibility Issues - Only show critical power-related issues */}
+      {compatibilityIssues.filter(
+        issue =>
+          issue.includes('psuTooWeak') ||
+          issue.includes('psuCriticallyUnderpowered') ||
+          issue.includes('insufficientPowerConnectors')
+      ).length > 0 && (
         <div
           className={`mx-4 mb-4 p-3 rounded-lg ${
             theme === 'dark'
@@ -301,11 +346,18 @@ const SelectedComponentsList: React.FC<Props> = ({
               theme === 'dark' ? 'text-red-400' : 'text-red-600'
             }`}
           >
-            {compatibilityIssues.map((issue, index) => (
-              <li key={index} className="break-words">
-                {issue}
-              </li>
-            ))}
+            {compatibilityIssues
+              .filter(
+                issue =>
+                  issue.includes('psuTooWeak') ||
+                  issue.includes('psuCriticallyUnderpowered') ||
+                  issue.includes('insufficientPowerConnectors')
+              )
+              .map((issue, index) => (
+                <li key={index} className="break-words">
+                  {issue}
+                </li>
+              ))}
           </ul>
         </div>
       )}
@@ -333,6 +385,20 @@ const SelectedComponentsList: React.FC<Props> = ({
               €{totalPrice.toFixed(2)}
             </span>
           </div>{' '}
+          {/* Configuration Name Input */}
+          <div className="mt-2">
+            <input
+              type="text"
+              value={configName || ''}
+              onChange={e => setConfigName(e.target.value)}
+              placeholder="PC#1"
+              className={`w-full p-2 rounded border text-sm transition-colors ${
+                theme === 'dark'
+                  ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500 focus:border-brand-red-500'
+                  : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-brand-blue-500'
+              } focus:outline-none`}
+            />
+          </div>
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -356,6 +422,40 @@ const SelectedComponentsList: React.FC<Props> = ({
             >
               {t('configurator.actions.addToCart')}
             </button>
+          </div>
+          {/* PDF and Reset Buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* PDF Export Button */}
+            <button
+              onClick={handlePDFExport}
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                hasAllRequiredComponents
+                  ? theme === 'dark'
+                    ? 'bg-green-900/20 text-green-400 border border-green-800 hover:bg-green-900/30'
+                    : 'bg-green-50 text-green-600 border border-green-200 hover:bg-green-100'
+                  : theme === 'dark'
+                    ? 'bg-neutral-800/50 text-neutral-500 border border-neutral-700 hover:bg-neutral-800/70'
+                    : 'bg-neutral-100 text-neutral-500 border border-neutral-300 hover:bg-neutral-200'
+              }`}
+              title={t('configurator.actions.exportPDF')}
+            >
+              <Download size={16} />
+            </button>
+            {/* Reset Button */}
+            {selectedCount > 0 ? (
+              <button
+                onClick={onResetConfiguration}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                  theme === 'dark'
+                    ? 'bg-red-900/20 text-red-400 border border-red-800 hover:bg-red-900/30'
+                    : 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
+                }`}
+              >
+                <RotateCcw size={16} />
+              </button>
+            ) : (
+              <div></div>
+            )}
           </div>
         </div>
       </div>

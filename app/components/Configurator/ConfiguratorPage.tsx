@@ -17,6 +17,7 @@ import { createCaseFilterGroups } from './filter/caseFilters';
 import { createCoolingFilterGroups } from './filter/coolingFilters';
 import QuickFilters from './QuickFilters';
 import ComponentSelectionGrid from './ComponentSelectionGrid';
+import MobileFilterModal from './MobileFilterModal';
 import SelectedComponentsList from './SelectedComponentsList';
 import { checkFormFactorCompatibility } from './compatibility';
 import './customScrollbar.css';
@@ -44,7 +45,7 @@ const ConfiguratorPage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [configName, setConfigName] = useState(' ');
+  const [configName, setConfigName] = useState('');
   const [showCompatibilityModal, setShowCompatibilityModal] = useState(false);
   const [compatibilityIssues, setCompatibilityIssues] = useState<string[]>([]);
   const [totalPowerConsumption, setTotalPowerConsumption] = useState(0);
@@ -57,6 +58,7 @@ const ConfiguratorPage = () => {
     []
   );
   const [isLoadingConfiguration, setIsLoadingConfiguration] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Calculate min and max prices from components data
   const maxPrice = useMemo(() => {
@@ -82,6 +84,416 @@ const ConfiguratorPage = () => {
     const selected = selectedComponents[categoryKey];
     if (!selected) return false;
     if (Array.isArray(selected)) return selected.length > 0;
+    return true;
+  };
+
+  // Comprehensive compatibility checking function
+  const isComponentCompatible = (
+    component: Component,
+    activeCategory: string,
+    selectedComponents: Record<string, Component | Component[]>
+  ): boolean => {
+    // Helper to get single component from selected components
+    const getSingleComponent = (categoryKey: string): Component | null => {
+      const selected = selectedComponents[categoryKey];
+      if (!selected) return null;
+      if (Array.isArray(selected)) return selected[0] || null;
+      return selected;
+    };
+
+    // Check CPU compatibility
+    if (activeCategory === 'cpu') {
+      // Check CPU socket compatibility with motherboard
+      if (hasComponent('motherboard')) {
+        const motherboard = getSingleComponent('motherboard');
+        const cpuSocket = component.specifications?.['Socket'];
+        const mbSocket =
+          motherboard?.specifications?.['CPU Socket'] ||
+          motherboard?.specifications?.['Socket'];
+
+        if (cpuSocket && mbSocket && cpuSocket !== mbSocket) {
+          return false;
+        }
+      }
+
+      // Check CPU TDP compatibility with cooler
+      if (hasComponent('cooling')) {
+        const cooling = getSingleComponent('cooling');
+        const cpuTdp = component.specifications?.['TDP'];
+        const coolerMaxTdp = cooling?.specifications?.['Max TDP'];
+
+        if (cpuTdp && coolerMaxTdp) {
+          const cpuTdpNum = parseInt(cpuTdp.toString().replace(/[^\d]/g, ''));
+          const coolerTdpNum = parseInt(
+            coolerMaxTdp.toString().replace(/[^\d]/g, '')
+          );
+          if (
+            !isNaN(cpuTdpNum) &&
+            !isNaN(coolerTdpNum) &&
+            cpuTdpNum > coolerTdpNum
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Check motherboard compatibility
+    if (activeCategory === 'motherboard') {
+      // Check form factor compatibility with case
+      if (hasComponent('case')) {
+        const caseComponent = getSingleComponent('case');
+        const caseForm =
+          caseComponent?.specifications?.['Form Factor'] ||
+          caseComponent?.specifications?.['Motherboard Support'] ||
+          '';
+        const mbForm = component.specifications?.['Form Factor'];
+
+        if (
+          caseForm &&
+          mbForm &&
+          !checkFormFactorCompatibility(caseForm, mbForm)
+        ) {
+          return false;
+        }
+      }
+
+      // Check socket compatibility with CPU
+      if (hasComponent('cpu')) {
+        const cpu = getSingleComponent('cpu');
+        const cpuSocket = cpu?.specifications?.['Socket'];
+        const mbSocket =
+          component.specifications?.['CPU Socket'] ||
+          component.specifications?.['Socket'];
+
+        if (cpuSocket && mbSocket && cpuSocket !== mbSocket) {
+          return false;
+        }
+      }
+
+      // Check RAM type compatibility
+      if (hasComponent('ram')) {
+        const ram = getSingleComponent('ram');
+        const ramType =
+          ram?.specifications?.['Type'] || ram?.specifications?.['Memory Type'];
+        const mbRamType =
+          component.specifications?.['Memory Type'] ||
+          component.specifications?.['Memory Support'];
+
+        if (ramType && mbRamType && !mbRamType.includes(ramType)) {
+          return false;
+        }
+      }
+    }
+
+    // Check case compatibility
+    if (activeCategory === 'case') {
+      // Check form factor compatibility with motherboard
+      if (hasComponent('motherboard')) {
+        const motherboard = getSingleComponent('motherboard');
+        const mbForm = motherboard?.specifications?.['Form Factor'];
+        const caseForm =
+          component.specifications?.['Form Factor'] ||
+          component.specifications?.['Motherboard Support'] ||
+          '';
+
+        if (
+          mbForm &&
+          caseForm &&
+          !checkFormFactorCompatibility(caseForm, mbForm)
+        ) {
+          return false;
+        }
+      }
+
+      // Check GPU clearance
+      if (hasComponent('gpu')) {
+        const gpu = getSingleComponent('gpu');
+        const gpuLength =
+          gpu?.specifications?.['Length'] ||
+          gpu?.specifications?.['Card Length'];
+        const maxGpuLength =
+          component.specifications?.['Max GPU Length'] ||
+          component.specifications?.['Maximum GPU Length'] ||
+          component.specifications?.['GPU Clearance'];
+
+        if (gpuLength && maxGpuLength) {
+          const gpuMm = parseInt(gpuLength.toString().replace(/[^\d]/g, ''));
+          const maxMm = parseInt(maxGpuLength.toString().replace(/[^\d]/g, ''));
+          if (!isNaN(gpuMm) && !isNaN(maxMm) && gpuMm > maxMm) {
+            return false;
+          }
+        }
+      }
+
+      // Check PSU form factor compatibility
+      if (hasComponent('psu')) {
+        const psu = getSingleComponent('psu');
+        const psuFormFactor =
+          psu?.specifications?.['Form Factor'] ||
+          psu?.specifications?.['form_factor'];
+        const caseFormFactor =
+          component.specifications?.['PSU Form Factor'] ||
+          component.specifications?.['PSU Support'];
+
+        if (
+          psuFormFactor &&
+          caseFormFactor &&
+          !caseFormFactor
+            .toString()
+            .toLowerCase()
+            .includes(psuFormFactor.toString().toLowerCase())
+        ) {
+          return false;
+        }
+      }
+    }
+
+    // Check GPU compatibility
+    if (activeCategory === 'gpu') {
+      // Check GPU clearance with case
+      if (hasComponent('case')) {
+        const caseComponent = getSingleComponent('case');
+        const gpuLength =
+          component.specifications?.['Length'] ||
+          component.specifications?.['Card Length'];
+        const maxGpuLength =
+          caseComponent?.specifications?.['Max GPU Length'] ||
+          caseComponent?.specifications?.['Maximum GPU Length'] ||
+          caseComponent?.specifications?.['GPU Clearance'];
+
+        if (gpuLength && maxGpuLength) {
+          const gpuMm = parseInt(gpuLength.toString().replace(/[^\d]/g, ''));
+          const maxMm = parseInt(maxGpuLength.toString().replace(/[^\d]/g, ''));
+          if (!isNaN(gpuMm) && !isNaN(maxMm) && gpuMm > maxMm) {
+            return false;
+          }
+        }
+      }
+
+      // Check power connector compatibility with PSU
+      if (hasComponent('psu')) {
+        const psu = getSingleComponent('psu');
+        const gpuPowerConnectors =
+          component.specifications?.['Power Connectors'] ||
+          component.specifications?.['Power Requirements'];
+        const psuConnectors =
+          psu?.specifications?.['GPU Connectors'] ||
+          psu?.specifications?.['PCIe Connectors'];
+
+        if (gpuPowerConnectors && psuConnectors) {
+          // Basic check for 8-pin and 6-pin connectors
+          const gpu8pin = (
+            gpuPowerConnectors.toString().match(/8[\s-]*pin/gi) || []
+          ).length;
+          const gpu6pin = (
+            gpuPowerConnectors.toString().match(/6[\s-]*pin/gi) || []
+          ).length;
+          const psu8pin = (psuConnectors.toString().match(/8[\s-]*pin/gi) || [])
+            .length;
+          const psu6pin = (psuConnectors.toString().match(/6[\s-]*pin/gi) || [])
+            .length;
+
+          if (gpu8pin > psu8pin || gpu6pin > psu6pin) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Check RAM compatibility
+    if (activeCategory === 'ram') {
+      // Check RAM type compatibility with motherboard
+      if (hasComponent('motherboard')) {
+        const motherboard = getSingleComponent('motherboard');
+        const ramType =
+          component.specifications?.['Type'] ||
+          component.specifications?.['Memory Type'];
+        const mbRamType =
+          motherboard?.specifications?.['Memory Type'] ||
+          motherboard?.specifications?.['Memory Support'];
+
+        if (ramType && mbRamType && !mbRamType.includes(ramType)) {
+          return false;
+        }
+
+        // Check RAM speed compatibility
+        const ramSpeed = component.specifications?.['Speed'];
+        const mbMaxRamSpeed =
+          motherboard?.specifications?.['Memory Speed'] ||
+          motherboard?.specifications?.['Max Memory Speed'];
+
+        if (ramSpeed && mbMaxRamSpeed) {
+          const ramSpeedMhz = parseInt(
+            ramSpeed.toString().replace(/[^\d]/g, '')
+          );
+          const maxSpeedMhz = parseInt(
+            mbMaxRamSpeed.toString().replace(/[^\d]/g, '')
+          );
+          if (
+            !isNaN(ramSpeedMhz) &&
+            !isNaN(maxSpeedMhz) &&
+            ramSpeedMhz > maxSpeedMhz
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Check cooling compatibility
+    if (activeCategory === 'cooling') {
+      // Check socket compatibility with CPU
+      if (hasComponent('cpu')) {
+        const cpu = getSingleComponent('cpu');
+        const coolerSockets =
+          component.specifications?.['Socket Support'] ||
+          component.specifications?.['Socket Compatibility'] ||
+          component.specifications?.['Compatible Sockets'];
+        const cpuSocket = cpu?.specifications?.['Socket'];
+
+        if (coolerSockets && cpuSocket) {
+          const supportedSockets = coolerSockets.toString().toLowerCase();
+          const currentSocket = cpuSocket.toString().toLowerCase();
+
+          const isSocketSupported =
+            supportedSockets.includes(currentSocket) ||
+            supportedSockets.includes('universal') ||
+            supportedSockets.includes('all');
+
+          if (!isSocketSupported) {
+            return false;
+          }
+        }
+      }
+
+      // Check TDP compatibility with CPU
+      if (hasComponent('cpu')) {
+        const cpu = getSingleComponent('cpu');
+        const coolerMaxTdp = component.specifications?.['Max TDP'];
+        const cpuTdp = cpu?.specifications?.['TDP'];
+
+        if (coolerMaxTdp && cpuTdp) {
+          const coolerTdpNum = parseInt(
+            coolerMaxTdp.toString().replace(/[^\d]/g, '')
+          );
+          const cpuTdpNum = parseInt(cpuTdp.toString().replace(/[^\d]/g, ''));
+          if (
+            !isNaN(coolerTdpNum) &&
+            !isNaN(cpuTdpNum) &&
+            cpuTdpNum > coolerTdpNum
+          ) {
+            return false;
+          }
+        }
+      }
+
+      // Check clearance with case
+      if (hasComponent('case')) {
+        const caseComponent = getSingleComponent('case');
+        const coolerHeight = component.specifications?.['Height'];
+        const maxCpuHeight = caseComponent?.specifications?.['Max CPU Height'];
+
+        if (coolerHeight && maxCpuHeight) {
+          const coolerMm = parseInt(
+            coolerHeight.toString().replace(/[^\d]/g, '')
+          );
+          const maxMm = parseInt(maxCpuHeight.toString().replace(/[^\d]/g, ''));
+          if (!isNaN(coolerMm) && !isNaN(maxMm) && coolerMm > maxMm) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Check PSU compatibility
+    if (activeCategory === 'psu') {
+      // Check form factor compatibility with case
+      if (hasComponent('case')) {
+        const caseComponent = getSingleComponent('case');
+        const psuFormFactor =
+          component.specifications?.['Form Factor'] ||
+          component.specifications?.['form_factor'];
+        const caseFormFactor =
+          caseComponent?.specifications?.['PSU Form Factor'] ||
+          caseComponent?.specifications?.['PSU Support'];
+
+        if (
+          psuFormFactor &&
+          caseFormFactor &&
+          !caseFormFactor
+            .toString()
+            .toLowerCase()
+            .includes(psuFormFactor.toString().toLowerCase())
+        ) {
+          return false;
+        }
+      }
+
+      // Check power connector compatibility with GPU
+      if (hasComponent('gpu')) {
+        const gpu = getSingleComponent('gpu');
+        const gpuPowerConnectors =
+          gpu?.specifications?.['Power Connectors'] ||
+          gpu?.specifications?.['Power Requirements'];
+        const psuConnectors =
+          component.specifications?.['GPU Connectors'] ||
+          component.specifications?.['PCIe Connectors'];
+
+        if (gpuPowerConnectors && psuConnectors) {
+          // Basic check for 8-pin and 6-pin connectors
+          const gpu8pin = (
+            gpuPowerConnectors.toString().match(/8[\s-]*pin/gi) || []
+          ).length;
+          const gpu6pin = (
+            gpuPowerConnectors.toString().match(/6[\s-]*pin/gi) || []
+          ).length;
+          const psu8pin = (psuConnectors.toString().match(/8[\s-]*pin/gi) || [])
+            .length;
+          const psu6pin = (psuConnectors.toString().match(/6[\s-]*pin/gi) || [])
+            .length;
+
+          if (gpu8pin > psu8pin || gpu6pin > psu6pin) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Check storage compatibility
+    if (activeCategory === 'storage') {
+      if (hasComponent('motherboard')) {
+        const motherboard = getSingleComponent('motherboard');
+        const storageType = component.specifications?.['Type'];
+        const storageInterface = component.specifications?.['Interface'];
+        const mbM2Slots = motherboard?.specifications?.['M.2 Slots'];
+        const mbSataConnectors =
+          motherboard?.specifications?.['SATA Connectors'];
+
+        // Check M.2/NVMe compatibility
+        if (
+          storageType &&
+          (storageType.includes('NVMe') || storageType.includes('M.2'))
+        ) {
+          const m2Slots = parseInt(mbM2Slots?.toString() || '0');
+          if (m2Slots === 0) {
+            return false;
+          }
+        }
+
+        // Check SATA compatibility
+        if (
+          storageInterface?.includes('SATA') ||
+          storageType?.includes('SATA')
+        ) {
+          const sataConnectors = parseInt(mbSataConnectors?.toString() || '0');
+          if (sataConnectors === 0) {
+            return false;
+          }
+        }
+      }
+    }
+
     return true;
   };
 
@@ -325,31 +737,15 @@ const ConfiguratorPage = () => {
         const res = await fetch(`/api/components?${queryParams}`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        let fetched = data.components || []; // Filter incompatible motherboards and cases
+        let fetched = data.components || [];
+
+        // Filter incompatible components based on currently selected components
         const filtered = fetched.filter((component: Component) => {
-          // If loading motherboards and a case is selected, filter by form factor
-          if (activeCategory === 'motherboard' && hasComponent('case')) {
-            const caseComponent = getSingleComponent('case');
-            const caseForm =
-              caseComponent?.specifications?.['Form Factor'] ||
-              caseComponent?.specifications?.['Motherboard Support'] ||
-              '';
-            return checkFormFactorCompatibility(
-              caseForm,
-              component.specifications?.['Form Factor'] || ''
-            );
-          }
-          // If loading cases and a motherboard is selected, filter by form factor
-          if (activeCategory === 'case' && hasComponent('motherboard')) {
-            const motherboard = getSingleComponent('motherboard');
-            const mbForm = motherboard?.specifications?.['Form Factor'];
-            const caseForm =
-              component.specifications?.['Form Factor'] ||
-              component.specifications?.['Motherboard Support'] ||
-              '';
-            return mbForm && checkFormFactorCompatibility(caseForm, mbForm);
-          }
-          return true;
+          return isComponentCompatible(
+            component,
+            activeCategory,
+            selectedComponents
+          );
         });
         setComponents(filtered);
       } catch (e) {
@@ -987,7 +1383,14 @@ const ConfiguratorPage = () => {
     }
 
     setCompatibilityIssues(issues);
-    setShowCompatibilityModal(issues.length > 0);
+    // Since we now filter incompatible components, only show modal for critical power issues
+    const criticalIssues = issues.filter(
+      issue =>
+        issue.includes('psuTooWeak') ||
+        issue.includes('psuCriticallyUnderpowered') ||
+        issue.includes('insufficientPowerConnectors')
+    );
+    setShowCompatibilityModal(criticalIssues.length > 0);
   }, [selectedComponents, t]);
 
   // Calculate recommended PSU wattage
@@ -1288,7 +1691,6 @@ const ConfiguratorPage = () => {
     [activeFilters]
   );
 
-  // ...existing code...
   // Handle search query change
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
@@ -1560,6 +1962,94 @@ const ConfiguratorPage = () => {
     addItem,
   ]);
 
+  // Handle PDF export
+  const handleExportPDF = useCallback(async () => {
+    try {
+      // Check if we have all required components
+      const requiredCategories = [
+        'cpu',
+        'gpu',
+        'motherboard',
+        'ram',
+        'storage',
+        'psu',
+        'case',
+        'cooling',
+      ];
+      const missingCategories = requiredCategories.filter(
+        categoryId => !selectedComponents[categoryId]
+      );
+
+      if (missingCategories.length > 0) {
+        const missingCategoryNames = missingCategories.map(categoryId => {
+          const category = componentCategories.find(
+            cat => cat.id === categoryId
+          );
+          return category?.name || categoryId;
+        });
+
+        alert(
+          t('configurator.actions.errors.missingComponents', {
+            components: missingCategoryNames.join(', '),
+          })
+        );
+        return;
+      }
+
+      // Prepare the configuration data for PDF
+      const configurationData = {
+        configName: configName || 'Custom PC Configuration',
+        selectedComponents,
+        componentCategories,
+        totalPrice,
+        totalPowerConsumption,
+        recommendedPsuWattage: getRecommendedPsuWattage(),
+        compatibilityIssues,
+      };
+
+      // Call the PDF export API
+      const response = await fetch('/api/configurator/export-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(configurationData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      // Get the PDF as a blob and download it
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `${configName || 'pc-configuration'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Failed to export PDF:', error);
+      alert(
+        t('configurator.actions.errors.exportPDFFailed', {
+          defaultMessage: 'Failed to export PDF. Please try again.',
+        })
+      );
+    }
+  }, [
+    selectedComponents,
+    componentCategories,
+    configName,
+    totalPrice,
+    totalPowerConsumption,
+    compatibilityIssues,
+    getRecommendedPsuWattage,
+    t,
+  ]);
+
   // Define filter groups based on active category and available specifications
   const getFilterGroups = useCallback(() => {
     // Category-specific filter group creation
@@ -1593,6 +2083,12 @@ const ConfiguratorPage = () => {
     []
   );
 
+  // Handle reset configuration
+  const handleResetConfiguration = useCallback(() => {
+    setSelectedComponents({});
+    setConfigName(' ');
+  }, []);
+
   return (
     <ConfiguratorLayout>
       {/* Show loading overlay when loading configuration */}
@@ -1615,8 +2111,81 @@ const ConfiguratorPage = () => {
         </div>
       )}
 
-      <div className="flex">
-        <div className="flex space-x-0">
+      <div className="flex flex-col lg:flex-row min-h-screen">
+        {/* Mobile Header - Categories & Summary */}
+        <div className="lg:hidden bg-white dark:bg-stone-950 border-b border-neutral-200 dark:border-neutral-800 p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-xl font-bold text-neutral-900 dark:text-white">
+              {t('configurator.title')}
+            </h1>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowMobileFilters(true)}
+                className={`p-2 rounded-lg transition-colors ${
+                  theme === 'dark'
+                    ? 'hover:bg-stone-800 text-neutral-400 hover:text-white'
+                    : 'hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900'
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                  />
+                </svg>
+              </button>
+              <div className="bg-brand-blue-100 dark:bg-brand-red-900/20 px-3 py-1 rounded-full">
+                <span className="text-brand-blue-600 dark:text-brand-red-400 font-medium text-sm">
+                  {Object.keys(selectedComponents).length}/10
+                </span>
+              </div>
+              {Object.keys(selectedComponents).length > 0 && (
+                <div className="bg-brand-blue-100 dark:bg-brand-red-900/20 px-3 py-1 rounded-full">
+                  <span className="text-brand-blue-600 dark:text-brand-red-400 font-medium text-sm">
+                    €{totalPrice.toFixed(2)}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Category Selector */}
+          <div className="overflow-x-auto">
+            <div className="flex space-x-2 pb-2">
+              {componentCategories.map(category => (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    activeCategory === category.id
+                      ? theme === 'dark'
+                        ? 'bg-brand-red-500 text-white'
+                        : 'bg-brand-blue-500 text-white'
+                      : theme === 'dark'
+                        ? 'bg-stone-800 text-neutral-300 hover:bg-stone-700'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                  }`}
+                >
+                  {category.name}
+                  {selectedComponents[category.id] && (
+                    <span className="ml-1 text-xs">✓</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:flex lg:space-x-0">
           {/* Left sidebar - Category list */}
           <div className="flex space-x-[1px]">
             <CategoryList
@@ -1639,8 +2208,9 @@ const ConfiguratorPage = () => {
         </div>
 
         {/* Middle content area */}
-        <div className="flex-grow mx-4">
-          <div className="flex items-center justify-between mb-6">
+        <div className="flex-grow mx-2 lg:mx-4 flex flex-col pb-20 lg:pb-0">
+          {/* Desktop Header */}
+          <div className="hidden lg:flex items-center justify-between mb-6">
             <div className="flex items-center bg-white/5 dark:bg-stone-950/50 mt-2 backdrop-blur-lg px-4 py-2 rounded-full border border-neutral-200 dark:border-neutral-800">
               <span className="text-brand-blue-600 dark:text-brand-red-400 font-medium mr-2">
                 {t('configurator.performance')}
@@ -1666,20 +2236,20 @@ const ConfiguratorPage = () => {
               </div>
             )}
           </div>
-          {/* CPU quick filter buttons - fixed at top of component list */}
-          <div className="sticky top-0 z-10 bg-white dark:bg-stone-950 py-3 rounded-t-lg border-b border-neutral-200 dark:border-neutral-800">
-            <div className="flex items-center justify-between">
-              {' '}
-              <div className="flex-1">
-                <QuickFilters
-                  activeFilter={quickCpuFilter}
-                  onFilterChange={handleQuickCpuFilterChange}
-                  activeCategory={activeCategory}
-                  isQuickFilterActive={isQuickFilterActive}
-                  activeFilters={activeFilters}
-                />
-              </div>
-              {/* Clear filters button - only show when filters are active */}
+          {/* Component list */}
+          <div
+            className="bg-white dark:bg-stone-950 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 flex flex-col flex-grow"
+            style={{ maxHeight: 'calc(100vh - 160px)' }}
+          >
+            {/* Mobile Filters */}
+            <div className="lg:hidden p-4 border-b border-neutral-200 dark:border-neutral-800">
+              <QuickFilters
+                activeFilter={quickCpuFilter}
+                onFilterChange={handleQuickCpuFilterChange}
+                activeCategory={activeCategory}
+                isQuickFilterActive={isQuickFilterActive}
+                activeFilters={activeFilters}
+              />
               {(quickCpuFilter ||
                 Object.keys(activeFilters).some(key => activeFilters[key])) && (
                 <button
@@ -1687,7 +2257,7 @@ const ConfiguratorPage = () => {
                     setQuickCpuFilter(null);
                     setActiveFilters({});
                   }}
-                  className={`ml-4 px-3 py-1 text-sm rounded-md border transition-colors ${
+                  className={`mt-2 px-3 py-1 text-sm rounded-md border transition-colors ${
                     theme === 'dark'
                       ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800 hover:text-white'
                       : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
@@ -1697,12 +2267,39 @@ const ConfiguratorPage = () => {
                 </button>
               )}
             </div>
-          </div>
-          {/* Component list */}
-          <div
-            className="bg-white dark:bg-stone-950 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 flex flex-col"
-            style={{ maxHeight: 'calc(100vh - 160px)' }}
-          >
+            {/* Desktop Filters */}
+            <div className="hidden lg:block sticky top-0 z-10 bg-white dark:bg-stone-950 py-3 rounded-t-lg border-b border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-center justify-between px-4">
+                <div className="flex-1">
+                  <QuickFilters
+                    activeFilter={quickCpuFilter}
+                    onFilterChange={handleQuickCpuFilterChange}
+                    activeCategory={activeCategory}
+                    isQuickFilterActive={isQuickFilterActive}
+                    activeFilters={activeFilters}
+                  />
+                </div>
+                {(quickCpuFilter ||
+                  Object.keys(activeFilters).some(
+                    key => activeFilters[key]
+                  )) && (
+                  <button
+                    onClick={() => {
+                      setQuickCpuFilter(null);
+                      setActiveFilters({});
+                    }}
+                    className={`ml-4 px-3 py-1 text-sm rounded-md border transition-colors ${
+                      theme === 'dark'
+                        ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800 hover:text-white'
+                        : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                    }`}
+                  >
+                    {t('configurator.clearFilters')}
+                  </button>
+                )}
+              </div>
+            </div>
+            {/* Search Bar */}
             <div className="mb-4 relative p-4 flex-shrink-0">
               <div className="relative">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -1767,8 +2364,8 @@ const ConfiguratorPage = () => {
           </div>
         </div>
 
-        {/* Right sidebar - Selected components & summary */}
-        <div className="bg-white dark:bg-stone-950 shadow-lg rounded-lg">
+        {/* Right sidebar - Selected components & summary - Desktop only */}
+        <div className="hidden lg:block bg-white dark:bg-stone-950 shadow-lg rounded-lg">
           <SelectedComponentsList
             selectedComponents={selectedComponents}
             componentCategories={componentCategories}
@@ -1781,10 +2378,60 @@ const ConfiguratorPage = () => {
             onSaveConfiguration={handleSaveConfiguration}
             onSubmitConfiguration={handleSubmitConfiguration}
             onAddToCart={handleAddToCart}
+            onResetConfiguration={handleResetConfiguration}
+            onExportPDF={handleExportPDF}
             totalPowerConsumption={totalPowerConsumption}
             getRecommendedPsuWattage={getRecommendedPsuWattage}
           />
         </div>
+
+        {/* Mobile Bottom Bar with Summary and Actions */}
+        {Object.keys(selectedComponents).length > 0 && (
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-stone-950 border-t border-neutral-200 dark:border-neutral-800 p-4 shadow-lg z-40">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                  {t('configurator.totalPrice')}
+                </div>
+                <div className="text-2xl font-bold text-brand-blue-600 dark:text-brand-red-400">
+                  €{totalPrice.toFixed(2)}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                  {t('configurator.components')}
+                </div>
+                <div className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  {Object.keys(selectedComponents).length}/10
+                </div>
+              </div>
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={handleAddToCart}
+                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+                  theme === 'dark'
+                    ? 'bg-brand-red-500 text-white hover:bg-brand-red-600'
+                    : 'bg-brand-blue-500 text-white hover:bg-brand-blue-600'
+                }`}
+              >
+                {t('configurator.actions.addToCart')}
+              </button>
+              {isAuthenticated && (
+                <button
+                  onClick={handleSaveConfiguration}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium border transition-all ${
+                    theme === 'dark'
+                      ? 'border-brand-red-500 text-brand-red-400 hover:bg-brand-red-500 hover:text-white'
+                      : 'border-brand-blue-500 text-brand-blue-600 hover:bg-brand-blue-500 hover:text-white'
+                  }`}
+                >
+                  {t('configurator.actions.save')}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Compatibility issues modal */}
         {showCompatibilityModal && (
@@ -1794,9 +2441,16 @@ const ConfiguratorPage = () => {
                 {t('configurator.compatibility.title')}
               </h2>
               <ul className="list-disc list-inside text-red-600 mb-4">
-                {compatibilityIssues.map((issue, idx) => (
-                  <li key={idx}>{issue}</li>
-                ))}
+                {compatibilityIssues
+                  .filter(
+                    issue =>
+                      issue.includes('psuTooWeak') ||
+                      issue.includes('psuCriticallyUnderpowered') ||
+                      issue.includes('insufficientPowerConnectors')
+                  )
+                  .map((issue, idx) => (
+                    <li key={idx}>{issue}</li>
+                  ))}
               </ul>
               <button
                 className="px-4 py-2 bg-blue-600 text-white rounded"
@@ -1807,6 +2461,19 @@ const ConfiguratorPage = () => {
             </div>
           </div>
         )}
+
+        {/* Mobile Filter Modal */}
+        <MobileFilterModal
+          isOpen={showMobileFilters}
+          onClose={() => setShowMobileFilters(false)}
+          filterGroups={getFilterGroups()}
+          activeFilters={activeFilters}
+          onFiltersChange={handleFiltersChange}
+          priceRange={priceRange}
+          onPriceChange={handlePriceChange}
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+        />
       </div>
     </ConfiguratorLayout>
   );

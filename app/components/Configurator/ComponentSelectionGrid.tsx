@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import ComponentCard from './ComponentCard';
+import ComponentModal from './ComponentModal';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './customScrollbar.css';
@@ -29,10 +30,25 @@ const ComponentSelectionGrid: React.FC<ComponentSelectionGridProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const componentsPerPage = 7;
 
+  // Modal state for mobile
+  const [selectedModalComponent, setSelectedModalComponent] =
+    useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // Reset page when category or components change
   useEffect(() => {
     setCurrentPage(1);
   }, [activeCategory, components?.length]);
+
+  const handleViewDetails = (component: any) => {
+    setSelectedModalComponent(component);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedModalComponent(null);
+  };
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -90,6 +106,7 @@ const ComponentSelectionGrid: React.FC<ComponentSelectionGridProps> = ({
                 selectedComponents[activeCategory]?.id === component.id
               }
               onSelect={onSelectComponent}
+              onViewDetails={handleViewDetails}
             />
           </div>
         ))}
@@ -149,6 +166,17 @@ const ComponentSelectionGrid: React.FC<ComponentSelectionGridProps> = ({
           </button>
         </div>
       )}
+
+      {/* Mobile Component Details Modal */}
+      <ComponentModal
+        component={selectedModalComponent}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        isSelected={
+          selectedComponents[activeCategory]?.id === selectedModalComponent?.id
+        }
+        onSelect={onSelectComponent}
+      />
     </div>
   );
 };

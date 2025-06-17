@@ -1035,6 +1035,7 @@
     },    "actions": {
       "save": " Saglabāt Melnrakstu",
       "addToCart": "Pievienot Grozam",
+      "exportPDF": "Lejupielādēt PDF",
       "saved": "Konfigurācija saglabāta jūsu melnrakstu sarakstā",
       "submitted": "Konfigurācija veiksmīgi iesniegta",
       "addedToCart": "Konfigurācija pievienota grozam",      "errors": {
@@ -1043,7 +1044,8 @@
         "missingComponents": "Trūkst šādas obligātās komponentes: {components}",
         "emptyConfiguration": "Konfigurācija ir tukša",
         "loginToSave": "Lūdzu, ieejiet savā kontā, lai saglabātu konfigurāciju",
-        "addToCartFailed": "Neizdevās pievienot konfigurāciju grozam"
+        "addToCartFailed": "Neizdevās pievienot konfigurāciju grozam",
+        "exportPDFFailed": "Neizdevās lejupielādēt PDF failu"
       }
     },
     "categoryList": {
