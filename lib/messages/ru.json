@@ -64,7 +64,8 @@
     "warranty": "3 года гарантии",
     "support": "Техническая поддержка 24/7",
     "Popular": "Популярные конфигурации",
-    "topPick": "Топ выбор",    "popular": "Популярный",
+    "topPick": "Топ выбор",    
+    "popular": "Популярный",
     "viewedTimes": "Просмотрено {count} раз",
     "discount": "-{percent}%",
     "Choose": "Почему выбирают нас",
@@ -225,7 +226,8 @@
       "rgb": "RGB подсветка",
       "lighting": "Подсветка",
       "wireless": "Беспроводной",
-      "connectivity": "Подключение",      "connection": "Соединение",
+      "connectivity": "Подключение",      
+      "connection": "Соединение",
       "resolution": "Разрешение",
       "backlight": "Подсветка"
     },
@@ -303,7 +305,8 @@
     "myConfigurations": "Мои конфигурации",
     "myOrders": "Мои заказы",
     "profile": "Профиль",
-    "noConfigurations": "У вас пока нет конфигураций",    "noOrders": "У вас пока нет заказов",
+    "noConfigurations": "У вас пока нет конфигураций",    
+    "noOrders": "У вас пока нет заказов",
     "loadingOrders": "Загрузка заказов...",
     "orderId": "Номер заказа",
     "date": "Дата",
@@ -333,7 +336,8 @@
     "statComputers": "Собрано Компьютеров",
     "statCustomers": "Довольных Клиентов",
     "statOrders": "Выполненных Заказов",
-    "statExperience": "Лет Опыта",    "customerReviews": "Что Говорят Наши Клиенты",
+    "statExperience": "Лет Опыта",    
+    "customerReviews": "Что Говорят Наши Клиенты",
     "NoReviews": "На данный момент отзывов нет",
     "viewAllReviews": "Посмотреть все отзывы на Google",
     "customerName": "Довольный Клиент",
@@ -382,7 +386,8 @@
         "description": "Представили наш новый онлайн-конфигуратор ПК для более простой индивидуальной сборки."
       }
     ]
-  },  "categoryPage": {
+  },  
+  "categoryPage": {
     "backTo": "Назад к {type}",
     "backToHome": "Вернуться на главную",
     "min": "Мин",
@@ -396,7 +401,8 @@
     "item": "товар",
     "items": "товаров",
     "noProducts": "Товары не найдены",
-    "tryDifferentFilters": "Попробуйте изменить фильтры или условия поиска",    "noCriteriaMatch": "Попробуйте изменить фильтры или условия поиска",
+    "tryDifferentFilters": "Попробуйте изменить фильтры или условия поиска",    
+    "noCriteriaMatch": "Попробуйте изменить фильтры или условия поиска",
     "resetFilters": "Сбросить Фильтры",
     "noOptions": "Нет доступных опций",
     "fetchError": "Ошибка при загрузке {type}",
@@ -419,7 +425,8 @@
       "baseClock": "Базовая Частота",
       "frequency": "Частота",
       "architecture": "Архитектура",
-      "integratedGraphics": "Встроенная графика",      "memory": "Память",
+      "integratedGraphics": "Встроенная графика",      
+      "memory": "Память",
       "memoryType": "Тип Памяти",
       "vram": "Видеопамять (VRAM)",
       "gpuModel": "Модель GPU",
@@ -521,7 +528,8 @@
       "material": "Материал",
       "includedFans": "Включенные Вентиляторы",
       "usbPorts": "USB Порты",
-      "colorVariant": "Цветовой Вариант",      "fanCount": "Количество Вентиляторов",
+      "colorVariant": "Цветовой Вариант",      
+      "fanCount": "Количество Вентиляторов",
       "noiseLevel": "Уровень Шума",
       "maxTdp": "Максимальный TDP"
     },
@@ -809,11 +817,14 @@
         "gpuTooLong": "Видеокарта слишком длинная для корпуса",
         "coolerTooTall": "Кулер процессора слишком высокий для корпуса",
         "coolerSocketMismatch": "Кулер процессора не поддерживает сокет процессора",
-        "coolerInsufficientTdp": "Рейтинг TDP кулера недостаточен для процессора",        "psuTooLong": "Блок питания слишком длинный для корпуса",
-        "radiatorTooLarge": "Радиатор слишком большой для корпуса",        "noM2Slots": "Материнская плата не имеет слотов M.2 для NVMe накопителя",
+        "coolerInsufficientTdp": "Рейтинг TDP кулера недостаточен для процессора",        
+        "psuTooLong": "Блок питания слишком длинный для корпуса",
+        "radiatorTooLarge": "Радиатор слишком большой для корпуса",        
+        "noM2Slots": "Материнская плата не имеет слотов M.2 для NVMe накопителя",
         "noSataConnectors": "Материнская плата не имеет разъемов SATA для накопителя",
         "ramSpeedTooHigh": "Скорость ОЗУ превышает поддержку материнской платы",
-        "gpuTooWide": "Видеокарта требует слишком много слотов расширения",        "psuCriticallyUnderpowered": "Блок питания критически недостаточен",
+        "gpuTooWide": "Видеокарта требует слишком много слотов расширения",        
+        "psuCriticallyUnderpowered": "Блок питания критически недостаточен",
         "psuDangerouslyUnderpowered": "Блок питания опасно недостаточен",
         "psuWattageUnknown": "Мощность блока питания не может быть определена",
         "psuFormFactorIncompatible": "Форм-фактор блока питания несовместим с корпусом",
@@ -1208,7 +1219,8 @@
       "storage": "Накопитель",
       "motherboard": "Материнская плата",
       "powerSupply": "Блок питания",
-      "case": "Корпус",      "cooling": "Охлаждение",
+      "case": "Корпус",      
+      "cooling": "Охлаждение",
       "price": "Цена",
       "minPrice": "Мин. цена",
       "maxPrice": "Макс. цена",
@@ -1301,7 +1313,8 @@
       "public": "Публичный",
       "private": "Приватный"
     }
-  },  "reviewComponents": {
+  },  
+  "reviewComponents": {
     "customerReviews": "Отзывы Клиентов",
     "outOf5": "из 5",
     "reviewCount": "{count} {count, plural, one {отзыв} few {отзыва} many {отзывов} other {отзывов}}",
@@ -1341,7 +1354,8 @@
     "previous": "Предыдущая",
     "next": "Следующая",
     "tryAgain": "Попробовать Снова"
-  },  "reviewErrors": {
+  },  
+  "reviewErrors": {
     "notAuthenticated": "Вы должны войти в систему, чтобы оставить отзыв",
     "emptyComment": "Пожалуйста, введите ваш отзыв",
     "submitFailed": "Не удалось отправить отзыв",
@@ -1350,7 +1364,8 @@
     "loadFailed": "Не удалось загрузить отзывы",
     "deleteFailed": "Не удалось удалить отзыв",
     "updateFailed": "Не удалось обновить отзыв"
-  },"cart": {
+  },
+  "cart": {
     "title": "Ваша Корзина",
     "empty": "Ваша Корзина Пуста",
     "emptyMessage": "Ваша корзина пуста. Добавьте товары, чтобы продолжить покупки.",
@@ -1398,7 +1413,8 @@
     "firstName": "Имя",
     "lastName": "Фамилия",
     "emailOptional": "Эл. почта (необязательно, если указан телефон)",
-    "phoneOptional": "Телефон (необязательно, если указан эл. почта)",    "password": "Пароль",
+    "phoneOptional": "Телефон (необязательно, если указан эл. почта)",    
+    "password": "Пароль",
     "confirmPassword": "Подтвердите Пароль",
     "passwordStrength": "Надежность пароля",
     "passwordRequirements": {
@@ -1410,7 +1426,9 @@
     },
     "signUp": "Регистрация",
     "signingUp": "Обработка...",
-    "signingIn": "Вход...",    "forgotPassword": "Забыли пароль?",    "resetPassword": {
+    "signingIn": "Вход...",    
+    "forgotPassword": "Забыли пароль?",    
+    "resetPassword": {
       "title": "Восстановить пароль",
       "subtitle": "Введите ваш адрес электронной почты или номер телефона, и мы отправим код подтверждения",
       "emailLabel": "Адрес электронной почты",
@@ -1537,9 +1555,11 @@
       "totalPrice": "Общая стоимость",
       "description": "Описание",
       "createdBy": "Создан",
-      "createdOn": "Создано",      "visibility": "Видимость",
+      "createdOn": "Создано",      
+      "visibility": "Видимость",
       "template": "Шаблон",
-      "public": "Публичный",      "componentSummary": "Краткое описание компонентов",
+      "public": "Публичный",      
+      "componentSummary": "Краткое описание компонентов",
       "historyText": "История конфигурации будет представлена здесь",
       "close": "Закрыть"
     },
@@ -1552,7 +1572,8 @@
     "discountPrice": "Цена со скидкой",
     "stock": "Наличие",
     "sku": "Артикул"
-  },  "specialist": {
+  },  
+  "specialist": {
     "dashboard": {
       "title": "Панель специалиста",
       "welcomeBack": "Добро пожаловать обратно",
@@ -1617,7 +1638,8 @@
     "totalRepairs": "Всего ремонтов",
     "totalRevenue": "Общий доход",
     "pendingConfigurations": "Ожидающие конфигурации",
-    "activeRepairs": "Активные ремонты",    "lowStockItems": "Товары с низким запасом",
+    "activeRepairs": "Активные ремонты",    
+    "lowStockItems": "Товары с низким запасом",
     "monthlyGrowth": "Месячный рост",
     "salesOverview": "Обзор продаж",
     "repairMetrics": "Метрики ремонта",
@@ -1772,7 +1794,8 @@
     "notesPlaceholder": "Введите примечания об изменении статуса...",
     "confirmDelete": "Вы действительно хотите удалить этот ремонт?",
     "noProduct": "Нет продукта"
-  },  "checkout": {
+  },  
+  "checkout": {
     "title": "Оформление Заказа",
     "shippingAddress": "Адрес Доставки",
     "firstName": "Имя",
@@ -1912,7 +1935,8 @@
         "subtitle": "Ваш пароль был успешно сброшен",
         "message": "Теперь вы можете войти с новым паролем",
         "backToLogin": "Вернуться к входу"      }
-  },  "order": {
+  },  
+  "order": {
     "title": "Заказ #{orderId}",
     "orderItems": "Товары заказа",
     "configuration": "Конфигурация",

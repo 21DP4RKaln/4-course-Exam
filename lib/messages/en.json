@@ -1,4 +1,5 @@
-{  "common": {
+{ 
+  "common": {
     "appName": "IvaPro",
     "Text": "Top-quality custom PC builds and components for gamers, designers, and professionals. Located in Riga, Latvia.",
     "lightMode": "Light mode",
@@ -34,7 +35,8 @@
     "email": "Email",
     "or": "or",
     "yes": "Yes",
-    "no": "No",    "tryAgain": "Try Again",
+    "no": "No",    
+    "tryAgain": "Try Again",
     "sorry": "Sorry",
     "productIdMissing": "Product ID is missing",
     "component": "Component",
@@ -64,11 +66,10 @@
     "close": "Close",
     "Name": "Custom PCs Built For Your Needs",
     "Info": "We build top-performance custom PCs for gaming, content creation, and professional use with carefully selected quality components.",
-    "shipping": "Free shipping in Riga",
+    "shipping": "Free shipping in Riga",    
     "warranty": "3-year warranty",
-    "support": "24/7 Technical support",
-    "Popular": "Popular Configurations",
-    "topPick": "Top Pick",    "popular": "Popular",
+    "topPick": "Top Pick",    
+    "popular": "Popular",
     "viewedTimes": "Viewed {count} times",
     "discount": "-{percent}%",
     "Choose": "Why Choose Us",
@@ -172,7 +173,8 @@
       "description": "Description",
       "specifications": "Specifications",
       "reviews": "Reviews"
-    },    "noSpecifications": "No specifications available for this product.",
+    },    
+    "noSpecifications": "No specifications available for this product.",
     "addToCart": "Add to Cart",
     "specificationGroups": {
       "Manufacturer": "Manufacturer",
@@ -182,7 +184,8 @@
       "Physical": "Physical",
       "Features": "Features",
       "Other": "Other"
-    },    "specificationKeys": {
+    },    
+    "specificationKeys": {
       "base frequency": "Base Frequency",
       "max ram frequency": " Max RAM Frequency",
       "max ram capacity": "Max RAM Capacity",
@@ -222,7 +225,8 @@
       "rgb": "RGB Lighting",
       "lighting": "Lighting",
       "wireless": "Wireless",
-      "connectivity": "Connectivity",      "connection": "Connection",
+      "connectivity": "Connectivity",      
+      "connection": "Connection",
       "resolution": "Resolution",
       "backlight": "Backlight"
     },
@@ -296,11 +300,13 @@
       "financialReports": "Financial Reports",
       "analytics": "Analytics",
       "viewOrders": "View Orders"
-    },    "title": "Dashboard",
+    },    
+    "title": "Dashboard",
     "myConfigurations": "My Configurations",
     "myOrders": "My Orders",
     "profile": "Profile",
-    "noConfigurations": "You don't have any configurations yet",    "noOrders": "You don't have any orders yet",
+    "noConfigurations": "You don't have any configurations yet",    
+    "noOrders": "You don't have any orders yet",
     "loadingOrders": "Loading orders...",
     "orderId": "Order ID",
     "date": "Date",
@@ -330,7 +336,8 @@
     "statComputers": "Computers Built",
     "statCustomers": "Happy Customers",
     "statOrders": "Completed Orders",
-    "statExperience": "Years Experience",    "customerReviews": "What Our Customers Say",
+    "statExperience": "Years Experience",    
+    "customerReviews": "What Our Customers Say",
     "NoReviews": "No reviews available at the moment",
     "viewAllReviews": "View all reviews on Google",
     "customerName": "Satisfied Customer",
@@ -379,7 +386,8 @@
         "description": "Introduced our new online PC configurator for easier custom builds."
       }
     ]
-  },  "categoryPage": {
+  },  
+  "categoryPage": {
     "backTo": "Back to {type}",
     "backToHome": "Back to Home",
     "filters": "Filters",
@@ -388,7 +396,8 @@
     "max": "Max",
     "priceRange": "Price Range",
     "searchPlaceholder": "Search products...",
-    "sortBy": "Sort by","item": "item",
+    "sortBy": "Sort by",
+    "item": "item",
     "items": "items",
     "noProductsFound": "No products found",
     "noCriteriaMatch": "Try adjusting your filters or search terms",
@@ -402,7 +411,8 @@
       "nameAsc": "Name: A to Z",
       "nameDesc": "Name: Z to A",
       "stockDesc": "Availability"
-    },    "filterGroups": {
+    },    
+    "filterGroups": {
       "manufacturer": "Manufacturer",
       "general": "General",
       "model": "Model",
@@ -411,7 +421,8 @@
       "threads": "Threads",
       "frequency": "Frequency",
       "architecture": "Architecture",
-      "baseClock": "Base Clock",      "integratedGraphics": "Integrated Graphics",
+      "baseClock": "Base Clock",      
+      "integratedGraphics": "Integrated Graphics",
       "memory": "Memory",
       "memoryType": "Memory Type",
       "vram": "Video Memory (VRAM)",
@@ -453,8 +464,9 @@
       "sidePanel": "Side Panel",
       "caseType": "Case Type",
       "coolerType": "Cooler Type",
-      "radiatorSize": "Radiator Size",
+      "radiatorSize": "Radiator Size",      
       "memorySlots": "Memory Slots",
+      "ramSlots": "RAM Slots",
       "fans": "Fans",
       "busWidth": "Memory Bus Width",
       "outputPorts": "Output Ports",
@@ -492,8 +504,9 @@
       "pcieSlots": "PCIe Slots",
       "sataPorts": "SATA Ports",
       "wifi": "Wi-Fi",
-      "bluetooth": "Bluetooth",
+      "bluetooth": "Bluetooth",      
       "usb": "USB",
+      "usbTypeCPorts": "USB Type-C Ports",
       "ethernet": "Ethernet",
       "efficiency": "Efficiency",
       "modular": "Modular",
@@ -517,12 +530,21 @@
       "heightAdjustable": "Height Adjustable",
       "powerConnectors": "Power Connectors",
       "displayPorts": "Display Ports",
-      "maxMemory": "Max Memory",
+      "maxMemory": "Max Memory",      
+      "slots525": "5.25\" Slots",
+      "slots35": "3.5\" Slots",
+      "slots25": "2.5\" Slots",      
+      "M_2_Slots": "M.2 Slots",      
+      "SATA Ports": "SATA Ports",
+      "SLI_Crossfire": "SLI/Crossfire",
+      "WiFi_Bluetooth": "WiFi/Bluetooth",
       "sataConnectors": "SATA Connectors",
       "wifiBuiltIn": "Wi-Fi Built-in",
       "bluetoothBuiltIn": "Bluetooth Built-in",
-      "modules": "Modules",      "tbw": "TBW",
-      "material": "Material",      "includedFans": "Included Fans",
+      "modules": "Modules",      
+      "tbw": "TBW",
+      "material": "Material",      
+      "includedFans": "Included Fans",
       "usbPorts": "USB Ports",
       "colorVariant": "Color Variant",      
       "fanCount": "Fan Count",
@@ -759,18 +781,19 @@
     "color": "Color",
     "material": "Material",
     "audioIn": "Audio In",
-    "audioOut": "Audio Out",
+    "audioOut": "Audio Out",    
+    "ramSlots": "RAM Slots",
     "usb20Ports": "USB 2.0 Ports",	
     "usb30Ports": "USB 3.0 Ports",
     "usb32Ports": "USB 3.2 Ports",
-    "usbTypeCPorts": "USB Type-C Ports",
     "slots525": "5.25\" Slots",
     "slots35": "3.5\" Slots",
     "slots25": "2.5\" Slots",
     "waterCooling": "Water Cooling",
     "sidePanel": "Side Panel",
     "fanDiameter": "Fan Diameter",
-    "fanSpeed": "Fan Speed"
+    "fanSpeed": "Fan Speed",
+    "usbTypeCPorts": "USB Type-C Ports"
   },
   "configurator": {
     "title": "PC Configuration",
@@ -828,11 +851,14 @@
         "gpuTooLong": "GPU is too long for case",
         "coolerTooTall": "CPU cooler is too tall for case",
         "coolerSocketMismatch": "CPU cooler doesn't support CPU socket",
-        "coolerInsufficientTdp": "CPU cooler TDP rating is insufficient for CPU",        "psuTooLong": "PSU is too long for case",
-        "radiatorTooLarge": "Radiator is too large for case",          "noM2Slots": "Motherboard has no M.2 slots for NVMe storage",
+        "coolerInsufficientTdp": "CPU cooler TDP rating is insufficient for CPU",        
+        "psuTooLong": "PSU is too long for case",
+        "radiatorTooLarge": "Radiator is too large for case",          
+        "noM2Slots": "Motherboard has no M.2 slots for NVMe storage",
         "noSataConnectors": "Motherboard has no SATA connectors for storage",
         "ramSpeedTooHigh": "RAM speed exceeds motherboard support",
-        "gpuTooWide": "GPU requires too many expansion slots",        "psuCriticallyUnderpowered": "PSU is critically underpowered",
+        "gpuTooWide": "GPU requires too many expansion slots",        
+        "psuCriticallyUnderpowered": "PSU is critically underpowered",
         "psuDangerouslyUnderpowered": "PSU is dangerously underpowered",
         "psuWattageUnknown": "PSU wattage could not be determined",
         "psuFormFactorIncompatible": "PSU form factor not compatible with case",
@@ -841,10 +867,16 @@
         "cpuCoolerMountingConflict": "Cooler mounting may conflict with RAM or other components",
         "insufficientPowerConnectors": "PSU has insufficient GPU power connectors"
       }
-    },
-    "search": "Search components",    
+    },    
+    "search": "Search components",
+    "componentDetails": "Component Details",
+    "specifications": "Specifications",
+    "stock": "Stock",
+    "components": "Components",    
     "filters": {
       "apply": "Apply",
+      "applyFilters": "Apply Filters",
+      "priceRange": "Price Range",
       "max" : "Max",
       "min" : "Min",	
       "price": "Price",
@@ -903,20 +935,32 @@
       "manufacturer": "Manufacturer",
       "max_ram_frequency": "Max RAM Frequency",
       "ram": "RAM",
-      "Model": "Model",
+      "Model": "Model",      
       "TDP": "TDP",
       "Sub Brand": "Sub Brand",
       "usb20Ports": "USB 2.0 Ports",	
       "usb30Ports": "USB 3.0 Ports",
       "usb32Ports": "USB 3.2 Ports",
-      "Base_Clock": "Base Clock",
+      "usbTypeCPorts": "USB Type-C Ports",
+      "USB Type-C Ports": "USB Type-C Ports",
+      "Base_Clock": "Base Clock",      
       "slots525": "5.25\" Slots",
-      "slots35": "3.5\" Slots",
-      "slots25": "2.5\" Slots",
+      "slots35": "3.5\" Slots",      
+      "slots25": "2.5\" Slots",      
       "m2Slots": "M.2 Slots",
-      "Socket": "Socket",
+      "M_2_Slots": "M.2 Slots",
+      "USB 2.0 Ports": "USB 2.0 Ports",
+      "USB 3.0 Ports": "USB 3.0 Ports",
+      "USB 3.2 Ports": "USB 3.2 Ports",
+      "5.25\" Slots": "5.25\" Slots",
+      "3.5\" Slots": "3.5\" Slots",
+      "2.5\" Slots": "2.5\" Slots",
       "Video Memory": "Video Memory",
       "Fan Count": "Fan Count",
+      "Socket": "Socket",
+      "M.2 Slots": "M.2 Slots",
+      "WiFi/Bluetooth": "WiFi/Bluetooth",
+
       "Chip Type": "Chip Type",
       "DVI Port": "DVI Port",
       "VGA Port": "VGA Port",
@@ -932,9 +976,12 @@
       "Processor Support": "Processor Support",
       "Max Memory Frequency": "Max Memory Frequency",
       "Max Video Cards": "Max Video Cards",
-      "SATA Ports": "SATA Ports",      
-      "sliCrossfire": "SLI/Crossfire",
+      "SATA Ports": "SATA Ports",        
+      "sliCrossfire": "SLI/Crossfire",      
+      "SLI/Crossfire": "SLI/Crossfire",      
+      "SLI_Crossfire": "SLI/Crossfire",
       "wifiBluetooth": "WiFi/Bluetooth",
+      "WiFi_Bluetooth": "WiFi/Bluetooth",
       "NVMe Support": "NVMe Support",
       "releaseDate": "Release Date",
       "generation": "Generation",
@@ -979,7 +1026,6 @@
       "Material": "Material",
       "Audio In": "Audio In",
       "Audio Out": "Audio Out",      
-      "usbTypeCPorts": "USB Type-C Ports",
       "Water Cooling": "Water Cooling",
       "Speed": "Speed",
       "heatsink": "Heatsink",
@@ -1011,10 +1057,10 @@
       "Noise Level": "Noise Level",
       "Radiator Size": "Radiator Size",
       "fanSize": "Fan Size",
-      "noise": "Noise Level",
+      "noise": "Noise Level",      
       "radiatorSize": "Radiator Size",
       "base_clock": "Base Clock",
-      "boost_clock": "Boost Clock",
+      "boost_clock": "Boost Clock",      
       "integrated_graphics": "Integrated Graphics"
     },
     "quickFilters": {
@@ -1207,10 +1253,9 @@
       "manufacturer": "Manufacturer",
       "max_ram_frequency": "Max RAM Frequency",
       "ram": "RAM",
-      "Model": "Model",
+      "Model": "Model",      
       "TDP": "TDP",
       "Base_Clock": "Base Clock",
-      "Socket": "Socket",
       "Boost_Clock": "Boost Clock",
       "brand": "Brand",
       "series": "Series",
@@ -1351,7 +1396,8 @@
       "storage": "Storage",
       "motherboard": "Motherboard",
       "powerSupply": "Power Supply",
-      "case": "Case",      "cooling": "Cooling",
+      "case": "Case",      
+      "cooling": "Cooling",
       "price": "Price",
       "minPrice": "Min Price",
       "maxPrice": "Max Price",
@@ -1428,7 +1474,8 @@
       "newBadge": "New",
       "offBadge": "-{percentage}% Off",
       "featuredBadge": "Featured"
-    },    "noProducts": "No Products Found",
+    },    
+    "noProducts": "No Products Found",
     "tryDifferentFilters": "Try changing your filters or search criteria",
     "shopTitle": "Shop",
     "shopSubtitle": "Find the perfect PC setup for your needs",
@@ -1443,7 +1490,8 @@
     "configuratorDescription": "Use our PC configurator to build the perfect system",
     "readyMade": "Ready-Made PCs",
     "readyMadeDescription": "Browse our pre-built gaming and workstation PCs"
-  },"reviewComponents": {
+  },
+  "reviewComponents": {
     "customerReviews": "Customer Reviews",
     "outOf5": "out of 5",
     "reviewCount": "{count} {count, plural, one {review} other {reviews}}",
@@ -1483,7 +1531,8 @@
     "previous": "Previous",
     "next": "Next",
     "tryAgain": "Try Again"
-  },  "reviewErrors": {
+  },  
+  "reviewErrors": {
     "notAuthenticated": "You must be logged in to submit a review",
     "emptyComment": "Please enter your review",
     "submitFailed": "Failed to submit review",
@@ -1492,7 +1541,8 @@
     "loadFailed": "Failed to load reviews",
     "deleteFailed": "Failed to delete review",
     "updateFailed": "Failed to update review"
-  },"cart": {
+  },
+  "cart": {
     "title": "Your Cart",
     "empty": "Your Cart is Empty",
     "emptyMessage": "Your shopping cart is empty. Add some items to continue shopping.",
@@ -1540,7 +1590,8 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "emailOptional": "Email (optional if phone provided)",
-    "phoneOptional": "Phone (optional if email provided)",    "password": "Password",
+    "phoneOptional": "Phone (optional if email provided)",    
+    "password": "Password",
     "confirmPassword": "Confirm Password",
     "passwordStrength": "Password Strength",
     "passwordRequirements": {
@@ -1552,7 +1603,9 @@
     },
     "signUp": "Sign Up",
     "signingUp": "Processing...",
-    "signingIn": "Signing in...",    "forgotPassword": "Forgot your password?",    "resetPassword": {
+    "signingIn": "Signing in...",    
+    "forgotPassword": "Forgot your password?",    
+    "resetPassword": {
       "title": "Reset your password",
       "subtitle": "Enter your email address or phone number and we'll send you a verification code",
       "emailLabel": "Email address",
@@ -1682,7 +1735,8 @@
       "createdOn": "Created On",
       "visibility": "Visibility",
       "template": "Template",
-      "public": "Public",      "componentSummary": "Component Summary",
+      "public": "Public",      
+      "componentSummary": "Component Summary",
       "historyText": "Configuration history will be implemented here",
       "close": "Close"
     },
@@ -1695,7 +1749,8 @@
     "discountPrice": "Discount Price",
     "stock": "Stock",
     "sku": "SKU"
-  },  "specialist": {
+  },  
+  "specialist": {
     "dashboard": {
       "title": "Specialist Dashboard",
       "welcomeBack": "Welcome back",
@@ -1733,7 +1788,8 @@
       "yesterday": "yesterday",
       "noRecentActivity": "No recent activity to display"
     }
-  },"staff": {
+  },
+  "staff": {
     "dashboard": "Dashboard",
     "account": "Account",
     "repairs": "Repairs",
@@ -1917,7 +1973,8 @@
     "notesPlaceholder": "Enter notes about the status change...",
     "confirmDelete": "Are you sure you want to delete this repair?",
     "noProduct": "No product"
-  },  "checkout": {
+  },  
+  "checkout": {
     "title": "Checkout",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -1936,7 +1993,6 @@
     "useNewAddress": "Use New Address",
     "courier": "Courier",
     "post": "Post",
-    
     "subtotal": "Subtotal",
     "total": "Total",
     "selectCountry": "Select Country",
@@ -2017,7 +2073,8 @@
     "orderItems": "Order Items",
     "configuration": "Configuration",
     "component": "Component",
-    "totalLabel": "Total",    "orderDate": "Order Date",
+    "totalLabel": "Total",    
+    "orderDate": "Order Date",
     "totalAmount": "Total Amount",
     "paymentMethod": "Payment Method",
     "shippingAddress": "Shipping Address",
@@ -2085,7 +2142,8 @@
           "strong": "Strong"
         },
         "passwordMismatch": "Passwords don't match"
-      },      "step4": {
+      },      
+      "step4": {
         "title": "Password Reset Successful",
         "subtitle": "Your password has been successfully reset",
         "message": "You can now sign in with your new password",
