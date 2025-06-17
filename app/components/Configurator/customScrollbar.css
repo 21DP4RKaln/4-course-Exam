@@ -3,15 +3,15 @@
   width: 8px;
 }
 .custom-scrollbar-dark::-webkit-scrollbar-track {
-  background: #202020;
+  background: #0a0a0a;
   border-radius: 10px;
 }
 .custom-scrollbar-dark::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
+  background: #2a2a2a;
   border-radius: 10px;
 }
 .custom-scrollbar-dark::-webkit-scrollbar-thumb:hover {
-  background: #555555;
+  background: #404040;
 }
 
 /* Custom scrollbar for light mode */
@@ -33,7 +33,7 @@
 /* Firefox scrollbar styles */
 .custom-scrollbar-dark {
   scrollbar-width: thin;
-  scrollbar-color: #4a4a4a #202020;
+  scrollbar-color: #2a2a2a #0a0a0a;
 }
 
 .custom-scrollbar-light {

@@ -36,11 +36,12 @@ module.exports = {
         accent: {
           DEFAULT: 'var(--accent)',
           foreground: 'var(--accent-foreground)',
-        },
-        card: {
+        },        card: {
           DEFAULT: 'var(--card)',
           foreground: 'var(--card-foreground)',
         },
+        'dark-background': '#000000',
+        'dark-card': '#080808',
         brand: {
           red: {
             DEFAULT: '#dc2626',
@@ -83,19 +84,18 @@ module.exports = {
             tertiary: '#6b7280',
           },
           accent: '#f3f4f6',
-        },
-        // Dark mode colors
+        },        // Dark mode colors
         dark: {
-          background: '#0a0a0a', 
-          surface: '#141414',
-          card: '#1c1c1e', 
-          border: '#2d2d2d',
+          background: '#000000', 
+          surface: '#0a0a0a',
+          card: '#0d0d0d', 
+          border: '#1a1a1a',
           text: {
             primary: '#f9fafb',
             secondary: '#9ca3af',
             tertiary: '#6b7280',
           },
-          accent: '#202020',
+          accent: '#141414',
         },
       },
       textColor: {

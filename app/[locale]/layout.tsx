@@ -59,6 +59,32 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages(safeLocale);
   return (
     <html lang={safeLocale} suppressHydrationWarning className="scroll-smooth">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme') || 'system';
+                  var resolvedTheme;
+                  
+                  if (theme === 'system') {
+                    resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  } else {
+                    resolvedTheme = theme;
+                  }
+                  
+                  if (resolvedTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })()
+            `,
+          }}
+        />
+      </head>
       <body className={`${inter.className} antialiased`}>
         <SessionWrapper>
           <I18nProvider locale={safeLocale} messages={messages}>

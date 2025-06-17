@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent flash of unstyled content */
+html {
+  color-scheme: light dark;
+}
+
 /* Mac-specific improvements */
 @layer base {
   * {
@@ -69,15 +74,15 @@
     width: 8px;
   }
   .custom-scrollbar-dark::-webkit-scrollbar-track {
-    background: #202020;
+    background: #0a0a0a;
     border-radius: 10px;
   }
   .custom-scrollbar-dark::-webkit-scrollbar-thumb {
-    background: #4a4a4a;
+    background: #2a2a2a;
     border-radius: 10px;
   }
   .custom-scrollbar-dark::-webkit-scrollbar-thumb:hover {
-    background: #555555;
+    background: #404040;
   }
 
   /* Custom scrollbar for light mode */
@@ -99,7 +104,7 @@
   /* Firefox scrollbar styles */
   .custom-scrollbar-dark {
     scrollbar-width: thin;
-    scrollbar-color: #4a4a4a #202020;
+    scrollbar-color: #2a2a2a #0a0a0a;
   }
 
   .custom-scrollbar-light {
@@ -130,22 +135,22 @@
   }
 
   .dark {
-    --background: #0a0a0a;
+    --background: #000000;
     --foreground: #f9fafb;
-    --card: #101011;
+    --card: #080808;
     --card-foreground: #f9fafb;
-    --border: #101010;
-    --input: #101010;
-    --ring: #101010;
+    --border: #080808;
+    --input: #080808;
+    --ring: #080808;
     --primary: #dc2626;
     --primary-foreground: #ffffff;
-    --secondary: #202020;
+    --secondary: #1a1a1a;
     --secondary-foreground: #f9fafb;
-    --accent: #1c1c1e;
+    --accent: #141414;
     --accent-foreground: #f9fafb;
     --destructive: #dc2626;
     --destructive-foreground: #ffffff;
-    --muted: #2d2d2d;
+    --muted: #1f1f1f;
     --muted-foreground: #9ca3af;
   }
 }
@@ -155,7 +160,7 @@
     @apply border-neutral-200 dark:border-neutral-700;
   }
   body {
-    @apply bg-white dark:bg-dark-background text-neutral-900 dark:text-white font-sans antialiased;
+    @apply bg-white dark:bg-black text-neutral-900 dark:text-white font-sans antialiased;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
@@ -190,7 +195,7 @@
   }
 
   .form-input {
-    @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
+    @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-950 
     border border-neutral-300 dark:border-neutral-700 
     text-neutral-900 dark:text-white shadow-inner-soft 
     focus:ring-2 focus:ring-primary focus:border-transparent 
@@ -199,7 +204,7 @@
   }
 
   .form-select {
-    @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-stone-950 
+    @apply w-full px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-950 
     border border-neutral-300 dark:border-neutral-700 
     text-neutral-900 dark:text-white shadow-inner-soft 
     cursor-pointer appearance-none
@@ -208,14 +213,14 @@
   }
 
   .form-select option {
-    @apply bg-white dark:bg-stone-950 text-neutral-900 dark:text-white;
+    @apply bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white;
   }
 
   .form-checkbox {
     @apply rounded border-neutral-300 dark:border-neutral-600 
     text-primary dark:text-red-500 
     focus:ring-2 focus:ring-primary 
-    bg-white dark:bg-stone-950 transition-colors;
+    bg-white dark:bg-neutral-950 transition-colors;
   }
 
   .form-error {
@@ -242,7 +247,7 @@
   }
 
   .btn-outline {
-    @apply btn border border-input bg-white dark:bg-dark-background hover:bg-accent hover:text-neutral-900 dark:hover:text-white;
+    @apply btn border border-input bg-white dark:bg-black hover:bg-accent hover:text-neutral-900 dark:hover:text-white;
   }
 
   .btn-ghost {
@@ -255,7 +260,7 @@
 
   /* Card styles */
   .card {
-    @apply rounded-xl border bg-white dark:bg-dark-card text-neutral-900 dark:text-white shadow-soft overflow-hidden;
+    @apply rounded-xl border bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white shadow-soft overflow-hidden;
   }
 
   .card-header {
@@ -318,22 +323,22 @@
   }
 
   .table-footer {
-    @apply border-t bg-neutral-100 dark:bg-stone-950 font-medium [&>tr]:last:border-b-0;
+    @apply border-t bg-neutral-100 dark:bg-neutral-950 font-medium [&>tr]:last:border-b-0;
   }
 
   .table-row {
-    @apply border-b transition-colors hover:bg-neutral-50 dark:hover:bg-stone-950 data-[state=selected]:bg-neutral-100 dark:data-[state=selected]:bg-stone-950;
+    @apply border-b transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900 data-[state=selected]:bg-neutral-100 dark:data-[state=selected]:bg-neutral-900;
   }
 
   /* Navbar styles */
   .navbar {
-    @apply fixed top-0 left-0 right-0 z-50 flex h-16 items-center border-b border-neutral-200 dark:border-neutral-700 
-    bg-white/80 dark:bg-dark-background/80 backdrop-blur-sm transition-all;
+    @apply fixed top-0 left-0 right-0 z-50 flex h-16 items-center border-b border-neutral-200 dark:border-neutral-800 
+    bg-white/80 dark:bg-black/80 backdrop-blur-sm transition-all;
   }
 
   /* Mobile menu styles */
   .mobile-menu {
-    @apply fixed inset-0 z-50 flex flex-col bg-white dark:bg-dark-background p-6 pt-20 shadow-xl animation-in data-[state=closed]:animation-out;
+    @apply fixed inset-0 z-50 flex flex-col bg-white dark:bg-black p-6 pt-20 shadow-xl animation-in data-[state=closed]:animation-out;
   }
 
   /* Hero section styles */
@@ -342,7 +347,7 @@
   }
 
   .hero-bg-dark {
-    @apply bg-dark-background bg-[url('/dark-pc.png')] bg-center bg-cover bg-no-repeat;
+    @apply bg-black bg-[url('/dark-pc.png')] bg-center bg-cover bg-no-repeat;
   }
 
   .hero-bg-light {
@@ -367,13 +372,13 @@
 
   /* Product specific styles */
   .product-card {
-    @apply bg-white dark:bg-stone-950 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-sm 
+    @apply bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-sm 
     hover:shadow-md dark:hover:shadow-lg transition-all duration-200;
   }
 
   .product-image-container {
     @apply relative bg-neutral-100 dark:bg-neutral-900 rounded-lg overflow-hidden;
-    padding-bottom: 100%; /* This creates a 1:1 aspect ratio */
+    padding-bottom: 100%;
   }
 
   .product-image-container > * {
@@ -386,7 +391,7 @@
   }
 
   .product-specs-table {
-    @apply w-full border-collapse bg-white dark:bg-stone-950 rounded-lg overflow-hidden;
+    @apply w-full border-collapse bg-white dark:bg-neutral-950 rounded-lg overflow-hidden;
   }
 
   .product-specs-row {
@@ -462,7 +467,7 @@
 
   .wishlist-button-inactive {
     @apply border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 
-    bg-white dark:bg-stone-950 hover:bg-neutral-50 dark:hover:bg-neutral-700;
+    bg-white dark:bg-neutral-950 hover:bg-neutral-50 dark:hover:bg-neutral-700;
   }
 
   .action-button {

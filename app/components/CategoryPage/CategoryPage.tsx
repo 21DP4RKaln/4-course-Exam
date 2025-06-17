@@ -843,14 +843,7 @@ export default function CategoryPage({ params, type }: CategoryPageProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-      >
-        <p className="text-lg text-neutral-600 dark:text-neutral-400 mt-2">
-          {filteredComponents.length}{' '}
-          {t(
-            `categoryPage.${filteredComponents.length === 1 ? 'item' : 'items'}`
-          )}
-        </p>
-      </motion.div>
+      ></motion.div>
       <motion.div
         className="flex flex-col lg:flex-row gap-6"
         initial={{ opacity: 0, y: 30 }}

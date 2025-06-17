@@ -23,9 +23,9 @@
   /* Dark mode */
   &.dark {
     --stripe-color-text: theme('colors.white');
-    --stripe-color-background: theme('colors.stone.950');
+    --stripe-color-background: theme('colors.neutral.950');
     --stripe-color-border: theme('colors.neutral.700');
-    --stripe-input-background: theme('colors.stone.950');
+    --stripe-input-background: theme('colors.neutral.950');
     --stripe-input-border: theme('colors.neutral.700');
     --stripe-input-text: theme('colors.white');
     --stripe-input-placeholder: theme('colors.neutral.500');

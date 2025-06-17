@@ -25,24 +25,46 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>('system');
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('light');
-  const [mounted, setMounted] = useState(false);
 
+  // Initialize theme on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedTheme = localStorage.getItem('theme') as Theme | null;
-      if (storedTheme) {
-        setTheme(storedTheme);
-      } else {
-        setTheme('system');
-      }
-      setMounted(true);
+    const storedTheme = localStorage.getItem('theme') as Theme | null;
+    const initialTheme = storedTheme || 'system';
+
+    let initialResolvedTheme: 'dark' | 'light';
+    if (initialTheme === 'system') {
+      initialResolvedTheme = window.matchMedia('(prefers-color-scheme: dark)')
+        .matches
+        ? 'dark'
+        : 'light';
+    } else {
+      initialResolvedTheme = initialTheme;
     }
+
+    // Only update state if different from current state
+    if (theme !== initialTheme) {
+      setTheme(initialTheme);
+    }
+    if (resolvedTheme !== initialResolvedTheme) {
+      setResolvedTheme(initialResolvedTheme);
+    }
+
+    // Ensure DOM is in sync (safety measure)
+    const root = document.documentElement;
+    if (initialResolvedTheme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+
+    setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!mounted || typeof window === 'undefined') return;
+    if (!mounted) return;
 
     if (theme === 'system') {
       const systemPreference = window.matchMedia('(prefers-color-scheme: dark)')
@@ -64,7 +86,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme, mounted]);
 
   useEffect(() => {
-    if (!mounted || typeof window === 'undefined') return;
+    if (!mounted) return;
 
     const root = document.documentElement;
 
@@ -94,10 +116,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setTheme(newTheme);
   };
 
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
     <ThemeContext.Provider
       value={{
@@ -107,7 +125,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setTheme: handleSetTheme,
       }}
     >
-      {children}
+      {!mounted ? <div className="opacity-0">{children}</div> : children}
     </ThemeContext.Provider>
   );
 }
