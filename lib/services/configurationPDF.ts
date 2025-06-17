@@ -1,5 +1,3 @@
-import fs from 'fs-extra';
-import path from 'path';
 import { jsPDF } from 'jspdf';
 
 export interface ConfigurationPDFData {
@@ -20,18 +18,14 @@ export interface ConfigurationPDFData {
 /**
  * Generates a professional configuration PDF
  * @param configData Configuration data to include in the PDF
- * @returns Path to the generated PDF file
+ * @returns Buffer containing the PDF data
  */
 export async function generateConfigurationPDF(
   configData: ConfigurationPDFData
-): Promise<string> {
-  const tempDir = path.join(process.cwd(), 'tmp');
-  await fs.ensureDir(tempDir);
-
-  const filename = `configuration-${configData.id}.pdf`;
-  const outputPath = path.join(tempDir, filename);
-
+): Promise<Buffer> {
   try {
+    console.log('Starting PDF generation for config:', configData.id);
+
     // Create a new PDF document with jsPDF
     const doc = new jsPDF();
 
@@ -203,27 +197,19 @@ export async function generateConfigurationPDF(
       `Dokuments ģenerēts: ${new Date().toLocaleString('lv-LV')}`,
       20,
       yPosition
-    );
-
-    // Save the PDF
+    ); // Generate PDF buffer directly without filesystem write    // Generate PDF buffer directly without filesystem write
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
-    await fs.writeFile(outputPath, pdfBuffer);
-
-    return outputPath;
+    console.log('PDF generated successfully, buffer size:', pdfBuffer.length);
+    return pdfBuffer;
   } catch (error) {
     console.error('Error generating PDF with jsPDF:', error);
+    // Log more details for Vercel debugging
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      configId: configData.id,
+      environment: process.env.NODE_ENV,
+    });
     throw new Error('Failed to generate PDF');
-  }
-}
-
-/**
- * Delete the generated configuration file
- * @param filePath Path to the configuration file to delete
- */
-export async function cleanupConfigurationPDF(filePath: string): Promise<void> {
-  try {
-    await fs.remove(filePath);
-  } catch (error) {
-    console.error('Error cleaning up configuration file:', error);
   }
 }

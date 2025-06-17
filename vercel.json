@@ -6,10 +6,13 @@
         "schedule": "0 0 1 * *"
       }
     ],
-    "buildCommand": "NODE_OPTIONS='--max-old-space-size=3072' NEXT_WEBPACK_CONCURRENCY=1 next build",
-    "functions": {
+    "buildCommand": "NODE_OPTIONS='--max-old-space-size=3072' NEXT_WEBPACK_CONCURRENCY=1 next build",    "functions": {
       "app/api/**": {
         "maxDuration": 30
+      },
+      "app/api/configurator/export-pdf/route.ts": {
+        "maxDuration": 60,
+        "memory": 1024
       }
     },
     "routes": [

@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  generateConfigurationPDF,
-  cleanupConfigurationPDF,
-} from '@/lib/services/configurationPDF';
-import fs from 'fs-extra';
+import { generateConfigurationPDF } from '@/lib/services/configurationPDF';
 
 export async function POST(request: NextRequest) {
   try {
@@ -89,17 +85,11 @@ export async function POST(request: NextRequest) {
           });
         }
       }
-    ); // Generate PDF
-    const pdfPath = await generateConfigurationPDF(configData);
+    ); // Generate PDF buffer directly
+    const pdfBuffer = await generateConfigurationPDF(configData);
 
-    // Read the file content as buffer
-    const fileBuffer = await fs.readFile(pdfPath);
-
-    // Clean up the temporary file
-    await cleanupConfigurationPDF(pdfPath);
-
-    // Return the file as a downloadable response
-    return new NextResponse(fileBuffer, {
+    // Return the PDF buffer as a downloadable response
+    return new NextResponse(pdfBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
@@ -108,8 +98,19 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error generating configuration PDF:', error);
+    // Log more details for debugging
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error('API Error details:', {
+      message: errorMessage,
+      stack: errorStack,
+      environment: process.env.NODE_ENV,
+      vercel: process.env.VERCEL,
+      region: process.env.VERCEL_REGION,
+    });
     return NextResponse.json(
-      { error: 'Failed to generate configuration PDF' },
+      { error: 'Failed to generate configuration PDF', details: errorMessage },
       { status: 500 }
     );
   }
