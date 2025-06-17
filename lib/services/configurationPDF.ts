@@ -26,10 +26,8 @@ export async function generateConfigurationPDF(
   try {
     console.log('Starting PDF generation for config:', configData.id);
 
-    // Create a new PDF document with jsPDF
     const doc = new jsPDF();
 
-    // Format date and time professionally
     const formattedDate = configData.createdAt.toLocaleDateString('lv-LV', {
       year: 'numeric',
       month: 'long',
@@ -40,7 +38,6 @@ export async function generateConfigurationPDF(
       minute: '2-digit',
     });
 
-    // Header
     doc.setFontSize(20);
     doc.setTextColor(31, 41, 55);
     doc.text('IVAPRO', 20, 30);
@@ -48,14 +45,12 @@ export async function generateConfigurationPDF(
     doc.setFontSize(16);
     doc.text('DATORA KONFIGURĀCIJAS SARAKSTS', 20, 45);
 
-    // Draw header line
     doc.setDrawColor(220, 38, 38);
     doc.setLineWidth(2);
     doc.line(20, 55, 190, 55);
 
     let yPosition = 75;
 
-    // Configuration Information
     doc.setFontSize(14);
     doc.setTextColor(55, 65, 81);
     doc.text('KONFIGURĀCIJAS INFORMĀCIJA:', 20, yPosition);
@@ -70,14 +65,12 @@ export async function generateConfigurationPDF(
 
     yPosition += 50;
 
-    // Components section
     doc.setFontSize(14);
     doc.setTextColor(55, 65, 81);
     doc.text('KOMPONENTES:', 20, yPosition);
 
     yPosition += 15;
 
-    // Table headers
     doc.setFontSize(10);
     doc.setTextColor(55, 65, 81);
     doc.text('Kategorija', 20, yPosition);
@@ -87,18 +80,16 @@ export async function generateConfigurationPDF(
 
     yPosition += 10;
 
-    // Draw header line
     doc.setDrawColor(107, 114, 128);
     doc.setLineWidth(0.5);
     doc.line(20, yPosition, 190, yPosition);
 
     yPosition += 5;
 
-    // Component rows
     configData.components.forEach(component => {
       const specifications = Object.entries(component.specifications)
         .filter(([key, value]) => value && value !== 'N/A')
-        .slice(0, 2) // Limit to 2 specs for space
+        .slice(0, 2)
         .map(([key, value]) => `${key}: ${value}`)
         .join(', ');
 
@@ -121,7 +112,6 @@ export async function generateConfigurationPDF(
 
       yPosition += 10;
 
-      // Check if we need a new page
       if (yPosition > 250) {
         doc.addPage();
         yPosition = 30;
@@ -130,14 +120,12 @@ export async function generateConfigurationPDF(
 
     yPosition += 10;
 
-    // Draw summary line
     doc.setDrawColor(220, 38, 38);
     doc.setLineWidth(1);
     doc.line(20, yPosition, 190, yPosition);
 
     yPosition += 15;
 
-    // Summary
     doc.setFontSize(14);
     doc.setTextColor(55, 65, 81);
     doc.text('KOPSAVILKUMS:', 20, yPosition);
@@ -163,7 +151,6 @@ export async function generateConfigurationPDF(
 
     yPosition += 40;
 
-    // Footer
     doc.setFontSize(10);
     doc.setTextColor(156, 163, 175);
     doc.text(
@@ -197,19 +184,26 @@ export async function generateConfigurationPDF(
       `Dokuments ģenerēts: ${new Date().toLocaleString('lv-LV')}`,
       20,
       yPosition
-    ); // Generate PDF buffer directly without filesystem write    // Generate PDF buffer directly without filesystem write
+    );
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
     console.log('PDF generated successfully, buffer size:', pdfBuffer.length);
     return pdfBuffer;
   } catch (error) {
     console.error('Error generating PDF with jsPDF:', error);
-    // Log more details for Vercel debugging
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      configId: configData.id,
-      environment: process.env.NODE_ENV,
-    });
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        configId: configData.id,
+        environment: process.env.NODE_ENV,
+      });
+    } else {
+      console.error('Error details:', {
+        message: String(error),
+        configId: configData.id,
+        environment: process.env.NODE_ENV,
+      });
+    }
     throw new Error('Failed to generate PDF');
   }
 }
