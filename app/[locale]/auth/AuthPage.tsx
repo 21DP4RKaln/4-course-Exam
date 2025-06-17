@@ -298,18 +298,21 @@ export default function AuthPage() {
             {/* Social Login Buttons */}
             <SocialContainer>
               <SocialButton
+                type="button"
                 onClick={() => handleSocialLogin('google')}
                 theme={theme}
               >
                 <GoogleIcon />
               </SocialButton>
               <SocialButton
+                type="button"
                 onClick={() => handleSocialLogin('apple')}
                 theme={theme}
               >
                 <AppleIcon />
               </SocialButton>
               <SocialButton
+                type="button"
                 onClick={() => handleSocialLogin('linkedin')}
                 theme={theme}
               >
@@ -660,18 +663,21 @@ export default function AuthPage() {
             {/* Social Login Buttons */}
             <SocialContainer>
               <SocialButton
+                type="button"
                 onClick={() => handleSocialLogin('google')}
                 theme={theme}
               >
                 <GoogleIcon />
               </SocialButton>
               <SocialButton
+                type="button"
                 onClick={() => handleSocialLogin('apple')}
                 theme={theme}
               >
                 <AppleIcon />
               </SocialButton>
               <SocialButton
+                type="button"
                 onClick={() => handleSocialLogin('linkedin')}
                 theme={theme}
               >
@@ -769,7 +775,11 @@ export default function AuthPage() {
               <Title theme="light">{t('auth.haveProfileTitle')}</Title>
               <Paragraph>{t('auth.thenLogin')}</Paragraph>{' '}
               <AnimatedButtonWrapper>
-                <button className="animated-button ghost" onClick={toggleForm}>
+                <button
+                  type="button"
+                  className="animated-button ghost"
+                  onClick={toggleForm}
+                >
                   <span>{t('buttons.login')}</span>
                   <span />
                 </button>
@@ -779,7 +789,11 @@ export default function AuthPage() {
               <Title theme="light">{t('auth.firstTimeTitle')}</Title>
               <Paragraph>{t('auth.thenRegister')}</Paragraph>{' '}
               <AnimatedButtonWrapper>
-                <button className="animated-button ghost" onClick={toggleForm}>
+                <button
+                  type="button"
+                  className="animated-button ghost"
+                  onClick={toggleForm}
+                >
                   <span>{t('buttons.register')}</span>
                   <span />
                 </button>
