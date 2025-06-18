@@ -30,6 +30,7 @@ export async function PUT(request: NextRequest) {
     const lastName = formData.get('lastName') as string | null;
     const password = formData.get('password') as string | null;
     const profileImage = formData.get('profileImage') as File | null;
+    const deleteImage = formData.get('deleteImage') === 'true';
     const shippingAddress = formData.get('shippingAddress') as string | null;
     const shippingCity = formData.get('shippingCity') as string | null;
     const shippingPostalCode = formData.get('shippingPostalCode') as

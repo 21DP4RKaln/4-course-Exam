@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 export async function seedSpecificationKeys(prisma: PrismaClient) {
-  // Get all component categories
+  // Iegūt visas komponentu kategorijas
   const componentCategories = await prisma.componentCategory.findMany();
   const cpuCategory = componentCategories.find(c => c.slug === 'cpu');
   const gpuCategory = componentCategories.find(c => c.slug === 'gpu');
@@ -14,7 +14,7 @@ export async function seedSpecificationKeys(prisma: PrismaClient) {
   const caseCategory = componentCategories.find(c => c.slug === 'case');
   const coolingCategory = componentCategories.find(c => c.slug === 'cooling');
 
-  // Get all peripheral categories
+  // Iegūt visas perifērijas kategorijas
   const peripheralCategories = await prisma.peripheralCategory.findMany();
   const keyboardCategory = peripheralCategories.find(
     c => c.slug === 'keyboard'
@@ -36,7 +36,7 @@ export async function seedSpecificationKeys(prisma: PrismaClient) {
   );
   const gamepadCategory = peripheralCategories.find(c => c.slug === 'gamepad');
 
-  // CPU Spec Keys
+  // CPU specifikāciju atslēgas
   const cpuSpecKeys = [
     {
       name: 'manufacturer',
@@ -76,7 +76,7 @@ export async function seedSpecificationKeys(prisma: PrismaClient) {
     },
   ];
 
-  // GPU Spec Keys
+  // GPU specifikāciju atslēgas
   const gpuSpecKeys = [
     {
       name: 'manufacturer',
@@ -116,9 +116,9 @@ export async function seedSpecificationKeys(prisma: PrismaClient) {
     },
   ];
 
-  // Add specs for other component categories...
+  // Pievienot specifikācijas citām komponentu kategorijām...
 
-  // Keyboard Spec Keys
+  // Klaviatūras specifikāciju atslēgas
   const keyboardSpecKeys = [
     {
       name: 'switch_type',
@@ -152,17 +152,17 @@ export async function seedSpecificationKeys(prisma: PrismaClient) {
     },
   ];
 
-  // Add specs for other peripheral categories...
+  // Pievienot specifikācijas citām perifērijas kategorijām...
 
-  // Combine all spec keys
+  // Apvienot visas specifikāciju atslēgas
   const allSpecKeys = [
     ...cpuSpecKeys,
     ...gpuSpecKeys,
     ...keyboardSpecKeys,
-    // Add more categories here
+    // Pievienot vairāk kategoriju šeit
   ];
 
-  // Insert spec keys
+  // Ievietot specifikāciju atslēgas
   for (const specKey of allSpecKeys) {
     await prisma.specificationKey.upsert({
       where: { name: specKey.name },

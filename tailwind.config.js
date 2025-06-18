@@ -70,9 +70,8 @@ module.exports = {
             800: '#004594',
             900: '#003b7a',
             950: '#00254d',
-          },
-        },
-        // Light mode colors
+          },        },
+        // Gaišā režīma krāsas
         light: {
           background: '#ffffff',
           surface: '#f9fafb',
@@ -82,9 +81,8 @@ module.exports = {
             primary: '#111827',
             secondary: '#4b5563',
             tertiary: '#6b7280',
-          },
-          accent: '#f3f4f6',
-        },        // Dark mode colors
+          },          accent: '#f3f4f6',
+        },        // Tumšā režīma krāsas
         dark: {
           background: '#000000', 
           surface: '#0a0a0a',

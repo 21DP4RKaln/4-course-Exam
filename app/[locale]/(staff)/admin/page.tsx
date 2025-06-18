@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { SalesChart } from '@/app/components/Admin/SalesChart';
 import { RepairChart } from '@/app/components/Admin/RepairChart';
+import Link from 'next/link';
 
 export default function AdminDashboard() {
   const t = useTranslations();
@@ -107,6 +108,72 @@ export default function AdminDashboard() {
         <div className="text-sm text-neutral-500 dark:text-neutral-400">
           {t('staff.welcomeBack')}, {user?.name || user?.email}
         </div>
+      </div>
+      {/* Quick Navigation Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Link href={`/${locale}/admin/users`} className="block">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-blue-500">
+            <div className="flex items-center">
+              <Users className="h-8 w-8 text-blue-500 mr-3" />
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  {t('staff.users')}
+                </h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                  Pārvaldīt lietotājus
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link href={`/${locale}/admin/orders`} className="block">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-green-500">
+            <div className="flex items-center">
+              <Package className="h-8 w-8 text-green-500 mr-3" />
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  {t('staff.orders')}
+                </h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                  Pārvaldīt pasūtījumus
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link href={`/${locale}/admin/configurations`} className="block">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-purple-500">
+            <div className="flex items-center">
+              <BarChart className="h-8 w-8 text-purple-500 mr-3" />
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  {t('staff.configurations')}
+                </h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                  Pārvaldīt konfigurācijas
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link href={`/${locale}/admin/account`} className="block">
+          <div className="bg-white dark:bg-stone-950 rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-orange-500">
+            <div className="flex items-center">
+              <Users className="h-8 w-8 text-orange-500 mr-3" />
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  Profils
+                </h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                  Rediģēt profilu un iestatījumus
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
       </div>
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

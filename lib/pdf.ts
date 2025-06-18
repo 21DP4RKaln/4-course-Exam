@@ -5,7 +5,15 @@ export interface OrderPDFData {
   id: string;
   createdAt: Date;
   shippingName: string;
-  shippingAddress: string;
+  shippingAd  const filename = `configuration-${configurationData.id}.txt`;
+  const outputPath = path.join(tempDir, filename);
+
+  // Formatēt datumu un laiku profesionāli
+  const formattedDate = orderData.createdAt.toLocaleDateString('lv-LV', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });ring;
   shippingEmail: string;
   shippingPhone: string;
   paymentMethod: string;
@@ -38,7 +46,7 @@ export async function generateOrderPDF(
   const filename = `order-receipt-${orderData.id}.txt`;
   const outputPath = path.join(tempDir, filename);
 
-  // Format date and time professionally
+  // Formatēt datumu un laiku profesionāli
   const formattedDate = orderData.createdAt.toLocaleDateString('lv-LV', {
     year: 'numeric',
     month: 'long',
@@ -49,13 +57,13 @@ export async function generateOrderPDF(
     minute: '2-digit',
   });
 
-  // Calculate line total for each item
+  // Aprēķināt rindas kopsummu katram vienumam
   const formatItemLine = (item: any) => {
     const lineTotal = item.price * item.quantity;
     return `${item.name.padEnd(35)} ${item.quantity.toString().padStart(3)} x €${item.price.toFixed(2).padStart(8)} = €${lineTotal.toFixed(2).padStart(10)}`;
   };
 
-  // Create professional receipt content
+  // Izveidot profesionālu kvīts saturu
   const receiptContent = `
 ╔═══════════════════════════════════════════════════════════════════════╗
 ║                              IVAPRO                                   ║

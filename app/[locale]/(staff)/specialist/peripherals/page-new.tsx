@@ -13,17 +13,20 @@ import { Badge } from '@/app/components/ui/badge';
 import { Input } from '@/app/components/ui/input';
 import {
   Search,
-  Package,
+  Monitor,
   AlertTriangle,
   CheckCircle,
   Edit,
   Eye,
   Filter,
+  Keyboard,
+  Mouse,
+  Headphones,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-interface Component {
+interface Peripheral {
   id: string;
   name: string;
   description: string;
@@ -35,7 +38,9 @@ interface Component {
     id: string;
     name: string;
     description: string;
+    slug: string;
   };
+  specifications: Record<string, string>;
   stockStatus: 'in_stock' | 'low_stock' | 'out_of_stock';
   imageUrl?: string;
   createdAt: string;
@@ -46,69 +51,69 @@ interface Category {
   id: string;
   name: string;
   description: string;
-  displayOrder: number;
+  slug: string;
 }
 
-interface ComponentsResponse {
-  components: Component[];
+interface PeripheralsResponse {
+  peripherals: Peripheral[];
   categories: Category[];
   total: number;
   lowStockCount: number;
   outOfStockCount: number;
 }
 
-export default function ComponentsPage() {
+export default function PeripheralsPage() {
   const t = useTranslations();
   const pathname = usePathname();
   const locale = pathname.split('/')[1];
-  const [data, setData] = useState<ComponentsResponse | null>(null);
+  const [data, setData] = useState<PeripheralsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showLowStock, setShowLowStock] = useState(false);
 
   useEffect(() => {
-    fetchComponents();
+    fetchPeripherals();
   }, [selectedCategory, showLowStock]);
 
-  const fetchComponents = async () => {
+  const fetchPeripherals = async () => {
     try {
       const params = new URLSearchParams();
       if (selectedCategory) params.append('categoryId', selectedCategory);
       if (showLowStock) params.append('lowStock', 'true');
 
       const response = await fetch(
-        `/api/specialist/products/components?${params}`
+        `/api/specialist/products/peripherals?${params}`
       );
       if (response.ok) {
         const responseData = await response.json();
         setData(responseData);
       } else {
-        console.error('Failed to fetch components:', response.status);
+        console.error('Failed to fetch peripherals:', response.status);
       }
     } catch (error) {
-      console.error('Error fetching components:', error);
+      console.error('Error fetching peripherals:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredComponents =
-    data?.components.filter(component => {
+  const filteredPeripherals =
+    data?.peripherals.filter(peripheral => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
-          component.name.toLowerCase().includes(query) ||
-          component.description.toLowerCase().includes(query) ||
-          component.sku.toLowerCase().includes(query) ||
-          component.category.name.toLowerCase().includes(query)
+          peripheral.name.toLowerCase().includes(query) ||
+          peripheral.description.toLowerCase().includes(query) ||
+          peripheral.sku.toLowerCase().includes(query) ||
+          peripheral.category.name.toLowerCase().includes(query)
         );
       }
       return true;
     }) || [];
 
-  const getStockBadge = (component: Component) => {
-    switch (component.stockStatus) {
+  const getStockBadge = (peripheral: Peripheral) => {
+    switch (peripheral.stockStatus) {
       case 'out_of_stock':
         return <Badge variant="destructive">Out of Stock</Badge>;
       case 'low_stock':
@@ -140,12 +145,22 @@ export default function ComponentsPage() {
     }
   };
 
+  const getCategoryIcon = (categoryName: string) => {
+    const name = categoryName.toLowerCase();
+    if (name.includes('keyboard')) return <Keyboard className="h-4 w-4" />;
+    if (name.includes('mouse')) return <Mouse className="h-4 w-4" />;
+    if (name.includes('monitor')) return <Monitor className="h-4 w-4" />;
+    if (name.includes('headphone') || name.includes('audio'))
+      return <Headphones className="h-4 w-4" />;
+    return <Monitor className="h-4 w-4" />;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         <span className="ml-2 text-neutral-600 dark:text-neutral-400">
-          Loading components...
+          Loading peripherals...
         </span>
       </div>
     );
@@ -155,10 +170,10 @@ export default function ComponentsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-          Component Inventory
+          Peripheral Inventory
         </h1>
         <p className="text-neutral-600 dark:text-neutral-400">
-          Manage and monitor component inventory levels
+          Manage and monitor peripheral inventory levels
         </p>
       </div>
 
@@ -167,9 +182,9 @@ export default function ComponentsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Components
+              Total Peripherals
             </CardTitle>
-            <Package className="h-4 w-4 text-blue-600" />
+            <Monitor className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data?.total || 0}</div>
@@ -219,7 +234,7 @@ export default function ComponentsPage() {
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
             <Input
-              placeholder="Search components..."
+              placeholder="Search peripherals..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -250,56 +265,78 @@ export default function ComponentsPage() {
         </Button>
       </div>
 
-      {/* Components Grid */}
+      {/* Peripherals Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredComponents.map(component => (
+        {filteredPeripherals.map(peripheral => (
           <Card
-            key={component.id}
+            key={peripheral.id}
             className="hover:shadow-lg transition-shadow"
           >
             <CardHeader>
               <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg mb-1">
-                    {component.name}
-                  </CardTitle>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                    {component.category.name}
-                  </p>
+                <div className="flex items-center gap-2 flex-1">
+                  {getCategoryIcon(peripheral.category.name)}
+                  <div className="flex-1">
+                    <CardTitle className="text-lg mb-1">
+                      {peripheral.name}
+                    </CardTitle>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                      {peripheral.category.name}
+                    </p>
+                  </div>
                 </div>
-                {getStockIcon(component.stockStatus)}
+                {getStockIcon(peripheral.stockStatus)}
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
-                  {component.description}
+                  {peripheral.description}
                 </p>
 
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-semibold text-primary">
-                    €{component.price.toFixed(2)}
+                    €{peripheral.price.toFixed(2)}
                   </span>
-                  {getStockBadge(component)}
+                  {getStockBadge(peripheral)}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-neutral-500">Stock:</span>
                     <span className="ml-1 font-medium">
-                      {component.quantity}
+                      {peripheral.quantity}
                     </span>
                   </div>
                   <div>
                     <span className="text-neutral-500">SKU:</span>
-                    <span className="ml-1 font-medium">{component.sku}</span>
+                    <span className="ml-1 font-medium">{peripheral.sku}</span>
                   </div>
                 </div>
 
-                {component.subType && (
+                {peripheral.subType && (
                   <div className="text-sm">
                     <span className="text-neutral-500">Type:</span>
-                    <span className="ml-1">{component.subType}</span>
+                    <span className="ml-1">{peripheral.subType}</span>
+                  </div>
+                )}
+
+                {/* Key Specifications */}
+                {Object.keys(peripheral.specifications).length > 0 && (
+                  <div className="border-t pt-3">
+                    <p className="text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                      Key Specs:
+                    </p>
+                    <div className="grid grid-cols-1 gap-1 text-xs">
+                      {Object.entries(peripheral.specifications)
+                        .slice(0, 3)
+                        .map(([key, value]) => (
+                          <div key={key} className="flex justify-between">
+                            <span className="text-neutral-500">{key}:</span>
+                            <span className="font-medium">{value}</span>
+                          </div>
+                        ))}
+                    </div>
                   </div>
                 )}
 
@@ -319,11 +356,11 @@ export default function ComponentsPage() {
         ))}
       </div>
 
-      {filteredComponents.length === 0 && !loading && (
+      {filteredPeripherals.length === 0 && !loading && (
         <div className="text-center py-12">
-          <Package className="mx-auto h-12 w-12 text-neutral-400 mb-4" />
+          <Monitor className="mx-auto h-12 w-12 text-neutral-400 mb-4" />
           <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">
-            No components found
+            No peripherals found
           </h3>
           <p className="text-neutral-600 dark:text-neutral-400">
             Try adjusting your search criteria or filters.

@@ -1760,11 +1760,17 @@
     "newConfigurationSubmitted": "Jauna konfigurācija iesniegta pārskatīšanai",
     "newRepairRequest": "Saņemts jauns remonta pieprasījums",
     "minutesAgo": "pirms {minutes} minūtēm",
-    "hourAgo": "pirms 1 stundas",
-    "hoursAgo": "pirms {hours} stundām",
+    "hourAgo": "pirms 1 stundas",    "hoursAgo": "pirms {hours} stundām",
     "today": "šodien",
     "yesterday": "vakar",
-    "noRecentActivity": "Nav nesenu aktivitāšu, ko parādīt"
+    "noRecentActivity": "Nav nesenu aktivitāšu, ko parādīt",
+    "performance": "Veiktspējas rādītāji",
+    "completedThisWeek": "Pabeigts šonedēļ",
+    "repairsThisWeek": "Remonti šonedēļ",
+    "completedThisMonth": "Pabeigts šomēnes",
+    "repairsThisMonth": "Remonti šomēnes",
+    "avgCompletionTime": "Vidējais pabeigšanas laiks",
+    "daysAverage": "dienu vidēji"
   }
 },
 "staff": {

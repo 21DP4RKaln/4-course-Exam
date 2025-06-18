@@ -53,7 +53,7 @@ export default function EditComponentPage({
     resolver: zodResolver(componentSchema),
   });
 
-  // Check for valid ID
+  // Pārbaudīt derīgu ID
   useEffect(() => {
     if (!params.id || params.id === 'undefined') {
       console.error('Invalid component ID:', params.id);

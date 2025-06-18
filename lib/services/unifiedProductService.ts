@@ -125,7 +125,7 @@ export function extractComponentSpecifications(
   if (component.cpu) {
     specifications['Brand'] = component.cpu.brand || '';
 
-    // Extract series from CPU name if series field is empty
+    // Izvilkt sēriju no CPU nosaukuma, ja sērijas lauks ir tukšs
     let series = component.cpu.series || '';
     if (!series && component.name) {
       const name = component.name.toLowerCase();
@@ -153,7 +153,7 @@ export function extractComponentSpecifications(
     specifications['Integrated GPU'] = component.cpu.integratedGpu
       ? 'Yes'
       : 'No';
-    // Power Consumption removed as requested
+    // Enerģijas patēriņš noņemts pēc pieprasījuma
   }
   if (component.gpu) {
     specifications['Brand'] = component.gpu.brand || '';
@@ -168,7 +168,7 @@ export function extractComponentSpecifications(
     specifications['HDMI Port'] = component.gpu.hasHDMI ? 'Yes' : 'No';
     specifications['Sub Brand'] = component.gpu.subBrand || '';
     specifications['Architecture'] = component.gpu.architecture || '';
-    // Power Consumption removed as requested
+    // Enerģijas patēriņš noņemts pēc pieprasījuma
   }
   if (component.ram) {
     specifications['Brand'] = component.ram.brand || '';
@@ -178,7 +178,7 @@ export function extractComponentSpecifications(
     specifications['RGB Lighting'] = component.ram.backlighting ? 'Yes' : 'No';
     specifications['Voltage'] = `${component.ram.voltage || 0} V`;
     specifications['Capacity'] = `${component.ram.gb || 0} GB`;
-    // Power Consumption removed as requested
+    // Enerģijas patēriņš noņemts pēc pieprasījuma
   }
   if (component.storage) {
     specifications['Brand'] = component.storage.brand || '';
@@ -189,7 +189,7 @@ export function extractComponentSpecifications(
     specifications['Interface'] = component.storage.compatibility || '';
     specifications['Write Speed'] = `${component.storage.writeSpeed || 0} MB/s`;
     specifications['Read Speed'] = `${component.storage.readSpeed || 0} MB/s`;
-    // Power Consumption removed as requested
+    // Enerģijas patēriņš noņemts pēc pieprasījuma
   }
   if (component.motherboard) {
     specifications['Brand'] = component.motherboard.brand || '';
@@ -238,7 +238,7 @@ export function extractComponentSpecifications(
     specifications['Molex/PATA Connections'] = String(
       component.psu.molexPataConnections || ''
     );
-    // Add energy efficiency certification
+    // Pievienot enerģijas efektivitātes sertifikāciju
     specifications['Certification'] = component.psu.energyEfficiency || '';
   }
 
@@ -247,7 +247,7 @@ export function extractComponentSpecifications(
     specifications['Socket'] = component.cooling.socket || '';
     specifications['Fan Diameter'] = `${component.cooling.fanDiameter || 0} mm`;
     specifications['Fan Speed'] = `${component.cooling.fanSpeed || 0} RPM`;
-    // Add cooling type from category/subCategory
+    // Pievienot dzesēšanas tipu no kategorijas/apakškategorijas
     specifications['Type'] =
       component.cooling.category || component.cooling.subCategory || '';
   }

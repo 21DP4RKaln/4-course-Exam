@@ -1,4 +1,3 @@
-/* Custom scrollbar for dark mode */
 .custom-scrollbar-dark::-webkit-scrollbar {
   width: 8px;
 }
@@ -14,7 +13,6 @@
   background: #404040;
 }
 
-/* Custom scrollbar for light mode */
 .custom-scrollbar-light::-webkit-scrollbar {
   width: 8px;
 }
@@ -30,7 +28,7 @@
   background: #bbbbbb;
 }
 
-/* Firefox scrollbar styles */
+/* Firefox */
 .custom-scrollbar-dark {
   scrollbar-width: thin;
   scrollbar-color: #2a2a2a #0a0a0a;

@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 
 export async function seedCases(prisma: PrismaClient) {
-  // Get all components with subType 'case'
+  // Iegūt visus komponentus ar apakštipu 'case'
   const caseComponents = await prisma.component.findMany({
     where: { subType: 'case' },
   });
 
-  // Prepare Case entries
+  // Sagatavot korpusu ierakstus
   const cases = [];
 
   // For each Case component, create a detailed Case entry

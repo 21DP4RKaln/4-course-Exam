@@ -43,6 +43,8 @@
     "outOfStock": "Out of stock",
     "onlyLeft": "Only",
     "inStock": "In Stock",
+    "saving": "Saving...",
+    "saved": "Saved",
     "MISSING_MESSAGE": "Translation not available"
   },
   "nav": {
@@ -1873,11 +1875,17 @@
       "newConfigurationSubmitted": "New configuration submitted for review",
       "newRepairRequest": "New repair request received",
       "minutesAgo": "{minutes} minutes ago",
-      "hourAgo": "1 hour ago",
-      "hoursAgo": "{hours} hours ago",
+      "hourAgo": "1 hour ago",      "hoursAgo": "{hours} hours ago",
       "today": "today",
       "yesterday": "yesterday",
-      "noRecentActivity": "No recent activity to display"
+      "noRecentActivity": "No recent activity to display",
+      "performance": "Performance Metrics",
+      "completedThisWeek": "Completed This Week",
+      "repairsThisWeek": "Repairs this week",
+      "completedThisMonth": "Completed This Month", 
+      "repairsThisMonth": "Repairs this month",
+      "avgCompletionTime": "Average Completion Time",
+      "daysAverage": "days average"
     }
   },
   "staff": {
@@ -1942,6 +1950,8 @@
     "currentPasswordPlaceholder": "Enter your current password",
     "newPassword": "New Password",
     "newPasswordPlaceholder": "Enter your new password",
+    "profileUpdateSuccess": "Profile updated successfully!",
+    "passwordUpdateSuccess": "Password updated successfully!",
     "passwordRequirements": "Password must be at least 8 characters long and contain a mix of letters, numbers, and special characters.",
     "confirmPassword": "Confirm New Password",
     "confirmPasswordPlaceholder": "Confirm your new password"

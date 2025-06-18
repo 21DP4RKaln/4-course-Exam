@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Handle profile image uploads with proper headers
+  // Apstrādāt profila attēlu augšupielādi ar atbilstošām galvenēm
   if (request.nextUrl.pathname.startsWith('/api/uploads/')) {
     const response = NextResponse.next();
 
-    // Add proper CORS headers for image uploads
+    // Pievienot atbilstošas CORS galvenes attēlu augšupielādei
     response.headers.set('Access-Control-Allow-Origin', '*');
     response.headers.set(
       'Access-Control-Allow-Methods',

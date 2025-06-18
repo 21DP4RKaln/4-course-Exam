@@ -46,5 +46,5 @@ resetViewCounts();
 //   "reset-views": "tsx scripts/reset-view-counts.ts"
 // }
 
-// Example crontab entry to run this script on the 1st of each month at 00:00
+// Piemērs crontab ierakstam, lai palaistu šo skriptu katra mēneša 1. datumā plkst. 00:00
 // 0 0 1 * * /usr/bin/node /path/to/your/project/scripts/reset-view-counts.js >> /path/to/logs/reset-views.log 2>&1

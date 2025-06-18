@@ -167,7 +167,7 @@ export async function generateConfigurationPDF(
 
     yPosition += 35;
 
-    // Company info
+    // Uzņēmuma informācija
     doc.setFontSize(9);
     doc.setTextColor(156, 163, 175);
     doc.text('SIA "IvaPro"', 20, yPosition);
@@ -177,7 +177,7 @@ export async function generateConfigurationPDF(
 
     yPosition += 35;
 
-    // Generation timestamp
+    // Ģenerēšanas laika zīmogs
     doc.setFontSize(8);
     doc.setTextColor(209, 213, 219);
     doc.text(

@@ -1,28 +1,28 @@
 import { PrismaClient } from '@prisma/client';
 
 export async function seedStorage(prisma: PrismaClient) {
-  // Get all components with subType 'storage'
+  // Iegūt visus komponentus ar apakštipu 'storage'
   const storageComponents = await prisma.component.findMany({
     where: { subType: 'storage' },
   });
 
-  // Prepare storage entries
+  // Sagatavot krātuves ierakstus
   const storages = [];
 
-  // Define storage types
+  // Definēt krātuves tipus
   const storageTypes = ['NVMe SSD', 'SATA SSD', 'HDD'];
 
-  // Define form factors
+  // Definēt formas faktorus
   const formFactors = ['M.2 2280', 'M.2 2230', '2.5"', '3.5"'];
 
-  // Define interfaces
+  // Definēt interfeisus
   const interfaces = ['PCIe 4.0', 'PCIe 3.0', 'SATA III', 'SATA III'];
 
-  // For each storage component, create a detailed storage entry
+  // Katram krātuves komponentam izveidot detalizētu krātuves ierakstu
   for (let i = 0; i < storageComponents.length; i++) {
     const component = storageComponents[i];
 
-    // Parse existing specifications if available
+    // Parsēt esošās specifikācijas, ja tādas ir pieejamas
     const specs = component.specifications
       ? JSON.parse(component.specifications.toString())
       : {};
@@ -63,7 +63,7 @@ export async function seedStorage(prisma: PrismaClient) {
       cache: 64 * (1 + (i % 4)),
     });
   }
-  // Add 10 more storage devices directly
+  // Pievienot 10 papildu krātuves ierīces tieši
   const additionalStorage = [
     {
       manufacturer: 'Samsung',
@@ -176,9 +176,9 @@ export async function seedStorage(prisma: PrismaClient) {
       cache: 128,
     },
   ];
-  // Create component entries for the new storage devices
+  // Izveidot komponentu ierakstus jaunajām krātuves ierīcēm
   for (const storage of additionalStorage) {
-    // Create a base component first
+    // Vispirms izveidot pamata komponentu
     const sku = `STORAGE-${storage.manufacturer.toUpperCase().replace(' ', '-')}-${storage.capacity < 1000 ? storage.capacity : storage.capacity / 1000}${storage.capacity < 1000 ? 'GB' : 'TB'}-${storage.type.replace(' ', '-')}-${Date.now().toString().slice(-6)}`;
     const sizeLabel =
       storage.capacity < 1000
@@ -192,7 +192,7 @@ export async function seedStorage(prisma: PrismaClient) {
       throw new Error('Storage category not found');
     }
 
-    // Calculate a reasonable price based on specs
+    // Aprēķināt saprātīgu cenu, pamatojoties uz specifikācijām
     let basePrice;
     let capacityMultiplier;
 
@@ -245,14 +245,14 @@ export async function seedStorage(prisma: PrismaClient) {
       },
     });
 
-    // Add to storage entries
+    // Pievienot krātuves ierakstiem
     storages.push({
       componentId: component.id,
       ...storage,
     });
   }
 
-  // Insert storage entries
+  // Ievietot krātuves ierakstus
   for (const storage of storages) {
     await prisma.storage.upsert({
       where: { componentId: storage.componentId },

@@ -39,7 +39,7 @@ function extractComponentSpecifications(
   component: any
 ): Record<string, string> {
   const specifications: Record<string, string> = {};
-  // CPU Specifications
+  // CPU Specifikācijas
   if (component.cpu) {
     const cpu = component.cpu;
     if (cpu.brand) specifications['Brand'] = cpu.brand;
@@ -58,7 +58,7 @@ function extractComponentSpecifications(
       specifications['Integrated GPU'] = cpu.integratedGpu ? 'Yes' : 'No';
   }
 
-  // GPU Specifications
+  // GPU Specifikācijas
   if (component.gpu) {
     const gpu = component.gpu;
     if (gpu.brand) specifications['Brand'] = gpu.brand;
@@ -77,7 +77,7 @@ function extractComponentSpecifications(
       specifications['HDMI Port'] = gpu.hasHDMI ? 'Yes' : 'No';
   }
 
-  // RAM Specifications
+  // RAM Specifikācijas
   if (component.ram) {
     const ram = component.ram;
     if (ram.brand) specifications['Brand'] = ram.brand;
@@ -91,7 +91,7 @@ function extractComponentSpecifications(
     if (ram.voltage) specifications['Voltage'] = `${ram.voltage} V`;
   }
 
-  // Storage Specifications
+  // Datu krātuves specifikācijas
   if (component.storage) {
     const storage = component.storage;
     if (storage.brand) specifications['Brand'] = storage.brand;
@@ -108,7 +108,7 @@ function extractComponentSpecifications(
       specifications['Read Speed'] = `${storage.readSpeed} MB/s`;
   }
 
-  // PSU Specifications
+  // PSU (Barošanas bloka) specifikācijas
   if (component.psu) {
     const psu = component.psu;
     if (psu.brand) specifications['Brand'] = psu.brand;
@@ -126,7 +126,7 @@ function extractComponentSpecifications(
       );
   }
 
-  // Motherboard Specifications
+  // Mātesplates specifikācijas
   if (component.motherboard) {
     const mb = component.motherboard;
     if (mb.brand) specifications['Brand'] = mb.brand;
@@ -154,7 +154,7 @@ function extractComponentSpecifications(
       specifications['NVMe Support'] = mb.nvmeSupport ? 'Yes' : 'No';
   }
 
-  // Cooling Specifications
+  // Dzesēšanas specifikācijas
   if (component.cooling) {
     const cooling = component.cooling;
     if (cooling.brand) specifications['Brand'] = cooling.brand;
@@ -165,7 +165,7 @@ function extractComponentSpecifications(
       specifications['Fan Speed'] = `${cooling.fanSpeed} RPM`;
   }
 
-  // Case Specifications
+  // Korpusa specifikācijas
   if (component.caseModel) {
     const caseModel = component.caseModel;
     if (caseModel.brand) specifications['Brand'] = caseModel.brand;
@@ -199,7 +199,7 @@ function extractComponentSpecifications(
         : 'No';
   }
 
-  // Peripheral Specifications
+  // Perifērijas ierīču specifikācijas
   if (component.keyboard) {
     const keyboard = component.keyboard;
     if (keyboard.brand) specifications['Brand'] = keyboard.brand;

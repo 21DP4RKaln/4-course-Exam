@@ -19,17 +19,17 @@ const HOME_PATH = /^\/(en|lv|ru)$/;
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for API routes
+  // Izlaist middleware API maršrutiem
   if (pathname.startsWith('/api/')) {
     return NextResponse.next();
   }
 
-  // Skip middleware for public paths
+  // Izlaist middleware publiskajiem ceļiem
   if (PUBLIC_PATHS.some(pattern => pattern.test(pathname))) {
     return NextResponse.next();
   }
 
-  // Handle locale routing
+  // Apstrādāt lokalizācijas maršrutēšanu
   const pathnameHasLocale = locales.some(
     locale => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );
@@ -43,10 +43,10 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  // Get locale from path
+  // Iegūt lokāli no ceļa
   const locale = pathname.split('/')[1];
 
-  // Handle authentication for protected routes
+  // Apstrādāt autentifikāciju aizsargātajiem maršrutiem
   if (ADMIN_PATHS.test(pathname) || SPECIALIST_PATHS.test(pathname)) {
     const token = request.cookies.get('authToken')?.value;
 
@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
         throw new Error('Invalid token');
       }
 
-      // Handle admin routes
+      // Apstrādāt admina maršrutus
       if (ADMIN_PATHS.test(pathname)) {
         if (payload.role !== 'ADMIN') {
           return NextResponse.redirect(
@@ -72,7 +72,7 @@ export async function middleware(request: NextRequest) {
         }
       }
 
-      // Handle specialist routes
+      // Apstrādāt speciālistu maršrutus
       if (SPECIALIST_PATHS.test(pathname)) {
         if (!['ADMIN', 'SPECIALIST'].includes(payload.role)) {
           return NextResponse.redirect(
@@ -81,7 +81,7 @@ export async function middleware(request: NextRequest) {
         }
       }
 
-      // Add user info to request headers
+      // Pievienot lietotāja informāciju pieprasījuma galvenēm
       const requestHeaders = new Headers(request.headers);
       requestHeaders.set('x-user-id', payload.userId);
       requestHeaders.set('x-user-role', payload.role);
@@ -112,9 +112,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip public files and API routes
+    // Izlaist publiskos failus un API maršrutus
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
-    // Match all paths except static files and api routes
+    // Atbilst visiem ceļiem, izņemot statiskos failus un API maršrutus
     '/((?!api/promo/validate|_next/static|_next/image|favicon.ico).*)',
   ],
 };

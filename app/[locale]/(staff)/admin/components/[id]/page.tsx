@@ -31,7 +31,7 @@ export default function ViewComponentPage({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if we have a valid ID
+    // Pārbaudīt, vai mums ir derīgs ID
     if (!params.id || params.id === 'undefined') {
       console.error('Invalid component ID:', params.id);
       router.push(`/${locale}/admin/components`);

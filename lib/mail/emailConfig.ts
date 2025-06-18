@@ -15,7 +15,7 @@ export async function getEmailConfig(): Promise<EmailConfig> {
       SMTP_FROM_NAME: process.env.SMTP_FROM_NAME,
     });
 
-    // Check if required environment variables are present
+    // Pārbaudīt, vai ir nepieciešamie vides mainīgie
     const requiredVars = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'];
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
 

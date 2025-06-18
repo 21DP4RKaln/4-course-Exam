@@ -55,7 +55,7 @@ export const getCompatibilityIssues = (
 ): string[] => {
   const issues: string[] = [];
 
-  // Check power consumption against PSU capacity
+  // Pārbaudīt enerģijas patēriņu pret PSU jaudu
   if (selectedComponents.psu && totalPowerConsumption > 0) {
     const psuPower = parseInt(
       selectedComponents.psu.specifications?.['Power'] || '0'
@@ -74,7 +74,7 @@ export const getCompatibilityIssues = (
     }
   }
 
-  // Example: CPU-Motherboard socket
+  // Piemērs: CPU-Mātesplates ligzda
   if (selectedComponents.cpu && selectedComponents.motherboard) {
     const cpuSocket = selectedComponents.cpu.specifications?.['Socket'];
     const mbSocket =
@@ -113,7 +113,7 @@ export const getCompatibilityIssues = (
   return issues;
 };
 
-// React component for compatibility checking display
+// React komponente saderības pārbaudes attēlošanai
 interface CompatibilityCheckerProps {
   totalPowerConsumption: number;
   compatibilityIssues: string[];
