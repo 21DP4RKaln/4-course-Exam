@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import CategoryList from './CategoryList';
 import FilterSection from './FilterSection';
@@ -38,6 +39,32 @@ const ConfiguratorPage = () => {
 
   const searchParams = useSearchParams();
 
+  // Animation variants for consistent motion design
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+  };
+
+  const fadeInLeft = {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -20 },
+  };
+
+  const fadeInRight = {
+    initial: { opacity: 0, x: 20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 20 },
+  };
+
+  const scaleIn = {
+    initial: { opacity: 0, scale: 0.9 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.9 },
+  };
+
+  // Component state
   const [activeCategory, setActiveCategory] = useState<string>('cpu');
   const [quickCpuFilter, setQuickCpuFilter] = useState<string | null>(null);
   const [selectedComponents, setSelectedComponents] = useState<
@@ -2188,29 +2215,58 @@ const ConfiguratorPage = () => {
   return (
     <>
       {/* Show loading overlay when loading configuration */}
-      {isLoadingConfiguration && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-stone-950 p-6 rounded-lg shadow-lg">
-            <div className="flex items-center space-x-3">
-              <div
-                className={`animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 ${
-                  theme === 'dark'
-                    ? 'border-brand-red-500'
-                    : 'border-brand-blue-500'
-                }`}
-              ></div>
-              <span className="text-neutral-900 dark:text-white">
-                Loading configuration...
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {isLoadingConfiguration && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', duration: 0.5 }}
+              className="bg-white dark:bg-stone-950 p-6 rounded-lg shadow-lg"
+            >
+              <div className="flex items-center space-x-3">
+                <div
+                  className={`animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 ${
+                    theme === 'dark'
+                      ? 'border-brand-red-500'
+                      : 'border-brand-blue-500'
+                  }`}
+                ></div>
+                <span className="text-neutral-900 dark:text-white">
+                  Loading configuration...
+                </span>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div className="flex flex-col lg:flex-row min-h-screen">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col lg:flex-row min-h-screen"
+      >
+        {' '}
         {/* Mobile Header - Categories & Summary */}
-        <div className="lg:hidden bg-white dark:bg-stone-950 border-b border-neutral-200 dark:border-neutral-800 p-4">
-          <div className="flex justify-between items-center mb-4">
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="lg:hidden bg-white dark:bg-stone-950 border-b border-neutral-200 dark:border-neutral-800 p-4"
+        >
+          <motion.div
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="flex justify-between items-center mb-4"
+          >
             <h1 className="text-xl font-bold text-neutral-900 dark:text-white">
               {t('configurator.title')}
             </h1>
@@ -2247,18 +2303,28 @@ const ConfiguratorPage = () => {
                 <div className="bg-brand-blue-100 dark:bg-brand-red-900/20 px-3 py-1 rounded-full">
                   <span className="text-brand-blue-600 dark:text-brand-red-400 font-medium text-sm">
                     €{totalPrice.toFixed(2)}
-                  </span>
+                  </span>{' '}
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* Mobile Category Selector */}
-          <div className="overflow-x-auto">
+          <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="overflow-x-auto"
+          >
             <div className="flex space-x-2 pb-2">
-              {componentCategories.map(category => (
-                <button
+              {componentCategories.map((category, index) => (
+                <motion.button
                   key={category.id}
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setActiveCategory(category.id)}
                   className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     activeCategory === category.id
@@ -2274,16 +2340,25 @@ const ConfiguratorPage = () => {
                   {selectedComponents[category.id] && (
                     <span className="ml-1 text-xs">✓</span>
                   )}
-                </button>
+                </motion.button>
               ))}
             </div>
-          </div>
-        </div>
-
+          </motion.div>
+        </motion.div>{' '}
         {/* Desktop Sidebar */}
-        <div className="hidden lg:flex lg:space-x-0">
+        <motion.div
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="hidden lg:flex lg:space-x-0"
+        >
           {/* Left sidebar - Category list */}
-          <div className="flex space-x-[1px]">
+          <motion.div
+            initial={{ x: -10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="flex space-x-[1px]"
+          >
             <CategoryList
               categories={componentCategories}
               activeCategory={activeCategory}
@@ -2300,14 +2375,28 @@ const ConfiguratorPage = () => {
               minPrice={minPrice}
               maxPrice={maxPrice}
             />
-          </div>
-        </div>
-
+          </motion.div>
+        </motion.div>{' '}
         {/* Middle content area */}
-        <div className="flex-grow mx-2 lg:mx-4 flex flex-col pb-20 lg:pb-0">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex-grow mx-2 lg:mx-4 flex flex-col pb-20 lg:pb-0"
+        >
           {/* Desktop Header */}
-          <div className="hidden lg:flex items-center justify-between mb-6">
-            <div className="flex items-center bg-white/5 dark:bg-stone-950/50 mt-2 backdrop-blur-lg px-4 py-2 rounded-full border border-neutral-200 dark:border-neutral-800">
+          <motion.div
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+            className="hidden lg:flex items-center justify-between mb-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+              className="flex items-center bg-white/5 dark:bg-stone-950/50 mt-2 backdrop-blur-lg px-4 py-2 rounded-full border border-neutral-200 dark:border-neutral-800"
+            >
               <span className="text-brand-blue-600 dark:text-brand-red-400 font-medium mr-2">
                 {t('configurator.performance')}
               </span>
@@ -2318,22 +2407,34 @@ const ConfiguratorPage = () => {
                 <span className="text-neutral-500 dark:text-neutral-400">
                   /10
                 </span>
-              </div>
-            </div>
+              </div>{' '}
+            </motion.div>
 
-            {Object.keys(selectedComponents).length > 0 && (
-              <div className="bg-white/5 dark:bg-stone-950/50 backdrop-blur-lg px-4 py-2 rounded-full border border-neutral-200 dark:border-neutral-800">
-                <span className="text-brand-blue-600 dark:text-brand-red-400">
-                  {t('configurator.totalPower')}:
-                  <span className="text-neutral-900 dark:text-white font-bold ml-1">
-                    {totalPowerConsumption}W
+            <AnimatePresence>
+              {Object.keys(selectedComponents).length > 0 && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white/5 dark:bg-stone-950/50 backdrop-blur-lg px-4 py-2 rounded-full border border-neutral-200 dark:border-neutral-800"
+                >
+                  <span className="text-brand-blue-600 dark:text-brand-red-400">
+                    {t('configurator.totalPower')}:
+                    <span className="text-neutral-900 dark:text-white font-bold ml-1">
+                      {totalPowerConsumption}W
+                    </span>
                   </span>
-                </span>
-              </div>
-            )}
-          </div>{' '}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>{' '}
           {/* Component list */}
-          <div
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
             className="bg-white dark:bg-stone-950 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 flex flex-col flex-grow"
             style={{ maxHeight: 'calc(100vh - 50px)' }}
           >
@@ -2443,14 +2544,18 @@ const ConfiguratorPage = () => {
                   loading={loading}
                   selectedComponents={selectedComponents}
                   onSelectComponent={handleSelectComponent}
-                />
+                />{' '}
               </div>
             </div>
-          </div>
-        </div>
-
+          </motion.div>
+        </motion.div>{' '}
         {/* Right sidebar - Selected components & summary - Desktop only */}
-        <div className="hidden lg:block bg-white dark:bg-stone-950 shadow-lg rounded-lg">
+        <motion.div
+          initial={{ x: 20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="hidden lg:block bg-white dark:bg-stone-950 shadow-lg rounded-lg"
+        >
           <SelectedComponentsList
             selectedComponents={selectedComponents}
             componentCategories={componentCategories}
@@ -2468,85 +2573,113 @@ const ConfiguratorPage = () => {
             totalPowerConsumption={totalPowerConsumption}
             getRecommendedPsuWattage={getRecommendedPsuWattage}
           />
-        </div>
-
+        </motion.div>{' '}
         {/* Mobile Bottom Bar with Summary and Actions */}
-        {Object.keys(selectedComponents).length > 0 && (
-          <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-stone-950 border-t border-neutral-200 dark:border-neutral-800 p-4 shadow-lg z-40">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                  {t('configurator.totalPrice')}
+        <AnimatePresence>
+          {Object.keys(selectedComponents).length > 0 && (
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-stone-950 border-t border-neutral-200 dark:border-neutral-800 p-4 shadow-lg z-40"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('configurator.totalPrice')}
+                  </div>
+                  <div className="text-2xl font-bold text-brand-blue-600 dark:text-brand-red-400">
+                    €{totalPrice.toFixed(2)}
+                  </div>
                 </div>
-                <div className="text-2xl font-bold text-brand-blue-600 dark:text-brand-red-400">
-                  €{totalPrice.toFixed(2)}
+                <div className="text-right">
+                  <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('configurator.components')}
+                  </div>
+                  <div className="text-lg font-semibold text-neutral-900 dark:text-white">
+                    {Object.keys(selectedComponents).length}/10
+                  </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                  {t('configurator.components')}
-                </div>
-                <div className="text-lg font-semibold text-neutral-900 dark:text-white">
-                  {Object.keys(selectedComponents).length}/10
-                </div>
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={handleAddToCart}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
-                  theme === 'dark'
-                    ? 'bg-brand-red-500 text-white hover:bg-brand-red-600'
-                    : 'bg-brand-blue-500 text-white hover:bg-brand-blue-600'
-                }`}
-              >
-                {t('configurator.actions.addToCart')}
-              </button>
-              {isAuthenticated && (
-                <button
-                  onClick={handleSaveConfiguration}
-                  className={`flex-1 py-3 px-4 rounded-lg font-medium border transition-all ${
+              </div>{' '}
+              <div className="flex space-x-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleAddToCart}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
                     theme === 'dark'
-                      ? 'border-brand-red-500 text-brand-red-400 hover:bg-brand-red-500 hover:text-white'
-                      : 'border-brand-blue-500 text-brand-blue-600 hover:bg-brand-blue-500 hover:text-white'
+                      ? 'bg-brand-red-500 text-white hover:bg-brand-red-600'
+                      : 'bg-brand-blue-500 text-white hover:bg-brand-blue-600'
                   }`}
                 >
-                  {t('configurator.actions.save')}
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
+                  {t('configurator.actions.addToCart')}
+                </motion.button>
+                {isAuthenticated && (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleSaveConfiguration}
+                    className={`flex-1 py-3 px-4 rounded-lg font-medium border transition-all ${
+                      theme === 'dark'
+                        ? 'border-brand-red-500 text-brand-red-400 hover:bg-brand-red-500 hover:text-white'
+                        : 'border-brand-blue-500 text-brand-blue-600 hover:bg-brand-blue-500 hover:text-white'
+                    }`}
+                  >
+                    {' '}
+                    {t('configurator.actions.save')}
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>{' '}
         {/* Compatibility issues modal */}
-        {showCompatibilityModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-stone-950 p-6 rounded-lg shadow-lg w-96">
-              <h2 className="text-xl font-semibold mb-4">
-                {t('configurator.compatibility.title')}
-              </h2>
-              <ul className="list-disc list-inside text-red-600 mb-4">
-                {compatibilityIssues
-                  .filter(
-                    issue =>
-                      issue.includes('psuTooWeak') ||
-                      issue.includes('psuCriticallyUnderpowered') ||
-                      issue.includes('insufficientPowerConnectors')
-                  )
-                  .map((issue, idx) => (
-                    <li key={idx}>{issue}</li>
-                  ))}
-              </ul>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-                onClick={() => setShowCompatibilityModal(false)}
+        <AnimatePresence>
+          {showCompatibilityModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ type: 'spring', duration: 0.5 }}
+                className="bg-white dark:bg-stone-950 p-6 rounded-lg shadow-lg w-96"
               >
-                {t('common.close', { defaultMessage: 'Close' })}
-              </button>
-            </div>
-          </div>
-        )}
-
+                <h2 className="text-xl font-semibold mb-4">
+                  {t('configurator.compatibility.title')}
+                </h2>
+                <ul className="list-disc list-inside text-red-600 mb-4">
+                  {compatibilityIssues
+                    .filter(
+                      issue =>
+                        issue.includes('psuTooWeak') ||
+                        issue.includes('psuCriticallyUnderpowered') ||
+                        issue.includes('insufficientPowerConnectors')
+                    )
+                    .map((issue, idx) => (
+                      <li key={idx}>{issue}</li>
+                    ))}
+                </ul>{' '}
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                  onClick={() => setShowCompatibilityModal(false)}
+                >
+                  {t('common.close', { defaultMessage: 'Close' })}
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {/* Mobile Filter Modal */}
         <MobileFilterModal
           isOpen={showMobileFilters}
@@ -2559,7 +2692,7 @@ const ConfiguratorPage = () => {
           minPrice={minPrice}
           maxPrice={maxPrice}
         />
-      </div>
+      </motion.div>
     </>
   );
 };

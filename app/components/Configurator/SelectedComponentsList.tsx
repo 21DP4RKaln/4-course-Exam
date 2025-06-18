@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Cpu,
   Monitor,
@@ -13,8 +14,6 @@ import {
   X,
   AlertTriangle,
   Wrench,
-  Check,
-  RotateCcw,
   Download,
 } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
@@ -120,6 +119,7 @@ const SelectedComponentsList: React.FC<Props> = ({
         return <HardDrive size={20} className={iconColor} />;
     }
   };
+
   // Only show relevant categories: exclude Optical and Network, and show Services only if selected
   const visibleCategories = componentCategories.filter(
     cat =>
@@ -154,26 +154,97 @@ const SelectedComponentsList: React.FC<Props> = ({
   const hasAllRequiredComponents = requiredCategories.every(
     categoryId => selectedComponents[categoryId]
   );
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.4,
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const headerVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3, ease: 'easeOut' },
+    },
+  };
+
+  const progressVariants = {
+    hidden: { opacity: 0, scaleX: 0 },
+    visible: {
+      opacity: 1,
+      scaleX: 1,
+      transition: { duration: 0.5, ease: 'easeOut' },
+    },
+  };
+
+  const componentVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.3, ease: 'easeOut' },
+    },
+    exit: {
+      opacity: 0,
+      x: 20,
+      transition: { duration: 0.2 },
+    },
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3, ease: 'easeOut' },
+    },
+  };
+
   return (
-    <div
+    <motion.div
       className={`w-[320px] max-w-full rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${
         theme === 'dark'
           ? 'bg-stone-950 border border-neutral-800'
           : 'bg-white border border-neutral-200'
       }`}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
       {/* Header */}
-      <div
+      <motion.div
         className={`p-4 border-b ${
           theme === 'dark' ? 'border-neutral-800' : 'border-neutral-200'
         }`}
+        variants={headerVariants}
       >
         <div className="flex items-center justify-between">
-          <h3 className={theme === 'dark' ? 'text-white' : 'text-neutral-900'}>
+          <motion.h3
+            className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-neutral-900'}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
             {t('configurator.selectedComponents')}
-          </h3>
+          </motion.h3>
           <div className="flex items-center">
-            <div className="text-sm">
+            <motion.div
+              className="text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            >
               <span
                 className={`font-medium ${
                   theme === 'dark' ? 'text-white' : 'text-neutral-900'
@@ -188,106 +259,118 @@ const SelectedComponentsList: React.FC<Props> = ({
               >
                 /{totalCategories}
               </span>
-            </div>
+            </motion.div>
           </div>
         </div>
-        <div className="mt-3">
+        <motion.div className="mt-3" variants={progressVariants}>
           <div
             className={`h-2 rounded-full overflow-hidden ${
               theme === 'dark' ? 'bg-stone-800' : 'bg-neutral-100'
             }`}
           >
-            <div
+            <motion.div
               className={`h-2 rounded-full transition-all ${
                 theme === 'dark'
                   ? 'bg-gradient-to-r from-brand-red-600 to-brand-red-400'
                   : 'bg-gradient-to-r from-brand-blue-600 to-brand-blue-400'
               }`}
               style={{ width: `${(selectedCount / totalCategories) * 100}%` }}
+              initial={{ width: 0 }}
+              animate={{ width: `${(selectedCount / totalCategories) * 100}%` }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
             />
           </div>
-        </div>
-      </div>{' '}
+        </motion.div>
+      </motion.div>
+
       {/* Component List */}
       <div className="p-4 space-y-3 max-h-[800px] overflow-y-auto scrollbar-hide">
-        {visibleCategories.map(category => {
-          const selected = selectedComponents[category.id];
-          const isSelected =
-            category.id === 'services'
-              ? Array.isArray(selected)
-                ? selected.length > 0
-                : !!selected
-              : !!selected;
+        <AnimatePresence mode="popLayout">
+          {visibleCategories.map((category, index) => {
+            const selected = selectedComponents[category.id];
+            const isSelected =
+              category.id === 'services'
+                ? Array.isArray(selected)
+                  ? selected.length > 0
+                  : !!selected
+                : !!selected;
 
-          return (
-            <button
-              key={category.id}
-              onClick={() => onSetActiveCategory(category.id)}
-              className={`w-full flex items-center p-2 rounded-lg transition-all ${
-                theme === 'dark'
-                  ? isSelected
-                    ? 'bg-stone-900 hover:bg-stone-800'
-                    : 'border border-dashed border-neutral-800 hover:border-brand-red-500/50'
-                  : isSelected
-                    ? 'bg-neutral-50 hover:bg-neutral-100'
-                    : 'border border-dashed border-neutral-200 hover:border-brand-blue-500/50'
-              }`}
-            >
-              <span
-                className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                  theme === 'dark' ? 'bg-stone-800' : 'bg-neutral-100'
+            return (
+              <motion.button
+                key={category.id}
+                onClick={() => onSetActiveCategory(category.id)}
+                className={`w-full p-3 rounded-lg transition-all flex items-center text-left ${
+                  isSelected
+                    ? theme === 'dark'
+                      ? 'bg-brand-red-900/20 border border-brand-red-500/30 hover:bg-brand-red-900/30'
+                      : 'bg-brand-blue-50 border border-brand-blue-200 hover:bg-brand-blue-100'
+                    : theme === 'dark'
+                      ? 'bg-stone-900 border border-neutral-800 hover:bg-stone-800'
+                      : 'bg-neutral-50 border border-neutral-200 hover:bg-neutral-100'
                 }`}
+                variants={componentVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.02, x: 2 }}
+                whileTap={{ scale: 0.98 }}
+                layout
+                layoutId={`category-${category.id}`}
               >
-                {getCategoryIcon(category.id)}
-              </span>
-              <div className="flex-grow text-left min-w-0">
-                <div
-                  className={`text-sm font-medium truncate ${
-                    theme === 'dark' ? 'text-white' : 'text-neutral-900'
-                  }`}
+                <motion.div
+                  className="flex-shrink-0 mr-3"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  {category.name}
-                </div>
-                {isSelected && category.id !== 'services' && (
+                  {getCategoryIcon(category.id)}
+                </motion.div>
+                <div className="flex-grow min-w-0">
                   <div
-                    className={`text-xs truncate ${
-                      theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+                    className={`text-sm font-medium ${
+                      theme === 'dark' ? 'text-white' : 'text-neutral-900'
                     }`}
                   >
-                    {(selected as Component).name}
+                    {category.name}
                   </div>
-                )}
-                {isSelected &&
-                  category.id === 'services' &&
-                  Array.isArray(selected) && (
-                    <div
+                  {isSelected && category.id !== 'services' && (
+                    <motion.div
                       className={`text-xs truncate ${
                         theme === 'dark'
                           ? 'text-neutral-400'
                           : 'text-neutral-600'
                       }`}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: 0.1 }}
                     >
-                      {selected.map((c: Component) => c.name).join(', ')}
-                    </div>
+                      {(selected as Component).name}
+                    </motion.div>
                   )}
-              </div>
-              {isSelected && category.id !== 'services' && (
-                <div className="flex items-center ml-2 flex-shrink-0">
-                  <div
-                    className={`text-sm font-medium ${
-                      theme === 'dark'
-                        ? 'text-brand-red-400'
-                        : 'text-brand-blue-600'
-                    }`}
-                  >
-                    €{(selected as Component).price.toFixed(2)}
-                  </div>
+                  {isSelected &&
+                    category.id === 'services' &&
+                    Array.isArray(selected) && (
+                      <motion.div
+                        className={`text-xs truncate ${
+                          theme === 'dark'
+                            ? 'text-neutral-400'
+                            : 'text-neutral-600'
+                        }`}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2, delay: 0.1 }}
+                      >
+                        {selected.map((c: Component) => c.name).join(', ')}
+                      </motion.div>
+                    )}
                 </div>
-              )}
-              {isSelected &&
-                category.id === 'services' &&
-                Array.isArray(selected) && (
-                  <div className="flex items-center ml-2 flex-shrink-0">
+                {isSelected && category.id !== 'services' && (
+                  <motion.div
+                    className="flex items-center ml-2 flex-shrink-0"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.2, delay: 0.2 }}
+                  >
                     <div
                       className={`text-sm font-medium ${
                         theme === 'dark'
@@ -295,139 +378,178 @@ const SelectedComponentsList: React.FC<Props> = ({
                           : 'text-brand-blue-600'
                       }`}
                     >
-                      €
-                      {selected
-                        .reduce((sum: number, c: Component) => sum + c.price, 0)
-                        .toFixed(2)}
+                      €{(selected as Component).price.toFixed(2)}
                     </div>
-                  </div>
+                  </motion.div>
                 )}
-            </button>
-          );
-        })}
-      </div>{' '}
+                {isSelected &&
+                  category.id === 'services' &&
+                  Array.isArray(selected) && (
+                    <motion.div
+                      className="flex items-center ml-2 flex-shrink-0"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.2, delay: 0.2 }}
+                    >
+                      <div
+                        className={`text-sm font-medium ${
+                          theme === 'dark'
+                            ? 'text-brand-red-400'
+                            : 'text-brand-blue-600'
+                        }`}
+                      >
+                        €
+                        {selected
+                          .reduce(
+                            (sum: number, c: Component) => sum + c.price,
+                            0
+                          )
+                          .toFixed(2)}
+                      </div>
+                    </motion.div>
+                  )}
+              </motion.button>
+            );
+          })}
+        </AnimatePresence>
+      </div>
+
       {/* Compatibility Issues - Only show critical power-related issues */}
-      {compatibilityIssues.filter(
-        issue =>
-          issue.includes('psuTooWeak') ||
-          issue.includes('psuCriticallyUnderpowered') ||
-          issue.includes('insufficientPowerConnectors')
-      ).length > 0 && (
-        <div
-          className={`mx-4 mb-4 p-3 rounded-lg ${
-            theme === 'dark'
-              ? 'bg-red-900/20 border border-red-800'
-              : 'bg-red-50 border border-red-200'
-          }`}
-        >
-          <div
-            className={`flex items-center gap-2 text-sm font-medium mb-1 ${
-              theme === 'dark' ? 'text-red-400' : 'text-red-600'
+      <AnimatePresence>
+        {compatibilityIssues.filter(
+          issue =>
+            issue.includes('power') ||
+            issue.includes('wattage') ||
+            issue.includes('consumption')
+        ).length > 0 && (
+          <motion.div
+            className={`mx-4 mb-4 p-3 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-red-900/20 border-red-500/30'
+                : 'bg-red-50 border-red-200'
             }`}
+            initial={{ opacity: 0, height: 0, y: -10 }}
+            animate={{ opacity: 1, height: 'auto', y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
           >
-            <AlertTriangle size={16} className="flex-shrink-0" />
-            <span className="truncate">
-              {t('configurator.compatibility.issuesFound')}
-            </span>
-          </div>
-          <ul
-            className={`text-xs space-y-1 max-h-20 overflow-y-auto scrollbar-hide ${
-              theme === 'dark' ? 'text-red-400' : 'text-red-600'
-            }`}
-          >
-            {compatibilityIssues
-              .filter(
-                issue =>
-                  issue.includes('psuTooWeak') ||
-                  issue.includes('psuCriticallyUnderpowered') ||
-                  issue.includes('insufficientPowerConnectors')
-              )
-              .map((issue, index) => (
-                <li key={index} className="break-words">
-                  {issue}
-                </li>
-              ))}
-          </ul>
-        </div>
-      )}
-      {/* Summary & Actions */}
-      <div
+            <div className="flex items-start">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.2, delay: 0.1 }}
+              >
+                <AlertTriangle
+                  size={16}
+                  className={`mt-0.5 mr-2 flex-shrink-0 ${
+                    theme === 'dark' ? 'text-red-400' : 'text-red-500'
+                  }`}
+                />
+              </motion.div>
+              <div>
+                <motion.h4
+                  className={`text-sm font-medium ${
+                    theme === 'dark' ? 'text-red-400' : 'text-red-700'
+                  }`}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2, delay: 0.15 }}
+                >
+                  {t('configurator.compatibilityIssues')}
+                </motion.h4>
+                <motion.ul
+                  className={`text-xs mt-1 space-y-1 ${
+                    theme === 'dark' ? 'text-red-300' : 'text-red-600'
+                  }`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  {compatibilityIssues
+                    .filter(
+                      issue =>
+                        issue.includes('power') ||
+                        issue.includes('wattage') ||
+                        issue.includes('consumption')
+                    )
+                    .map((issue, index) => (
+                      <motion.li
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          duration: 0.2,
+                          delay: 0.25 + index * 0.05,
+                        }}
+                      >
+                        • {issue}
+                      </motion.li>
+                    ))}
+                </motion.ul>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Total Price and Actions */}
+      <motion.div
         className={`p-4 border-t ${
           theme === 'dark' ? 'border-neutral-800' : 'border-neutral-200'
         }`}
+        variants={buttonVariants}
       >
-        <div className="space-y-4">
-          {/* Total */}
-          <div className="flex items-center justify-between">
-            <span
-              className={
-                theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
-              }
-            >
-              Total:
-            </span>
-            <span
-              className={`text-lg font-bold ${
-                theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
-              }`}
-            >
-              €{totalPrice.toFixed(2)}
-            </span>
-          </div>{' '}
-          {/* Configuration Name Input */}
-          <div className="mt-2">
-            <input
-              type="text"
-              value={configName || ''}
-              onChange={e => setConfigName(e.target.value)}
-              placeholder="PC#1"
-              className={`w-full p-2 rounded border text-sm transition-colors ${
-                theme === 'dark'
-                  ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500 focus:border-brand-red-500'
-                  : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-brand-blue-500'
-              } focus:outline-none`}
-            />
-          </div>
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={onSaveConfiguration}
-              className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors truncate ${
-                theme === 'dark'
-                  ? 'bg-stone-900 text-white hover:bg-stone-800'
-                  : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-              }`}
-            >
-              {t('configurator.actions.save')}
-            </button>
-            <button
-              onClick={onAddToCart}
-              className={`px-2 py-2 rounded-lg text-sm font-medium text-white transition-colors truncate ${
-                theme === 'dark'
-                  ? 'bg-brand-red-500 hover:bg-brand-red-600'
-                  : 'bg-brand-blue-500 hover:bg-brand-blue-600'
-              } disabled:opacity-50`}
-              disabled={selectedCount === 0 || compatibilityIssues.length > 0}
-            >
-              {t('configurator.actions.addToCart')}
-            </button>
-          </div>
-          {/* PDF and Reset Buttons */}
+        <motion.div
+          className="flex items-center justify-between mb-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <span
+            className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
+            }`}
+          >
+            {t('configurator.totalPrice')}:
+          </span>
+          <motion.span
+            className={`text-lg font-bold ${
+              theme === 'dark' ? 'text-brand-red-400' : 'text-brand-blue-600'
+            }`}
+            key={totalPrice}
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            €{totalPrice.toFixed(2)}
+          </motion.span>
+        </motion.div>
+
+        <motion.div
+          className="space-y-2"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
           <div className="grid grid-cols-2 gap-2">
             {/* PDF Export Button - using save-button component */}
-            <SaveButton
-              onClick={onExportPDF}
-              disabled={!hasAllRequiredComponents}
-            />
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <SaveButton
+                onClick={onExportPDF}
+                disabled={!hasAllRequiredComponents}
+              />
+            </motion.div>
             {/* Reset Button - using reset-button component */}
-            <ResetButton
-              onClick={onResetConfiguration}
-              disabled={selectedCount === 0}
-            />
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <ResetButton
+                onClick={onResetConfiguration}
+                disabled={selectedCount === 0}
+              />
+            </motion.div>
           </div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

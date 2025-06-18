@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 
@@ -53,6 +54,42 @@ const FilterSection: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   const { theme } = useTheme();
+
+  // Animation variants
+  const sidebarVariants = {
+    hidden: { x: -20, opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.4,
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const sectionVariants = {
+    hidden: { y: 10, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.3, ease: 'easeOut' },
+    },
+  };
+
+  const expandVariants = {
+    collapsed: { height: 0, opacity: 0 },
+    expanded: {
+      height: 'auto',
+      opacity: 1,
+      transition: {
+        height: { duration: 0.3, ease: 'easeInOut' },
+        opacity: { duration: 0.2, delay: 0.1 },
+      },
+    },
+  };
+
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({
@@ -144,154 +181,225 @@ const FilterSection: React.FC<Props> = ({
   ];
 
   return (
-    <aside
+    <motion.aside
       className={`flex flex-col h-full p-1 min-w-[220px] w-[240px] max-w-[260px] ${
         theme === 'dark'
           ? 'bg-stone-950 border-neutral-800'
           : 'bg-white border-neutral-200'
       } border transition-colors duration-200`}
+      variants={sidebarVariants}
+      initial="hidden"
+      animate="visible"
     >
-      {' '}
-      <div className="flex flex-col gap-4 mt-20">
+      <motion.div
+        className="flex flex-col gap-4 mt-20"
+        variants={sidebarVariants}
+      >
         {/* Price Range Filter */}
-        <div className="flex flex-col gap-1 ">
-          <button
+        <motion.div className="flex flex-col gap-1" variants={sectionVariants}>
+          <motion.button
             onClick={() => toggleSection('price')}
             className={`flex items-center justify-between w-full p-2 rounded-lg text-sm font-medium ${
               theme === 'dark'
                 ? 'hover:bg-stone-900 text-white'
                 : 'hover:bg-neutral-100 text-neutral-900'
             }`}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.15 }}
           >
             <span>{t('filters.price')}</span>
-            {expandedSections.price ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
-              <ChevronDown className="w-4 h-4" />
-            )}
-          </button>
-
-          {expandedSections.price && (
-            <div className="flex flex-col gap-1.5 px-1">
-              {' '}
-              <div className="grid grid-cols-2 gap-1">
-                <input
-                  type="number"
-                  min={minPrice}
-                  max={maxPrice}
-                  value={localPriceRange[0]}
-                  onChange={e => handleMinPriceChange(Number(e.target.value))}
-                  className={`w-full p-2 rounded border ${
-                    theme === 'dark'
-                      ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500'
-                      : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400'
-                  } focus:outline-none focus:ring-2 ${
-                    theme === 'dark'
-                      ? 'focus:ring-brand-red-500/50'
-                      : 'focus:ring-brand-blue-500/50'
-                  }`}
-                  placeholder={`${minPrice}`}
-                />
-                <input
-                  type="number"
-                  min={minPrice}
-                  max={maxPrice}
-                  value={localPriceRange[1]}
-                  onChange={e => handleMaxPriceChange(Number(e.target.value))}
-                  className={`w-full p-2 rounded border ${
-                    theme === 'dark'
-                      ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500'
-                      : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400'
-                  } focus:outline-none focus:ring-2 ${
-                    theme === 'dark'
-                      ? 'focus:ring-brand-red-500/50'
-                      : 'focus:ring-brand-blue-500/50'
-                  }`}
-                  placeholder={`${maxPrice}`}
-                />
-              </div>
-              <button
-                onClick={applyPriceRange}
-                className={`w-full p-2 rounded text-sm font-medium transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-brand-red-500 hover:bg-brand-red-600 text-white'
-                    : 'bg-brand-blue-500 hover:bg-brand-blue-600 text-white'
-                }`}
-              >
-                {t('configurator.filters.apply')}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Specification Filters */}
-        {filterGroups.map((group, index) => (
-          <div key={group.title} className="flex flex-col gap-2">
-            <button
-              onClick={() => toggleSection(group.title)}
-              className={`flex items-center justify-between w-full p-2 rounded-lg text-sm font-medium ${
-                theme === 'dark'
-                  ? 'hover:bg-stone-900 text-white'
-                  : 'hover:bg-neutral-100 text-neutral-900'
-              }`}
+            <motion.div
+              animate={{ rotate: expandedSections.price ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
             >
-              <span>
-                {group.titleTranslationKey
-                  ? t(group.titleTranslationKey)
-                  : t(group.title)}
-              </span>
-              {expandedSections[group.title] ? (
+              {expandedSections.price ? (
                 <ChevronUp className="w-4 h-4" />
               ) : (
                 <ChevronDown className="w-4 h-4" />
               )}
-            </button>
+            </motion.div>
+          </motion.button>
 
-            {expandedSections[group.title] && (
-              <div className="flex flex-col gap-1 px-2">
-                {group.options.map(option => (
-                  <label
-                    key={option.id}
-                    className={`flex items-center gap-1 p-1.5 rounded-lg cursor-pointer text-sm ${
+          <AnimatePresence>
+            {expandedSections.price && (
+              <motion.div
+                className="flex flex-col gap-1.5 px-1"
+                variants={expandVariants}
+                initial="collapsed"
+                animate="expanded"
+                exit="collapsed"
+                style={{ overflow: 'hidden' }}
+              >
+                <div className="grid grid-cols-2 gap-1">
+                  <motion.input
+                    type="number"
+                    min={minPrice}
+                    max={maxPrice}
+                    value={localPriceRange[0]}
+                    onChange={e => handleMinPriceChange(Number(e.target.value))}
+                    className={`w-full p-2 rounded border ${
                       theme === 'dark'
-                        ? 'hover:bg-stone-900 text-neutral-300'
-                        : 'hover:bg-neutral-100 text-neutral-600'
+                        ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500'
+                        : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400'
+                    } focus:outline-none focus:ring-2 ${
+                      theme === 'dark'
+                        ? 'focus:ring-brand-red-500/50'
+                        : 'focus:ring-brand-blue-500/50'
                     }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={activeFilters[option.id] || false}
-                      onChange={() => toggleFilter(option.id)}
-                      className={`form-checkbox h-4 w-4 rounded border ${
-                        theme === 'dark'
-                          ? 'border-neutral-700 text-brand-red-500'
-                          : 'border-neutral-300 text-brand-blue-500'
-                      }`}
-                    />
-                    <span>
-                      {option.translationKey
-                        ? t(option.translationKey)
-                        : option.name}
-                    </span>
-                    {option.count && (
-                      <span
-                        className={`ml-auto text-xs ${
-                          theme === 'dark'
-                            ? 'text-neutral-500'
-                            : 'text-neutral-400'
-                        }`}
-                      >
-                        ({option.count})
-                      </span>
-                    )}
-                  </label>
-                ))}
-              </div>
+                    placeholder={`${minPrice}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: 0.1 }}
+                  />
+                  <motion.input
+                    type="number"
+                    min={minPrice}
+                    max={maxPrice}
+                    value={localPriceRange[1]}
+                    onChange={e => handleMaxPriceChange(Number(e.target.value))}
+                    className={`w-full p-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-stone-900 border-neutral-800 text-white placeholder-neutral-500'
+                        : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400'
+                    } focus:outline-none focus:ring-2 ${
+                      theme === 'dark'
+                        ? 'focus:ring-brand-red-500/50'
+                        : 'focus:ring-brand-blue-500/50'
+                    }`}
+                    placeholder={`${maxPrice}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: 0.15 }}
+                  />
+                </div>
+                <motion.button
+                  onClick={applyPriceRange}
+                  className={`w-full p-2 rounded text-sm font-medium transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-brand-red-500 hover:bg-brand-red-600 text-white'
+                      : 'bg-brand-blue-500 hover:bg-brand-blue-600 text-white'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, delay: 0.2 }}
+                >
+                  {t('configurator.filters.apply')}
+                </motion.button>
+              </motion.div>
             )}
-          </div>
-        ))}
-      </div>
-    </aside>
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Specification Filters */}
+        <AnimatePresence mode="popLayout">
+          {filterGroups.map((group, index) => (
+            <motion.div
+              key={group.title}
+              className="flex flex-col gap-2"
+              variants={sectionVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              transition={{ delay: index * 0.05 }}
+            >
+              <motion.button
+                onClick={() => toggleSection(group.title)}
+                className={`flex items-center justify-between w-full p-2 rounded-lg text-sm font-medium ${
+                  theme === 'dark'
+                    ? 'hover:bg-stone-900 text-white'
+                    : 'hover:bg-neutral-100 text-neutral-900'
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.15 }}
+              >
+                <span>
+                  {group.titleTranslationKey
+                    ? t(group.titleTranslationKey)
+                    : t(group.title)}
+                </span>
+                <motion.div
+                  animate={{ rotate: expandedSections[group.title] ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {expandedSections[group.title] ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </motion.div>
+              </motion.button>
+
+              <AnimatePresence>
+                {expandedSections[group.title] && (
+                  <motion.div
+                    className="flex flex-col gap-1 px-2"
+                    variants={expandVariants}
+                    initial="collapsed"
+                    animate="expanded"
+                    exit="collapsed"
+                    style={{ overflow: 'hidden' }}
+                  >
+                    {group.options.map((option, optionIndex) => (
+                      <motion.label
+                        key={option.id}
+                        className={`flex items-center gap-1 p-1.5 rounded-lg cursor-pointer text-sm ${
+                          theme === 'dark'
+                            ? 'hover:bg-stone-900 text-neutral-300'
+                            : 'hover:bg-neutral-100 text-neutral-600'
+                        }`}
+                        whileHover={{ x: 2 }}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          duration: 0.2,
+                          delay: optionIndex * 0.03 + 0.1,
+                        }}
+                      >
+                        <motion.input
+                          type="checkbox"
+                          checked={activeFilters[option.id] || false}
+                          onChange={() => toggleFilter(option.id)}
+                          className={`form-checkbox h-4 w-4 rounded border ${
+                            theme === 'dark'
+                              ? 'border-neutral-700 text-brand-red-500'
+                              : 'border-neutral-300 text-brand-blue-500'
+                          }`}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        />
+                        <span>
+                          {option.translationKey
+                            ? t(option.translationKey)
+                            : option.name}
+                        </span>
+                        {option.count && (
+                          <motion.span
+                            className={`ml-auto text-xs ${
+                              theme === 'dark'
+                                ? 'text-neutral-500'
+                                : 'text-neutral-400'
+                            }`}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: optionIndex * 0.03 + 0.2 }}
+                          >
+                            ({option.count})
+                          </motion.span>
+                        )}
+                      </motion.label>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+    </motion.aside>
   );
 };
 

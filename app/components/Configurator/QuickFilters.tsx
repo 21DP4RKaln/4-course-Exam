@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { filters } from './filters';
@@ -762,83 +763,153 @@ const QuickFilters: React.FC<Props> = ({
     return null;
   }
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.3,
+        staggerChildren: 0.05,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.2, ease: 'easeOut' },
+    },
+  };
+
   return (
-    <div
+    <motion.div
       className={`relative h-[45px] ${
         theme === 'dark'
           ? 'bg-dark-card border border-dark-border'
           : 'bg-white border border-neutral-200'
       } rounded-lg flex items-center overflow-hidden transition-colors duration-200`}
       ref={containerRef}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
-      {' '}
-      {canScrollLeft && (
-        <button
-          onClick={() => scrollSafe('left')}
-          className={`absolute left-0 top-0 bottom-0 w-8 flex justify-center items-center z-10 group ${
-            theme === 'dark'
-              ? 'bg-dark-card hover:bg-gradient-to-r hover:from-blue-900/20 hover:to-purple-900/20'
-              : 'bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50'
-          } rounded-l-lg transition-all duration-300`}
-          aria-label="Scroll left"
-        >
-          <ChevronLeft
-            className={`w-4 h-4 transition-colors duration-300 ${
+      <AnimatePresence>
+        {canScrollLeft && (
+          <motion.button
+            onClick={() => scrollSafe('left')}
+            className={`absolute left-0 top-0 bottom-0 w-8 flex justify-center items-center z-10 group ${
               theme === 'dark'
-                ? 'text-neutral-400 group-hover:text-blue-400'
-                : 'text-neutral-600 group-hover:text-blue-600'
-            }`}
-          />
-        </button>
-      )}{' '}
-      <div className="flex items-center justify-start overflow-hidden mx-8 w-full transition-transform duration-300 ease-in-out">
-        {visibleFilters.map((filter, index) => {
-          const isActive =
-            filter.id === null
-              ? Object.keys(activeFilters).length === 0 // "All" is active when no filters are active
-              : isQuickFilterActive && filter.id
-                ? isQuickFilterActive(filter.id)
-                : false;
+                ? 'bg-dark-card hover:bg-gradient-to-r hover:from-blue-900/20 hover:to-purple-900/20'
+                : 'bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50'
+            } rounded-l-lg transition-all duration-300`}
+            aria-label="Scroll left"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChevronLeft
+              className={`w-4 h-4 transition-colors duration-300 ${
+                theme === 'dark'
+                  ? 'text-neutral-400 group-hover:text-blue-400'
+                  : 'text-neutral-600 group-hover:text-blue-600'
+              }`}
+            />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
-          return (
-            <button
-              key={`${filter.id}-${index}`}
-              className={`whitespace-nowrap flex-1 flex justify-center items-center text-sm font-medium h-[45px] relative 
-                transition-all duration-300 ease-in-out transform 
-                hover:scale-105 active:scale-95 
-                ${getBrandGlow(filter.id, isActive)}
-                ${
-                  isActive
-                    ? `${getBrandColor(filter.id, isActive)} ${getBrandUnderlineColor(filter.id)} after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:transition-all after:duration-300`
-                    : `${getBrandColor(filter.id, isActive)} hover:shadow-md`
-                }`}
-              onClick={() => handleFilterChange(filter.id)}
-            >
-              {filter.name}
-            </button>
-          );
-        })}
-      </div>
-      {canScrollRight && (
-        <button
-          onClick={() => scrollSafe('right')}
-          className={`absolute right-0 top-0 bottom-0 w-8 flex justify-center items-center z-10 group ${
-            theme === 'dark'
-              ? 'bg-dark-card hover:bg-gradient-to-l hover:from-blue-900/20 hover:to-purple-900/20'
-              : 'bg-white hover:bg-gradient-to-l hover:from-blue-50 hover:to-purple-50'
-          } rounded-r-lg transition-all duration-300`}
-          aria-label="Scroll right"
-        >
-          <ChevronRight
-            className={`w-4 h-4 transition-colors duration-300 ${
+      <motion.div
+        className="flex items-center justify-start overflow-hidden mx-8 w-full transition-transform duration-300 ease-in-out"
+        variants={containerVariants}
+      >
+        <AnimatePresence mode="popLayout">
+          {visibleFilters.map((filter, index) => {
+            const isActive =
+              filter.id === null
+                ? Object.keys(activeFilters).length === 0
+                : isQuickFilterActive && filter.id
+                  ? isQuickFilterActive(filter.id)
+                  : false;
+
+            return (
+              <motion.button
+                key={`${filter.id}-${index}`}
+                className={`whitespace-nowrap flex-1 flex justify-center items-center text-sm font-medium h-[45px] relative 
+                  transition-all duration-300 ease-in-out transform 
+                  hover:scale-105 active:scale-95 
+                  ${getBrandGlow(filter.id, isActive)}
+                  ${
+                    isActive
+                      ? `${getBrandColor(filter.id, isActive)} ${getBrandUnderlineColor(filter.id)} after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:transition-all after:duration-300`
+                      : `${getBrandColor(filter.id, isActive)} hover:shadow-md`
+                  }`}
+                onClick={() => handleFilterChange(filter.id)}
+                variants={buttonVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                whileHover={{
+                  scale: 1.05,
+                  y: -1,
+                }}
+                whileTap={{ scale: 0.95 }}
+                layout
+                layoutId={filter.id || 'all'}
+                transition={{
+                  layout: { duration: 0.3, ease: 'easeInOut' },
+                  scale: { duration: 0.15 },
+                  y: { duration: 0.15 },
+                }}
+              >
+                <motion.span
+                  initial={isActive ? { scale: 1.1 } : { scale: 1 }}
+                  animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {filter.name}
+                </motion.span>
+              </motion.button>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
+
+      <AnimatePresence>
+        {canScrollRight && (
+          <motion.button
+            onClick={() => scrollSafe('right')}
+            className={`absolute right-0 top-0 bottom-0 w-8 flex justify-center items-center z-10 group ${
               theme === 'dark'
-                ? 'text-neutral-400 group-hover:text-blue-400'
-                : 'text-neutral-600 group-hover:text-blue-600'
-            }`}
-          />
-        </button>
-      )}
-    </div>
+                ? 'bg-dark-card hover:bg-gradient-to-l hover:from-blue-900/20 hover:to-purple-900/20'
+                : 'bg-white hover:bg-gradient-to-l hover:from-blue-50 hover:to-purple-50'
+            } rounded-r-lg transition-all duration-300`}
+            aria-label="Scroll right"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChevronRight
+              className={`w-4 h-4 transition-colors duration-300 ${
+                theme === 'dark'
+                  ? 'text-neutral-400 group-hover:text-blue-400'
+                  : 'text-neutral-600 group-hover:text-blue-600'
+              }`}
+            />
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

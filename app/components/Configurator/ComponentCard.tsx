@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { motion } from 'framer-motion';
 import { Cpu, Monitor, HardDrive, Server, Zap, Fan, Box } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 // import Image from 'next/image'
@@ -90,7 +91,12 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
     return null;
   }
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ y: -5, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       className={`rounded-lg p-4 transition-all cursor-pointer ${
         theme === 'dark'
           ? 'bg-stone-900 border border-neutral-800 hover:border-brand-red-500/30'
@@ -327,7 +333,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
