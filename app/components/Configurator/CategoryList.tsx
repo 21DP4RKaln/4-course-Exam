@@ -184,34 +184,33 @@ const CategoryList: React.FC<Props> = ({
         className="flex flex-col gap-1 flex-1 px-2 py-8"
         variants={sidebarVariants}
       >
-        <AnimatePresence mode="popLayout">
-          {displayCategories.map((category, index) => {
-            const isActive = activeCategory === category.id;
-            const isSelected = !!selectedComponents[category.id];
+        {displayCategories.map((category, index) => {
+          const isActive = activeCategory === category.id;
+          const isSelected = !!selectedComponents[category.id];
 
-            return (
-              <motion.button
-                key={category.id}
-                onClick={() => onSetActiveCategory(category.id)}
-                className={buttonClasses(isActive)}
-                variants={categoryItemVariants}
-                whileHover={{
-                  scale: 1.02,
-                  x: 2,
-                }}
-                whileTap={{ scale: 0.98 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 400,
-                  damping: 30,
-                  scale: { duration: 0.15 },
-                  x: { duration: 0.15 },
-                }}
-                layout
-                layoutId={`category-${category.id}`}
-              >
-                <motion.span
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all mr-3
+          return (
+            <motion.button
+              key={category.id}
+              onClick={() => onSetActiveCategory(category.id)}
+              className={buttonClasses(isActive)}
+              variants={categoryItemVariants}
+              whileHover={{
+                scale: 1.02,
+                x: 2,
+              }}
+              whileTap={{ scale: 0.98 }}
+              transition={{
+                type: 'spring',
+                stiffness: 400,
+                damping: 30,
+                scale: { duration: 0.15 },
+                x: { duration: 0.15 },
+              }}
+              layout
+              layoutId={`category-${category.id}`}
+            >
+              <motion.span
+                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all mr-3
                   ${
                     isActive
                       ? theme === 'dark'
@@ -222,52 +221,51 @@ const CategoryList: React.FC<Props> = ({
                         : 'bg-neutral-100'
                   }
                 `}
-                  whileHover={
-                    isActive
-                      ? {}
-                      : {
-                          backgroundColor:
-                            theme === 'dark'
-                              ? 'rgba(41, 37, 36, 1)'
-                              : 'rgba(245, 245, 245, 1)',
-                        }
-                  }
-                  transition={{ duration: 0.2 }}
-                >
-                  {getCategoryIcon(category.id)}
-                </motion.span>
+                whileHover={
+                  isActive
+                    ? {}
+                    : {
+                        backgroundColor:
+                          theme === 'dark'
+                            ? 'rgba(41, 37, 36, 1)'
+                            : 'rgba(245, 245, 245, 1)',
+                      }
+                }
+                transition={{ duration: 0.2 }}
+              >
+                {getCategoryIcon(category.id)}
+              </motion.span>
 
-                <span className="text-sm font-medium tracking-wide">
-                  {category.name}
-                </span>
+              <span className="text-sm font-medium tracking-wide">
+                {category.name}
+              </span>
 
-                <AnimatePresence>
-                  {isSelected && (
-                    <motion.span
-                      className={`ml-auto text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-sm 
+              <AnimatePresence>
+                {isSelected && (
+                  <motion.span
+                    className={`ml-auto text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-sm 
                       ${
                         theme === 'dark'
                           ? 'bg-brand-red-500 text-white border-stone-800'
                           : 'bg-brand-blue-500 text-white border-white'
                       } border`}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 500,
-                        damping: 30,
-                        duration: 0.2,
-                      }}
-                    >
-                      ✓
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            );
-          })}
-        </AnimatePresence>
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 500,
+                      damping: 30,
+                      duration: 0.2,
+                    }}
+                  >
+                    ✓
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          );
+        })}
       </motion.nav>
     </motion.aside>
   );

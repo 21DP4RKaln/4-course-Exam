@@ -531,6 +531,30 @@ const SelectedComponentsList: React.FC<Props> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
+          {/* Action Buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={onSaveConfiguration}
+              className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors truncate ${
+                theme === 'dark'
+                  ? 'bg-stone-900 text-white hover:bg-stone-800'
+                  : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+              }`}
+            >
+              {t('configurator.actions.save')}
+            </button>
+            <button
+              onClick={onAddToCart}
+              className={`px-2 py-2 rounded-lg text-sm font-medium text-white transition-colors truncate ${
+                theme === 'dark'
+                  ? 'bg-brand-red-500 hover:bg-brand-red-600'
+                  : 'bg-brand-blue-500 hover:bg-brand-blue-600'
+              } disabled:opacity-50`}
+              disabled={selectedCount === 0 || compatibilityIssues.length > 0}
+            >
+              {t('configurator.actions.addToCart')}
+            </button>
+          </div>
           <div className="grid grid-cols-2 gap-2">
             {/* PDF Export Button - using save-button component */}
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
