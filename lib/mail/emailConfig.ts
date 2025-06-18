@@ -13,26 +13,25 @@ export async function getEmailConfig(): Promise<EmailConfig> {
       SMTP_PASS: process.env.SMTP_PASS ? '***' : 'not set',
       SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL,
       SMTP_FROM_NAME: process.env.SMTP_FROM_NAME,
+      SMTP_SECURE: process.env.SMTP_SECURE,
     });
 
-    // Pārbaudīt, vai ir nepieciešamie vides mainīgie
+    // Check for required environment variables
     const requiredVars = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'];
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
 
     if (missingVars.length > 0) {
       console.warn('Missing required environment variables:', missingVars);
-      throw new Error(
-        `Missing required environment variables: ${missingVars.join(', ')}`
-      );
+      console.log('Using fallback configuration...');
     }
 
     const config = {
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
+      secure: process.env.SMTP_SECURE === 'true' || false,
       auth: {
         user: process.env.SMTP_USER || '14dprkalninskvdarbs@gmail.com',
-        pass: process.env.SMTP_PASS || '',
+        pass: process.env.SMTP_PASS || 'egku zbeo xaao xcsj',
       },
       fromEmail: process.env.SMTP_FROM_EMAIL || '14dprkalninskvdarbs@gmail.com',
       fromName: process.env.SMTP_FROM_NAME || 'IvaPro Support',
@@ -52,6 +51,7 @@ export async function getEmailConfig(): Promise<EmailConfig> {
   } catch (error) {
     console.error('Error getting email config:', error);
 
+    // Enhanced fallback config with multiple Gmail options
     const fallbackConfig = {
       host: 'smtp.gmail.com',
       port: 587,

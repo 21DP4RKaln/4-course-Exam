@@ -62,6 +62,8 @@ export default function OrderConfirmationPage() {
   const sendConfirmationEmail = async () => {
     setEmailSending(true);
     try {
+      console.log('Attempting to send confirmation email for order:', orderId);
+
       const response = await fetch('/api/orders/confirm', {
         method: 'POST',
         headers: {
@@ -71,19 +73,76 @@ export default function OrderConfirmationPage() {
       });
 
       const result = await response.json();
+      console.log('Email sending response:', result);
 
       if (result.success) {
         setEmailSent(true);
         setOrder((prev: any) => ({ ...prev, status: 'PROCESSING' }));
         alert('E-pasts nosūtīts veiksmīgi!');
       } else {
-        alert('Kļūda nosūtot e-pastu: ' + result.error);
+        console.error('Email sending failed:', result);
+        alert('Kļūda nosūtot e-pastu: ' + (result.error || 'Nezināma kļūda'));
       }
     } catch (error) {
       console.error('Error sending email:', error);
-      alert('Kļūda nosūtot e-pastu');
+      alert(
+        'Kļūda nosūtot e-pastu: ' +
+          (error instanceof Error ? error.message : 'Nezināma kļūda')
+      );
     } finally {
       setEmailSending(false);
+    }
+  };
+
+  // Function to test SMTP configuration
+  const testSMTPConfig = async () => {
+    try {
+      const testEmail = prompt('Ievadiet e-pasta adresi testēšanai:');
+      if (!testEmail) return;
+
+      // First test configuration
+      console.log('Testing SMTP configuration...');
+      const configResponse = await fetch('/api/debug/email-diagnostic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'config' }),
+      });
+
+      const configResult = await configResponse.json();
+      console.log('Config test result:', configResult);
+
+      if (!configResult.success) {
+        alert('SMTP konfigurācijas tests neizdevās: ' + configResult.error);
+        return;
+      }
+
+      // Then try sending test email
+      console.log('Sending test email...');
+      const sendResponse = await fetch('/api/debug/email-diagnostic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'send', testEmail }),
+      });
+
+      const sendResult = await sendResponse.json();
+      console.log('Send test result:', sendResult);
+
+      if (sendResult.success) {
+        alert('SMTP tests veiksmīgs! Pārbaudiet savu e-pastu: ' + testEmail);
+      } else {
+        alert('SMTP tests neizdevās: ' + sendResult.error);
+        console.error('SMTP test failed:', sendResult);
+      }
+    } catch (error) {
+      console.error('SMTP test error:', error);
+      alert(
+        'SMTP testa kļūda: ' +
+          (error instanceof Error ? error.message : 'Nezināma kļūda')
+      );
     }
   };
 
@@ -198,16 +257,24 @@ export default function OrderConfirmationPage() {
             </button>
           )}
 
+          {/* SMTP Test poga (debugging) */}
+          <button
+            onClick={testSMTPConfig}
+            className="px-6 py-3 bg-orange-600 text-white rounded-md hover:bg-orange-700 inline-block mb-4 ml-4"
+          >
+            Testēt SMTP
+          </button>
+
           {/* Status indikators */}
           {order?.status === 'PROCESSING' && (
             <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-md inline-block">
-              ✅ Pasūtījums apstrādāts un e-pasts nosūtīts
+              Pasūtījums apstrādāts un e-pasts nosūtīts
             </div>
           )}
 
           {emailSent && (
             <div className="mb-4 p-3 bg-blue-100 text-blue-800 rounded-md inline-block">
-              📧 E-pasts tikko nosūtīts!
+              E-pasts tikko nosūtīts!
             </div>
           )}
 
