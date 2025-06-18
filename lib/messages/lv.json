@@ -1805,11 +1805,15 @@
   "activeRepairs": "Aktīvie remonti",  
   "lowStockItems": "Preces ar zemu krājumu",
   "monthlyGrowth": "Mēneša pieaugums",
-  "salesOverview": "Pārdošanas pārskats",
-  "repairMetrics": "Remonta metrika",
+  "salesOverview": "Pārdošanas pārskats",  "repairMetrics": "Remonta metrika",
   "retry": "Mēģināt vēlreiz",
   "ready-made": "Gatavie datori",
-  "failedToLoadData": "Neizdevās ielādēt paneļa datus"
+  "failedToLoadData": "Neizdevās ielādēt paneļa datus",
+  "manageUsers": "Pārvaldīt lietotājus",
+  "manageOrders": "Pārvaldīt pasūtījumus",
+  "manageConfigurations": "Pārvaldīt konfigurācijas",
+  "profile": "Profils",
+  "editProfileAndSettings": "Rediģēt profilu un iestatījumus"
 },
 "account": {
   "account": "Konts",

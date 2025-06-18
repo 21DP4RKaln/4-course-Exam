@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
 import {
   Plus,
   Edit,
@@ -31,24 +32,53 @@ export default function UsersPage() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = pathname.split('/')[1];
+  const { user: currentUser, loading: authLoading } = useAuth();
 
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check authentication first
+    if (authLoading) return;
+
+    if (!currentUser || currentUser.role !== 'ADMIN') {
+      router.push(`/${locale}/unauthorized`);
+      return;
+    }
+
     fetchUsers();
-  }, []);
+  }, [currentUser, authLoading, locale, router]);
 
   const fetchUsers = async () => {
     try {
+      console.log('Fetching users...');
+      setError(null);
       const response = await fetch('/api/admin/users');
+      console.log('Response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
-        setUsers(data);
+        console.log('Received data:', data);
+        setUsers(data.users || []); // API returns { users: [...], pagination: {...} }
+      } else {
+        console.error(
+          'Failed to fetch users:',
+          response.status,
+          response.statusText
+        );
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        setError(
+          `Failed to fetch users: ${response.status} ${response.statusText}`
+        );
       }
     } catch (error) {
       console.error('Error fetching users:', error);
+      setError(
+        `Error fetching users: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setLoading(false);
     }
@@ -61,14 +91,21 @@ export default function UsersPage() {
       });
 
       if (response.ok) {
+        const updatedUser = await response.json();
         setUsers(
           users.map(u =>
-            u.id === user.id ? { ...u, isBlocked: !u.isBlocked } : u
+            u.id === user.id ? { ...u, isBlocked: updatedUser.isBlocked } : u
           )
         );
+      } else {
+        console.error('Failed to toggle user block status:', response.status);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        alert('Failed to update user status. Please try again.');
       }
     } catch (error) {
       console.error('Error toggling user block status:', error);
+      alert('Failed to update user status. Please try again.');
     }
   };
 
@@ -82,9 +119,15 @@ export default function UsersPage() {
 
       if (response.ok) {
         setUsers(users.filter(user => user.id !== id));
+      } else {
+        console.error('Failed to delete user:', response.status);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        alert('Failed to delete user. Please try again.');
       }
     } catch (error) {
       console.error('Error deleting user:', error);
+      alert('Failed to delete user. Please try again.');
     }
   };
 
@@ -164,6 +207,41 @@ export default function UsersPage() {
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  console.log('Users state:', users);
+  console.log('Filtered users:', filteredUsers);
+  console.log('Loading state:', loading);
+  console.log('Auth loading state:', authLoading);
+  console.log('Current user:', currentUser);
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+            Users Management
+          </h1>
+        </div>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <p className="text-red-600 dark:text-red-400">{error}</p>
+          <button
+            onClick={fetchUsers}
+            className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (authLoading || loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-neutral-500 dark:text-neutral-400">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -188,7 +266,18 @@ export default function UsersPage() {
           />
         </div>
 
-        <DataTable columns={columns} data={filteredUsers} loading={loading} />
+        {filteredUsers.length === 0 && !loading ? (
+          <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
+            No users found
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filteredUsers}
+            loading={loading}
+            emptyMessage="No users found"
+          />
+        )}
       </div>
     </div>
   );

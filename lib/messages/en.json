@@ -1920,11 +1920,15 @@
     "activeRepairs": "Active Repairs",    
     "lowStockItems": "Low Stock Items",
     "monthlyGrowth": "Monthly Growth",
-    "salesOverview": "Sales Overview",
-    "repairMetrics": "Repair Metrics",
+    "salesOverview": "Sales Overview",    "repairMetrics": "Repair Metrics",
     "retry": "Retry",
     "ready-made": "Ready-Made PCs",
-    "failedToLoadData": "Failed to load dashboard data"
+    "failedToLoadData": "Failed to load dashboard data",
+    "manageUsers": "Manage users",
+    "manageOrders": "Manage orders",
+    "manageConfigurations": "Manage configurations",
+    "profile": "Profile",
+    "editProfileAndSettings": "Edit profile and settings"
   },
   "account": {
     "account": "Account",

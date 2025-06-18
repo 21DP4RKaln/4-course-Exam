@@ -2,26 +2,28 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Eye, Edit, Trash, Plus } from 'lucide-react';
 
 export default function AdminConfigurationsPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
   const [configurations, setConfigurations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') {
-      router.push('/unauthorized');
+      router.push(`/${locale}/unauthorized`);
       return;
     }
     fetchConfigurations();
-  }, [user]);
+  }, [user, locale]);
 
   const fetchConfigurations = async () => {
     try {
-      const response = await fetch('/api/admin/configurations');
+      const response = await fetch('/api/staff/configurations');
       const data = await response.json();
       setConfigurations(data);
     } catch (error) {
@@ -34,7 +36,7 @@ export default function AdminConfigurationsPage() {
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this configuration?')) {
       try {
-        await fetch(`/api/admin/configurations/${id}`, {
+        await fetch(`/api/staff/configurations/${id}`, {
           method: 'DELETE',
         });
         fetchConfigurations();
@@ -59,7 +61,7 @@ export default function AdminConfigurationsPage() {
           Configurations
         </h1>
         <button
-          onClick={() => router.push('/admin/configurations/create')}
+          onClick={() => router.push(`/${locale}/admin/configurations/create`)}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -146,7 +148,9 @@ export default function AdminConfigurationsPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() =>
-                        router.push(`/admin/configurations/${config.id}`)
+                        router.push(
+                          `/${locale}/admin/configurations/${config.id}`
+                        )
                       }
                       className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                     >
@@ -154,7 +158,9 @@ export default function AdminConfigurationsPage() {
                     </button>
                     <button
                       onClick={() =>
-                        router.push(`/admin/configurations/${config.id}/edit`)
+                        router.push(
+                          `/${locale}/admin/configurations/${config.id}/edit`
+                        )
                       }
                       className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
                     >

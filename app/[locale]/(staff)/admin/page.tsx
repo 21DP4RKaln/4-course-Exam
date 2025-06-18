@@ -120,7 +120,7 @@ export default function AdminDashboard() {
                   {t('staff.users')}
                 </h3>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                  Pārvaldīt lietotājus
+                  {t('staff.manageUsers')}
                 </p>
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function AdminDashboard() {
                   {t('staff.orders')}
                 </h3>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                  Pārvaldīt pasūtījumus
+                  {t('staff.manageOrders')}
                 </p>
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
                   {t('staff.configurations')}
                 </h3>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                  Pārvaldīt konfigurācijas
+                  {t('staff.manageConfigurations')}
                 </p>
               </div>
             </div>
@@ -165,10 +165,10 @@ export default function AdminDashboard() {
               <Users className="h-8 w-8 text-orange-500 mr-3" />
               <div>
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                  Profils
+                  {t('staff.profile')}
                 </h3>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                  Rediģēt profilu un iestatījumus
+                  {t('staff.editProfileAndSettings')}
                 </p>
               </div>
             </div>
