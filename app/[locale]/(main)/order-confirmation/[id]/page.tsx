@@ -257,14 +257,14 @@ export default function OrderConfirmationPage() {
             </button>
           )}
 
-          {/* SMTP Test poga (debugging) */}
+          {/* SMTP Test poga (debugging) 
           <button
             onClick={testSMTPConfig}
             className="px-6 py-3 bg-orange-600 text-white rounded-md hover:bg-orange-700 inline-block mb-4 ml-4"
           >
             Testēt SMTP
           </button>
-
+                                */}
           {/* Status indikators */}
           {order?.status === 'PROCESSING' && (
             <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-md inline-block">

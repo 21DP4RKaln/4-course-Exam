@@ -30,33 +30,63 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    // Send order receipt email
+    // Send order receipt email - but don't fail if email fails
     let emailSent = false;
+    let emailError = null;
     try {
       const orderLocale = order?.locale || 'en';
       emailSent = await sendOrderReceipt(orderId, orderLocale);
-      console.log(`Order receipt email sent for order: ${orderId}`);
-    } catch (emailError) {
-      console.error('Error sending order receipt email:', emailError);
+      console.log(
+        `✅ Order receipt email sent for order: ${orderId}, result: ${emailSent}`
+      );
+    } catch (error) {
+      emailError =
+        error instanceof Error ? error.message : 'Unknown email error';
+      console.error('❌ Error sending order receipt email:', error);
+
+      // Log failed email for manual processing
+      console.log('🔄 MANUAL EMAIL NEEDED:', {
+        orderId,
+        email: order.shippingEmail,
+        customerName: order.shippingName,
+        error: emailError,
+        timestamp: new Date().toISOString(),
+      });
     }
 
-    // Skip audit log creation to avoid database dependency issues
-    console.log(`Order confirmed: ${orderId}, email sent: ${emailSent}`);
+    // Always return success for order confirmation, regardless of email status
+    console.log(
+      `📋 Order confirmed: ${orderId}, email sent: ${emailSent}, email error: ${emailError || 'none'}`
+    );
 
     return NextResponse.json({
       success: true,
-      message: 'Order confirmed and email sent',
+      message: emailSent
+        ? 'Order confirmed and email sent successfully'
+        : 'Order confirmed successfully - email will be processed separately',
       emailSent,
+      emailError: emailSent ? null : emailError,
       order: {
         id: order.id,
         status: order.status,
         shippingEmail: order.shippingEmail,
+        shippingName: order.shippingName,
       },
+      // Provide user-friendly message in Latvian
+      userMessage: emailSent
+        ? 'Pasūtījums apstiprināts un e-pasts nosūtīts!'
+        : 'Pasūtījums apstiprināts! E-pasta apstiprinājums tiks nosūtīts drīzumā.',
+      // Additional info for troubleshooting
+      emailStatus: emailSent ? 'sent' : 'failed',
+      emailErrorMessage: emailError,
     });
   } catch (error) {
-    console.error('Error confirming order:', error);
+    console.error('❌ Error confirming order:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }
